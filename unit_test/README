@@ -1,0 +1,5 @@
+Useful unit test code
+
+Colors.h/.cpp : Useful functions which will modify the console terminal color. This can create colorful output which allows rapid viewing of pass/fail conditions.
+
+Logger.h/.cpp : A log container which will store unit test results until all tests have completed. Useful for storing intermediate results rather than crash the results.
