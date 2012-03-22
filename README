@@ -12,4 +12,12 @@ Project Structure
    -  Math : A collection of useful C++ math libraries
       - Geometry : A useful Vector, Quaternion, and other Geometry tools
    
+   - Vision : A collection of computer vision and image processing utilities
+    
+      - IO : 
+
+   - Geographic : A collection of geographic utilities
+     
+      - ntif 
+
    - Unit Test : A collection of useful Unit Testing Utilities
