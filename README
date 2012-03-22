@@ -3,4 +3,12 @@ This is a repo containing useful libraries and utilities I have created.
 This is in an effort to annotate and document projects which are good enough to 
 use and deploy in a general sense.
 
+Feel free to use any code which you find in this repo.  I ask that you send me any
+improvements or modifications so that I can potentially add them permanently. 
+
+
+Project Structure
+- Code_Sandbox
+   -  Math : A collection of useful C++ math libraries
+      - Geometry : A useful Vector, Quaternion, and other Geometry tools
 
