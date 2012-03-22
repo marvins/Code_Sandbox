@@ -6,3 +6,5 @@ bool ASSERT_EQUAL( double const& valA, double const& valB, double const& diff ){
         return false;
     return true;
 }
+
+
