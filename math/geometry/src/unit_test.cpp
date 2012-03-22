@@ -3,8 +3,8 @@
 #include "Vector.h"
 #include "Quaternion.h"
 
-#include "test/Assert.h"
-#include "test/Logger.h"
+#include "../../../unit_test/src/Assert.h"
+#include "../../../unit_test/src/Logger.h"
 
 using namespace std;
 
