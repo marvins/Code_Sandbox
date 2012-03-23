@@ -11,6 +11,10 @@
 #include "gdal_priv.h"
 #include "cpl_conv.h"
 
+#include "../../../opencv/OpenCVUtils.h"
+#include "../utilities/GDAL2OpenCV.h"
+
+
 using namespace cv;
 using namespace std;
 
@@ -31,7 +35,7 @@ class GeoImage{
 
         GDALDriver* getDriver()const;
 
-        void get_image()const;
+        Mat get_image()const;
 
         bool isOpenCVValid()const;
         
@@ -40,6 +44,7 @@ class GeoImage{
     private:
 
         void load_image();
+        Mat  merge_bands( vector<Mat>const& imgStack, vector<int> colors, vector<int> depths )const;
 
         string filename;
         bool initialize;
