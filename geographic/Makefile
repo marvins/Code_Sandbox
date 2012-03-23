@@ -6,8 +6,13 @@ TEST_HEADERS = $(TEST_DIR)/src
 
 TEST_INCLUDE = -I$(TEST_HEADERS)
 
+ifeq ($(shell uname),Linux)
 GDAL_LIBS = -L/usr/local/lib -lgdal
 GDAL_INCLUDE = -I/usr/local/include
+else
+GDAL_LIBS = -L/opt/local/lib -lgdal
+GDAL_INCLUDE = -I/opt/local/include
+endif
 
 SOURCES = src/structures/*.cpp \
 		  src/utilities/*.cpp \
