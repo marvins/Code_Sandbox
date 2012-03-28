@@ -45,6 +45,8 @@ class GeoImage{
         double getMin()const;
         double getMax()const;
 
+        void write_image( const string& imgFilename = "__NONE__" );
+
     private:
 
         void load_image();

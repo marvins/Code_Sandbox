@@ -258,3 +258,9 @@ Mat GeoImage::merge_bands( vector<Mat>const& imgStack, vector<int> colors, vecto
 double GeoImage::getMin()const{ return adfMinMax[0]; }
 double GeoImage::getMax()const{ return adfMinMax[1]; }
 
+
+void GeoImage::write_image( const string& imgFilename ){
+
+    throw string("ERROR: not implemented");
+
+}
