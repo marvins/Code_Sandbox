@@ -10,6 +10,9 @@
 #include <cvaux.h>
 #include <highgui.h>
 
+#include <fstream>
+#include <iostream>
+
 #include "src/structures/GeoImage.h"
 
 using namespace cv;
@@ -116,29 +119,53 @@ int  TEST_NITF_initialization( string& note){
 
 int  TEST_NITF_get_image( string& note ){
 
+    //image array
     vector<GeoImage> imgArr;
+    
+    //create opencv structures
+    Mat currentImg;
+    namedWindow("IMAGE",0);
 
+    //open run list
     ifstream fin;
     fin.open("data/run_file.txt");
     string fname;
     fin >> fname;
     while( !fin.eof()){
-      imgArr.push_back( GeoImage(fname, true));
+
+        GeoImage img(fname, true);
+        if( img.isOpenCVValid() ){
+            //currentImg = Scalar(0);
+            currentImg = img.get_image();
+           
+            Size sz = img.getMatSize();
+            double ar = sz.width/sz.height;
+            int maxWidth = 500;
+            int w = std::min( maxWidth, sz.width);
+            int h = std::min( maxWidth/ar, (double)sz.height);
+
+            cout << fname << endl;
+            cout << "min: " << img.getMin() << ", max: " << img.getMax() << endl;
+            cout << "sz: " << sz.width << ", " << sz.height << endl;
+            imshow("IMAGE",currentImg);
+            waitKey(0);
+        }
+
+        //imgArr.push_back( GeoImage(fname, true));
+      
       fin >> fname;
     }
     fin.close();
     
-    Mat currentImg;
-    namedWindow("IMAGE");
 
-    for(size_t i=0; i<imgArr.size(); i++){
-        if( imgArr[i].isOpenCVValid() ){
-            currentImg = imgArr[i].get_image();
-            cout << imgArr[i].get_filename() << endl;
-            imshow("IMAGE",currentImg);
-            waitKey(0);
-        }
-    }
+    //for(size_t i=0; i<imgArr.size(); i++){
+        //if( imgArr[i].isOpenCVValid() ){
+            //currentImg = imgArr[i].get_image();
+            //cout << imgArr[i].get_filename() << endl;
+            //imshow("IMAGE",currentImg);
+            //waitKey(0);
+        //}
+    //}
 
     
 

@@ -114,6 +114,16 @@ void GeoImage::load_image(){
 
 }
 
+Size GeoImage::getMatSize()const{
+
+    if( isOpenCVValid() ){
+        return Size( poDataset->GetRasterBand(1)->GetXSize(), poDataset->GetRasterBand(1)->GetYSize());
+    }
+    else
+        return Size(0,0);
+
+}
+
 /**
  * Get Driver
  */
@@ -130,39 +140,55 @@ bool GeoImage::gdal_load()const{
 }
 
 
-Mat GeoImage::get_image()const{
+Mat GeoImage::get_image(){
 
     vector<Mat> imgStack(  poDataset->GetRasterCount());
     vector<int> colors(      poDataset->GetRasterCount());
     vector<int> depths(    poDataset->GetRasterCount());
 
+
     for( size_t i=0; i<poDataset->GetRasterCount(); i++){
-        
+
         //create objects
         GDALRasterBand *band;
         band = poDataset->GetRasterBand(i+1);
-        
+
         //get datatype
         depths[i]  = gdal2opencvPixelType( band->GetRasterDataType());
-        cout << "DataType: " << GDALGetDataTypeName(band->GetRasterDataType()) << endl;
+        
+        //check for max and min values, if max is around 4095, then I will set the range for normalization
+        magScale = 16;
+
 
         //get pixeltype
         colors[i] = band->GetColorInterpretation();
-        cout << "ColorType: " << GDALGetColorInterpretationName(band->GetColorInterpretation()) << endl;
 
         //load pixels
         int cols = band->GetXSize();
         int rows = band->GetYSize();
         Mat timg(Size(cols, rows), cvDepthChannel2Type(depths[i],1));
 
+        double minP = 0;
+        double maxP = 0;
         for(size_t r=0; r<rows; r++){
-            
+
             float* pafScanline;
             pafScanline = (float*)CPLMalloc(sizeof(float)*cols);
             band->RasterIO( GF_Read, 0, r, cols, 1, pafScanline, cols, 1, GDT_Float32, 0, 0);
 
             for( size_t c=0; c<cols; c++){
-               
+
+                if( r == 0 && c == 0 ){
+                    minP = pafScanline[c];
+                    maxP = pafScanline[c];
+                }
+                if( pafScanline[c] > maxP ){
+                    maxP = pafScanline[c];
+                }
+                if( pafScanline[c] < minP ){
+                    minP = pafScanline[c];
+                }
+
                 if( depths[i] == CV_8U )
                     timg.at<uchar>(r,c) = pafScanline[c];
                 else if( depths[i] == CV_16U )
@@ -173,13 +199,19 @@ Mat GeoImage::get_image()const{
                     throw string("Invalid pixel type");
             }
         }
+        if( depths[i] == CV_16U && maxP < 4096 )
+            timg = timg.clone()*16;
+        else if( depths[i] == CV_16U && maxP < 16384 )
+            timg = timg.clone()*4;
 
+        adfMinMax[0] = minP;
+        adfMinMax[1] = maxP;
         imgStack[i] = timg.clone();
     }
 
     //merge channels into single image
     Mat img = merge_bands( imgStack, colors, depths );
-    
+
     return img;
 }
 
@@ -204,7 +236,7 @@ Mat GeoImage::merge_bands( vector<Mat>const& imgStack, vector<int> colors, vecto
 
 
     if(nCh == 1)
-        return imgStack[0];
+        return imgStack[0].clone();
 
     if(nCh == 3){
         Mat imgOut;
@@ -216,9 +248,13 @@ Mat GeoImage::merge_bands( vector<Mat>const& imgStack, vector<int> colors, vecto
         trueSet[2] = imgStack[0].clone();
         merge(trueSet, imgOut);
 
-        return imgOut;
+        return imgOut.clone();
     }
 
-    return imgStack[0];
+    return imgStack[0].clone();
 
 }
+
+double GeoImage::getMin()const{ return adfMinMax[0]; }
+double GeoImage::getMax()const{ return adfMinMax[1]; }
+

@@ -35,11 +35,15 @@ class GeoImage{
 
         GDALDriver* getDriver()const;
 
-        Mat get_image()const;
+        Mat get_image();
+        Size getMatSize()const;
 
         bool isOpenCVValid()const;
         
         bool gdal_load()const;
+
+        double getMin()const;
+        double getMax()const;
 
     private:
 
@@ -55,6 +59,9 @@ class GeoImage{
 
         bool gdalLoadFailed;
         bool openCVCompat;
+        
+        double adfMinMax[2];
+        double magScale;
 };
 
 #endif
