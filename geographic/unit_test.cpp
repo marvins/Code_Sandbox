@@ -117,57 +117,59 @@ int  TEST_NITF_initialization( string& note){
     return true;
 }
 
+void show_image(const string& fname, int i){
+
+    //create opencv structures
+    Mat currentImg;
+    namedWindow("IMAGE",0);
+    GeoImage img(fname, true);
+
+    cout << "Image " << i << endl;
+    if( img.isOpenCVValid() ){    
+        currentImg = img.get_image();
+        Size sz = img.getMatSize();
+        double ar = sz.width/sz.height;
+        int maxWidth = 500;
+        int w = std::min( maxWidth, sz.width);
+        int h = std::min( maxWidth/ar, (double)sz.height);
+        cout << fname << endl;
+        cout << "min: " << img.getMin() << ", max: " << img.getMax() << endl;
+        cout << "sz: " << sz.width << ", " << sz.height << endl;
+        imshow("IMAGE",currentImg);
+        waitKey(0);
+    }
+}
+
 int  TEST_NITF_get_image( string& note ){
 
     //image array
     vector<GeoImage> imgArr;
-    
-    //create opencv structures
-    Mat currentImg;
-    namedWindow("IMAGE",0);
+
 
     //open run list
     ifstream fin;
     fin.open("data/run_file.txt");
     string fname;
     fin >> fname;
+    int i=0;
     while( !fin.eof()){
 
-        GeoImage img(fname, true);
-        if( img.isOpenCVValid() ){
-            //currentImg = Scalar(0);
-            currentImg = img.get_image();
-           
-            Size sz = img.getMatSize();
-            double ar = sz.width/sz.height;
-            int maxWidth = 500;
-            int w = std::min( maxWidth, sz.width);
-            int h = std::min( maxWidth/ar, (double)sz.height);
-
-            cout << fname << endl;
-            cout << "min: " << img.getMin() << ", max: " << img.getMax() << endl;
-            cout << "sz: " << sz.width << ", " << sz.height << endl;
-            imshow("IMAGE",currentImg);
-            waitKey(0);
-        }
-
-        //imgArr.push_back( GeoImage(fname, true));
-      
-      fin >> fname;
+        show_image(fname, i++);
+        fin >> fname;
     }
     fin.close();
-    
+
 
     //for(size_t i=0; i<imgArr.size(); i++){
-        //if( imgArr[i].isOpenCVValid() ){
-            //currentImg = imgArr[i].get_image();
-            //cout << imgArr[i].get_filename() << endl;
-            //imshow("IMAGE",currentImg);
-            //waitKey(0);
-        //}
+    //if( imgArr[i].isOpenCVValid() ){
+    //currentImg = imgArr[i].get_image();
+    //cout << imgArr[i].get_filename() << endl;
+    //imshow("IMAGE",currentImg);
+    //waitKey(0);
+    //}
     //}
 
-    
+
 
     note = "TEST NOT INITIALIZED";
     return false;
