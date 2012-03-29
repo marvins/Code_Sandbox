@@ -22,6 +22,7 @@ void TEST_structure_module();
 int  TEST_NITF_Constructor( string& note);
 int  TEST_NITF_initialization( string& note);
 int  TEST_NITF_get_image( string& note );
+int TEST_NITF_write_image( string& note );
 
 int main( int argc, char* argv[] ){
 
@@ -45,6 +46,9 @@ void TEST_structure_module(){
 
     result = TEST_NITF_get_image(note);
     print_test_results("GeoImage Get Image",result, note);
+    
+    result = TEST_NITF_write_image(note);
+    print_test_results("GeoImage Write Image",result, note);
 
     print_module_footer("NITF Image");
 
@@ -171,4 +175,12 @@ int  TEST_NITF_get_image( string& note ){
     note = "TEST NOT INITIALIZED";
     return false;
 
+}
+
+int TEST_NITF_write_image( string& note ){
+
+
+
+    note = "TEST NOT INITIALIZED";
+    return false;
 }
