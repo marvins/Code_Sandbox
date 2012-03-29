@@ -24,6 +24,7 @@ class GeoImage{
 
         GeoImage();
         GeoImage(const string& fname, const bool& init = false );
+        ~GeoImage();
 
         void set_filename( const string& fname );
         string get_filename( )const;

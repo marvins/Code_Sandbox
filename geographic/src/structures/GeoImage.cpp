@@ -12,7 +12,19 @@ GeoImage::GeoImage():filename(""), initialize(false), openCVCompat(false), gdalL
  * @param[in] Init Whether or not to initialize image
 */
 GeoImage::GeoImage(const string& fname, const bool& Init ): 
-    filename(fname), initialize(Init), openCVCompat(false), gdalLoadFailed(false){  init();  }
+    filename(fname), initialize(Init), openCVCompat(false), gdalLoadFailed(false)
+{  
+        
+    poDataset = NULL;
+
+    init();  
+    
+}
+
+
+GeoImage::~GeoImage(){
+
+}
 
 /** 
  * Initialize image
@@ -112,6 +124,7 @@ void GeoImage::load_image(){
     //get the driver infomation
     driver = poDataset->GetDriver();
 
+    cout << "driver: " << driver->GetDescription() << endl;
 }
 
 Size GeoImage::getMatSize()const{
@@ -260,6 +273,7 @@ double GeoImage::getMax()const{ return adfMinMax[1]; }
 
 
 void GeoImage::write_image( const string& imgFilename ){
+
 
     throw string("ERROR: not implemented");
 
