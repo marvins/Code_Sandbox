@@ -123,8 +123,6 @@ void GeoImage::load_image(){
 
     //get the driver infomation
     driver = poDataset->GetDriver();
-
-    cout << "driver: " << driver->GetDescription() << endl;
 }
 
 Size GeoImage::getMatSize()const{

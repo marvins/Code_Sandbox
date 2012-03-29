@@ -124,19 +124,26 @@ void show_image(const string& fname, int i){
     namedWindow("IMAGE",0);
     GeoImage img(fname, true);
 
+
+    bool showImg = false;
     cout << "Image " << i << endl;
+    
     if( img.isOpenCVValid() ){    
         currentImg = img.get_image();
+        
         Size sz = img.getMatSize();
-        double ar = sz.width/sz.height;
-        int maxWidth = 500;
-        int w = std::min( maxWidth, sz.width);
-        int h = std::min( maxWidth/ar, (double)sz.height);
-        cout << fname << endl;
         cout << "min: " << img.getMin() << ", max: " << img.getMax() << endl;
         cout << "sz: " << sz.width << ", " << sz.height << endl;
-        imshow("IMAGE",currentImg);
-        waitKey(0);
+
+        if( showImg == true ){
+            double ar = sz.width/sz.height;
+            int maxWidth = 500;
+            int w = std::min( maxWidth, sz.width);
+            int h = std::min( maxWidth/ar, (double)sz.height);
+            cout << fname << endl;
+            imshow("IMAGE",currentImg);
+            waitKey(0);
+        }
     }
 }
 
@@ -158,16 +165,6 @@ int  TEST_NITF_get_image( string& note ){
         fin >> fname;
     }
     fin.close();
-
-
-    //for(size_t i=0; i<imgArr.size(); i++){
-    //if( imgArr[i].isOpenCVValid() ){
-    //currentImg = imgArr[i].get_image();
-    //cout << imgArr[i].get_filename() << endl;
-    //imshow("IMAGE",currentImg);
-    //waitKey(0);
-    //}
-    //}
 
 
 
