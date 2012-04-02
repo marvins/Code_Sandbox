@@ -22,7 +22,5 @@ HEADERS = src/structures/*.h \
 OBJECTS = build/*.o
 
 
-test: $(HEADERS)
-	g++ unit_test.cpp $(TEST_SOURCES) $(SOURCES) -o unit_test `pkg-config opencv --cflags --libs` $(GDAL_INCLUDE) $(GDAL_LIBS)
-	./unit_test
-
+unit_test: $(HEADERS) $(SOURCES) unit_test.cpp
+	g++ unit_test.cpp $(SOURCES) -o unit_test $(GDAL_INCLUDE) $(TEST_INCLUDE) `pkg-config opencv --cflags --libs` $(GDAL_LIBS) -g

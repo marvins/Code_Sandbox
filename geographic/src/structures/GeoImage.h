@@ -24,6 +24,7 @@ class GeoImage{
 
         GeoImage();
         GeoImage(const string& fname, const bool& init = false );
+        ~GeoImage();
 
         void set_filename( const string& fname );
         string get_filename( )const;
@@ -35,11 +36,17 @@ class GeoImage{
 
         GDALDriver* getDriver()const;
 
-        Mat get_image()const;
+        Mat get_image();
+        Size getMatSize()const;
 
         bool isOpenCVValid()const;
         
         bool gdal_load()const;
+
+        double getMin()const;
+        double getMax()const;
+
+        void write_image( const string& imgFilename = "__NONE__" );
 
     private:
 
@@ -55,6 +62,9 @@ class GeoImage{
 
         bool gdalLoadFailed;
         bool openCVCompat;
+        
+        double adfMinMax[2];
+        double magScale;
 };
 
 #endif

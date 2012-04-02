@@ -11,15 +11,16 @@ https://skydrive.live.com/redir.aspx?cid=2efc5dd61ba698a5&resid=2EFC5DD61BA698A5
 
 Project Structure
 - Code_Sandbox
-   -  Math : A collection of useful C++ math libraries
-      - Geometry : A useful Vector, Quaternion, and other Geometry tools
    
-   - Vision : A collection of computer vision and image processing utilities
-    
-      - IO : 
-
+   -  Math : A collection of useful C++ math libraries
+      - Core : A useful Vector class
+      - Geometry : A useful Quaternion, and other Geometry tools
+      - Calculus : A library of calculus operations
+   
    - Geographic : A collection of geographic utilities
      
-      - ntif 
+      - ntif loading
+
+   - OpenCV : A collection of OpenCV utilities
 
    - Unit Test : A collection of useful Unit Testing Utilities
