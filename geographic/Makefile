@@ -1,28 +1,23 @@
+TEST_SOURCES = ../unit_test/src/Assert.cpp \
+				   ../unit_test/src/Logger.cpp \
+					../unit_test/src/Color.cpp
 
-TEST_DIR = ../unit_test
 
-TEST_SOURCES = $(TEST_DIR)/src/*.cpp
-TEST_HEADERS = $(TEST_DIR)/src
-
-TEST_INCLUDE = -I$(TEST_HEADERS)
-
-ifeq ($(shell uname),Linux)
+#ifeq ($(shell uname),Linux)
 GDAL_LIBS = -L/usr/local/lib -lgdal
 GDAL_INCLUDE = -I/usr/local/include
-else
-GDAL_LIBS = -L/opt/local/lib -lgdal
-GDAL_INCLUDE = -I/opt/local/include
-endif
+#else
+#GDAL_LIBS = -L/opt/local/lib -lgdal
+#GDAL_INCLUDE = -I/opt/local/include
+#endif
 
 SOURCES = src/structures/*.cpp \
 		  src/utilities/*.cpp \
-		  ../opencv/*.cpp \
-		  $(TEST_SOURCES)
+		  ../opencv/*.cpp 
 
 HEADERS = src/structures/*.h \
-		  src/utilities/*.h \
-		  ../opencv/*.h \
-		  $(TEST_HEADERS)/*.h
+	  	   src/utilities/*.h \
+    		../opencv/*.h 
 
 OBJECTS = build/*.o
 

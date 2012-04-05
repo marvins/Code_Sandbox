@@ -2,9 +2,12 @@
    Unit test showing how to use and implement the Geographic Utilities
 */
 
-#include <Assert.h>
-#include <Color.h>
-#include <Logger.h>
+#include <fstream>
+#include <iostream>
+#include <string> 
+
+#include "../unit_test/src/Assert.h"
+#include "../unit_test/src/Logger.h"
 
 #include <cv.h>
 #include <cvaux.h>
@@ -14,6 +17,7 @@
 #include <iostream>
 
 #include "src/structures/GeoImage.h"
+
 
 using namespace cv;
 using namespace std;
@@ -96,7 +100,6 @@ int  TEST_NITF_initialization( string& note){
     GeoImage img6("data/U_1036A.NTF", true );
 
     
-
     //test set init
     note = "Driver short description not NITF, actual: ";
     if( string(img1.getDriver()->GetDescription()) != "NITF" )
@@ -163,14 +166,16 @@ int  TEST_NITF_get_image( string& note ){
 
     //open run list
     ifstream fin;
-    fin.open("data/run_file.txt");
+    fin.open("data/run_files.txt");
     string fname;
     fin >> fname;
     int i=0;
     while( !fin.eof()){
+       cout << "Loading " << fname << endl;
+      imgArr.push_back( GeoImage(fname, true));
+      fin >> fname;
 
         show_image(fname, i++);
-        fin >> fname;
     }
     fin.close();
 
