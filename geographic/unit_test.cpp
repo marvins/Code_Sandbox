@@ -10,6 +10,9 @@
 #include <cvaux.h>
 #include <highgui.h>
 
+#include <fstream>
+#include <iostream>
+
 #include "src/structures/GeoImage.h"
 
 using namespace cv;
