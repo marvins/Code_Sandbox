@@ -2,9 +2,12 @@
    Unit test showing how to use and implement the Geographic Utilities
 */
 
-#include <Assert.h>
-#include <Color.h>
-#include <Logger.h>
+#include <fstream>
+#include <iostream>
+#include <string> 
+
+#include "../unit_test/src/Assert.h"
+#include "../unit_test/src/Logger.h"
 
 #include <cv.h>
 #include <cvaux.h>
@@ -15,6 +18,7 @@
 
 #include "src/structures/GeoImage.h"
 
+
 using namespace cv;
 using namespace std;
 
@@ -22,6 +26,7 @@ void TEST_structure_module();
 int  TEST_NITF_Constructor( string& note);
 int  TEST_NITF_initialization( string& note);
 int  TEST_NITF_get_image( string& note );
+int TEST_NITF_write_image( string& note );
 
 int main( int argc, char* argv[] ){
 
@@ -35,18 +40,21 @@ void TEST_structure_module(){
     int result;
     string note;
     
-    print_module_header("NITF Image");
+    //print_module_header("NITF Image");
     
-    result = TEST_NITF_Constructor(note);
-    print_test_results("GeoImage Constructor",result,note);
+    //result = TEST_NITF_Constructor(note);
+    //print_test_results("GeoImage Constructor",result,note);
     
-    result = TEST_NITF_initialization(note);
-    print_test_results("GeoImage Initialization",result,note);
+    //result = TEST_NITF_initialization(note);
+    //print_test_results("GeoImage Initialization",result,note);
 
     result = TEST_NITF_get_image(note);
-    print_test_results("GeoImage Get Image",result, note);
+    //print_test_results("GeoImage Get Image",result, note);
+    
+    //result = TEST_NITF_write_image(note);
+    //print_test_results("GeoImage Write Image",result, note);
 
-    print_module_footer("NITF Image");
+    //print_module_footer("NITF Image");
 
 }
 
@@ -92,7 +100,6 @@ int  TEST_NITF_initialization( string& note){
     GeoImage img6("data/U_1036A.NTF", true );
 
     
-
     //test set init
     note = "Driver short description not NITF, actual: ";
     if( string(img1.getDriver()->GetDescription()) != "NITF" )
@@ -117,35 +124,72 @@ int  TEST_NITF_initialization( string& note){
     return true;
 }
 
-int  TEST_NITF_get_image( string& note ){
+void show_image(const string& fname, int i){
 
-    vector<GeoImage> imgArr;
-
-    ifstream fin;
-    fin.open("data/run_file.txt");
-    string fname;
-    fin >> fname;
-    while( !fin.eof()){
-      imgArr.push_back( GeoImage(fname, true));
-      fin >> fname;
-    }
-    fin.close();
-    
+    //create opencv structures
     Mat currentImg;
-    namedWindow("IMAGE");
+    namedWindow("IMAGE",0);
+    GeoImage img(fname, true);
 
-    for(size_t i=0; i<imgArr.size(); i++){
-        if( imgArr[i].isOpenCVValid() ){
-            currentImg = imgArr[i].get_image();
-            cout << imgArr[i].get_filename() << endl;
+
+    bool showImg = false;
+    cout << "Image " << i << endl;
+    
+    if( false ){   //img.isOpenCVValid() ){    
+        currentImg = img.get_image();
+        
+        //Size sz = img.getMatSize();
+        //cout << "min: " << img.getMin() << ", max: " << img.getMax() << endl;
+        //cout << "sz: " << sz.width << ", " << sz.height << endl;
+
+        /*
+        if( showImg == true ){
+            double ar = sz.width/sz.height;
+            int maxWidth = 500;
+            int w = std::min( maxWidth, sz.width);
+            int h = std::min( maxWidth/ar, (double)sz.height);
+            cout << fname << endl;
             imshow("IMAGE",currentImg);
             waitKey(0);
         }
+        */
     }
 
-    
+    destroyAllWindows();
+}
+
+int  TEST_NITF_get_image( string& note ){
+
+    //image array
+    vector<GeoImage> imgArr;
+
+
+    //open run list
+    ifstream fin;
+    fin.open("data/run_files.txt");
+    string fname;
+    fin >> fname;
+    int i=0;
+    while( !fin.eof()){
+       cout << "Loading " << fname << endl;
+      imgArr.push_back( GeoImage(fname, true));
+      fin >> fname;
+
+        show_image(fname, i++);
+    }
+    fin.close();
+
+
 
     note = "TEST NOT INITIALIZED";
     return false;
 
+}
+
+int TEST_NITF_write_image( string& note ){
+
+
+
+    note = "TEST NOT INITIALIZED";
+    return false;
 }
