@@ -3,7 +3,9 @@
 /**
  * Default Constructor
 */
-GeoImage::GeoImage():filename(""), initialize(false), openCVCompat(false), gdalLoadFailed(false){}
+GeoImage::GeoImage():filename(""), initialize(false), openCVCompat(false), gdalLoadFailed(false){
+    cout << "GeoImage Default Constructor" << endl;    
+}
 
 
 /**
@@ -15,15 +17,34 @@ GeoImage::GeoImage(const string& fname, const bool& Init ):
     filename(fname), initialize(Init), openCVCompat(false), gdalLoadFailed(false)
 {  
         
+    cout << "GeoImage Parameterized Constructor" << endl;
     poDataset = NULL;
 
     init();  
     
 }
+        
+GeoImage::GeoImage( const GeoImage& rhs ){
+
+    cout << "GeoImage Copy Constructor" << endl;
+    throw string("ERROR: not implemented");
+}
 
 
 GeoImage::~GeoImage(){
+    
+    cout << "GeoImage Destructor" << endl;
+    if( poDataset != NULL ){
+        cout << "Closing Dataset" << endl;
+        GDALClose(poDataset);
+    }
+}
 
+GeoImage& GeoImage::operator = (const GeoImage& rhs ){
+
+    cout << "GeoImage Assignment Operator" << endl;
+    throw string("NOT IMPLMENTED");
+    return (*this);
 }
 
 /** 
@@ -154,7 +175,7 @@ bool GeoImage::gdal_load()const{
 Mat GeoImage::get_image(){
 
     vector<Mat> imgStack(  poDataset->GetRasterCount());
-    vector<int> colors(      poDataset->GetRasterCount());
+    vector<int> colors(    poDataset->GetRasterCount());
     vector<int> depths(    poDataset->GetRasterCount());
 
 

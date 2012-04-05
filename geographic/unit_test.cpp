@@ -36,21 +36,21 @@ void TEST_structure_module(){
     int result;
     string note;
     
-    print_module_header("NITF Image");
+    //print_module_header("NITF Image");
     
-    result = TEST_NITF_Constructor(note);
-    print_test_results("GeoImage Constructor",result,note);
+    //result = TEST_NITF_Constructor(note);
+    //print_test_results("GeoImage Constructor",result,note);
     
-    result = TEST_NITF_initialization(note);
-    print_test_results("GeoImage Initialization",result,note);
+    //result = TEST_NITF_initialization(note);
+    //print_test_results("GeoImage Initialization",result,note);
 
     result = TEST_NITF_get_image(note);
-    print_test_results("GeoImage Get Image",result, note);
+    //print_test_results("GeoImage Get Image",result, note);
     
-    result = TEST_NITF_write_image(note);
-    print_test_results("GeoImage Write Image",result, note);
+    //result = TEST_NITF_write_image(note);
+    //print_test_results("GeoImage Write Image",result, note);
 
-    print_module_footer("NITF Image");
+    //print_module_footer("NITF Image");
 
 }
 
@@ -132,13 +132,14 @@ void show_image(const string& fname, int i){
     bool showImg = false;
     cout << "Image " << i << endl;
     
-    if( img.isOpenCVValid() ){    
+    if( false ){   //img.isOpenCVValid() ){    
         currentImg = img.get_image();
         
-        Size sz = img.getMatSize();
-        cout << "min: " << img.getMin() << ", max: " << img.getMax() << endl;
-        cout << "sz: " << sz.width << ", " << sz.height << endl;
+        //Size sz = img.getMatSize();
+        //cout << "min: " << img.getMin() << ", max: " << img.getMax() << endl;
+        //cout << "sz: " << sz.width << ", " << sz.height << endl;
 
+        /*
         if( showImg == true ){
             double ar = sz.width/sz.height;
             int maxWidth = 500;
@@ -148,7 +149,10 @@ void show_image(const string& fname, int i){
             imshow("IMAGE",currentImg);
             waitKey(0);
         }
+        */
     }
+
+    destroyAllWindows();
 }
 
 int  TEST_NITF_get_image( string& note ){

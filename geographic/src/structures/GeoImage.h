@@ -24,7 +24,12 @@ class GeoImage{
 
         GeoImage();
         GeoImage(const string& fname, const bool& init = false );
+        
+        GeoImage( const GeoImage& rhs );
+
         ~GeoImage();
+
+        GeoImage& operator = (const GeoImage& rhs );
 
         void set_filename( const string& fname );
         string get_filename( )const;
