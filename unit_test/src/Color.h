@@ -6,7 +6,7 @@
 
 using namespace std;
 
-enum COLORS  { RED = 31, YELLOW = 33, GREEN = 32, BLUE = 34 };
+enum COLORS  { RED = 31, YELLOW = 33, GREEN = 32, BLUE = 34, CYAN = 36 };
 
 #define color_end "\033[0m"
 
