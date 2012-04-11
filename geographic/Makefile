@@ -16,6 +16,10 @@ GDAL         	= $(GDAL_LIBS) $(GDAL_INCLUDE)
 OPENCV = `pkg-config opencv --cflags --libs`
 OPENCV_INCLUDE = `pkg-config opencv --cflags`
 
+# Boost Libraries
+BOOST_INCLUDE = -I/usr/local/include
+BOOST_LIBS    = -L/usr/local/lib -lboost_filesystem -lboost_system
+BOOST		  = $(BOOST_INCLUDE) $(BOOST_LIBS)
 
 
 # Geographic NITF Libraries
@@ -31,10 +35,10 @@ OBJECTS = build/GeoImage.o \
 #				BUILD SEQUENCE		
 ###################################################################
 unit_test: unit_test.cpp $(TEST_INCLUDE) $(OBJECTS)
-	g++ unit_test.cpp -o unit_test $(OPENCV) $(GDAL) $(TEST_SOURCES) $(OBJECTS)
+	g++ unit_test.cpp -o unit_test $(OPENCV) $(GDAL) $(BOOST) $(TEST_SOURCES) $(OBJECTS)
 
 build/GeoImage.o:	src/structures/GeoImage.cpp $(HEADERS)
-	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(BOOST_INCLUDE)
 
 build/GDAL2OpenCV.o: src/utilities/GDAL2OpenCV.cpp $(HEADERS)
 	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE)
@@ -42,5 +46,12 @@ build/GDAL2OpenCV.o: src/utilities/GDAL2OpenCV.cpp $(HEADERS)
 build/OpenCVUtils.o: ../opencv/OpenCVUtils.cpp $(HEADERS)
 	g++ $< -c -o $@ $(OPENCV_INCLUDE)
 
-#$(SOURCES) -o unit_test $(GDAL_INCLUDE) $(TEST_INCLUDE) `pkg-config opencv --cflags --libs` $(GDAL_LIBS) -g
-#$(HEADERS) $(SOURCES) unit_test.cpp
+
+###################################################################
+# 				MISC TOOLS
+###################################################################
+clean: 
+	rm -r build/*.o
+	rm unit_test
+
+
