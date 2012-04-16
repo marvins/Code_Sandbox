@@ -28,7 +28,11 @@ GeoImage::GeoImage(const string& fname, const bool& Init ):
         
 GeoImage::GeoImage( const GeoImage& rhs ){
 
-    throw string("ERROR: not implemented");
+    filename = rhs.filename;
+
+    initialize = rhs.initialize;
+    
+    init();
 }
 
 
@@ -103,7 +107,7 @@ void GeoImage::load_image(){
 
     //make sure that the file exists
     if( !fs::exists( fs::path( filename ) ) )
-        throw string(string("Error: Image ") + filename + string(" does not exist"));
+        throw string(string("Error: Image <") + filename + string("> does not exist"));
 
     //initialize GDAL
     gdalLoadFailed = false;
