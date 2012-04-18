@@ -25,7 +25,15 @@ GeoImage::GeoImage(const string& fname, const bool& Init ):
     init();  
     
 }
-        
+  
+/**
+ * Copy constructor
+ * 
+ * Note that I don't allow you to pass the data pointers. 
+ * This does a complete deep copy.
+ *
+ * @param[in] rhs GeoImage to be copied
+*/
 GeoImage::GeoImage( const GeoImage& rhs ){
 
     filename = rhs.filename;
@@ -35,7 +43,11 @@ GeoImage::GeoImage( const GeoImage& rhs ){
     init();
 }
 
-
+/**
+ * GeoImage destructor
+ * 
+ * @brief Deallocates the GDAL datasets
+*/
 GeoImage::~GeoImage(){
     
     if( poDataset != NULL ){
