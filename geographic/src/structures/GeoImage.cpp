@@ -1,10 +1,13 @@
 #include "GeoImage.h"
 
+#include <boost/filesystem.hpp>
+
+namespace fs = boost::filesystem;
+
 /**
  * Default Constructor
 */
 GeoImage::GeoImage():filename(""), initialize(false), openCVCompat(false), gdalLoadFailed(false){
-    cout << "GeoImage Default Constructor" << endl;    
 }
 
 
@@ -17,7 +20,6 @@ GeoImage::GeoImage(const string& fname, const bool& Init ):
     filename(fname), initialize(Init), openCVCompat(false), gdalLoadFailed(false)
 {  
         
-    cout << "GeoImage Parameterized Constructor" << endl;
     poDataset = NULL;
 
     init();  
@@ -26,23 +28,23 @@ GeoImage::GeoImage(const string& fname, const bool& Init ):
         
 GeoImage::GeoImage( const GeoImage& rhs ){
 
-    cout << "GeoImage Copy Constructor" << endl;
-    throw string("ERROR: not implemented");
+    filename = rhs.filename;
+
+    initialize = rhs.initialize;
+    
+    init();
 }
 
 
 GeoImage::~GeoImage(){
     
-    cout << "GeoImage Destructor" << endl;
     if( poDataset != NULL ){
-        cout << "Closing Dataset" << endl;
         GDALClose(poDataset);
     }
 }
 
 GeoImage& GeoImage::operator = (const GeoImage& rhs ){
 
-    cout << "GeoImage Assignment Operator" << endl;
     throw string("NOT IMPLMENTED");
     return (*this);
 }
@@ -97,9 +99,15 @@ string GeoImage::get_filename( )const{
  */
 void GeoImage::load_image(){
     
+    //make sure the image is initialize. This is more of a debugging
+    //test as if this false, then I allowed something bad
     if( initialize == false ){
         throw string("Error: image not initialized");
     }
+
+    //make sure that the file exists
+    if( !fs::exists( fs::path( filename ) ) )
+        throw string(string("Error: Image <") + filename + string("> does not exist"));
 
     //initialize GDAL
     gdalLoadFailed = false;
