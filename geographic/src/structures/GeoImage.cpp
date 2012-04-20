@@ -10,39 +10,55 @@ namespace fs = boost::filesystem;
 GeoImage::GeoImage():filename(""), initialize(false), openCVCompat(false), gdalLoadFailed(false){
 }
 
+/** Parameterized Constructor
+ *
+ * @param[in] fname image filename
+ * @param[in] init initialization flag. If you want to load the image information, 
+ * then you can set this equal to true. 
+ */
 
-/**
- * Parameterized Constructor
- * @param[in] fname Filename to use
- * @param[in] Init Whether or not to initialize image
-*/
 GeoImage::GeoImage(const string& fname, const bool& Init ): 
     filename(fname), initialize(Init), openCVCompat(false), gdalLoadFailed(false)
 {  
-        
+
     poDataset = NULL;
 
     init();  
-    
+
 }
-        
+
+/** Copy Constructor
+ *
+ * @brief Note that this performs a deep copy. In fact,
+ * it merely transfers any pre-loading information, then 
+ * reloads the image information using GDAL
+ *
+ * @param[in] rhs Image to be copied
+ */
 GeoImage::GeoImage( const GeoImage& rhs ){
 
     filename = rhs.filename;
 
     initialize = rhs.initialize;
-    
+
     init();
 }
 
 
+/** Destructor
+ *
+ * Deallocates any GDAL information loaded 
+ */
 GeoImage::~GeoImage(){
     
-    if( poDataset != NULL ){
-        GDALClose(poDataset);
-    }
+    
 }
 
+/** 
+ * Assignment operator (DEEP COPY)
+ *
+ * @param[in] rhs image to be copied
+ */
 GeoImage& GeoImage::operator = (const GeoImage& rhs ){
 
     throw string("NOT IMPLMENTED");
@@ -51,16 +67,16 @@ GeoImage& GeoImage::operator = (const GeoImage& rhs ){
 
 /** 
  * Initialize image
-*/
+ */
 void GeoImage::init(){
     if( initialize == true )
         load_image();
 }
 
 /**
-  * Retrief the init state
-  * @return initialization state
-*/
+ * Retrief the init state
+ * @return initialization state
+ */
 bool GeoImage::get_init()const{
     return initialize;
 }
@@ -68,7 +84,7 @@ bool GeoImage::get_init()const{
 /**
  * Set the initialization state
  * @param[in] val Value to set state to
-*/
+ */
 void GeoImage::set_init( const bool& val ){
     initialize = val;
     if( initialize == true && filename != "")
@@ -78,9 +94,10 @@ void GeoImage::set_init( const bool& val ){
 }
 
 
-/**
- * Set the image filename
- * @param[in] fname filename to load 
+/** Assign a new image filename
+ *
+ * @param[in] fname new image filename (Note that the image will not be loaded
+ * until you reapply init())
  */
 void GeoImage::set_filename( const string& fname ){
     filename = fname;
@@ -94,11 +111,13 @@ string GeoImage::get_filename( )const{
     return filename;
 }
 
-/**
- * Load image using GDAL Drivers
+/** Load The Image Into Memory
+ *
+ * @brief if you are using GDAL, then it will open, do sanity
+ * checking, then load the image dataset.
  */
 void GeoImage::load_image(){
-    
+
     //make sure the image is initialize. This is more of a debugging
     //test as if this false, then I allowed something bad
     if( initialize == false ){
@@ -116,7 +135,7 @@ void GeoImage::load_image(){
     //open dataset
     try{
         poDataset = (GDALDataset*)GDALOpen(filename.c_str(), GA_ReadOnly);
-    
+
         if( poDataset == NULL ){
             openCVCompat = false;
             gdalLoadFailed = true;
@@ -139,7 +158,7 @@ void GeoImage::load_image(){
     if( poDataset->GetRasterCount() <= 0 ){
         return;
     }
-    
+
     openCVCompat = true;
 
     //check to make sure its open
@@ -195,7 +214,7 @@ Mat GeoImage::get_image(){
 
         //get datatype
         depths[i]  = gdal2opencvPixelType( band->GetRasterDataType());
-        
+
         //check for max and min values, if max is around 4095, then I will set the range for normalization
         magScale = 16;
 

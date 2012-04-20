@@ -8,8 +8,6 @@
 #include <iostream>
 #include <string>
 
-#include "gdal_priv.h"
-#include "cpl_conv.h"
 
 #include "../../../opencv/OpenCVUtils.h"
 #include "../utilities/GDAL2OpenCV.h"
@@ -18,20 +16,42 @@
 using namespace cv;
 using namespace std;
 
+/**
+ * Geographic Image Type
+ *
+ * @brief Stores and manipulates geographic images
+ *
+*/
 class GeoImage{
+    
+    /**
+     * Enumeration useful for loading different image types. The
+     * only planned type considered now is the NITF.
+    */
+    enum GEO_IMAGE_TYPE{
+        NITF
+    };
 
     public:
 
+        /** Default constructor */
         GeoImage();
-        GeoImage(const string& fname, const bool& init = false );
+
+        /** Parameterized Constructor */
+        GeoImage(const string& fname, const bool& init = true );
         
+        /** Copy Constructor */
         GeoImage( const GeoImage& rhs );
 
+        /** Destructor */
         ~GeoImage();
 
+        /** Assignment operator (DEEP COPY) */
         GeoImage& operator = (const GeoImage& rhs );
 
+        /** Assign a new image filename */
         void set_filename( const string& fname );
+
         string get_filename( )const;
    
         bool get_init()const;
@@ -55,21 +75,27 @@ class GeoImage{
 
     private:
 
+        /** Load The Image Into Memory
+         *
+         * @brief if you are using GDAL, then it will open, do sanity
+         * checking, then load the image dataset.
+        */
         void load_image();
+
+
         Mat  merge_bands( vector<Mat>const& imgStack, vector<int> colors, vector<int> depths )const;
 
-        string filename;
+        NITF_Header header_info;
+        
         bool initialize;
 
-        GDALDriver  *driver;
-        GDALDataset *poDataset;
         double adfGeoTransform[6];
 
         bool gdalLoadFailed;
         bool openCVCompat;
         
         double adfMinMax[2];
-        double magScale;
+
 };
 
 #endif
