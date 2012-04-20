@@ -34,7 +34,7 @@ GeoImage::GeoImage(const string& fname, const bool& Init ):
  * reloads the image information using GDAL
  *
  * @param[in] rhs Image to be copied
- */
+*/
 GeoImage::GeoImage( const GeoImage& rhs ){
 
     filename = rhs.filename;
@@ -44,11 +44,11 @@ GeoImage::GeoImage( const GeoImage& rhs ){
     init();
 }
 
-
-/** Destructor
- *
- * Deallocates any GDAL information loaded 
- */
+/**
+ * GeoImage destructor
+ * 
+ * @brief Deallocates the GDAL datasets
+*/
 GeoImage::~GeoImage(){
     
     
