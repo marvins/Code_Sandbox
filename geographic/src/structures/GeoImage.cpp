@@ -21,13 +21,16 @@ GeoImage::GeoImage(): initialize(false), openCVCompatible(false){
  * then you can set this equal to true. 
  */
 GeoImage::GeoImage(const std::string& fname, const bool& Init ): 
-    filename(fname), initialize(Init), openCVCompat(false), gdalLoadFailed(false)
+    initialize(Init), openCVCompatible(false)
 {  
 
-    poDataset = NULL;
-
+    //create new header object
+    header_data = new NITFHeader_Info();
+    
+    //set filename
+    header_data->set_filename(fname);
+    
     init();  
-
 }
 
 /** Copy Constructor
@@ -40,10 +43,13 @@ GeoImage::GeoImage(const std::string& fname, const bool& Init ):
 */
 GeoImage::GeoImage( const GeoImage& rhs ){
 
-    filename = rhs.filename;
+    //create new data object
+    header_data = new NITFHeader_Info( *rhs.header_data );
 
+    //set initialize flag
     initialize = rhs.initialize;
 
+    //call initialize
     init();
 }
 
@@ -54,6 +60,8 @@ GeoImage::GeoImage( const GeoImage& rhs ){
 */
 GeoImage::~GeoImage(){
     
+    if( header_data == NULL )
+        delete header_data;
     
 }
 
@@ -90,7 +98,7 @@ bool GeoImage::get_init()const{
  */
 void GeoImage::set_init( const bool& val ){
     initialize = val;
-    if( initialize == true && filename != "")
+    if( initialize == true )
         init();
     else
         initialize = false;
@@ -103,7 +111,7 @@ void GeoImage::set_init( const bool& val ){
  * until you reapply init())
  */
 void GeoImage::set_filename( const string& fname ){
-    filename = fname;
+    header_data->set_image_filename( fname );
 }
 
 /**
@@ -111,7 +119,7 @@ void GeoImage::set_filename( const string& fname ){
  * @return filename of image
  */
 string GeoImage::get_filename( )const{
-    return filename;
+    return header_data->get_image_filename( filename );
 }
 
 /** Load The Image Into Memory
@@ -128,8 +136,8 @@ void GeoImage::load_image(){
     }
 
     //make sure that the file exists
-    if( !fs::exists( fs::path( filename ) ) )
-        throw string(string("Error: Image <") + filename + string("> does not exist"));
+    if( !header_data->image_filename_exists())
+        throw string(string("Error: Image <") + header_data->get_image_filename() + string("> does not exist"));
 
     //initialize GDAL
     gdalLoadFailed = false;

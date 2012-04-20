@@ -46,10 +46,14 @@ class GeoImage{
 
         /** Get the current image filename */
         std::string get_filename( )const;
-   
-        //bool get_init()const;
-        //void set_init( const bool& val );
+        
+        /** Get initialization status */
+        bool get_init()const;
+        
+        /** Set initialization status */
+        void set_init( const bool& val );
 
+        /** Initialize and load image */
         void init();
 
         //GDALDriver* getDriver()const;
