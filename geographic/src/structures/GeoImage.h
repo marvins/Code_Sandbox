@@ -8,14 +8,6 @@
 #include <iostream>
 #include <string>
 
-
-#include "../../../opencv/OpenCVUtils.h"
-#include "../utilities/GDAL2OpenCV.h"
-
-
-using namespace cv;
-using namespace std;
-
 /**
  * Geographic Image Type
  *
@@ -52,26 +44,27 @@ class GeoImage{
         /** Assign a new image filename */
         void set_filename( const string& fname );
 
-        string get_filename( )const;
+        /** Get the current image filename */
+        std::string get_filename( )const;
    
-        bool get_init()const;
-        void set_init( const bool& val );
+        //bool get_init()const;
+        //void set_init( const bool& val );
 
         void init();
 
-        GDALDriver* getDriver()const;
+        //GDALDriver* getDriver()const;
 
-        Mat get_image();
-        Size getMatSize()const;
+        //Mat get_image();
+        //Size getMatSize()const;
 
-        bool isOpenCVValid()const;
+        //bool isOpenCVValid()const;
         
-        bool gdal_load()const;
+        //bool gdal_load()const;
 
-        double getMin()const;
-        double getMax()const;
+        //double getMin()const;
+        //double getMax()const;
 
-        void write_image( const string& imgFilename = "__NONE__" );
+        //void write_image( const string& imgFilename = "__NONE__" );
 
     private:
 
@@ -83,18 +76,25 @@ class GeoImage{
         void load_image();
 
 
-        Mat  merge_bands( vector<Mat>const& imgStack, vector<int> colors, vector<int> depths )const;
+        //Mat  merge_bands( vector<Mat>const& imgStack, vector<int> colors, vector<int> depths )const;
 
-        NITF_Header header_info;
+
+        /**
+         * Image Metadata 
+        */
+        GeoHeader_Info* header_data; /*< Container for image header and meta-data */
         
-        bool initialize;
-
-        double adfGeoTransform[6];
-
-        bool gdalLoadFailed;
-        bool openCVCompat;
+        /** 
+         * GDAL Container
+        */
+        GDAL_Data gdal_data;
         
-        double adfMinMax[2];
+        /**
+         * Sanity Flags 
+        */
+        bool initialize;             /*< Flag for whether or not to load data */
+        bool openCVCompatble;        /*< Flag for whether or not the image is valid with OpenCV */
+        
 
 };
 

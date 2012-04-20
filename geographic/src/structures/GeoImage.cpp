@@ -7,7 +7,11 @@ namespace fs = boost::filesystem;
 /**
  * Default Constructor
 */
-GeoImage::GeoImage():filename(""), initialize(false), openCVCompat(false), gdalLoadFailed(false){
+GeoImage::GeoImage(): initialize(false), openCVCompatible(false){
+
+    //initialize the header data
+    header_data = NULL;
+
 }
 
 /** Parameterized Constructor
@@ -16,8 +20,7 @@ GeoImage::GeoImage():filename(""), initialize(false), openCVCompat(false), gdalL
  * @param[in] init initialization flag. If you want to load the image information, 
  * then you can set this equal to true. 
  */
-
-GeoImage::GeoImage(const string& fname, const bool& Init ): 
+GeoImage::GeoImage(const std::string& fname, const bool& Init ): 
     filename(fname), initialize(Init), openCVCompat(false), gdalLoadFailed(false)
 {  
 
