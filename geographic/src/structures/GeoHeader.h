@@ -18,7 +18,7 @@ class GeoHeader_Info{
 
       bool image_filename_exists()const;
 
-   private:
+   protected:
 
       std::string image_filename;
 

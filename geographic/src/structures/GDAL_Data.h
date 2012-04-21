@@ -4,6 +4,10 @@
 #include "gdal_priv.h"
 #include "cpl_conv.h"
 
+enum PIXELTYPE{
+   NITF = 123 
+};
+
 /** 
  * @class GDAL_Data
  *
@@ -22,6 +26,8 @@ class GDAL_Data{
         GDALDriver  *driver;    /*<  Driver Object */
         GDALDataset *dataset;   /*<  Dataset Object */
         bool  gdalLoadFailed;   /*<  Whether or not the load operation failed */
+
+        double adfMinMax[2];
 };
 
 #endif

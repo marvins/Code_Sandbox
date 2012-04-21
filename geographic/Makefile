@@ -24,8 +24,7 @@ BOOST		  = $(BOOST_INCLUDE) $(BOOST_LIBS)
 
 # Geographic NITF Libraries
 HEADERS = src/structures/*.h \
-	  	   src/utilities/*.h \
-    		../opencv/*.h 
+	  	   src/utilities/*.h
 
 OBJECTS = build/GeoImage.o \
 		  build/GDAL2OpenCV.o \
@@ -46,7 +45,7 @@ build/GeoImage.o:	src/structures/GeoImage.cpp $(HEADERS)
 build/GDAL2OpenCV.o: src/utilities/GDAL2OpenCV.cpp $(HEADERS)
 	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE)
 
-build/OpenCVUtils.o: ../opencv/OpenCVUtils.cpp $(HEADERS)
+build/OpenCVUtils.o: src/utilities/OpenCVUtils.cpp $(HEADERS)
 	g++ $< -c -o $@ $(OPENCV_INCLUDE)
 
 build/GDAL_Data.o:  src/structures/GDAL_Data.cpp $(HEADERS)

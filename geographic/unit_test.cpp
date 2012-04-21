@@ -23,7 +23,7 @@ using namespace cv;
 using namespace std;
 
 void TEST_structure_module();
-//int  TEST_NITF_Constructor( string& note);
+int  TEST_NITF_Constructor( string& note);
 //int  TEST_NITF_initialization( string& note);
 //int  TEST_NITF_get_image( string& note );
 //int TEST_NITF_write_image( string& note );
@@ -117,23 +117,23 @@ int  TEST_NITF_initialization( string& note){
     
     //test set init
     note = "Driver short description not NITF, actual: ";
-    if( string(img1.getDriver()->GetDescription()) != "NITF" )
-    { note += img1.getDriver()->GetDescription();  return false; }
+    if( string(img1.getImageTypeName()) != "NITF" )
+    { note += img1.getImageTypeName();  return false; }
     
-    if( string(img2.getDriver()->GetDescription()) != "NITF" )
-    { note += img2.getDriver()->GetDescription();  return false; }
+    if( string(img2.getImageTypeName()) != "NITF" )
+    { note += img2.getImageTypeName();  return false; }
     
-    if( string(img3.getDriver()->GetDescription()) != "NITF" )
-    { note += img3.getDriver()->GetDescription();  return false; }
+    if( string(img3.getImageTypeName()) != "NITF" )
+    { note += img3.getImageTypeName();  return false; }
     
-    if( string(img4.getDriver()->GetDescription()) != "NITF" )
-    { note += img4.getDriver()->GetDescription();  return false; }
+    if( string(img4.getImageTypeName()) != "NITF" )
+    { note += img4.getImageTypeName();  return false; }
     
-    if( string(img5.getDriver()->GetDescription()) != "NITF" )
-    { note += img5.getDriver()->GetDescription();  return false; }
+    if( string(img5.getImageTypeName()) != "NITF" )
+    { note += img5.getImageTypeName();  return false; }
     
-    if( string(img6.getDriver()->GetDescription()) != "NITF" )
-    { note += img6.getDriver()->GetDescription();  return false; }
+    if( string(img6.getImageTypeName()) != "NITF" )
+    { note += img6.getImageTypeName();  return false; }
 
     note = "Test successful";
     return true;

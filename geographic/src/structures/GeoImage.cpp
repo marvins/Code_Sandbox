@@ -1,4 +1,6 @@
 #include "GeoImage.h"
+#include "../utilities/GDAL2OpenCV.h"
+#include "../utilities/OpenCVUtils.h"
 
 using namespace cv;
 using namespace std;
@@ -191,17 +193,7 @@ cv::Size GeoImage::getMatSize()const{
 
 }
 
-/**
- * Get Driver
- */
-GDALDriver* GeoImage::getDriver()const{
-
-    if( gdal_data.gdalLoadFailed == true )
-        throw std::string("Image not loaded");
-
-    return gdal_data.driver;
-}
-
+/** Check if the status of the loading operation was valid */
 bool GeoImage::gdal_load()const{
     return gdal_data.gdalLoadFailed;
 }
@@ -209,23 +201,19 @@ bool GeoImage::gdal_load()const{
 
 Mat GeoImage::get_image(){
 
-    vector<Mat> imgStack(  poDataset->GetRasterCount());
-    vector<int> colors(    poDataset->GetRasterCount());
-    vector<int> depths(    poDataset->GetRasterCount());
+    vector<Mat> imgStack(  gdal_data.dataset->GetRasterCount());
+    vector<int> colors(    gdal_data.dataset->GetRasterCount());
+    vector<int> depths(    gdal_data.dataset->GetRasterCount());
 
 
-    for( size_t i=0; i<poDataset->GetRasterCount(); i++){
+    for( size_t i=0; i<gdal_data.dataset->GetRasterCount(); i++){
 
         //create objects
         GDALRasterBand *band;
-        band = poDataset->GetRasterBand(i+1);
+        band = gdal_data.dataset->GetRasterBand(i+1);
 
         //get datatype
         depths[i]  = gdal2opencvPixelType( band->GetRasterDataType());
-
-        //check for max and min values, if max is around 4095, then I will set the range for normalization
-        magScale = 16;
-
 
         //get pixeltype
         colors[i] = band->GetColorInterpretation();
@@ -271,8 +259,8 @@ Mat GeoImage::get_image(){
         else if( depths[i] == CV_16U && maxP < 16384 )
             timg = timg.clone()*4;
 
-        adfMinMax[0] = minP;
-        adfMinMax[1] = maxP;
+        gdal_data.adfMinMax[0] = minP;
+        gdal_data.adfMinMax[1] = maxP;
         imgStack[i] = timg.clone();
     }
 
@@ -322,8 +310,8 @@ Mat GeoImage::merge_bands( vector<Mat>const& imgStack, vector<int> colors, vecto
 
 }
 
-//double GeoImage::getMin()const{ return adfMinMax[0]; }
-//double GeoImage::getMax()const{ return adfMinMax[1]; }
+double GeoImage::getMin()const{ return gdal_data.adfMinMax[0]; }
+double GeoImage::getMax()const{ return gdal_data.adfMinMax[1]; }
 
 
 void GeoImage::write_image( const std::string& imgFilename ){
@@ -331,4 +319,11 @@ void GeoImage::write_image( const std::string& imgFilename ){
 
     throw std::string("ERROR: not implemented");
 
+}
+
+std::string GeoImage::getImageTypeName()const{
+
+   if( gdal_data.driver != NULL )
+      return gdal_data.driver->GetDescription();
+   return "NONE";
 }
