@@ -1,43 +1,93 @@
 #include "GeoImage.h"
 
+#include <boost/filesystem.hpp>
+
+namespace fs = boost::filesystem;
+
 /**
  * Default Constructor
 */
-GeoImage::GeoImage():filename(""), initialize(false), openCVCompat(false), gdalLoadFailed(false){}
+GeoImage::GeoImage(): initialize(false), openCVCompatible(false){
 
+    //initialize the header data
+    header_data = NULL;
+
+}
+
+/** Parameterized Constructor
+ *
+ * @param[in] fname image filename
+ * @param[in] init initialization flag. If you want to load the image information, 
+ * then you can set this equal to true. 
+ */
+GeoImage::GeoImage(const std::string& fname, const bool& Init ): 
+    initialize(Init), openCVCompatible(false)
+{  
+
+    //create new header object
+    header_data = new NITFHeader_Info();
+    
+    //set filename
+    header_data->set_filename(fname);
+    
+    init();  
+}
+
+/** Copy Constructor
+ *
+ * @brief Note that this performs a deep copy. In fact,
+ * it merely transfers any pre-loading information, then 
+ * reloads the image information using GDAL
+ *
+ * @param[in] rhs Image to be copied
+*/
+GeoImage::GeoImage( const GeoImage& rhs ){
+
+    //create new data object
+    header_data = new NITFHeader_Info( *rhs.header_data );
+
+    //set initialize flag
+    initialize = rhs.initialize;
+
+    //call initialize
+    init();
+}
 
 /**
- * Parameterized Constructor
- * @param[in] fname Filename to use
- * @param[in] Init Whether or not to initialize image
+ * GeoImage destructor
+ * 
+ * @brief Deallocates the GDAL datasets
 */
-GeoImage::GeoImage(const string& fname, const bool& Init ): 
-    filename(fname), initialize(Init), openCVCompat(false), gdalLoadFailed(false)
-{  
-        
-    poDataset = NULL;
-
-    init();  
+GeoImage::~GeoImage(){
+    
+    if( header_data == NULL )
+        delete header_data;
     
 }
 
+/** 
+ * Assignment operator (DEEP COPY)
+ *
+ * @param[in] rhs image to be copied
+ */
+GeoImage& GeoImage::operator = (const GeoImage& rhs ){
 
-GeoImage::~GeoImage(){
-
+    throw string("NOT IMPLMENTED");
+    return (*this);
 }
 
 /** 
  * Initialize image
-*/
+ */
 void GeoImage::init(){
     if( initialize == true )
         load_image();
 }
 
 /**
-  * Retrief the init state
-  * @return initialization state
-*/
+ * Retrief the init state
+ * @return initialization state
+ */
 bool GeoImage::get_init()const{
     return initialize;
 }
@@ -45,22 +95,23 @@ bool GeoImage::get_init()const{
 /**
  * Set the initialization state
  * @param[in] val Value to set state to
-*/
+ */
 void GeoImage::set_init( const bool& val ){
     initialize = val;
-    if( initialize == true && filename != "")
+    if( initialize == true )
         init();
     else
         initialize = false;
 }
 
 
-/**
- * Set the image filename
- * @param[in] fname filename to load 
+/** Assign a new image filename
+ *
+ * @param[in] fname new image filename (Note that the image will not be loaded
+ * until you reapply init())
  */
 void GeoImage::set_filename( const string& fname ){
-    filename = fname;
+    header_data->set_image_filename( fname );
 }
 
 /**
@@ -68,17 +119,25 @@ void GeoImage::set_filename( const string& fname ){
  * @return filename of image
  */
 string GeoImage::get_filename( )const{
-    return filename;
+    return header_data->get_image_filename( filename );
 }
 
-/**
- * Load image using GDAL Drivers
+/** Load The Image Into Memory
+ *
+ * @brief if you are using GDAL, then it will open, do sanity
+ * checking, then load the image dataset.
  */
 void GeoImage::load_image(){
-    
+
+    //make sure the image is initialize. This is more of a debugging
+    //test as if this false, then I allowed something bad
     if( initialize == false ){
         throw string("Error: image not initialized");
     }
+
+    //make sure that the file exists
+    if( !header_data->image_filename_exists())
+        throw string(string("Error: Image <") + header_data->get_image_filename() + string("> does not exist"));
 
     //initialize GDAL
     gdalLoadFailed = false;
@@ -87,7 +146,7 @@ void GeoImage::load_image(){
     //open dataset
     try{
         poDataset = (GDALDataset*)GDALOpen(filename.c_str(), GA_ReadOnly);
-    
+
         if( poDataset == NULL ){
             openCVCompat = false;
             gdalLoadFailed = true;
@@ -110,7 +169,7 @@ void GeoImage::load_image(){
     if( poDataset->GetRasterCount() <= 0 ){
         return;
     }
-    
+
     openCVCompat = true;
 
     //check to make sure its open
@@ -154,7 +213,7 @@ bool GeoImage::gdal_load()const{
 Mat GeoImage::get_image(){
 
     vector<Mat> imgStack(  poDataset->GetRasterCount());
-    vector<int> colors(      poDataset->GetRasterCount());
+    vector<int> colors(    poDataset->GetRasterCount());
     vector<int> depths(    poDataset->GetRasterCount());
 
 
@@ -166,7 +225,7 @@ Mat GeoImage::get_image(){
 
         //get datatype
         depths[i]  = gdal2opencvPixelType( band->GetRasterDataType());
-        
+
         //check for max and min values, if max is around 4095, then I will set the range for normalization
         magScale = 16;
 
