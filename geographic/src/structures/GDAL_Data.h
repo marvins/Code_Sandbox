@@ -10,7 +10,9 @@
  * @brief Container for GDAL Header information
 */
 class GDAL_Data{
-       
+
+   public:
+
        /** Default Constructor */
        GDAL_Data();
 
@@ -19,7 +21,7 @@ class GDAL_Data{
 
         GDALDriver  *driver;    /*<  Driver Object */
         GDALDataset *dataset;   /*<  Dataset Object */
-
+        bool  gdalLoadFailed;   /*<  Whether or not the load operation failed */
 };
 
 #endif

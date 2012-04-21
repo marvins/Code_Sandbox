@@ -8,6 +8,7 @@ GDAL_Data::GDAL_Data(){
 
     driver = NULL;
     dataset = NULL;
+    gdalLoadFailed = false;
 }
 
 /** Destroy the GDAL Data object

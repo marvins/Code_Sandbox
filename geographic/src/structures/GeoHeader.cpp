@@ -1,5 +1,9 @@
 #include "GeoHeader_Info.h"
 
+#include <boost/filesystem.hpp>
+
+namespace fs = boost::filesystem;
+
 GeoHeader_Info::GeoHeader_Info(){ }
 
 GeoHeader_Info::~GeoHeader_Info(){ }
@@ -10,4 +14,12 @@ std::string GeoHeader_Info::get_image_filename()const{
 
 void GeoHeader_Info::set_image_filename( std::string const& filename ){
     image_filename = filename;
+}
+
+bool GeoHeader_Info::image_filename_exists(){
+
+   if(bf::exists(bf::path(image_filename)) == true )
+      return true;
+
+   return false;
 }

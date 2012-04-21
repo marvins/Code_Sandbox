@@ -5,20 +5,25 @@
 
 class GeoHeader_Info{
 
-    GeoHeader_Info();
+   public:
+      GeoHeader_Info();
 
-    virtual ~GeoHeader_Info();
+      virtual ~GeoHeader_Info();
 
-    std::string get_image_filename()const;
+      std::string get_image_filename()const;
 
-    void set_image_filename( std::string const& filename );
-    
-    private:
+      void set_image_filename( std::string const& filename );
 
-        std::string image_filename;
+      virtual void copy_header_info(GeoHeader_Info* other ) = 0;
+
+      bool image_filename_exists()const;
+
+   private:
+
+      std::string image_filename;
 
 
-}
+};
 
 
 #endif

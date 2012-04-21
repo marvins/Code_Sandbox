@@ -1,15 +1,19 @@
 #ifndef __SRC_GEOGRAPHIC_NITF_HEADER_H__
 #define __SRC_GEOGRAPHIC_NITF_HEADER_H__
 
+#include "GeoHeader.h"
+
 class NITFHeader_Info : public GeoHeader_Info{
 
-    public:
+   public:
 
-        NITFHeader_Info();
+      NITFHeader_Info();
 
-        virtual ~NITFHeader_Info();
+      virtual ~NITFHeader_Info();
 
-    private:
+      void copy_header_info( GeoHeader_Info*  other );
+
+   private:
 
 
 

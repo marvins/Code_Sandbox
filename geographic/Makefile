@@ -29,7 +29,10 @@ HEADERS = src/structures/*.h \
 
 OBJECTS = build/GeoImage.o \
 		  build/GDAL2OpenCV.o \
-		  build/OpenCVUtils.o
+		  build/OpenCVUtils.o \
+		  build/GDAL_Data.o \
+		  build/NITFHeader.o \
+		  build/GeoHeader.o
 
 ###################################################################
 #				BUILD SEQUENCE		
@@ -38,7 +41,7 @@ unit_test: unit_test.cpp $(TEST_INCLUDE) $(OBJECTS)
 	g++ unit_test.cpp -o unit_test $(OPENCV) $(GDAL) $(BOOST) $(TEST_SOURCES) $(OBJECTS)
 
 build/GeoImage.o:	src/structures/GeoImage.cpp $(HEADERS)
-	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(BOOST_INCLUDE)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE)
 
 build/GDAL2OpenCV.o: src/utilities/GDAL2OpenCV.cpp $(HEADERS)
 	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE)
@@ -46,6 +49,14 @@ build/GDAL2OpenCV.o: src/utilities/GDAL2OpenCV.cpp $(HEADERS)
 build/OpenCVUtils.o: ../opencv/OpenCVUtils.cpp $(HEADERS)
 	g++ $< -c -o $@ $(OPENCV_INCLUDE)
 
+build/GDAL_Data.o:  src/structures/GDAL_Data.cpp $(HEADERS)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE)
+
+build/NITFHeader.o: src/structures/NITFHeader.cpp $(HEADERS)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE)
+
+build/GeoHeader.o: src/structures/GeoHeader.cpp $(HEADERS)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(BOOST_INCLUDE)
 
 ###################################################################
 # 				MISC TOOLS

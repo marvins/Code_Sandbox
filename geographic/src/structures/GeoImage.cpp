@@ -1,8 +1,7 @@
 #include "GeoImage.h"
 
-#include <boost/filesystem.hpp>
-
-namespace fs = boost::filesystem;
+using namespace cv;
+using namespace std;
 
 /**
  * Default Constructor
@@ -28,7 +27,7 @@ GeoImage::GeoImage(const std::string& fname, const bool& Init ):
     header_data = new NITFHeader_Info();
     
     //set filename
-    header_data->set_filename(fname);
+    header_data->set_image_filename(fname);
     
     init();  
 }
@@ -44,7 +43,8 @@ GeoImage::GeoImage(const std::string& fname, const bool& Init ):
 GeoImage::GeoImage( const GeoImage& rhs ){
 
     //create new data object
-    header_data = new NITFHeader_Info( *rhs.header_data );
+    header_data = new NITFHeader_Info( );
+    header_data->copy_header_info( rhs.header_data );
 
     //set initialize flag
     initialize = rhs.initialize;
@@ -72,7 +72,7 @@ GeoImage::~GeoImage(){
  */
 GeoImage& GeoImage::operator = (const GeoImage& rhs ){
 
-    throw string("NOT IMPLMENTED");
+    throw std::string("NOT IMPLMENTED");
     return (*this);
 }
 
@@ -110,7 +110,7 @@ void GeoImage::set_init( const bool& val ){
  * @param[in] fname new image filename (Note that the image will not be loaded
  * until you reapply init())
  */
-void GeoImage::set_filename( const string& fname ){
+void GeoImage::set_filename( const std::string& fname ){
     header_data->set_image_filename( fname );
 }
 
@@ -118,8 +118,8 @@ void GeoImage::set_filename( const string& fname ){
  * Extract the image filename
  * @return filename of image
  */
-string GeoImage::get_filename( )const{
-    return header_data->get_image_filename( filename );
+std::string GeoImage::get_filename( )const{
+    return header_data->get_image_filename( );
 }
 
 /** Load The Image Into Memory
@@ -132,65 +132,62 @@ void GeoImage::load_image(){
     //make sure the image is initialize. This is more of a debugging
     //test as if this false, then I allowed something bad
     if( initialize == false ){
-        throw string("Error: image not initialized");
+        throw std::string("Error: image not initialized");
     }
 
     //make sure that the file exists
     if( !header_data->image_filename_exists())
-        throw string(string("Error: Image <") + header_data->get_image_filename() + string("> does not exist"));
+        throw std::string(std::string("Error: Image <") + header_data->get_image_filename() + std::string("> does not exist"));
 
+   
     //initialize GDAL
-    gdalLoadFailed = false;
     GDALAllRegister();
 
     //open dataset
     try{
-        poDataset = (GDALDataset*)GDALOpen(filename.c_str(), GA_ReadOnly);
+        gdal_data.dataset = (GDALDataset*)GDALOpen( header_data->get_image_filename().c_str(), GA_ReadOnly);
 
-        if( poDataset == NULL ){
-            openCVCompat = false;
-            gdalLoadFailed = true;
+        if( gdal_data.dataset == NULL ){
+            openCVCompatible = false;
+            gdal_data.gdalLoadFailed = true;
             return;
         }
 
-        if( poDataset->GetRasterCount() <= 0 ){
-            openCVCompat = false;
+        if( gdal_data.dataset->GetRasterCount() <= 0 ){
+            openCVCompatible = false;
         }
     }
     catch(...){
-        openCVCompat = false;
-        gdalLoadFailed = true;
+        openCVCompatible = false;
+        gdal_data.gdalLoadFailed = true;
     }
 
-    if( gdalLoadFailed == true )
+    if( gdal_data.gdalLoadFailed == true )
         return;
 
     //check for pixel data and halt action if it is not present
-    if( poDataset->GetRasterCount() <= 0 ){
+    if( gdal_data.dataset->GetRasterCount() <= 0 ){
         return;
     }
 
-    openCVCompat = true;
+    openCVCompatible = true;
 
     //check to make sure its open
-    if( poDataset == NULL ){
-        throw string("Dataset did not load");
+    if( gdal_data.dataset == NULL ){
+        throw std::string("Dataset did not load");
     }
-
-    //get the dataset information
-    poDataset->GetGeoTransform( adfGeoTransform );
 
     //get the driver infomation
-    driver = poDataset->GetDriver();
+    gdal_data.driver = gdal_data.dataset->GetDriver();
 }
 
-Size GeoImage::getMatSize()const{
+cv::Size GeoImage::getMatSize()const{
 
     if( isOpenCVValid() ){
-        return Size( poDataset->GetRasterBand(1)->GetXSize(), poDataset->GetRasterBand(1)->GetYSize());
+        return cv::Size( gdal_data.dataset->GetRasterBand(1)->GetXSize(), gdal_data.dataset->GetRasterBand(1)->GetYSize());
     }
     else
-        return Size(0,0);
+        return cv::Size(0,0);
 
 }
 
@@ -199,14 +196,14 @@ Size GeoImage::getMatSize()const{
  */
 GDALDriver* GeoImage::getDriver()const{
 
-    if( gdalLoadFailed == true )
-        throw string("Image not loaded");
+    if( gdal_data.gdalLoadFailed == true )
+        throw std::string("Image not loaded");
 
-    return driver;
+    return gdal_data.driver;
 }
 
 bool GeoImage::gdal_load()const{
-    return gdalLoadFailed;
+    return gdal_data.gdalLoadFailed;
 }
 
 
@@ -266,7 +263,7 @@ Mat GeoImage::get_image(){
                 else if( depths[i] == CV_32S )
                     timg.at<int>(r,c) = pafScanline[c];
                 else
-                    throw string("Invalid pixel type");
+                    throw std::string("Invalid pixel type");
             }
         }
         if( depths[i] == CV_16U && maxP < 4096 )
@@ -286,7 +283,7 @@ Mat GeoImage::get_image(){
 }
 
 bool GeoImage::isOpenCVValid()const{
-    return openCVCompat;
+    return openCVCompatible;
 }
 
 Mat GeoImage::merge_bands( vector<Mat>const& imgStack, vector<int> colors, vector<int> depths )const{
@@ -295,13 +292,13 @@ Mat GeoImage::merge_bands( vector<Mat>const& imgStack, vector<int> colors, vecto
     Mat image;
 
     if(imgStack.size() <= 0 )
-        throw string("Error: imgStack must have at least 1 image");
+        throw std::string("Error: imgStack must have at least 1 image");
 
     int d0 = depths[0];
     for(size_t i=1; i<depths.size(); i++)
         if( d0 != depths[i] ){
             cout << "Error: Depths are not uniform" << endl;
-            throw string("Error: Depths are not uniform");
+            throw std::string("Error: Depths are not uniform");
         }
 
 
@@ -325,13 +322,13 @@ Mat GeoImage::merge_bands( vector<Mat>const& imgStack, vector<int> colors, vecto
 
 }
 
-double GeoImage::getMin()const{ return adfMinMax[0]; }
-double GeoImage::getMax()const{ return adfMinMax[1]; }
+//double GeoImage::getMin()const{ return adfMinMax[0]; }
+//double GeoImage::getMax()const{ return adfMinMax[1]; }
 
 
-void GeoImage::write_image( const string& imgFilename ){
+void GeoImage::write_image( const std::string& imgFilename ){
 
 
-    throw string("ERROR: not implemented");
+    throw std::string("ERROR: not implemented");
 
 }

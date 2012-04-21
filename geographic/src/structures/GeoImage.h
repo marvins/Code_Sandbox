@@ -8,6 +8,11 @@
 #include <iostream>
 #include <string>
 
+#include "GDAL_Data.h"
+
+#include "GeoHeader.h"
+#include "NITFHeader.h"
+
 /**
  * Geographic Image Type
  *
@@ -30,7 +35,7 @@ class GeoImage{
         GeoImage();
 
         /** Parameterized Constructor */
-        GeoImage(const string& fname, const bool& init = true );
+        GeoImage(const std::string& fname, const bool& init = true );
         
         /** Copy Constructor */
         GeoImage( const GeoImage& rhs );
@@ -42,7 +47,7 @@ class GeoImage{
         GeoImage& operator = (const GeoImage& rhs );
 
         /** Assign a new image filename */
-        void set_filename( const string& fname );
+        void set_filename( const std::string& fname );
 
         /** Get the current image filename */
         std::string get_filename( )const;
@@ -56,12 +61,12 @@ class GeoImage{
         /** Initialize and load image */
         void init();
 
-        //GDALDriver* getDriver()const;
-
         //Mat get_image();
-        //Size getMatSize()const;
+        
+        /** Get the size of the opencv image */
+        cv::Size getMatSize()const;
 
-        //bool isOpenCVValid()const;
+        bool isOpenCVValid()const;
         
         //bool gdal_load()const;
 
@@ -97,7 +102,7 @@ class GeoImage{
          * Sanity Flags 
         */
         bool initialize;             /*< Flag for whether or not to load data */
-        bool openCVCompatble;        /*< Flag for whether or not the image is valid with OpenCV */
+        bool openCVCompatible;       /*< Flag for whether or not the image is valid with OpenCV */
         
 
 };
