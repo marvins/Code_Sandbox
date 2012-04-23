@@ -24,9 +24,9 @@ using namespace std;
 
 void TEST_structure_module();
 int  TEST_NITF_Constructor( string& note);
-//int  TEST_NITF_initialization( string& note);
-//int  TEST_NITF_get_image( string& note );
-//int TEST_NITF_write_image( string& note );
+int  TEST_NITF_initialization( string& note);
+int  TEST_NITF_get_image( string& note );
+int TEST_NITF_write_image( string& note );
 
 /** Main Driver 
  *
@@ -55,14 +55,14 @@ void TEST_structure_module(){
     result = TEST_NITF_Constructor(note);
     print_test_results("GeoImage Constructor",result,note);
     
-    //result = TEST_NITF_initialization(note);
-    //print_test_results("GeoImage Initialization",result,note);
+    result = TEST_NITF_initialization(note);
+    print_test_results("GeoImage Initialization",result,note);
 
-    //result = TEST_NITF_get_image(note);
-    //print_test_results("GeoImage Get Image",result, note);
+    result = TEST_NITF_get_image(note);
+    print_test_results("GeoImage Get Image",result, note);
     
-    //result = TEST_NITF_write_image(note);
-    //print_test_results("GeoImage Write Image",result, note);
+    result = TEST_NITF_write_image(note);
+    print_test_results("GeoImage Write Image",result, note);
 
     /** Print the Test Footer for the NITF Image Library */
     print_module_footer("NITF Image");
@@ -70,7 +70,7 @@ void TEST_structure_module(){
 }
 
 int  TEST_NITF_Constructor( string& note){
-
+    
     GeoImage img1("data/U_1001A.NTF");
     GeoImage img2("data/U_1005A.NTF", false);
     GeoImage img3("data/U_1025A.NTF", true );
@@ -78,7 +78,6 @@ int  TEST_NITF_Constructor( string& note){
     GeoImage img5("data/U_1034A.NTF", true );
     GeoImage img6;
    
-   /*
     //test init function 
     note = "Initialization string improperly initialized on img";
     if( img1.get_init() == true  ){ note += "1"; return false; }
@@ -87,20 +86,18 @@ int  TEST_NITF_Constructor( string& note){
     if( img4.get_init() == false ){ note += "4"; return false; }
     if( img5.get_init() == false ){ note += "5"; return false; }
     if( img6.get_init() == true  ){ note += "6"; return false; }
-
+    
     //test set init function
     note = "Set init fails on set_init call";
     img6.set_init(true);
-    if( img6.get_init() == true || img6.get_filename() != ""){ return false; }
-   
+    if( img6.get_init() == true || img6.get_filename() != "_NO_IMAGE_SELECTED_"){ return false; }
+  
     //give it valid filename and try again
     img6.set_filename("data/U_1036A.NTF");
     img6.set_init(true);
     if( img6.get_init() != true || img6.get_filename() != "data/U_1036A.NTF" )
         return false;
     
-    */
-
     note = "Test successful";
     return true;
 }
@@ -197,6 +194,9 @@ int  TEST_NITF_get_image( string& note ){
 
 int TEST_NITF_write_image( string& note ){
 
+
     note = "TEST NOT INITIALIZED";
     return false;
+
+
 }

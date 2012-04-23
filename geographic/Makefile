@@ -60,6 +60,9 @@ build/GeoHeader.o: src/structures/GeoHeader.cpp $(HEADERS)
 ###################################################################
 # 				MISC TOOLS
 ###################################################################
+docs:
+	doxygen 
+
 clean: 
 	rm -r build/*.o
 	rm unit_test

@@ -11,7 +11,7 @@ using namespace std;
 GeoImage::GeoImage(): initialize(false), openCVCompatible(false){
 
     //initialize the header data
-    header_data = NULL;
+    header_data = new NITFHeader_Info();
 
 }
 
@@ -107,6 +107,7 @@ void GeoImage::set_init( const bool& val ){
 }
 
 
+
 /** Assign a new image filename
  *
  * @param[in] fname new image filename (Note that the image will not be loaded
@@ -136,12 +137,19 @@ void GeoImage::load_image(){
     if( initialize == false ){
         throw std::string("Error: image not initialized");
     }
+    
+    if( header_data->get_image_filename() == "" || header_data->get_image_filename() == "_NO_IMAGE_SELECTED_"){
+        initialize = false;
+        return;
+    }
 
     //make sure that the file exists
-    if( !header_data->image_filename_exists())
-        throw std::string(std::string("Error: Image <") + header_data->get_image_filename() + std::string("> does not exist"));
+    if( !header_data->image_filename_exists()){
+        initialize = false;
+        return;
+        //throw std::string(std::string("Error: Image <") + header_data->get_image_filename() + std::string("> does not exist"));
+    }
 
-   
     //initialize GDAL
     GDALAllRegister();
 
@@ -154,7 +162,7 @@ void GeoImage::load_image(){
             gdal_data.gdalLoadFailed = true;
             return;
         }
-
+        
         if( gdal_data.dataset->GetRasterCount() <= 0 ){
             openCVCompatible = false;
         }
@@ -274,6 +282,13 @@ bool GeoImage::isOpenCVValid()const{
     return openCVCompatible;
 }
 
+/** Merge multiple GDAL Bands into a multi-channel OpenCV Image
+ *
+ * @param[in] imgStack Array of images loaded from GDAL
+ * @param[in] colors   Array of OpenCV interpreted GDAL Band colors
+ * @param[in] depths   Array of OpenCV interpreted GDAL Band pixel depths
+ * @return merged image
+*/
 Mat GeoImage::merge_bands( vector<Mat>const& imgStack, vector<int> colors, vector<int> depths )const{
 
     int nCh = imgStack.size(); 
@@ -317,7 +332,8 @@ double GeoImage::getMax()const{ return gdal_data.adfMinMax[1]; }
 void GeoImage::write_image( const std::string& imgFilename ){
 
 
-    throw std::string("ERROR: not implemented");
+    /** Create output dataset */
+    gdal_data.write( imgFilename, "NITF");
 
 }
 

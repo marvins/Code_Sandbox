@@ -1,6 +1,8 @@
 #include "NITFHeader.h"
 
-NITFHeader_Info::NITFHeader_Info(){ }
+NITFHeader_Info::NITFHeader_Info(){ 
+    image_filename = "_NO_IMAGE_SELECTED_";    
+}
 
 NITFHeader_Info::~NITFHeader_Info(){ }
 
