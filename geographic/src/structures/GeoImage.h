@@ -81,6 +81,8 @@ class GeoImage{
 
     /** Write the GeoImage to file */
     void write_image( const std::string& imgFilename = "__NONE__" );
+    
+    GeoHeader_Info*& get_header()const;
 
     private:
 

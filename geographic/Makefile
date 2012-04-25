@@ -2,9 +2,11 @@
 #
 TEST_SOURCES = ../unit_test/src/Assert.cpp \
 			   ../unit_test/src/Logger.cpp \
-			   ../unit_test/src/Color.cpp
+			   ../unit_test/src/Color.cpp \
+			   ../useful_stuff/string_functions/string_utilities.cpp
 
-TEST_INCLUDE = ../unit_test/src
+TEST_INCLUDE = ../unit_test/src \
+			   ../useful_stuff/string_functions
 
 
 # GDAL LIBRARY
@@ -31,31 +33,45 @@ OBJECTS = build/GeoImage.o \
 		  build/OpenCVUtils.o \
 		  build/GDAL_Data.o \
 		  build/NITFHeader.o \
+		  build/UInt16.o \
+		  build/UInt8.o \
 		  build/GeoHeader.o
+
+CFLAGS = -g -Wall
 
 ###################################################################
 #				BUILD SEQUENCE		
 ###################################################################
 unit_test: unit_test.cpp $(TEST_INCLUDE) $(OBJECTS)
-	g++ unit_test.cpp -o unit_test $(OPENCV) $(GDAL) $(BOOST) $(TEST_SOURCES) $(OBJECTS)
+	g++ unit_test.cpp -o unit_test $(OPENCV) $(GDAL) $(BOOST) $(TEST_SOURCES) $(OBJECTS) $(CFLAGS)
 
 build/GeoImage.o:	src/structures/GeoImage.cpp $(HEADERS)
-	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(CFLAGS)
 
 build/GDAL2OpenCV.o: src/utilities/GDAL2OpenCV.cpp $(HEADERS)
-	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(CFLAGS)
 
 build/OpenCVUtils.o: src/utilities/OpenCVUtils.cpp $(HEADERS)
-	g++ $< -c -o $@ $(OPENCV_INCLUDE)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(CFLAGS)
 
 build/GDAL_Data.o:  src/structures/GDAL_Data.cpp $(HEADERS)
-	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(CFLAGS)
 
 build/NITFHeader.o: src/structures/NITFHeader.cpp $(HEADERS)
-	g++ $< -c -o $@ $(OPENCV_INCLUDE)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(CFLAGS)
 
 build/GeoHeader.o: src/structures/GeoHeader.cpp $(HEADERS)
-	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(BOOST_INCLUDE)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(BOOST_INCLUDE) $(CFLAGS)
+
+build/PixelType.o: src/structures/PixelType.cpp $(HEADERS)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(CFLAGS)
+
+build/UInt16.o: src/structures/UInt16.cpp $(HEADERS)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(CFLAGS)
+
+build/UInt8.o: src/structures/UInt8.cpp $(HEADERS)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(CFLAGS)
+
 
 ###################################################################
 # 				MISC TOOLS
