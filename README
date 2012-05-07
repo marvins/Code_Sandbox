@@ -13,13 +13,18 @@ Project Structure
 - Code_Sandbox
    
    -  Math : A collection of useful C++ math libraries
+      
       - Core : A useful Vector class
+      
       - Geometry : A useful Quaternion, and other Geometry tools
+            - Vector : A ND vector class for math operations
+            - Quaternion : Quaternion class for rotation operations
+            
       - Calculus : A library of calculus operations
    
    - Geographic : A collection of geographic utilities
      
-      - ntif loading
+      - GeoImage - a Geographic image utility
 
    - OpenCV : A collection of OpenCV utilities
 
