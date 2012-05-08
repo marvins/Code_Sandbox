@@ -18,9 +18,6 @@
 #include <iostream>
 
 #include <GeoImage.h>
-#include <GDAL_Data.h>
-#include <NITFHeader.h>
-#include <GeoHeader.h>
 
 using namespace cv;
 using namespace std;

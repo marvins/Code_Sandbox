@@ -12,6 +12,7 @@
 
 #include <GeoHeader.h>
 #include <NITFHeader.h>
+#include <GDAL_Data.h>
 
 /**
  * Geographic Image Type

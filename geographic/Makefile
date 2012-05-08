@@ -4,9 +4,9 @@
 #  RELEVANT LIBRARY FLAGS
 
 # Final Install Destination
-PREFIX = /Users/marvinsmith/local
+PREFIX = /opt/local
 
-#Build directory
+#Build directory   (DO NOT TOUCH -fpic)
 BUILD = build
 
 # Build flags 
@@ -69,6 +69,14 @@ GEO_INCLUDE = -Isrc/structures -Isrc/utilities
 
 
 all: $(BUILD)/libgeoimage.so
+	mkdir -p $(BUILD)
+	mkdir -p $(BUILD)/bin
+	mkdir -p $(BUILD)/lib
+	mkdir -p $(BUILD)/include
+	mkdir -p $(BUILD)/include/geoimage
+	cp $(BUILD)/libgeoimage.so $(BUILD)/lib
+	cp src/structures/*.h $(BUILD)/include/geoimage
+	cp src/utilities/*.h  $(BUILD)/include/geoimage
 
 ###################################################################
 #				BUILD SEQUENCE		
@@ -112,21 +120,21 @@ docs:
 
 clean: 
 	rm -r build/*.o
+	rm -r build/bin
+	rm -r build/lib
+	rm -r build/include
 	rm unit_test
 
-check: $(HEADERS) $(OBJECTS)
-	rm build/*.o
-	make
-	make install
+check:
 	g++ -o build/unit_test unit_test.cpp $(OPENCV) $(TEST_SOURCES) -I$(PREFIX)/include/geoimage -L$(PREFIX)/lib -lgeoimage 
 	./build/unit_test
 
 install:
-	mkdir -p $(PREFIX)
-	mkdir -p $(PREFIX)/bin
-	mkdir -p $(PREFIX)/lib
-	mkdir -p $(PREFIX)/include
-	cp $(BUILD)/libgeoimage.so $(PREFIX)/lib
-	cp src/structures/*.h $(PREFIX)/include/geoimage
-	cp src/utilities/*.h  $(PREFIX)/include/geoimage
+	cp -r $(BUILD)/bin $(PREFIX)
+	cp -r $(BUILD)/lib $(PREFIX)
+	cp -r $(BUILD)/include $(PREFIX)
+
+uninstall:
+	rm -r $(PREFIX)/lib/libgeoimage.so
+	rm -r $(PREFIX)/include/geoimage
 
