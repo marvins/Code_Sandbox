@@ -116,6 +116,7 @@ clean:
 
 check:
 	g++ -o build/unit_test unit_test.cpp $(OPENCV) $(TEST_SOURCES) -I$(PREFIX)/include/geoimage -L$(PREFIX)/lib -lgeoimage 
+	./build/unit_test
 
 install:
 	mkdir -p $(PREFIX)
