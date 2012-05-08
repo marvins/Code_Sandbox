@@ -17,10 +17,10 @@
 #include <fstream>
 #include <iostream>
 
-#include "src/structures/GeoImage.h"
-#include "src/structures/GDAL_Data.h"
-#include "src/structures/NITFHeader.h"
-#include "src/structures/GeoHeader.h"
+#include <GeoImage.h>
+#include <GDAL_Data.h>
+#include <NITFHeader.h>
+#include <GeoHeader.h>
 
 using namespace cv;
 using namespace std;

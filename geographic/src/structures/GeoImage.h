@@ -8,10 +8,10 @@
 #include <iostream>
 #include <string>
 
-#include "GDAL_Data.h"
+#include <GDAL_Data.h>
 
-#include "GeoHeader.h"
-#include "NITFHeader.h"
+#include <GeoHeader.h>
+#include <NITFHeader.h>
 
 /**
  * Geographic Image Type
