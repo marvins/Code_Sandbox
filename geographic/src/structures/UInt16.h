@@ -13,7 +13,7 @@
 #include "gdal_priv.h"
 #include "cpl_conv.h"
 
-#include "PixelType.h"
+#include <PixelType.h>
 
 class UInt16 : public PixelType {
 public:

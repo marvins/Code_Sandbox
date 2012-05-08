@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "PixelType.h"
+#include <PixelType.h>
 
 class GeoHeader_Info{
 

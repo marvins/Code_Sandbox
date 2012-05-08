@@ -3,7 +3,7 @@
 
 #include <string>
 
-#include "GeoHeader.h"
+#include <GeoHeader.h>
 
 class NITFHeader_Info : public GeoHeader_Info{
 
