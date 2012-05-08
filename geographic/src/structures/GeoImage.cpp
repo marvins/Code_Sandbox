@@ -12,7 +12,7 @@ using namespace std;
  * Default Constructor
  */
 GeoImage::GeoImage() : initialize(false), openCVCompatible(false) {
-
+    
     //initialize the header data
     header_data = new NITFHeader_Info();
 
@@ -26,7 +26,7 @@ GeoImage::GeoImage() : initialize(false), openCVCompatible(false) {
  */
 GeoImage::GeoImage(const std::string& fname, const bool& Init) :
 initialize(Init), openCVCompatible(false) {
-
+    
     //create new header object
     header_data = new NITFHeader_Info();
 
@@ -145,9 +145,9 @@ void GeoImage::load_image() {
 
     //make sure that the file exists
     if (!header_data->image_filename_exists()) {
+        cout << "warning: Image <" << header_data->get_image_filename() << "> does not exist" << endl;
         initialize = false;
         return;
-        //throw std::string(std::string("Error: Image <") + header_data->get_image_filename() + std::string("> does not exist"));
     }
 
     //initialize GDAL

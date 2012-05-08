@@ -90,6 +90,7 @@ int TEST_NITF_Constructor(string& note) {
 
     GeoImage img1("data/U_1001A.NTF");
     GeoImage img2("data/U_1005A.NTF", false);
+    cout << "img3" << endl;
     GeoImage img3("data/U_1025A.NTF", true);
     GeoImage img4("data/U_1033A.NTF", true);
     GeoImage img5("data/U_1034A.NTF", true);

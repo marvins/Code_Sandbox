@@ -10,7 +10,7 @@ PREFIX = /Users/marvinsmith/local
 BUILD = build
 
 # Build flags 
-CFLAGS = -g -Wall -fPic
+CFLAGS = -g -Wall -fpic
 
 
 #
@@ -114,7 +114,10 @@ clean:
 	rm -r build/*.o
 	rm unit_test
 
-check:
+check: $(HEADERS) $(OBJECTS)
+	rm build/*.o
+	make
+	make install
 	g++ -o build/unit_test unit_test.cpp $(OPENCV) $(TEST_SOURCES) -I$(PREFIX)/include/geoimage -L$(PREFIX)/lib -lgeoimage 
 	./build/unit_test
 
