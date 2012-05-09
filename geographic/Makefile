@@ -10,7 +10,7 @@ PREFIX = /opt/local
 BUILD = build
 
 # Build flags 
-CFLAGS = -g -Wall -fpic
+CFLAGS = -Wall -fpic
 
 
 #
@@ -56,60 +56,95 @@ TEST = $(TEST_INCLUDE) $(TEST_SOURCES)
 HEADERS = src/structures/*.h \
 	  	   src/utilities/*.h
 
-OBJECTS = build/GeoImage.o \
-		  build/GDAL2OpenCV.o \
-		  build/OpenCVUtils.o \
-		  build/GDAL_Data.o \
-		  build/NITFHeader.o \
-		  build/UInt16.o \
-		  build/UInt8.o \
-		  build/GeoHeader.o
+OBJECTS       = build/GeoImage.o        build/GDAL2OpenCV.o  	   build/OpenCVUtils.o  	  build/GDAL_Data.o  	   build/NITFHeader.o  	     build/UInt16.o        build/UInt8.o  	    build/GeoHeader.o
+OBJECTS_DEBUG = build/GeoImage_DEBUG.o  build/GDAL2OpenCV_DEBUG.o  build/OpenCVUtils_DEBUG.o  build/GDAL_Data_DEBUG.o  build/NITFHeader_DEBUG.o  build/UInt16_DEBUG.o  build/UInt8_DEBUG.o  build/GeoHeader_DEBUG.o
 
 GEO_INCLUDE = -Isrc/structures -Isrc/utilities
 
 
-all: $(BUILD)/libgeoimage.so
+all: $(BUILD)/libgeoimage.so $(BUILD)/libgeoimage_DEBUG.so
 	mkdir -p $(BUILD)
 	mkdir -p $(BUILD)/bin
 	mkdir -p $(BUILD)/lib
 	mkdir -p $(BUILD)/include
 	mkdir -p $(BUILD)/include/geoimage
 	cp $(BUILD)/libgeoimage.so $(BUILD)/lib
+	cp $(BUILD)/libgeoimage_DEBUG.so $(BUILD)/lib
 	cp src/structures/*.h $(BUILD)/include/geoimage
 	cp src/utilities/*.h  $(BUILD)/include/geoimage
 
 ###################################################################
 #				BUILD SEQUENCE		
 ###################################################################
+# Main Shared Libraries
 $(BUILD)/libgeoimage.so: $(OBJECTS)
 	g++ -o $@ $(OBJECTS) $(GDAL) $(OPENCV) $(BOOST) -shared
 
+$(BUILD)/libgeoimage_DEBUG.so: $(OBJECTS)
+	g++ -o $@ $(OBJECTS) $(GDAL) $(OPENCV) $(BOOST) -g -shared
+
+# GeoImage Core
 build/GeoImage.o:	src/structures/GeoImage.cpp $(HEADERS)
 	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(CFLAGS) $(GEO_INCLUDE)
 
+build/GeoImage_DEBUG.o:	src/structures/GeoImage.cpp $(HEADERS)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(CFLAGS) -g $(GEO_INCLUDE)
+
+# GDAL 2 OpenCV 
 build/GDAL2OpenCV.o: src/utilities/GDAL2OpenCV.cpp $(HEADERS)
 	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(CFLAGS) $(GEO_INCLUDE)
 
+build/GDAL2OpenCV_DEBUG.o: src/utilities/GDAL2OpenCV.cpp $(HEADERS)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(CFLAGS) -g $(GEO_INCLUDE)
+
+# OpenCV Utilities
 build/OpenCVUtils.o: src/utilities/OpenCVUtils.cpp $(HEADERS)
 	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(CFLAGS) $(GEO_INCLUDE)
 
+build/OpenCVUtils_DEBUG.o: src/utilities/OpenCVUtils.cpp $(HEADERS)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(CFLAGS) -g $(GEO_INCLUDE)
+
+# GDAL_Data
 build/GDAL_Data.o:  src/structures/GDAL_Data.cpp $(HEADERS)
 	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(CFLAGS) $(GEO_INCLUDE)
 
+build/GDAL_Data_DEBUG.o:  src/structures/GDAL_Data.cpp $(HEADERS)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(CFLAGS) -g $(GEO_INCLUDE)
+
+# NITF Header
 build/NITFHeader.o: src/structures/NITFHeader.cpp $(HEADERS)
 	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(CFLAGS) $(GEO_INCLUDE)
 
+build/NITFHeader_DEBUG.o: src/structures/NITFHeader.cpp $(HEADERS)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(CFLAGS) -g $(GEO_INCLUDE)
+
+# GeoHeader
 build/GeoHeader.o: src/structures/GeoHeader.cpp $(HEADERS)
 	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(BOOST_INCLUDE) $(CFLAGS) $(GEO_INCLUDE)
 
+build/GeoHeader_DEBUG.o: src/structures/GeoHeader.cpp $(HEADERS)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(BOOST_INCLUDE) $(CFLAGS) -g $(GEO_INCLUDE)
+
+# PixelType
 build/PixelType.o: src/structures/PixelType.cpp $(HEADERS)
 	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(CFLAGS) $(GEO_INCLUDE)
 
+build/PixelType_DEBUG.o: src/structures/PixelType.cpp $(HEADERS)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(CFLAGS) -g $(GEO_INCLUDE)
+
+# UInt16
 build/UInt16.o: src/structures/UInt16.cpp $(HEADERS)
 	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(CFLAGS) $(GEO_INCLUDE)
 
+build/UInt16_DEBUG.o: src/structures/UInt16.cpp $(HEADERS)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(CFLAGS) -g $(GEO_INCLUDE)
+
+# UInt 8
 build/UInt8.o: src/structures/UInt8.cpp $(HEADERS)
 	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(CFLAGS) $(GEO_INCLUDE)
+
+build/UInt8_DEBUG.o: src/structures/UInt8.cpp $(HEADERS)
+	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(CFLAGS) -g $(GEO_INCLUDE)
 
 
 ###################################################################
