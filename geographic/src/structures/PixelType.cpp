@@ -4,20 +4,35 @@
  * 
  * Created on April 25, 2012, 10:13 AM
  */
-
-#include "gdal_priv.h"
-#include "cpl_conv.h"
-
 #include "PixelType.h"
-#include "../utilities/OpenCVUtils.h"
+
+#include <OpenCVUtils.h>
 
 using namespace cv;
 using namespace std;
 
+PixelType::PixelType(){
+    pixeltype = UNKNOWN;
+}
+
+/** Parameterized Constructor
+*/
+PixelType::PixelType( const int& tp ){
+    
+    //set value
+    pixeltype = tp;
+}
+
+/** 
+ * Return the GDAL Datatype. Used for formatting the 
+ * write image data.
+ *
+ * @return gdal datatype
+*/
 GDALDataType PixelType::get_gdal_type() const {
 
-    if( pixeltype == 0 )
-        throw string("No pixeltype set");
+    if( pixeltype == UNKNOWN )
+        return GDT_Unknown;
 
     if( pixeltype == UInt8C1 )
         return GDT_Byte;
@@ -25,20 +40,33 @@ GDALDataType PixelType::get_gdal_type() const {
     if( pixeltype == UInt16C1 )
         return GDT_UInt16;
 
+    if( pixeltype == UInt32C1 )
+        return GDT_UInt32;
+
+    throw string("UNSUPPORTED FORMAT");
     return GDT_Unknown;
 }
 
+/** 
+ * Get the name of the data type
+ *
+ * @return string of the name
+*/
 std::string PixelType::get_name() const {
     
-    if( pixeltype == 0 )
-        throw string("No pixeltype set");
+    if( pixeltype == UNKNOWN )
+        return "UNKNOWN";
     
     if( pixeltype == UInt8C1 )
-        return "UInt8";
+        return "UInt8C1";
 
     if( pixeltype == UInt16C1 )
-        return "UInt16";
+        return "UInt16C1";
+    
+    if( pixeltype == UInt32C1 )
+        return "UInt32C1";
 
+    throw string("UNSUPPORTED DATATYPE");
     return "Unknown";
 }
 

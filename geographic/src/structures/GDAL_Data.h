@@ -13,7 +13,7 @@
 
 #include <string>
 
-enum PIXELTYPE{
+enum IMAGETYPE{
    NITF = 123 
 };
 

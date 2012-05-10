@@ -5,8 +5,8 @@
  * Created on April 25, 2012, 10:13 AM
  */
 
-#ifndef PIXELTYPE_H
-#define	PIXELTYPE_H
+#ifndef __PIXELTYPE_H__
+#define	__PIXELTYPE_H__
 
 #include <cv.h>
 #include <cvaux.h>
@@ -17,13 +17,17 @@
 #include "gdal_priv.h"
 #include "cpl_conv.h"
 
+
 class PixelType {
 public:
     
-    static const int UNKNOWN  = 0;
-    static const int UInt8C1  = 1;
-    static const int UInt16C1 = 2;
-    static const int UInt32C1 = 3;
+    static const int UNKNOWN;
+    static const int UInt8C1;
+    static const int UInt16C1;
+    static const int UInt32C1;
+
+    PixelType();
+    PixelType( const int& tp );
 
     GDALDataType get_gdal_type()const;
     
@@ -39,6 +43,11 @@ private:
      int pixeltype;
 
 };
+
+const int PixelType::UNKNOWN  = 0;
+const int PixelType::UInt8C1  = 1;
+const int PixelType::UInt16C1 = 2;
+const int PixelType::UInt32C1 = 3;
 
 #endif	/* PIXELTYPE_H */
 
