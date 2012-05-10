@@ -20,9 +20,9 @@ class GeoHeader_Info{
 
       bool image_filename_exists()const;
       
-      void set_pixel_type( PixelType* pix);
+      void set_pixel_type( PixelType const& pix);
       
-      PixelType*& get_pixel_type()const;
+      PixelType get_pixel_type()const;
       
       virtual GeoHeader_Info*& clone()const = 0;
       
@@ -33,7 +33,7 @@ class GeoHeader_Info{
 
       std::string image_filename;
 
-      PixelType* pixeltype;
+      PixelType pixeltype;
 
 };
 

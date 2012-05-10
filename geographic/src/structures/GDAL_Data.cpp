@@ -69,10 +69,12 @@ void GDAL_Data::write( std::string const& image_filename, cv::Mat const& image, 
     
     //create an output dataset
     GDALDataset *outputData = oDriver->Create( image_filename.c_str(), 
-            image.cols, image.rows, image.channels(), header_data->get_pixel_type()->get_gdal_type(),
+            image.cols, image.rows, image.channels(), header_data->get_pixel_type().get_gdal_type(),
             papszOptions);
     
     GDALRasterBand* band;
+
+
     //load dataset with appropriate metadata
     for( int c=0; c<image.channels(); c++){
         
@@ -82,9 +84,12 @@ void GDAL_Data::write( std::string const& image_filename, cv::Mat const& image, 
         for( int y=0; y<image.rows; y++){
             for( int x=0; x<image.cols; x++){
                 int* value = new int;
-                *value = header_data->get_pixel_type()->convert( image, x, y);
+                
+                *value  = header_data->get_pixel_type().convert( image, x, y, c);
+
                 band->RasterIO( GF_Write, x, y, 1, 1, value, 
-                        1, 1, header_data->get_pixel_type()->get_gdal_type(), 0, 0);
+                        1, 1, header_data->get_pixel_type().get_gdal_type(), 0, 0);
+                
                 delete value;
             }
         }

@@ -20,16 +20,23 @@
 class PixelType {
 public:
     
-    virtual PixelType*& clone()const = 0;
+    static const int UNKNOWN  = 0;
+    static const int UInt8C1  = 1;
+    static const int UInt16C1 = 2;
+    static const int UInt32C1 = 3;
+
+    GDALDataType get_gdal_type()const;
     
-    virtual GDALDataType get_gdal_type()const = 0;
+    std::string get_name()const;
     
-    virtual std::string get_name()const = 0;
+    int convert( cv::Mat const& image, const int x, const int y, const int c);
     
-    virtual int convert( cv::Mat const& image, const int x, const int y) = 0;
-    
+    void set( const int& tp );
+
+    int  get( )const;
+
 private:
-     
+     int pixeltype;
 
 };
 

@@ -10,8 +10,8 @@
 
 #include <GDAL_Data.h>
 
-#include <GeoHeader.h>
 #include <NITFHeader.h>
+#include <GeoHeader.h>
 #include <GDAL_Data.h>
 
 /**

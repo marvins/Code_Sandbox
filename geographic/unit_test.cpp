@@ -69,9 +69,11 @@ void TEST_structure_module() {
     //result = TEST_NITF_get_image(note);
     //print_test_results("GeoImage Get Image", result, note);
 
+    cout << 0 << endl;
     result = TEST_GeoHeader(note);
     print_test_results("GeoHeader Member Functions", result, note);
     
+    cout << 1 << endl;
     result = TEST_PixelType(note);
     print_test_results("PixelType _INTERNALS_", result, note);
 
@@ -87,7 +89,6 @@ int TEST_NITF_Constructor(string& note) {
 
     GeoImage img1("data/U_1001A.NTF");
     GeoImage img2("data/U_1005A.NTF", false);
-    cout << "img3" << endl;
     GeoImage img3("data/U_1025A.NTF", true);
     GeoImage img4("data/U_1033A.NTF", true);
     GeoImage img5("data/U_1034A.NTF", true);
@@ -285,6 +286,7 @@ int TEST_NITF_write_image(string& note) {
 
 int TEST_GeoHeader(string& note) {
 
+    cout << "A" << endl;
     //create an image
     string fname01 = "data/24FEB129Z0200702ZXGEO000GS0000004F482008.ntf";
     string fname02 = "data/U_1001A.NTF";
@@ -292,12 +294,28 @@ int TEST_GeoHeader(string& note) {
     GeoImage img1( fname01, true);
     GeoImage img2( fname02, true);
     
+    cout << "pulling header" << endl;
+
+    GeoHeader_Info *hdr = img1.get_header();
+
+    cout << "okay" << endl;
+
+    cout << hdr->get_image_filename() << endl;
+    cout << "working" << endl;
+    exit(0);
+
     //query the pixeltype
     PixelType* pix01   = img1.get_header()->get_pixel_type();
+    cout << 0 << endl;
+    cout << "  " << pix01->get_name() << endl;
+    
     PixelType* pix02   = img2.get_header()->get_pixel_type();
+    cout << 0 << flush << "  " << pix02->get_name() << endl;
+    
     string  filename01 = img1.get_header()->get_image_filename();
     string  filename02 = img2.get_header()->get_image_filename();
     
+    cout << "C" << endl;
     if( filename01 != fname01 || filename02 != fname02 ){
         note = "Filename is not transferrin properly";
         return false;
@@ -317,12 +335,15 @@ int TEST_GeoHeader(string& note) {
 
 int TEST_PixelType(string& note) {
 
+    cout << "A" << endl;
     //create an image
     GeoImage img1("data/24FEB129Z0200702ZXGEO000GS0000004F482008.ntf", true);
 
+    cout << "B" << endl;
     //query the pixeltype
     PixelType* pix = img1.get_header()->get_pixel_type();
     
+    cout << "C" << endl;
     
     note = "Not implemented";
     return false;

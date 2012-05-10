@@ -2,8 +2,6 @@
 #include "../utilities/GDAL2OpenCV.h"
 #include "../utilities/OpenCVUtils.h"
 #include "PixelType.h"
-#include "UInt8.h"
-#include "UInt16.h"
 
 using namespace cv;
 using namespace std;
@@ -191,15 +189,22 @@ void GeoImage::load_image() {
     
     int depth = gdal2opencvPixelType(gdal_data.dataset->GetRasterBand(1)->GetRasterDataType());
     
-    if ( depth == CV_8U ){
-        header_data->set_pixel_type( new UInt8());
-    }
-    else if ( depth == CV_16U ){
-        header_data->set_pixel_type(new UInt16());
-    }
-    else {
+    cout << "setting type" << endl;
+    PixelType pixelToSet;
+
+    if ( depth == CV_8U )
+        pixelToSet.set( PixelType::UInt8C1 );
+
+    else if ( depth == CV_16U )
+        pixelToSet.set( PixelType::UInt16C1 );
+    
+    else 
         throw string(string("Unknown pixel depth: ") + opencvDepth2string(depth));
-    }
+    
+    header_data->set_pixel_type( pixelToSet );
+
+    cout << header_data->get_pixel_type().get_name() << endl;
+
 }
 
 cv::Size GeoImage::getMatSize()const {

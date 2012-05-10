@@ -2,15 +2,17 @@
 
 #include <boost/filesystem.hpp>
 
+#include <iostream>
+using namespace std;
+
 namespace fs = boost::filesystem;
 
 GeoHeader_Info::GeoHeader_Info(){ 
-    pixeltype = NULL;
+    pixeltype.set( PixelType::UNKNOWN );
 }
 
 GeoHeader_Info::~GeoHeader_Info(){
-    if( pixeltype != NULL )
-        delete pixeltype;
+
 }
 
 std::string GeoHeader_Info::get_image_filename()const{
@@ -29,14 +31,14 @@ bool GeoHeader_Info::image_filename_exists()const{
    return false;
 }
 
-void GeoHeader_Info::set_pixel_type( PixelType* pix){
-    pixeltype = pix->clone();
+void GeoHeader_Info::set_pixel_type( PixelType const& pix){
+   
+    //copy pixel type
+    pixeltype = pix;
+    
 }
 
-PixelType*& GeoHeader_Info::get_pixel_type()const{
+PixelType GeoHeader_Info::get_pixel_type()const{
     
-    if( pixeltype == NULL )
-        throw std::string("ERROR: pixeltype is currently NULL, cannot get");
-
-    return pixeltype->clone();
+    return pixeltype;
 }
