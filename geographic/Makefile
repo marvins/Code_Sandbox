@@ -4,7 +4,7 @@
 #  RELEVANT LIBRARY FLAGS
 
 # Final Install Destination
-PREFIX = /opt/local
+PREFIX = build
 
 #Build directory   (DO NOT TOUCH -fPic)
 BUILD = build
@@ -57,8 +57,8 @@ TEST = $(TEST_INCLUDE) $(TEST_SOURCES)
 HEADERS = src/structures/*.h \
 	  	   src/utilities/*.h
 
-OBJECTS       = build/PixelType.o		 build/OpenCVUtils.o
-OBJECTS_DEBUG = build/PixelType_DEBUG.o  build/OpenCVUtils_DEBUG.o
+OBJECTS       = build/GeoHeader.o 		build/PixelType.o		 build/OpenCVUtils.o
+OBJECTS_DEBUG = build/GeoHeader_DEBUG.o build/PixelType_DEBUG.o  build/OpenCVUtils_DEBUG.o
 
 #build/GeoImage.o        build/GDAL2OpenCV.o  	   build/OpenCVUtils.o  	  build/GDAL_Data.o  	   build/NITFHeader.o  	     build/GeoHeader.o		  build/PixelType.o
 #build/GeoImage_DEBUG.o  build/GDAL2OpenCV_DEBUG.o  build/OpenCVUtils_DEBUG.o  build/GDAL_Data_DEBUG.o  build/NITFHeader_DEBUG.o  build/GeoHeader_DEBUG.o  build/PixelType_DEBUG.o
@@ -125,10 +125,10 @@ build/NITFHeader_DEBUG.o: src/structures/NITFHeader.cpp $(HEADERS)
 
 # GeoHeader
 build/GeoHeader.o: src/structures/GeoHeader.cpp $(HEADERS)
-	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(BOOST_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(BOOST_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
 
 build/GeoHeader_DEBUG.o: src/structures/GeoHeader.cpp $(HEADERS)
-	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(BOOST_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(BOOST_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
 
 # PixelType
 build/PixelType.o: 		 src/structures/PixelType.cpp $(HEADERS)
@@ -153,7 +153,7 @@ clean:
 	rm unit_test
 
 check:
-	g++ -o build/unit_test unit_test.cpp TEST_structures.cpp TEST_utilities.cpp $(OPENCV) $(TEST_SOURCES) -I/opt/local/include -L/opt/local/lib -lgeoimage
+	g++ -o build/unit_test unit_test.cpp TEST_structures.cpp TEST_utilities.cpp $(OPENCV) $(TEST_SOURCES) -I$(PREFIX)/include -L$(PREFIX)/lib -lgeoimage
 	./build/unit_test
 
 install:

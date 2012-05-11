@@ -3,6 +3,7 @@
 
 #define GEOVERSION 1.0
 
+#include <geoimage/GeoHeader.h>
 #include <geoimage/PixelType.h>
 #include <geoimage/OpenCVUtils.h>
 

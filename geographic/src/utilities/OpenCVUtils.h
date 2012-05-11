@@ -1,5 +1,5 @@
-#ifndef __SRC_OPENCV_ENUMS_H__
-#define __SRC_OPENCV_ENUMS_H__
+#ifndef __SRC_OPENCV_UTILS_H__
+#define __SRC_OPENCV_UTILS_H__
 
 #include <string>
 

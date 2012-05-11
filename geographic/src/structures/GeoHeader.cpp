@@ -8,7 +8,7 @@ using namespace std;
 namespace fs = boost::filesystem;
 
 GeoHeader_Info::GeoHeader_Info(){ 
-    pixeltype.set( PIXELTYPE::UNKNOWN );
+    pixeltype.set( PixelType::UNKNOWN );
 }
 
 GeoHeader_Info::~GeoHeader_Info(){

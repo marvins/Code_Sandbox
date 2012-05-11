@@ -11,7 +11,7 @@
 #include "cpl_conv.h"
 
 //GeoImage includes
-#include <geoimage/OpenCVUtils.h>
+#include <GeoImage.h> //<geoimage/OpenCVUtils.h>
 
 using namespace cv;
 using namespace std;
