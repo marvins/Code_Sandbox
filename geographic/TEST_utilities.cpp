@@ -41,9 +41,6 @@ void TEST_utilities_module(){
     int result;
     string note;
 
-    /** Print the Test Header for the Structures module */
-    print_module_header("utilities");
-
     /**  Test the PixelType Module  */
     print_module_header("OpenCVUtils");
 
@@ -58,9 +55,6 @@ void TEST_utilities_module(){
     print_test_results( "OpenCVUtils   opencvDepth2string", result, note );
 
     
-    /** Print the Test Footer for the Structures module */
-    print_module_footer("utilities");
-
 }
 
 

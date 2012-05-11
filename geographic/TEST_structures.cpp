@@ -51,9 +51,6 @@ void TEST_structures_module(){
     int result;
     string note;
 
-    /** Print the Test Header for the Structures module */
-    print_module_header("structures");
-
     /**  Test the PixelType Module  */
     print_module_header("PixelType");
 
@@ -66,6 +63,9 @@ void TEST_structures_module(){
     
     result = TEST_PixelType_convert(   note );
     print_test_results( "PixelType  conversions", result, note );
+    
+    /**  Test the GeoHeader Module  */
+    print_module_header("GeoHeader");
 
     result = TEST_GeoHeader_core(     note );
     print_test_results(  "GeoHeader  core", result, note );
@@ -79,10 +79,6 @@ void TEST_structures_module(){
     result = TEST_GeoHeader_driver(   note );
     print_test_results(  "GeoHeader  driver", result, note );
     
-    
-    /** Print the Test Footer for the Structures module */
-    print_module_footer("structures");
-
 }
 
 /**
