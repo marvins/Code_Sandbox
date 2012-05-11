@@ -10,6 +10,7 @@
 #include "../useful_stuff/string_functions/string_utilities.h"
 
 #include "TEST_structures.h"
+#include "TEST_utilities.h"
 
 using namespace std;
 
@@ -24,7 +25,10 @@ int main(int argc, char* argv[]) {
         
         //begin structure module test
         TEST_structures_module();
-        
+
+        //begin utilities module test
+        TEST_utilities_module();
+
         print_module_footer("GeoImage Unit Test Framework");
     
     

@@ -153,7 +153,7 @@ clean:
 	rm unit_test
 
 check:
-	g++ -o build/unit_test unit_test.cpp TEST_structures.cpp $(OPENCV) $(TEST_SOURCES) -I/opt/local/include -L/opt/local/lib -lgeoimage
+	g++ -o build/unit_test unit_test.cpp TEST_structures.cpp TEST_utilities.cpp $(OPENCV) $(TEST_SOURCES) -I/opt/local/include -L/opt/local/lib -lgeoimage
 	./build/unit_test
 
 install:
