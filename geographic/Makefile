@@ -57,11 +57,11 @@ TEST = $(TEST_INCLUDE) $(TEST_SOURCES)
 HEADERS = src/structures/*.h \
 	  	   src/utilities/*.h
 
-OBJECTS       = build/GeoHeader.o 		build/PixelType.o		 build/OpenCVUtils.o
-OBJECTS_DEBUG = build/GeoHeader_DEBUG.o build/PixelType_DEBUG.o  build/OpenCVUtils_DEBUG.o
+OBJECTS       = build/NITFHeader.o     		build/GeoHeader.o 		build/PixelType.o		 build/OpenCVUtils.o
+OBJECTS_DEBUG = build/NITFHeader_DEBUG.o	build/GeoHeader_DEBUG.o build/PixelType_DEBUG.o  build/OpenCVUtils_DEBUG.o
 
-#build/GeoImage.o        build/GDAL2OpenCV.o  	   build/OpenCVUtils.o  	  build/GDAL_Data.o  	   build/NITFHeader.o  	     build/GeoHeader.o		  build/PixelType.o
-#build/GeoImage_DEBUG.o  build/GDAL2OpenCV_DEBUG.o  build/OpenCVUtils_DEBUG.o  build/GDAL_Data_DEBUG.o  build/NITFHeader_DEBUG.o  build/GeoHeader_DEBUG.o  build/PixelType_DEBUG.o
+#build/GeoImage.o        build/GDAL2OpenCV.o  	   build/OpenCVUtils.o  	  build/GDAL_Data.o  	    build/PixelType.o
+#build/GeoImage_DEBUG.o  build/GDAL2OpenCV_DEBUG.o  build/OpenCVUtils_DEBUG.o  build/GDAL_Data_DEBUG.o  build/PixelType_DEBUG.o
 
 GEO_INCLUDE = -Isrc/structures -Isrc/utilities
 
@@ -118,10 +118,10 @@ build/GDAL_Data_DEBUG.o:  src/structures/GDAL_Data.cpp $(HEADERS)
 
 # NITF Header
 build/NITFHeader.o: src/structures/NITFHeader.cpp $(HEADERS)
-	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
 
 build/NITFHeader_DEBUG.o: src/structures/NITFHeader.cpp $(HEADERS)
-	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
 
 # GeoHeader
 build/GeoHeader.o: src/structures/GeoHeader.cpp $(HEADERS)
