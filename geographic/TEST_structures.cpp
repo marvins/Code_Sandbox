@@ -36,6 +36,7 @@ int TEST_GeoHeader_driver(   string& note );
 int TEST_GeoHeader_core(     string& note );
 
 int TEST_GeoImage_core(      string& note );
+int TEST_GeoImage_get_image( string& note );
 
 /** 
  * Beginning of the structures module test
@@ -82,10 +83,13 @@ void TEST_structures_module(){
     print_test_results(  "GeoHeader  driver", result, note );
     
     /**  Test the GeoImage Module  */
-    print_module_header("GeoImage");
+    print_module_header( "GeoImage");
     
     result = TEST_GeoImage_core(      note );
     print_test_results(  "GeoImage   core",  result, note  );
+
+    result = TEST_GeoImage_get_image( note );
+    print_test_results(  "GeoImage   get_image", result, note );
 
 }
 
@@ -205,10 +209,70 @@ int TEST_GeoHeader_core(     string& note ){
 
 int TEST_GeoImage_core(      string& note ){
 
-    
+    //create some images
+    GeoImage img01;
+    GeoImage img02("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf", false);
+    GeoImage img03("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf", true );
+    GeoImage img04("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf");
+    GeoImage img05;
+    img05.set_filename("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf");
 
-    note = "Not Implemented";
-    return false;
+    //start testing
+    note = "Image Loading Failed";
+    if( img01.get_filename() != "_NO_IMAGE_SELECTED_" ) return false; 
+    if( img02.get_filename() != "data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf" ) return false; 
+    if( img03.get_filename() != "data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf" ) return false; 
+    if( img04.get_filename() != "data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf" ) return false; 
+    if( img05.get_filename() != "data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf" ) return false; 
+
+    //test init
+    note = "Image get_init() Failed At: ";
+    if( img01.get_init() != false ){ note += "img01"; return false; }
+    if( img02.get_init() != false ){ note += "img02"; return false; }
+    if( img03.get_init() != true  ){ note += "img03"; return false; }
+    if( img04.get_init() != false ){ note += "img04"; return false; }
+    if( img05.get_init() != false ){ note += "img05"; return false; }
+
+    //test opencv valid or gdal valid
+    note = "Validity Flags Failed At: ";
+    if( img01.isOpenCVValid() != false ){ note += "img01";  return false; }
+    if( img02.isOpenCVValid() != false ){ note += "img02";  return false; }
+    if( img03.isOpenCVValid() != true  ){ note += "img03";  return false; }
+    if( img04.isOpenCVValid() != false ){ note += "img04";  return false; }
+    if( img05.isOpenCVValid() != false ){ note += "img05";  return false; }
+
+    note = "Successful Operation";
+    return true;
 }
 
+int TEST_GeoImage_get_image( string& note ){
 
+    //create some images
+    GeoImage img01;
+    GeoImage img02("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf", false);
+    GeoImage img03("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf", true );
+    GeoImage img04("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf");
+    GeoImage img05;
+    img05.set_filename("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf");
+    
+    note = "Get Image Operation Failed At: ";
+    Mat testImg;
+
+    testImg = img01.get_image();
+    if( testImg.rows != 0 || testImg.cols != 0 ){ note += "img01"; return false; }
+
+    testImg = img02.get_image();
+    if( testImg.rows != 0 || testImg.cols != 0 ){ note += "img02"; return false; }
+    
+    testImg = img03.get_image();
+    if( testImg.rows != 3248 || testImg.cols != 4872 ){ note += "img03"; return false; }
+    
+    testImg = img04.get_image();
+    if( testImg.rows != 0 || testImg.cols != 0 ){ note += "img04"; return false; }
+    
+    testImg = img05.get_image();
+    if( testImg.rows != 0 || testImg.cols != 0 ){ note += "img05"; return false; }
+
+    note = "Operation Successful";
+    return true;
+}

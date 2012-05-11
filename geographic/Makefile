@@ -6,7 +6,7 @@
 # Final Install Destination
 PREFIX = build
 
-#Build directory   (DO NOT TOUCH -fPic)
+#Build directory   (DO NOT TOUCH -fPIC)
 BUILD = build
 
 # Build flags 
@@ -57,11 +57,8 @@ TEST = $(TEST_INCLUDE) $(TEST_SOURCES)
 HEADERS = src/structures/*.h \
 	  	   src/utilities/*.h
 
-OBJECTS       = build/NITFHeader.o     		build/GeoHeader.o 		build/PixelType.o		 build/OpenCVUtils.o	    build/GDAL_Data.o
-OBJECTS_DEBUG = build/NITFHeader_DEBUG.o	build/GeoHeader_DEBUG.o build/PixelType_DEBUG.o  build/OpenCVUtils_DEBUG.o  build/GDAL_Data_DEBUG.o
-
-#build/GeoImage.o        build/GDAL2OpenCV.o   	  
-#build/GeoImage_DEBUG.o  build/GDAL2OpenCV_DEBUG.o 
+OBJECTS       = build/NITFHeader.o     		build/GeoHeader.o 		build/PixelType.o		 build/OpenCVUtils.o	    build/GDAL_Data.o		 build/GeoImage.o  		build/GDAL2OpenCV.o	
+OBJECTS_DEBUG = build/NITFHeader_DEBUG.o	build/GeoHeader_DEBUG.o build/PixelType_DEBUG.o  build/OpenCVUtils_DEBUG.o  build/GDAL_Data_DEBUG.o  build/GeoImage_DEBUG.o build/GDAL2OpenCV_DEBUG.o
 
 GEO_INCLUDE = -Isrc/structures -Isrc/utilities
 
@@ -90,17 +87,17 @@ $(BUILD)/libgeoimage_DEBUG.so: $(OBJECTS_DEBUG)
 
 # GeoImage Core
 build/GeoImage.o:	src/structures/GeoImage.cpp $(HEADERS)
-	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
+	g++ $< -fPIC -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
 
 build/GeoImage_DEBUG.o:	src/structures/GeoImage.cpp $(HEADERS)
-	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
+	g++ $< -fPIC -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
 
 # GDAL 2 OpenCV 
 build/GDAL2OpenCV.o: src/utilities/GDAL2OpenCV.cpp $(HEADERS)
-	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
+	g++ $< -fPIC -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
 
 build/GDAL2OpenCV_DEBUG.o: src/utilities/GDAL2OpenCV.cpp $(HEADERS)
-	g++ $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
+	g++ $< -fPIC -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
 
 # OpenCV Utilities
 build/OpenCVUtils.o: src/utilities/OpenCVUtils.cpp $(HEADERS)
@@ -142,6 +139,7 @@ build/PixelType_DEBUG.o: src/structures/PixelType.cpp $(HEADERS)
 ###################################################################
 # 				MISC TOOLS
 ###################################################################
+.PHONY: docs
 docs:
 	doxygen 
 
@@ -153,7 +151,7 @@ clean:
 	rm unit_test
 
 check:
-	g++ -o build/unit_test unit_test.cpp TEST_structures.cpp TEST_utilities.cpp $(OPENCV) $(TEST_SOURCES) -I$(PREFIX)/include -L$(PREFIX)/lib -lgeoimage
+	g++ -o build/unit_test unit_test.cpp TEST_structures.cpp TEST_utilities.cpp $(OPENCV) $(TEST_SOURCES) -I$(PREFIX)/include -L$(PREFIX)/lib -lgeoimage $(OFLAGS)
 	./build/unit_test
 
 install:

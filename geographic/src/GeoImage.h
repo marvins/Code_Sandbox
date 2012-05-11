@@ -9,5 +9,6 @@
 #include <geoimage/NITFHeader.h>
 #include <geoimage/PixelType.h>
 #include <geoimage/OpenCVUtils.h>
+#include <geoimage/GDAL2OpenCV.h>
 
 #endif
