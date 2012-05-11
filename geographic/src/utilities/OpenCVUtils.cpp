@@ -7,6 +7,9 @@
 
 using namespace cv;
 
+#include <iostream>
+using namespace std;
+
 int cvDepthChannel2Type( const int Depth, const int Channels ){
 
     if( Depth == CV_8U  && Channels == 3 )  return CV_8UC3;
@@ -15,6 +18,9 @@ int cvDepthChannel2Type( const int Depth, const int Channels ){
     if( Depth == CV_16U && Channels == 3 ) return CV_16UC3;
     if( Depth == CV_16U && Channels == 2 ) return CV_16UC2;
     if( Depth == CV_16U && Channels == 1 ) return CV_16UC1;
+    if( Depth == CV_32S && Channels == 3 ) return CV_32SC3;
+    if( Depth == CV_32S && Channels == 2 ) return CV_32SC2;
+    if( Depth == CV_32S && Channels == 1 ) return CV_32SC1;
 
     throw string("Error: combo not supported");
 
@@ -22,23 +28,21 @@ int cvDepthChannel2Type( const int Depth, const int Channels ){
 }
 
 std::string opencvType2string( const int& type ){
-    if( type == CV_8UC1 )
-        return "CV_8UC1";
+    if( type == CV_8UC1 )  return "CV_8UC1";
+    if( type == CV_8UC2 )  return "CV_8UC2";
+    if( type == CV_8UC3 )  return "CV_8UC3";
     
-    if( type == CV_8UC3 )
-        return "CV_8UC3";
+    if( type == CV_16UC1 ) return "CV_16UC1";
+    if( type == CV_16UC2 ) return "CV_16UC2";
+    if( type == CV_16UC3 ) return "CV_16UC3";
     
-    if( type == CV_16UC1 )
-        return "CV_16UC1";
+    if( type == CV_32SC1 ) return "CV_32SC1";
+    if( type == CV_32SC2 ) return "CV_32SC2"; 
+    if( type == CV_32SC3 ) return "CV_32SC3";
     
-    if( type == CV_16UC3 )
-        return "CV_16UC3";
-    
-    if( type == CV_32FC1 )
-        return "CV_32FC1";
-    
-    if( type == CV_32FC3 )
-        return "CV_32FC3";
+    if( type == CV_32FC1 ) return "CV_32FC1";
+    if( type == CV_32FC2 ) return "CV_32FC2"; 
+    if( type == CV_32FC3 ) return "CV_32FC3";
     
     return "UNKNOWN";
 }
