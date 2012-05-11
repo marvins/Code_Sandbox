@@ -5,8 +5,8 @@
 #include <cvaux.h>
 #include <highgui.h>
 
-#include <NITFHeader.h>
-#include <GeoHeader.h>
+#include "NITFHeader.h"
+#include "GeoHeader.h"
 
 #include "gdal_priv.h"
 #include "cpl_conv.h"
