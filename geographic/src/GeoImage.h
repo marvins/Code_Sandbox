@@ -3,6 +3,7 @@
 
 #define GEOVERSION 1.0
 
+#include <geoimage/GeoImage.h>
 #include <geoimage/GeoHeader.h>
 #include <geoimage/GDAL_Data.h>
 #include <geoimage/NITFHeader.h>

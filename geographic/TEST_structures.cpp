@@ -35,6 +35,8 @@ int TEST_GeoHeader_pixel(    string& note );
 int TEST_GeoHeader_driver(   string& note );
 int TEST_GeoHeader_core(     string& note );
 
+int TEST_GeoImage_core(      string& note );
+
 /** 
  * Beginning of the structures module test
  *
@@ -79,7 +81,14 @@ void TEST_structures_module(){
     result = TEST_GeoHeader_driver(   note );
     print_test_results(  "GeoHeader  driver", result, note );
     
+    /**  Test the GeoImage Module  */
+    print_module_header("GeoImage");
+    
+    result = TEST_GeoImage_core(      note );
+    print_test_results(  "GeoImage   core",  result, note  );
+
 }
+
 
 /**
  * Test the PixelType internal types
@@ -193,4 +202,13 @@ int TEST_GeoHeader_core(     string& note ){
     note = "Not Implemented";
     return false;
 }
+
+int TEST_GeoImage_core(      string& note ){
+
+    
+
+    note = "Not Implemented";
+    return false;
+}
+
 
