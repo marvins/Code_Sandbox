@@ -89,14 +89,34 @@ g++ hello_world.cpp -I/opt/local/include -L/opt/local/lib -lgeoimage
 
 
 
-\section*{API Reference}
+\section*{API Tutorial}
 
 \begin{figure}[!h]
 \begin{lstlisting}
-GeoImage( const string& image_filename = "_NO_IMAGE_SELECTED_", const bool& initialize = false );
+GeoImage( const string& image_filename = "_NO_IMAGE_SELECTED_", 
+          const bool& initialize = false );
 \end{lstlisting}
 \caption{Constructor for the GeoImage Object}
 \label{fig:geoimage01}
 \end{figure}
+
+This is the basic constructor for the GeoImage class.  This constructor requires two arguments, 
+the name of the file which you are loading and a flag to tell the image if it is to load the
+data.  Note that certain images may be large, thus it is advantageous to load them only when they 
+are required.  True will load it immediately, and false will wait until the initialization flag
+is set at a later time. To set the flag and load the image, you may call the \texttt{set\_init()}
+flag. 
+
+\begin{figure}[!h]
+\begin{lstlisting}
+GeoImage img( "U_1001A.NTF", false); //initialize image
+
+img.set_init(true); //image is now loaded
+\end{lstlisting}
+\caption{Example of loading image into memory.}
+\label{fig:geoimage02}
+\end{figure}
+
+You may also change the image filename PRIOR to loading the image. 
 
 \end{document}

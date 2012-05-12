@@ -245,6 +245,8 @@ int TEST_GeoImage_core(      string& note ){
     note = "Validity Flags Failed At: ";
     if( img01.isOpenCVValid() != false ){ note += "img01";  return false; }
     if( img02.isOpenCVValid() != false ){ note += "img02";  return false; }
+    img02.set_init( true );
+    if( img02.isOpenCVValid() != true  ){ note += "img02";  return false; }
     if( img03.isOpenCVValid() != true  ){ note += "img03";  return false; }
     if( img04.isOpenCVValid() != false ){ note += "img04";  return false; }
     if( img05.isOpenCVValid() != false ){ note += "img05";  return false; }
