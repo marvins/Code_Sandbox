@@ -4,7 +4,7 @@
 #  RELEVANT LIBRARY FLAGS
 
 # Final Install Destination
-PREFIX = /opt/local
+PREFIX = build
 
 #Build directory   (DO NOT TOUCH -fPIC)
 BUILD = build

@@ -38,6 +38,8 @@ int TEST_GeoHeader_core(     string& note );
 int TEST_GeoImage_core(      string& note );
 int TEST_GeoImage_get_image( string& note );
 
+int TEST_GDAL_Data_write(    string& note );
+
 /** 
  * Beginning of the structures module test
  *
@@ -90,6 +92,12 @@ void TEST_structures_module(){
 
     result = TEST_GeoImage_get_image( note );
     print_test_results(  "GeoImage   get_image", result, note );
+
+    /**  Test the GDAL_Data Module  */
+    print_module_header( "GDAL_Data");
+
+    result = TEST_GDAL_Data_write( note );
+    print_test_results( "GDAL_Data   write", result, note );
 
 }
 
@@ -274,5 +282,30 @@ int TEST_GeoImage_get_image( string& note ){
     if( testImg.rows != 0 || testImg.cols != 0 ){ note += "img05"; return false; }
 
     note = "Operation Successful";
+    return true;
+}
+
+int TEST_GDAL_Data_write(    string& note ){
+    
+    //write image
+    GeoImage img01("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf", true);
+    Mat image01 = img01.get_image();
+
+    GDAL_Data::write( "data/result01.ntf", image01, img01.get_header()); 
+    
+    GeoImage img02("data/result01.ntf", true);
+    Mat image02 = img02.get_image();
+
+    note = "Writer Operation Failed";
+    if( image01.cols != image02.cols || image01.rows != image02.rows )
+        return false;
+    
+    note = "written image does not equal input image";
+    for( int i=0; i<image01.rows; i++ )
+        for( int j=0; j<image01.cols; j++)
+            if( fabs( image01.at<uchar>(i,j) - image02.at<uchar>(i,j)) > 0.00001 )
+                return false;
+
+    note = "Successful Operation";
     return true;
 }
