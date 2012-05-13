@@ -19,7 +19,7 @@ GeoImage::GeoImage() : initialize(false), openCVCompatible(false) {
 /** Parameterized Constructor
  *
  * @param[in] fname image filename
- * @param[in] init initialization flag. If you want to load the image information, 
+ * @param[in] Init initialization flag. If you want to load the image information, 
  * then you can set this equal to true. 
  */
 GeoImage::GeoImage(const std::string& fname, const bool& Init) :
@@ -205,6 +205,11 @@ void GeoImage::load_image() {
 
 }
 
+/**
+  * Get the Mat image size
+  *
+  * @return size of GDAL Image
+*/
 cv::Size GeoImage::getMatSize()const {
 
     if (isOpenCVValid()) {
@@ -219,6 +224,11 @@ bool GeoImage::gdal_load()const {
     return !gdal_data.gdalLoadFailed;
 }
 
+/**
+  * Get the OpenCV Image from GDAL
+  *
+  * @return OpenCV Image.
+*/
 Mat GeoImage::get_image() {
 
     //make sure the image has been initialized
@@ -297,6 +307,11 @@ Mat GeoImage::get_image() {
     return img;
 }
 
+/**
+  * Check if an image is in a valid OpenCV Format.
+  *
+  * @return true if image is available for OpenCV
+*/
 bool GeoImage::isOpenCVValid()const {
     return openCVCompatible;
 }
@@ -344,10 +359,20 @@ Mat GeoImage::merge_bands(vector<Mat>const& imgStack, vector<int> colors, vector
 
 }
 
+/**
+  * Return the min pixel value of the image
+  *
+  * @return min pixel value (double)
+*/
 double GeoImage::getMin()const {
     return gdal_data.adfMinMax[0];
 }
 
+/**  
+  * Return the max pixel value of the image
+  *
+  * @return max pixel value (double)
+*/
 double GeoImage::getMax()const {
     return gdal_data.adfMinMax[1];
 }
@@ -360,7 +385,9 @@ void GeoImage::write_image(const std::string& imgFilename) {
 
 }
 
-/** Get the type of image
+/** 
+ * Get the type of image
+ *
  * @return name of driver (ex GDAL)
  */
 std::string GeoImage::getImageTypeName()const {
@@ -370,6 +397,11 @@ std::string GeoImage::getImageTypeName()const {
     return "NONE";
 }
 
+/**
+  *  Return a copy of the header data. 
+  *
+  * @return Header info
+*/
 GeoHeader_Info*& GeoImage::get_header()const {
     return header_data->clone();
 }

@@ -73,6 +73,7 @@ class GeoImage{
     /** Return true if the image is valid with OpenCV */
     bool isOpenCVValid()const;
 
+    /** Return true if the gdal was loaded */
     bool gdal_load()const;
 
     /** Get the maximum pixel value (Grayscale 64FC1 image only) */
@@ -84,6 +85,7 @@ class GeoImage{
     /** Write the GeoImage to file */
     void write_image( const std::string& imgFilename = "__NONE__" );
     
+    /** Return a copy of the header data */
     GeoHeader_Info*& get_header()const;
 
     private:
