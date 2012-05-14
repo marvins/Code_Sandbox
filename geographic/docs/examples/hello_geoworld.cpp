@@ -19,5 +19,12 @@ int main( int argc, char* argv[] ){
     imshow("OUTPUT", img);
     waitKey(0);
 
+    //write the image to file
+    string output_filename = "result.ntf";
+    GeoHeader_Info* header_info = geoimg.get_header();
+    
+    GDAL_Data::write( output_filename, img, header_info );
+
+
     return 0;
 }

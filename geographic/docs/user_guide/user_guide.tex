@@ -119,4 +119,27 @@ img.set_init(true); //image is now loaded
 
 You may also change the image filename PRIOR to loading the image. 
 
+\subsection*{Writing Images}
+In order to write images, you must possess certain information.  First you must 
+give the api the desired filename, the OpenCV Images, and finally the header information
+required to write the image.
+
+\begin{figure}[!h]
+\begin{verbatim}
+
+GeoImage imgin( "U_1001A.NTF", true);
+Mat cvimg = imgin.get_image();
+
+/* Some Operations are applied here */
+
+string output_filename = "result.ntf";
+GeoHeader_Info* header_data = imgin.get_header();
+
+GDAL_Data::write( output_filename, cvimg, header_data);
+
+\end{verbatim}
+\caption{General Process of Writing NITF Images}
+\label{fig::gdal_data01}
+\end{figure}
+
 \end{document}
