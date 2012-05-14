@@ -5,6 +5,8 @@
 
 #include "GeoHeader.h"
 
+namespace GEO{
+
 class NITFHeader_Info : public GeoHeader_Info{
 
    public:
@@ -24,5 +26,6 @@ class NITFHeader_Info : public GeoHeader_Info{
        
 
 };
+}
 
 #endif

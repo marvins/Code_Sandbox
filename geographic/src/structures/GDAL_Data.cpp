@@ -4,6 +4,8 @@
 
 using namespace std;
 
+namespace GEO{
+
 /** Create the GDAL Dataset
  *
  * @brief This initializes all GDAL Dataset objects to NULL
@@ -101,3 +103,4 @@ void GDAL_Data::write( std::string const& image_filename, cv::Mat const& image, 
     
 
 }
+} //end of GEO namespace 

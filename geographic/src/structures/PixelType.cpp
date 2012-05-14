@@ -11,6 +11,8 @@
 using namespace cv;
 using namespace std;
 
+namespace GEO{
+
 const int PixelType::UNKNOWN  = 0;
 const int PixelType::UInt8C1  = 1;
 const int PixelType::UInt16C1 = 2;
@@ -126,3 +128,5 @@ int PixelType::get( )const{
 
     return pixeltype;
 }
+
+} //end of GEO namespace 

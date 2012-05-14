@@ -13,6 +13,8 @@
 
 #include <string>
 
+namespace GEO{
+
 enum IMAGETYPE{
    NITF = 123 
 };
@@ -43,5 +45,7 @@ class GDAL_Data{
         double adfMinMax[2];
 
 };
+
+} //end of GEO namespace 
 
 #endif

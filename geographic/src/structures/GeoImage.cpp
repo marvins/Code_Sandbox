@@ -6,6 +6,8 @@
 using namespace cv;
 using namespace std;
 
+namespace GEO{
+
 /**
  * Default Constructor
  */
@@ -405,3 +407,5 @@ std::string GeoImage::getImageTypeName()const {
 GeoHeader_Info*& GeoImage::get_header()const {
     return header_data->clone();
 }
+
+} //end of GEO namespace 

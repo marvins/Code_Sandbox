@@ -17,6 +17,7 @@
 #include "gdal_priv.h"
 #include "cpl_conv.h"
 
+namespace GEO{
 
 class PixelType {
 public:
@@ -43,7 +44,7 @@ private:
      int pixeltype;
 
 };
-
+}
 
 #endif	/* PIXELTYPE_H */
 

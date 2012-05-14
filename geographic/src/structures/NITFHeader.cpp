@@ -3,6 +3,8 @@
 #include <iostream>
 using namespace std;
 
+namespace GEO{
+
 NITFHeader_Info::NITFHeader_Info(){ 
     image_filename = "_NO_IMAGE_SELECTED_";    
 }
@@ -31,4 +33,6 @@ GeoHeader_Info*& NITFHeader_Info::clone() const{
 
 std::string NITFHeader_Info::get_driver_format() const{
     return "NITF";
+}
+
 }

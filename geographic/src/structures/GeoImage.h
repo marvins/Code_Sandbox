@@ -15,6 +15,8 @@
 #include "GDAL_Data.h"
 #include "PixelType.h"
 
+namespace GEO{
+
 /**
  * Geographic Image Type
  *
@@ -121,5 +123,6 @@ class GeoImage{
 
 
 };
+} //end of GEO namespace 
 
 #endif

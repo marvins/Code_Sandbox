@@ -107,19 +107,19 @@ void TEST_structures_module(){
 */
 int TEST_PixelType_types( string& note ){
     
-    if( PixelType::UNKNOWN != 0 ){
+    if( GEO::PixelType::UNKNOWN != 0 ){
         note = "UNKNOWN Type Failed";
         return 0;
     }
-    if( PixelType::UInt8C1 != 1 ){
+    if( GEO::PixelType::UInt8C1 != 1 ){
         note = "UInt8C1 Failed";
         return 0;
     }
-    if( PixelType::UInt16C1 != 2 ){
+    if( GEO::PixelType::UInt16C1 != 2 ){
         note = "UInt16C1 Failed";
         return 0;
     }
-    if( PixelType::UInt32C1 != 3 ){
+    if( GEO::PixelType::UInt32C1 != 3 ){
         note = "UInt32C1 Failed";
         return 0;
     }
@@ -134,25 +134,25 @@ int TEST_PixelType_types( string& note ){
 int TEST_PixelType_accessors( string& note ){
 
     //create a couple of pixeltypes 
-    PixelType tp01;
-    PixelType tp02( PixelType::UNKNOWN  );
-    PixelType tp03( PixelType::UInt8C1  );
-    PixelType tp04( PixelType::UInt16C1 );
-    PixelType tp05( PixelType::UInt32C1 );
+    GEO::PixelType tp01;
+    GEO::PixelType tp02( GEO::PixelType::UNKNOWN  );
+    GEO::PixelType tp03( GEO::PixelType::UInt8C1  );
+    GEO::PixelType tp04( GEO::PixelType::UInt16C1 );
+    GEO::PixelType tp05( GEO::PixelType::UInt32C1 );
 
     //test get and set
     note = "Get Operation Failed";
-    if( tp01.get() != PixelType::UNKNOWN ) return false;
-    if( tp02.get() != PixelType::UNKNOWN ) return false;
-    if( tp03.get() != PixelType::UInt8C1 ) return false;
-    if( tp04.get() != PixelType::UInt16C1) return false;
-    if( tp05.get() != PixelType::UInt32C1) return false;
+    if( tp01.get() != GEO::PixelType::UNKNOWN ) return false;
+    if( tp02.get() != GEO::PixelType::UNKNOWN ) return false;
+    if( tp03.get() != GEO::PixelType::UInt8C1 ) return false;
+    if( tp04.get() != GEO::PixelType::UInt16C1) return false;
+    if( tp05.get() != GEO::PixelType::UInt32C1) return false;
 
     note = "Set Operation Failed";
-    tp01.set( PixelType::UInt32C1 ); if( tp01.get() != PixelType::UInt32C1 ) return false;
-    tp02.set( PixelType::UInt16C1 ); if( tp02.get() != PixelType::UInt16C1 ) return false;
-    tp03.set( PixelType::UInt8C1  ); if( tp03.get() != PixelType::UInt8C1  ) return false;
-    tp04.set( PixelType::UNKNOWN  ); if( tp04.get() != PixelType::UNKNOWN  ) return false;
+    tp01.set( GEO::PixelType::UInt32C1 ); if( tp01.get() != GEO::PixelType::UInt32C1 ) return false;
+    tp02.set( GEO::PixelType::UInt16C1 ); if( tp02.get() != GEO::PixelType::UInt16C1 ) return false;
+    tp03.set( GEO::PixelType::UInt8C1  ); if( tp03.get() != GEO::PixelType::UInt8C1  ) return false;
+    tp04.set( GEO::PixelType::UNKNOWN  ); if( tp04.get() != GEO::PixelType::UNKNOWN  ) return false;
 
     note = "Get Name Operation Failed at: ";
     if( tp01.get_name() != "UInt32C1" ){ note += "UInt32C1"; return false; }
@@ -168,11 +168,11 @@ int TEST_PixelType_accessors( string& note ){
 int TEST_PixelType_convert( string& note ){
 
     //create a couple of pixeltypes 
-    PixelType tp01;
-    PixelType tp02( PixelType::UNKNOWN  );
-    PixelType tp03( PixelType::UInt8C1  );
-    PixelType tp04( PixelType::UInt16C1 );
-    PixelType tp05( PixelType::UInt32C1 );
+    GEO::PixelType tp01;
+    GEO::PixelType tp02( GEO::PixelType::UNKNOWN  );
+    GEO::PixelType tp03( GEO::PixelType::UInt8C1  );
+    GEO::PixelType tp04( GEO::PixelType::UInt16C1 );
+    GEO::PixelType tp05( GEO::PixelType::UInt32C1 );
     
 
     note = "gdal type conversion failed";
@@ -218,11 +218,11 @@ int TEST_GeoHeader_core(     string& note ){
 int TEST_GeoImage_core(      string& note ){
 
     //create some images
-    GeoImage img01;
-    GeoImage img02("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf", false);
-    GeoImage img03("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf", true );
-    GeoImage img04("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf");
-    GeoImage img05;
+    GEO::GeoImage img01;
+    GEO::GeoImage img02("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf", false);
+    GEO::GeoImage img03("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf", true );
+    GEO::GeoImage img04("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf");
+    GEO::GeoImage img05;
     img05.set_filename("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf");
 
     //start testing
@@ -258,11 +258,11 @@ int TEST_GeoImage_core(      string& note ){
 int TEST_GeoImage_get_image( string& note ){
 
     //create some images
-    GeoImage img01;
-    GeoImage img02("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf", false);
-    GeoImage img03("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf", true );
-    GeoImage img04("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf");
-    GeoImage img05;
+    GEO::GeoImage img01;
+    GEO::GeoImage img02("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf", false);
+    GEO::GeoImage img03("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf", true );
+    GEO::GeoImage img04("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf");
+    GEO::GeoImage img05;
     img05.set_filename("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf");
     
     note = "Get Image Operation Failed At: ";
@@ -290,12 +290,12 @@ int TEST_GeoImage_get_image( string& note ){
 int TEST_GDAL_Data_write(    string& note ){
     
     //write image
-    GeoImage img01("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf", true);
+    GEO::GeoImage img01("data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf", true);
     Mat image01 = img01.get_image();
 
-    GDAL_Data::write( "data/result01.ntf", image01, img01.get_header()); 
+    GEO::GDAL_Data::write( "data/result01.ntf", image01, img01.get_header()); 
     
-    GeoImage img02("data/result01.ntf", true);
+    GEO::GeoImage img02("data/result01.ntf", true);
     Mat image02 = img02.get_image();
 
     note = "Writer Operation Failed";

@@ -5,6 +5,8 @@
 
 #include "PixelType.h"
 
+namespace GEO{
+
 class GeoHeader_Info{
 
    public:
@@ -36,6 +38,6 @@ class GeoHeader_Info{
       PixelType pixeltype;
 
 };
-
+} //end of GEO namespace 
 
 #endif
