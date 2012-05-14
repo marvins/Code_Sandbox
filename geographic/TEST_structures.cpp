@@ -35,6 +35,9 @@ int TEST_GeoHeader_pixel(    string& note );
 int TEST_GeoHeader_driver(   string& note );
 int TEST_GeoHeader_core(     string& note );
 
+int TEST_NITFHeader_inherited( string& note );
+int TEST_NITFHeader_core( string& note );
+
 int TEST_GeoImage_core(      string& note );
 int TEST_GeoImage_get_image( string& note );
 
@@ -84,6 +87,15 @@ void TEST_structures_module(){
     result = TEST_GeoHeader_driver(   note );
     print_test_results(  "GeoHeader  driver", result, note );
     
+    /**  Test the GeoHeader Module  */
+    print_module_header("NITFHeader");
+    
+    result = TEST_NITFHeader_inherited( note );
+    print_test_results(  "NITFHeader inherited functions", result, note );
+
+    result = TEST_NITFHeader_core( note );
+    print_test_results(  "NITFHeader  core functions", result, note );
+
     /**  Test the GeoImage Module  */
     print_module_header( "GeoImage");
     
@@ -188,10 +200,21 @@ int TEST_PixelType_convert( string& note ){
 }
 
 int TEST_GeoHeader_filename( string& note ){
-
     
-    note = "Not Implemented";
-    return false;
+    GEO::GeoImage img01;
+    GEO::GeoImage img02("data/U_1001A.NTF", true );
+    
+    GEO::GeoHeader_Info* header_data01 = img01.get_header();
+    GEO::GeoHeader_Info* header_data02 = img02.get_header();
+    
+    note = "Operation Failed";
+    if( header_data01->isValid() == true ) return false;
+    if( header_data02->isValid() == false) return false; 
+
+    if( header_data02->get_image_filename() != "data/U_1001A.NTF") return false;
+
+    note = "Successful Operation";
+    return true;
 }
 
 int TEST_GeoHeader_pixel(    string& note ){
@@ -213,6 +236,74 @@ int TEST_GeoHeader_core(     string& note ){
 
     note = "Not Implemented";
     return false;
+}
+
+
+int TEST_NITFHeader_inherited( string& note ){
+    
+    //create nitf image
+    string image_filename = "data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf";
+
+    GEO::GeoImage img01;
+    GEO::GeoImage img02( image_filename, false);
+    GEO::GeoImage img03( image_filename, true );
+    GEO::GeoImage img04( image_filename);
+    GEO::GeoImage img05;
+    img05.set_filename( image_filename );
+    img05.set_init(true);
+
+    note = "NITFHeader_Info conversion failed";
+    GEO::NITFHeader_Info * header01 = dynamic_cast<GEO::NITFHeader_Info*>(img01.get_header());
+    if( header01->isValid() == true  ) return false;
+
+    GEO::NITFHeader_Info * header02 = dynamic_cast<GEO::NITFHeader_Info*>(img02.get_header());
+    if( header02->isValid() == true ) return false;
+    
+    GEO::NITFHeader_Info * header03 = dynamic_cast<GEO::NITFHeader_Info*>(img03.get_header());
+    if( header03->isValid() == false ) return false;
+    if( header03->get_image_filename() != image_filename ) return false;
+
+    GEO::NITFHeader_Info * header04 = dynamic_cast<GEO::NITFHeader_Info*>(img04.get_header());
+    if( header04->isValid() == true ) return false;
+
+    GEO::NITFHeader_Info * header05 = dynamic_cast<GEO::NITFHeader_Info*>(img05.get_header());
+    if( header05->isValid() == false ) return false;
+    if( header05->get_image_filename() != image_filename ) return false;
+
+    note = "Successful Operation";
+    return true;
+}
+
+int TEST_NITFHeader_core( string& note ){
+
+    //create nitf image
+    string image_filename = "data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf";
+
+    GEO::GeoImage img01;
+    GEO::GeoImage img02( image_filename, false);
+    GEO::GeoImage img03( image_filename, true );
+    GEO::GeoImage img04( image_filename);
+    GEO::GeoImage img05;
+    
+    GEO::NITFHeader_Info * header01 = dynamic_cast<GEO::NITFHeader_Info*>(img01.get_header());
+    if( header01->get_driver_format() != "NITF" ) return false;
+    
+    GEO::NITFHeader_Info * header02 = dynamic_cast<GEO::NITFHeader_Info*>(img02.get_header());
+    if( header02->get_driver_format() != "NITF" ) return false;
+    
+    GEO::NITFHeader_Info * header03 = dynamic_cast<GEO::NITFHeader_Info*>(img03.get_header());
+    if( header03->get_driver_format() != "NITF" ) return false;
+    
+    GEO::NITFHeader_Info * header04 = dynamic_cast<GEO::NITFHeader_Info*>(img04.get_header());
+    if( header04->get_driver_format() != "NITF" ) return false;
+    
+    GEO::NITFHeader_Info * header05 = dynamic_cast<GEO::NITFHeader_Info*>(img05.get_header());
+    if( header05->get_driver_format() != "NITF" ) return false;
+    
+    
+    
+    note = "Successful Operation";
+    return true;
 }
 
 int TEST_GeoImage_core(      string& note ){

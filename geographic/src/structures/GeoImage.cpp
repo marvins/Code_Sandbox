@@ -152,6 +152,7 @@ void GeoImage::load_image() {
 
     //initialize GDAL
     GDALAllRegister();
+    header_data->setValid( true );
 
     //open dataset
     try {
@@ -405,6 +406,7 @@ std::string GeoImage::getImageTypeName()const {
   * @return Header info
 */
 GeoHeader_Info*& GeoImage::get_header()const {
+
     return header_data->clone();
 }
 

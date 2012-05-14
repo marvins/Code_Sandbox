@@ -10,6 +10,7 @@ namespace fs = boost::filesystem;
 namespace GEO{
 
 GeoHeader_Info::GeoHeader_Info(){ 
+    valid = false;
     pixeltype.set( PixelType::UNKNOWN );
 }
 
@@ -44,5 +45,13 @@ PixelType GeoHeader_Info::get_pixel_type()const{
     
     return pixeltype;
 }
-
+      
+bool GeoHeader_Info::isValid()const{
+    return valid;
 }
+
+void GeoHeader_Info::setValid( const bool& flag ){
+    valid = flag;
+}
+
+}//end of GEO namespace

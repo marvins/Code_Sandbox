@@ -30,12 +30,17 @@ class GeoHeader_Info{
       
       virtual std::string get_driver_format()const = 0;
       
+      bool isValid()const;
+
+      void setValid( const bool& flag );
 
    protected:
 
       std::string image_filename;
 
       PixelType pixeltype;
+        
+      bool valid;
 
 };
 } //end of GEO namespace 

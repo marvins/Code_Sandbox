@@ -36,6 +36,7 @@ class Logger{
 void print_module_header( const string& header_name );
 void print_module_footer( const string& header_name );
 
-void print_test_results( const string& func_name, const int& result, const string& note="");
+void print_test_results(    const string& func_name, const int& result, const string& note="");
+void print_subtest_results( const string& func_name, const int& result, const string& note="" );
 
 #endif

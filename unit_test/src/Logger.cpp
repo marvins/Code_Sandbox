@@ -52,3 +52,11 @@ void print_test_results( const string& func_name, const int& result, const strin
     else    
         cout << Color(RED)   << "[FAILED] " << Color(BLUE) << func_name << " : " << Color(RED)   << note << color_end << endl;
 }
+
+void print_subtest_results( const string& func_name, const int& result, const string& note ){
+    
+    if(result == 1)
+        cout << Color(BLUE) << func_name << " : " << Color(GREEN) << note << color_end << endl;
+    else    
+        cout << Color(BLUE) << func_name << " : " << Color(RED)   << note << color_end << endl;
+}
