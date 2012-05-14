@@ -65,7 +65,7 @@ include statement. This proceedure is shown in Figure \ref{fig:basic01}.
 
 int main( int argc, char* argv[] ){
    
-   GeoImage img;
+   GEO::GeoImage img;
    return 0;
 }
 
@@ -93,7 +93,7 @@ g++ hello_world.cpp -I/opt/local/include -L/opt/local/lib -lgeoimage
 
 \begin{figure}[!h]
 \begin{lstlisting}
-GeoImage( const string& image_filename = "_NO_IMAGE_SELECTED_", 
+GEO::GeoImage( const string& image_filename = "_NO_IMAGE_SELECTED_", 
           const bool& initialize = false );
 \end{lstlisting}
 \caption{Constructor for the GeoImage Object}
@@ -105,7 +105,7 @@ the name of the file which you are loading and a flag to tell the image if it is
 data.  Note that certain images may be large, thus it is advantageous to load them only when they 
 are required.  True will load it immediately, and false will wait until the initialization flag
 is set at a later time. To set the flag and load the image, you may call the \texttt{set\_init()}
-flag. 
+flag. Also, every structure in the GeoImage library resides in the GEO namespace.
 
 \begin{figure}[!h]
 \begin{lstlisting}
