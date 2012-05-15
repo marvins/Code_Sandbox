@@ -1,13 +1,17 @@
+# TODO  Need to standardize GDAL include path
+
 ######################################################
 #	 Makefile for GeoImage   -   MacOSX Validated    #
 ######################################################
 #  RELEVANT LIBRARY FLAGS
 
 # Final Install Destination
-PREFIX = build/test
+PREFIX = /opt/local
 
 #Build directory   (DO NOT TOUCH -fPIC)
 BUILD = build
+
+GDAL_DIR = /usr
 
 # Build flags 
 CFLAGS = -Wall 
@@ -17,8 +21,8 @@ OFLAGS = $(CFLAGS) -O3
 #
 # GDAL LIBRARY
 #
-GDAL_LIBS 		= -L/opt/local/lib -lgdal
-GDAL_INCLUDE 	= -I/opt/local/include
+GDAL_LIBS 	= -L$(GDAL_DIR)/lib -lgdal1.7.0
+GDAL_INCLUDE 	= -I$(GDAL_DIR)/include/gdal
 GDAL         	= $(GDAL_LIBS) $(GDAL_INCLUDE)
 
 
@@ -54,14 +58,16 @@ TEST = $(TEST_INCLUDE) $(TEST_SOURCES)
 #
 # Geographic NITF Libraries
 #
-HEADERS = src/structures/*.h \
-	  	   src/utilities/*.h
+HEADERS = src/structures/*.h src/utilities/*.h
 
-OBJECTS       = build/NITFHeader.o     		build/GeoHeader.o 		build/PixelType.o		 build/OpenCVUtils.o	    build/GDAL_Data.o		 build/GeoImage.o  		build/GDAL2OpenCV.o	
-OBJECTS_DEBUG = build/NITFHeader_DEBUG.o	build/GeoHeader_DEBUG.o build/PixelType_DEBUG.o  build/OpenCVUtils_DEBUG.o  build/GDAL_Data_DEBUG.o  build/GeoImage_DEBUG.o build/GDAL2OpenCV_DEBUG.o
+OBJECTS       = build/NITFHeader.o     	  build/GeoHeader.o 	  build/PixelType.o	   build/OpenCVUtils.o	     build/GDAL_Data.o	     build/GeoImage.o  	    build/GDAL2OpenCV.o	
+OBJECTS_DEBUG = build/NITFHeader_DEBUG.o  build/GeoHeader_DEBUG.o build/PixelType_DEBUG.o  build/OpenCVUtils_DEBUG.o build/GDAL_Data_DEBUG.o build/GeoImage_DEBUG.o build/GDAL2OpenCV_DEBUG.o
 
 GEO_INCLUDE = -Isrc/structures -Isrc/utilities
 
+UTEST_SOURCES = tests/unit_test.cpp \
+	        tests/structures/TEST_structures.cpp \
+		tests/utilities/TEST_utilities.cpp
 
 all: $(BUILD)/libgeoimage.so $(BUILD)/libgeoimage_DEBUG.so
 	mkdir -p $(BUILD)
@@ -115,24 +121,24 @@ build/GDAL_Data_DEBUG.o:  src/structures/GDAL_Data.cpp $(HEADERS)
 
 # NITF Header
 build/NITFHeader.o: src/structures/NITFHeader.cpp $(HEADERS)
-	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
 
 build/NITFHeader_DEBUG.o: src/structures/NITFHeader.cpp $(HEADERS)
-	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
 
 # GeoHeader
 build/GeoHeader.o: src/structures/GeoHeader.cpp $(HEADERS)
-	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(BOOST_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(BOOST_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
 
 build/GeoHeader_DEBUG.o: src/structures/GeoHeader.cpp $(HEADERS)
-	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(BOOST_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(BOOST_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
 
 # PixelType
-build/PixelType.o: 		 src/structures/PixelType.cpp $(HEADERS)
-	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
+build/PixelType.o: 	 src/structures/PixelType.cpp $(HEADERS)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
 
 build/PixelType_DEBUG.o: src/structures/PixelType.cpp $(HEADERS)
-	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(DFLAGS) $(GEO_INCLUDE) 
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(DFLAGS) $(GEO_INCLUDE) 
 
 
 
@@ -151,7 +157,7 @@ clean:
 	rm unit_test
 
 check:
-	g++ -o build/unit_test unit_test.cpp TEST_structures.cpp TEST_utilities.cpp $(OPENCV) $(TEST_SOURCES) -I$(PREFIX)/include -L$(PREFIX)/lib -lgeoimage $(OFLAGS)
+	g++ -o build/unit_test $(UTEST_SOURCES) $(GDAL) $(OPENCV) $(TEST) -I$(PREFIX)/include -L$(PREFIX)/lib -lgeoimage $(OFLAGS)
 	./build/unit_test
 
 install:

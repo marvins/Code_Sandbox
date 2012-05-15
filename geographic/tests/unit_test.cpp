@@ -5,12 +5,12 @@
 #include <iostream>
 #include <string>
 
-#include "../unit_test/src/Assert.h"
-#include "../unit_test/src/Logger.h"
-#include "../useful_stuff/string_functions/string_utilities.h"
+#include <Assert.h>
+#include <Logger.h>
+#include <string_utilities.h>
 
-#include "TEST_structures.h"
-#include "TEST_utilities.h"
+#include "structures/TEST_structures.h"
+#include "utilities/TEST_utilities.h"
 
 using namespace std;
 

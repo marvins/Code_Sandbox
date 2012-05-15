@@ -11,8 +11,8 @@
 #include <fstream>
 #include <iostream>
 
-#include "gdal_priv.h"
-#include "cpl_conv.h"
+#include <gdal_priv.h>
+#include <cpl_conv.h>
 
 //GeoImage includes
 #include <GeoImage.h> 
@@ -22,9 +22,9 @@ using namespace std;
 
 bool showImg = false;   /*< Flag for viewing the images */
 
-#include "../unit_test/src/Assert.h"
-#include "../unit_test/src/Logger.h"
-#include "../useful_stuff/string_functions/string_utilities.h"
+#include <Assert.h>
+#include <Logger.h>
+#include <string_utilities.h>
 
 int TEST_PixelType_types( string& note );
 int TEST_PixelType_accessors( string& note );

@@ -7,8 +7,8 @@
 #include <fstream>
 #include <iostream>
 
-#include "gdal_priv.h"
-#include "cpl_conv.h"
+#include <gdal_priv.h>
+#include <cpl_conv.h>
 
 //GeoImage includes
 #include <GeoImage.h> //<geoimage/OpenCVUtils.h>
@@ -16,9 +16,9 @@
 using namespace cv;
 using namespace std;
 
-#include "../unit_test/src/Assert.h"
-#include "../unit_test/src/Logger.h"
-#include "../useful_stuff/string_functions/string_utilities.h"
+#include <Assert.h>
+#include <Logger.h>
+#include <string_utilities.h>
 
 int TEST_cvDepthChannel2Type( string& note );
 int TEST_opencvType2string(   string& note );

@@ -14,8 +14,8 @@
 
 #include <string>
 
-#include "gdal_priv.h"
-#include "cpl_conv.h"
+#include <gdal_priv.h>
+#include <cpl_conv.h>
 
 namespace GEO{
 
