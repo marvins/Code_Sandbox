@@ -127,15 +127,15 @@ required to write the image.
 \begin{figure}[!h]
 \begin{verbatim}
 
-GeoImage imgin( "U_1001A.NTF", true);
+GEO::GeoImage imgin( "U_1001A.NTF", true);
 Mat cvimg = imgin.get_image();
 
 /* Some Operations are applied here */
 
 string output_filename = "result.ntf";
-GeoHeader_Info* header_data = imgin.get_header();
+GEO::GeoHeader_Info* header_data = imgin.get_header();
 
-GDAL_Data::write( output_filename, cvimg, header_data);
+GEO::GDAL_Data::write( output_filename, cvimg, header_data);
 
 \end{verbatim}
 \caption{General Process of Writing NITF Images}
