@@ -7,42 +7,120 @@
 
 namespace GEO{
 
+/**
+ * @class Base Header Class. 
+ */
 class GeoHeader_Info{
 
-   public:
-      GeoHeader_Info();
+    public:
 
-      virtual ~GeoHeader_Info();
+        /** 
+         * Default constructor for GeoHeader
+         */
+        GeoHeader_Info();
 
-      std::string get_image_filename()const;
+        /**
+         * Destructor for GeoHeader
+         */
+        virtual ~GeoHeader_Info();
 
-      void set_image_filename( std::string const& filename );
+        /**
+         * Retrieve the image filename.
+         *
+         * @brief Retrieve the image filename.
+         *
+         * @return filename used to load image
+         */
+        std::string get_image_filename()const;
 
-      virtual void copy_header_info(GeoHeader_Info* other ) = 0;
+        /**
+         * Set the image filename.
+         *
+         * @brief Set the image filename. 
+         *
+         * @param[in] desired image filename.
+         */
+        void set_image_filename( std::string const& filename );
 
-      bool image_filename_exists()const;
-      
-      void set_pixel_type( PixelType const& pix);
-      
-      PixelType get_pixel_type()const;
-      
-      virtual GeoHeader_Info*& clone()const = 0;
-      
-      virtual std::string get_driver_format()const = 0;
-      
-      bool isValid()const;
+        /**
+         * Copy the header information. Performs a deep copy.
+         *
+         * @brief Copy the header data. 
+         */
+        virtual void copy_header_info(GeoHeader_Info* other ) = 0;
 
-      void setValid( const bool& flag );
+        /**
+         * Check if an image file exists.
+         *
+         * @return true if the file exists.
+         */
+        bool image_filename_exists()const;
 
-   protected:
+        /** 
+         * Set the pixel type of the image.  The PixelType 
+         * object must be one of the specified types in 
+         * PixelType.h.
+         *
+         * @brief Set the pixel type of the image.
+         *
+         * @param[in] pix Desired PixelType
+         */
+        void set_pixel_type( PixelType const& pix);
 
-      std::string image_filename;
+        /**
+         * Retrieve the PixelType of the image.
+         *
+         * @brief Retrieve the PixelType of the image.
+         *
+         * @return Specified PixelType
+         */
+        PixelType get_pixel_type()const;
 
-      PixelType pixeltype;
-        
-      bool valid;
+        /** 
+         * Clone the header using a deep copy. 
+         *
+         * @brief Clone the header using a deep copy.
+         *
+         * @return Clone of GeoHeader object
+         */
+        virtual GeoHeader_Info*& clone()const = 0;
+
+        /** 
+         * Retrieve the driver format.
+         *
+         * @brief Retrieve the driver format.
+         *
+         * @return Driver Format as String
+         */
+        virtual std::string get_driver_format()const = 0;
+
+        /** 
+         * Check if the data is valid on the header.
+         *
+         * @brief Check if the data is valid on the header.
+         *
+         * @return The State of the Header Object
+         */
+        bool isValid()const;
+
+        /**  
+         * Set the validity flag of the header.  This is not recommended for 
+         * the user to set unless they are creating their own header from scratch. 
+         *
+         * @brief Set the validity flag of the header object.
+         *
+         * @param[in] flag flag value to set
+         */
+        void setValid( const bool& flag );
+
+    protected:
+
+        PixelType pixeltype;        /*<  Pixeltype of GDAL Data */
+        std::string image_filename; /*<  Image filename */
+        bool valid; 		        /*<  Validity flag signifying if data is loaded */
 
 };
+
 } //end of GEO namespace 
 
 #endif
