@@ -124,6 +124,8 @@ int TEST_GeoHeader_driver(   string& note ){
 int TEST_DEMHeader_core(     string& note ){
     
     //create DTED Image
+    string filename01 = "/opt/dted/w119/n036.dt2";
+
 
     note = "Not Implemented";
     return false;
