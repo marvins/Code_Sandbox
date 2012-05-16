@@ -37,7 +37,7 @@ GeoHeader_Info*& NITFHeader_Info::clone() const{
    
 
 std::string NITFHeader_Info::get_driver_format() const{
-    return "IMAGE.NITF";
+    return "IMG.NITF";
 }
 
 }
