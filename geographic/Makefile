@@ -21,8 +21,8 @@ OFLAGS = $(CFLAGS) -O3
 #
 # GDAL LIBRARY
 #
-GDAL_LIBS 	= -L$(GDAL_DIR)/lib -lgdal1.7.0
-GDAL_INCLUDE 	= -I$(GDAL_DIR)/include/gdal
+GDAL_LIBS 	= -L$(GDAL_DIR)/lib -lgdal
+GDAL_INCLUDE 	= -I$(GDAL_DIR)/include
 GDAL         	= $(GDAL_LIBS) $(GDAL_INCLUDE)
 
 
@@ -60,8 +60,8 @@ TEST = $(TEST_INCLUDE) $(TEST_SOURCES)
 #
 HEADERS = src/structures/*.h src/utilities/*.h
 
-OBJECTS       = build/NITFHeader.o     	  build/GeoHeader.o 	  build/PixelType.o	   build/OpenCVUtils.o	     build/GDAL_Data.o	     build/GeoImage.o  	    build/GDAL2OpenCV.o	
-OBJECTS_DEBUG = build/NITFHeader_DEBUG.o  build/GeoHeader_DEBUG.o build/PixelType_DEBUG.o  build/OpenCVUtils_DEBUG.o build/GDAL_Data_DEBUG.o build/GeoImage_DEBUG.o build/GDAL2OpenCV_DEBUG.o
+OBJECTS       = build/SRTMHeader.o       build/DTEDHeader.o	 	  build/NITFHeader.o       build/DEMHeader.o       build/ImageHeader.o	     build/GeoHeader.o 	     build/PixelType.o	      build/OpenCVUtils.o	    build/GDAL_Data.o	    build/GeoImage.o       build/GDAL2OpenCV.o	
+OBJECTS_DEBUG = build/SRTMHeader_DEBUG.o build/DTEDHeader_DEBUG.o build/NITFHeader_DEBUG.o build/DEMHeader_DEBUG.o build/ImageHeader_DEBUG.o build/GeoHeader_DEBUG.o build/PixelType_DEBUG.o  build/OpenCVUtils_DEBUG.o build/GDAL_Data_DEBUG.o build/GeoImage_DEBUG.o build/GDAL2OpenCV_DEBUG.o
 
 GEO_INCLUDE = -Isrc/structures -Isrc/utilities
 
@@ -132,6 +132,34 @@ build/GeoHeader.o: src/structures/GeoHeader.cpp $(HEADERS)
 	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(BOOST_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
 
 build/GeoHeader_DEBUG.o: src/structures/GeoHeader.cpp $(HEADERS)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(BOOST_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
+
+# ImageHeader
+build/ImageHeader.o: src/structures/ImageHeader.cpp $(HEADERS)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(BOOST_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
+
+build/ImageHeader_DEBUG.o: src/structures/ImageHeader.cpp $(HEADERS)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(BOOST_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
+
+# DEMHeader
+build/DEMHeader.o: src/structures/DEMHeader.cpp $(HEADERS)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(BOOST_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
+
+build/DEMHeader_DEBUG.o: src/structures/DEMHeader.cpp $(HEADERS)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(BOOST_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
+
+# DTEDHeader
+build/DTEDHeader.o: src/structures/DTEDHeader.cpp $(HEADERS)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(BOOST_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
+
+build/DTEDHeader_DEBUG.o: src/structures/DTEDHeader.cpp $(HEADERS)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(BOOST_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
+
+# SRTMHeader
+build/SRTMHeader.o: src/structures/SRTMHeader.cpp $(HEADERS)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(BOOST_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
+
+build/SRTMHeader_DEBUG.o: src/structures/SRTMHeader.cpp $(HEADERS)
 	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(BOOST_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
 
 # PixelType

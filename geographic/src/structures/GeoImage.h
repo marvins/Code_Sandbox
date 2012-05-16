@@ -11,6 +11,8 @@
 #include "GDAL_Data.h"
 
 #include "NITFHeader.h"
+#include "DTEDHeader.h"
+#include "SRTMHeader.h"
 #include "GeoHeader.h"
 #include "GDAL_Data.h"
 #include "PixelType.h"
@@ -30,7 +32,9 @@ class GeoImage{
      * only planned type considered now is the NITF.
      */
     enum GEO_IMAGE_TYPE{
-        NITF
+        NITF,
+        DTED,
+        SRTM
     };
 
     public:
@@ -121,8 +125,14 @@ class GeoImage{
     bool initialize;             /*< Flag for whether or not to load data */
     bool openCVCompatible;       /*< Flag for whether or not the image is valid with OpenCV */
 
+    /**
+     *  Retrieve the type of file a particular string is
+     */
+    int getFileType( const std::string& fname );
+
 
 };
+
 } //end of GEO namespace 
 
 #endif

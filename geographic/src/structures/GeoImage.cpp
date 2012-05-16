@@ -3,8 +3,12 @@
 
 #include "GeoImage.h"
 
+#include <boost/filesystem.hpp>
+
 using namespace cv;
 using namespace std;
+
+namespace bf = boost::filesystem;
 
 namespace GEO{
 
@@ -27,12 +31,24 @@ GeoImage::GeoImage() : initialize(false), openCVCompatible(false) {
 GeoImage::GeoImage(const std::string& fname, const bool& Init) :
 initialize(Init), openCVCompatible(false) {
     
-    //create new header object
-    header_data = new NITFHeader_Info();
+    //figure out which type of image you are
+    int imtype = getFileType( fname ); 
+    
+    if(      imtype == DTED )
+        header_data = new DTEDHeader_Info();
 
+    else if( imtype == NITF )
+        header_data = new NITFHeader_Info();
+    
+    else if( imtype == SRTM )
+        header_data = new SRTMHeader_Info();
+    
+    else
+        throw string("TYPE FAILED");
+    
     //set filename
     header_data->set_image_filename(fname);
-
+    
     init();
 }
 
@@ -200,7 +216,10 @@ void GeoImage::load_image() {
 
     else if ( depth == CV_16U )
         pixelToSet.set( PixelType::UInt16C1 );
-    
+
+    else if ( depth == CV_16S )
+        pixelToSet.set( PixelType::Int16C1 );
+
     else 
         throw string(string("Unknown pixel depth: ") + opencvDepth2string(depth));
     
@@ -408,6 +427,21 @@ std::string GeoImage::getImageTypeName()const {
 GeoHeader_Info*& GeoImage::get_header()const {
 
     return header_data->clone();
+}
+
+/**
+ * Get the type of file
+*/
+int GeoImage::getFileType( const string& fname ){
+
+    //extract the extension
+    std::string ext = bf::path(fname).extension().string();
+
+    if( ( ext == ".dt2" ) == true ) return DTED;
+    if( ( ext == ".ntf" ) == true ) return NITF;
+    if( ( ext == ".NTF" ) == true ) return NITF;
+    
+    throw string("ERROR: Unknown type");
 }
 
 } //end of GEO namespace 

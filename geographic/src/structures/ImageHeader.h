@@ -1,19 +1,19 @@
-#ifndef __SRC_GEOGRAPHIC_NITF_HEADER_H__
-#define __SRC_GEOGRAPHIC_NITF_HEADER_H__
+#ifndef __SRC_GEOGRAPHIC_IMAGE_HEADER_H__
+#define __SRC_GEOGRAPHIC_IMAGE_HEADER_H__
 
 #include <string>
 
-#include "ImageHeader.h"
+#include "GeoHeader.h"
 
 namespace GEO{
 
-class NITFHeader_Info : public ImageHeader_Info{
+class ImageHeader_Info : public GeoHeader_Info{
 
    public:
 
-      NITFHeader_Info();
+      ImageHeader_Info();
 
-      virtual ~NITFHeader_Info();
+      virtual ~ImageHeader_Info();
 
       void copy_header_info( GeoHeader_Info*  other );
 

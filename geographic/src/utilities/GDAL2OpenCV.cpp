@@ -23,8 +23,19 @@ int gdal2opencvPixelType( const int& gdalType ){
     if( gdalType == GDT_UInt32 ){
         return CV_32S;
     }
-
-    cout << "ERROR" << endl;
+    if( gdalType == GDT_Float64 ){
+        return CV_64F;
+    }
+    if( gdalType == GDT_Float32 ){
+        return CV_32F;
+    }
+    if( gdalType == GDT_Int16 ){
+        return CV_16S;
+    }
+    if( gdalType == GDT_UInt16 ){
+        return CV_16U;
+    }
+    
     return 0;
 
 }

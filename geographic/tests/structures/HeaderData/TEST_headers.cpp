@@ -135,8 +135,26 @@ int TEST_ImageHeader_core(   string& note ){
 
 int TEST_DTEDHeader_core(    string& note ){
 
-    note = "Not Implemented";
-    return false;
+    string filename01 = "/opt/dted/w119/n036.dt2";
+
+    //create dted image
+    GEO::GeoImage img01( filename01, true );
+    
+    //pull the dted image header
+    GEO::GeoHeader_Info* header01 = img01.get_header();
+
+    //check header characteristics
+    note = "isValid() failed";
+    if( header01->isValid() != true ) return false;
+
+    note = "get_image_filename failed";
+    if( header01->get_image_filename() != filename01 ) return false;
+
+    note = "get_driver_format failed";
+    if( header01->get_driver_format() != "DEM.DTED" ) return false;
+
+    note = "Successful Operation";
+    return true;
 }
 
 int TEST_NITFHeader_core(    string& note ){
@@ -146,6 +164,7 @@ int TEST_NITFHeader_core(    string& note ){
 }
 
 int TEST_SRTMHeader_core(    string& note ){
+
 
     note = "Not Implemented";
     return false;
