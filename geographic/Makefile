@@ -66,8 +66,9 @@ OBJECTS_DEBUG = build/NITFHeader_DEBUG.o  build/GeoHeader_DEBUG.o build/PixelTyp
 GEO_INCLUDE = -Isrc/structures -Isrc/utilities
 
 UTEST_SOURCES = tests/unit_test.cpp \
-	        tests/structures/TEST_structures.cpp \
-		tests/utilities/TEST_utilities.cpp
+	        	tests/structures/TEST_structures.cpp \
+				tests/utilities/TEST_utilities.cpp \
+				tests/structures/HeaderData/TEST_headers.cpp
 
 all: $(BUILD)/libgeoimage.so $(BUILD)/libgeoimage_DEBUG.so
 	mkdir -p $(BUILD)

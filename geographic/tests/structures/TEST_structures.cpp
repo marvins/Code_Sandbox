@@ -1,5 +1,7 @@
 #include "TEST_structures.h"
 
+#include "HeaderData/TEST_headers.h"
+
 #include <fstream>
 #include <iostream>
 #include <string> 
@@ -17,8 +19,6 @@
 //GeoImage includes
 #include <GeoImage.h> 
 
-using namespace cv;
-using namespace std;
 
 bool showImg = false;   /*< Flag for viewing the images */
 
@@ -26,6 +26,10 @@ bool showImg = false;   /*< Flag for viewing the images */
 #include <Logger.h>
 #include <string_utilities.h>
 
+using namespace cv;
+using namespace std;
+
+/*
 int TEST_PixelType_types( string& note );
 int TEST_PixelType_accessors( string& note );
 int TEST_PixelType_convert( string& note );
@@ -42,6 +46,7 @@ int TEST_GeoImage_core(      string& note );
 int TEST_GeoImage_get_image( string& note );
 
 int TEST_GDAL_Data_write(    string& note );
+*/
 
 /** 
  * Beginning of the structures module test
@@ -50,73 +55,73 @@ int TEST_GDAL_Data_write(    string& note );
  * - PixelType
 */
 void TEST_structures_module(){
-    
-    //if( fabs(GEOVERSION - 1.0) > 0.00001 ){
-    //    cout << "BAD VERSION" << endl;
-    //}
+   
 
-    /** Framework variables */
-    int result;
-    string note;
+    if( fabs(GEOVERSION - 1.0) > 0.00001 ){
+        cout << "BAD VERSION" << endl;
+    }
+
+    /** test header data */
+    TEST_headers();
 
     /**  Test the PixelType Module  */
-    print_module_header("PixelType");
+    //print_module_header("PixelType");
 
 
-    result = TEST_PixelType_types(     note );
-    print_test_results( "PixelType  types", result, note );
+    //result = TEST_PixelType_types(     note );
+    //print_test_results( "PixelType  types", result, note );
 
-    result = TEST_PixelType_accessors( note );
-    print_test_results( "PixelType  accessors", result, note );
+    //result = TEST_PixelType_accessors( note );
+    //print_test_results( "PixelType  accessors", result, note );
     
-    result = TEST_PixelType_convert(   note );
-    print_test_results( "PixelType  conversions", result, note );
-    
-    /**  Test the GeoHeader Module  */
-    print_module_header("GeoHeader");
-
-    result = TEST_GeoHeader_core(     note );
-    print_test_results(  "GeoHeader  core", result, note );
-    
-    result = TEST_GeoHeader_filename( note );
-    print_test_results(  "GeoHeader  filename", result, note );
-
-    result = TEST_GeoHeader_pixel(    note );
-    print_test_results(  "GeoHeader  pixel", result, note );
-    
-    result = TEST_GeoHeader_driver(   note );
-    print_test_results(  "GeoHeader  driver", result, note );
+    //result = TEST_PixelType_convert(   note );
+    //print_test_results( "PixelType  conversions", result, note );
     
     /**  Test the GeoHeader Module  */
-    print_module_header("NITFHeader");
-    
-    result = TEST_NITFHeader_inherited( note );
-    print_test_results(  "NITFHeader inherited functions", result, note );
+    //print_module_header("GeoHeader");
 
-    result = TEST_NITFHeader_core( note );
-    print_test_results(  "NITFHeader  core functions", result, note );
+    //result = TEST_GeoHeader_core(     note );
+    //print_test_results(  "GeoHeader  core", result, note );
+    
+    //result = TEST_GeoHeader_filename( note );
+    //print_test_results(  "GeoHeader  filename", result, note );
+
+    //result = TEST_GeoHeader_pixel(    note );
+    //print_test_results(  "GeoHeader  pixel", result, note );
+    
+    //result = TEST_GeoHeader_driver(   note );
+    //print_test_results(  "GeoHeader  driver", result, note );
+    
+    /**  Test the GeoHeader Module  */
+    //print_module_header("NITFHeader");
+    
+    //result = TEST_NITFHeader_inherited( note );
+    //print_test_results(  "NITFHeader inherited functions", result, note );
+
+    //result = TEST_NITFHeader_core( note );
+    //print_test_results(  "NITFHeader  core functions", result, note );
 
     /**  Test the GeoImage Module  */
-    print_module_header( "GeoImage");
+    //print_module_header( "GeoImage");
     
-    result = TEST_GeoImage_core(      note );
-    print_test_results(  "GeoImage   core",  result, note  );
+    //result = TEST_GeoImage_core(      note );
+    //print_test_results(  "GeoImage   core",  result, note  );
 
-    result = TEST_GeoImage_get_image( note );
-    print_test_results(  "GeoImage   get_image", result, note );
+    //result = TEST_GeoImage_get_image( note );
+    //print_test_results(  "GeoImage   get_image", result, note );
 
     /**  Test the GDAL_Data Module  */
-    print_module_header( "GDAL_Data");
+    //print_module_header( "GDAL_Data");
 
-    result = TEST_GDAL_Data_write( note );
-    print_test_results( "GDAL_Data   write", result, note );
+    //result = TEST_GDAL_Data_write( note );
+    //print_test_results( "GDAL_Data   write", result, note );
 
 }
 
 
 /**
  * Test the PixelType internal types
-*/
+*
 int TEST_PixelType_types( string& note ){
     
     if( GEO::PixelType::UNKNOWN != 0 ){
@@ -142,7 +147,7 @@ int TEST_PixelType_types( string& note ){
 
 /** 
  * Test the getters and setters of the PixelType module
-*/
+*
 int TEST_PixelType_accessors( string& note ){
 
     //create a couple of pixeltypes 
@@ -401,4 +406,4 @@ int TEST_GDAL_Data_write(    string& note ){
 
     note = "Successful Operation";
     return true;
-}
+}*/
