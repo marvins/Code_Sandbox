@@ -13,3 +13,5 @@ Connected_Components
 Corner_Harris_OpenCV
 Flood_Fill
 ImageStitching
+FFT_gaussian
+Gaussian_Blur
