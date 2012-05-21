@@ -17,6 +17,7 @@ const int PixelType::UNKNOWN  = 0;
 const int PixelType::UInt8C1  = 1;
 const int PixelType::UInt16C1 = 2;
 const int PixelType::UInt32C1 = 3;
+const int PixelType::Int16C1  = 4;
 
 PixelType::PixelType(){
     pixeltype = UNKNOWN;

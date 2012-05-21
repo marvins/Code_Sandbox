@@ -122,6 +122,10 @@ int TEST_GeoHeader_driver(   string& note ){
 
 
 int TEST_DEMHeader_core(     string& note ){
+    
+    //create DTED Image
+    string filename01 = "/opt/dted/w119/n036.dt2";
+
 
     note = "Not Implemented";
     return false;
@@ -135,17 +139,60 @@ int TEST_ImageHeader_core(   string& note ){
 
 int TEST_DTEDHeader_core(    string& note ){
 
-    note = "Not Implemented";
-    return false;
+    string filename01 = "/opt/dted/w119/n036.dt2";
+
+    //create dted image
+    GEO::GeoImage img01( filename01, true );
+    
+    //pull the dted image header
+    GEO::GeoHeader_Info* header01 = img01.get_header();
+
+    //check header characteristics
+    note = "isValid() failed";
+    if( header01->isValid() != true ) return false;
+
+    note = "get_image_filename failed";
+    if( header01->get_image_filename() != filename01 ) return false;
+
+    note = "get_driver_format failed";
+    if( header01->get_driver_format() != "DEM.DTED" ) return false;
+
+    note = "Successful Operation";
+    return true;
 }
 
 int TEST_NITFHeader_core(    string& note ){
 
-    note = "Not Implemented";
-    return false;
+    string filename01 = "data/U_1001A.NTF";
+    string filename02 = "data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf";
+
+    //create dted image
+    GEO::GeoImage img01( filename01, true );
+    GEO::GeoImage img02( filename02, true );
+    
+    //pull the dted image header
+    GEO::GeoHeader_Info* header01 = img01.get_header();
+    GEO::GeoHeader_Info* header02 = img02.get_header();
+
+    //check header characteristics
+    note = "isValid() failed";
+    if( header01->isValid() != true ) return false;
+    if( header02->isValid() != true ) return false;
+
+    note = "get_image_filename failed";
+    if( header01->get_image_filename() != filename01 ) return false;
+    if( header02->get_image_filename() != filename02 ) return false;
+
+    note = "get_driver_format failed";
+    if( header01->get_driver_format() != "IMG.NITF" ) return false;
+    if( header02->get_driver_format() != "IMG.NITF" ) return false;
+
+    note = "Successful Operation";
+    return true;
 }
 
 int TEST_SRTMHeader_core(    string& note ){
+
 
     note = "Not Implemented";
     return false;
@@ -159,7 +206,6 @@ int TEST_PixelType_convert( string& note );
 int TEST_GeoHeader_filename( string& note );
 int TEST_GeoHeader_pixel(    string& note );
 int TEST_GeoHeader_driver(   string& note );
-int TEST_GeoHeader_core(     string& note );
 
 int TEST_NITFHeader_inherited( string& note );
 int TEST_NITFHeader_core( string& note );

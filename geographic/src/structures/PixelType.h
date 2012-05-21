@@ -26,6 +26,7 @@ public:
     static const int UInt8C1;
     static const int UInt16C1;
     static const int UInt32C1;
+    static const int Int16C1;
 
     PixelType();
     PixelType( const int& tp );

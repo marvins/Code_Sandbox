@@ -1,17 +1,17 @@
-#include "NITFHeader.h"
+#include "SRTMHeader.h"
 
 #include <iostream>
 using namespace std;
 
 namespace GEO{
 
-NITFHeader_Info::NITFHeader_Info(){ 
+SRTMHeader_Info::SRTMHeader_Info(){ 
     image_filename = "_NO_IMAGE_SELECTED_";    
 }
 
-NITFHeader_Info::~NITFHeader_Info(){ }
+SRTMHeader_Info::~SRTMHeader_Info(){ }
 
-void NITFHeader_Info::copy_header_info( GeoHeader_Info*  other ){
+void SRTMHeader_Info::copy_header_info( GeoHeader_Info*  other ){
 
     image_filename = other->get_image_filename();
 
@@ -19,9 +19,9 @@ void NITFHeader_Info::copy_header_info( GeoHeader_Info*  other ){
 
 }
 
-GeoHeader_Info*& NITFHeader_Info::clone() const{
+GeoHeader_Info*& SRTMHeader_Info::clone() const{
 
-    GeoHeader_Info* output = new NITFHeader_Info();
+    GeoHeader_Info* output = new SRTMHeader_Info();
 
     //set valid flag
     output->setValid( isValid() );
@@ -36,8 +36,8 @@ GeoHeader_Info*& NITFHeader_Info::clone() const{
 }
    
 
-std::string NITFHeader_Info::get_driver_format() const{
-    return "NITF";
+std::string SRTMHeader_Info::get_driver_format() const{
+    return "DEM.SRTM";
 }
 
 }
