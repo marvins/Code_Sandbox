@@ -67,8 +67,8 @@ au BufNewFile,BufRead *.frag,*.vert,*.fp,*.vp,*.glsl setf glsl
 " Enhanced keyboard mappings
 "
 
-map <C-n> :tabn
-map <C-p> :tabp
+map <C-n> :tabn<CR>
+map <C-p> :tabp<CR>
 
 " in normal mode F2 will save the file
 nmap <F2> :w<CR>

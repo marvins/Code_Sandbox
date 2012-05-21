@@ -17,11 +17,14 @@ using namespace std;
 typedef pair<Point2f, Point2f> pntMatch;
 
 class ImageModel{
-    
+
     public:
         Mat cimg;
         Mat gimg;
 
+        double focal;            // focal length of the camera in pixels
+        double cx, cy;           // optical centre of the camera in pixels
+        double yaw, pitch, roll; // offset in the panoramic image
 };
 
 vector<Mat> convertBGR2Gray( vector<Mat>const& images );
@@ -30,6 +33,9 @@ vector<string>  read_image_list( string const& filename );
 void show_image( Mat const& img );
 void FindMatches( Mat const& img1, Mat const& img2, vector<pntMatch>& matches );
 void convertMatch2Mat(const vector <pntMatch> &matches, Mat &src, Mat &dst);
+void FindBestRotation(const vector <pntMatch>& matches, const ImageModel& pano1, const ImageModel&pano2 , double& yaw, double& pitch, double& roll);
+void Pixel2Angles(double x, double y, double focal, double cx, double cy, double &yaw, double &pitch);
+bool Angles2Pixel(double yaw, double pitch, double roll, double focal, double cx, double cy, double &x, double &y);
 
 
 int main( int argc, char* argv[] ){
@@ -39,30 +45,41 @@ int main( int argc, char* argv[] ){
     //create list of images
     vector<Mat> images      = load_images( argv[1] );
     vector<Mat> gray_images = convertBGR2Gray( images );
-    
+
     //build image metrics
     vector< ImageModel >  imageModel( gray_images.size() );
     for( size_t i=0; i<gray_images.size(); i++ ){
-        imageModel[i].cimg = images[i].clone();
-        imageModel[i].gimg = gray_images[i].clone();
+        imageModel[i].cimg  = images[i].clone();
+        imageModel[i].gimg  = gray_images[i].clone();
+        imageModel[i].focal = 2917.0 * 0.25;
+        imageModel[i].cx    = imageModel[i].gimg.cols/2;
+        imageModel[i].cy    = imageModel[i].gimg.rows/2;
     }
 
     //find correspondencies between images
-    vector<pntMatch> matches;
+    vector<pntMatch> matches, refined_matches;
 
     for( size_t i=1; i< imageModel.size(); i++){
-        
+
         //find matching keypoints between images
         FindMatches( imageModel[i-1].gimg, imageModel[i].gimg, matches );
-        
+
         //convert match vector to Mats
         Mat pnts1, pnts2;
         convertMatch2Mat( matches, pnts1, pnts2 );
-        
+
         //compute homography matrix
         vector<uchar> mask;
         Mat homography = findHomography( pnts2, pnts1, mask, CV_RANSAC, 2.0 );
 
+        //filter out bad matches
+        for( size_t j=0; j<mask.size(); j++)
+            if( mask[j] )
+                refined_matches.push_back( matches[j] );
+
+        //calculate yaw, pitch, and roll for the image
+        double yaw, pitch, roll;
+        FindBestRotation( refined_matches, imageModel[i-1], imageModel[i], yaw, pitch, roll );
 
     }
 
@@ -71,8 +88,16 @@ int main( int argc, char* argv[] ){
 
 }
 
+/**
+  * Convert an array of images from color to grayscale
+  *
+  * @brief Convert an array of images from color to grayscale
+  *
+  * @param[in] images STL Vector of OpenCV Mat images in BGR Color
+  * @return    STL Vector of OpenCV Mat images in Grayscale
+*/
 vector<Mat> convertBGR2Gray( vector<Mat>const& images ){
-    
+
     Mat img;
     vector<Mat> img_out;
 
@@ -92,7 +117,7 @@ vector<Mat> load_images( string const& filename ){
     for( size_t i=0; i<filenames.size(); i++){
         images.push_back( imread(filenames[i]).clone() );
     }
-    
+
     return images;
 }
 
@@ -101,10 +126,10 @@ vector<string>  read_image_list( string const& filename ){
 
     vector<string> files;
     string str;
-    
+
     ifstream fin;
     fin.open( filename.c_str() );
-    
+
     fin >> str;
 
     while( !fin.eof() ){
@@ -131,16 +156,16 @@ void FindMatches( Mat const& img1, Mat const& img2, vector<pntMatch>& match_list
     vector<KeyPoint> keypoints1, keypoints2;
     detector.detect( img1, keypoints1 );
     detector.detect( img2, keypoints2 );
-    
+
     //compute descriptors
     SurfDescriptorExtractor extractor;
     Mat descriptors1, descriptors2;
     extractor.compute( img1, keypoints1, descriptors1 );
     extractor.compute( img2, keypoints2, descriptors2 );
-    
+
     //find matches
     vector<DMatch> matches;
-	FlannBasedMatcher matcher;
+    FlannBasedMatcher matcher;
     matcher.match(descriptors1, descriptors2, matches);
 
     match_list.clear();
@@ -173,3 +198,201 @@ void convertMatch2Mat(const vector <pntMatch> &matches, Mat &src, Mat &dst)
         dst.at<float>(i,1) = matches[i].second.y;
     }
 }
+
+void FindBestRotation(const vector <pntMatch>& matches, const ImageModel& pano1, const ImageModel&pano2 , double& yaw, double& pitch, double& roll){
+
+    // Find the best yaw,pitch,roll that transforms pts2 to pts1
+    // Uses the same technique used find the optimal transformation between 3D points, except in 2D.
+    // This algorithm is used in Iterative Closest Point matching as well.
+
+    // First, convert the pixel co-ordinates to panoramic space
+    vector <Point2d> pts1(matches.size()) ;// x,y is yaw/pitch position in panoramic space
+    vector <Point2d> pts2(matches.size());
+
+    for(unsigned int i=0; i < matches.size(); i++) {
+        double x1 = matches[i].first.x;
+        double y1 = matches[i].first.y;
+        double x2 = matches[i].second.x;
+        double y2 = matches[i].second.y;
+
+        double focal1 = pano1.focal;
+        double cx1 = pano1.cx;
+        double cy1 = pano1.cy;
+
+        double focal2 = pano2.focal;
+        double cx2 = pano2.cx;
+        double cy2 = pano2.cy;
+
+        Pixel2Angles(x1, y1, focal1, cx1, cy1, pts1[i].x, pts1[i].y);
+        Pixel2Angles(x2, y2, focal2, cx2, cy2, pts2[i].x, pts2[i].y);
+    }
+
+    // Find the centroid of both sets
+    Point2d centre1(0.0, 0.0);
+    Point2d centre2(0.0, 0.0);
+
+    for(unsigned int i=0; i < pts1.size(); i++) {
+        centre1 += pts1[i];
+        centre2 += pts2[i];
+    }
+
+    // OpenCV 2.x doesn't have operator/= implemented?
+    centre1 *= (1.0 / pts1.size());
+    centre2 *= (1.0 / pts1.size());
+
+    // Now find the optimial rotation using SVD
+    // Bring both sets to the centre
+    for(unsigned int i=0; i < pts1.size(); i++) {
+        pts1[i] -= centre1;
+        pts2[i] -= centre2;
+    }
+
+    // Accumulate H
+    Mat H = Mat::zeros(2,2, CV_64F);
+
+    for(unsigned int i=0; i < pts1.size(); i++) {
+        Mat A(2,1, CV_64F);
+        Mat B(1,2, CV_64F);
+
+        A.at<double>(0,0) = pts2[i].x;
+        A.at<double>(1,0) = pts2[i].y;
+
+        B.at<double>(0,0) = pts1[i].x;
+        B.at<double>(0,1) = pts1[i].y;
+
+        H += A*B;
+    }
+
+    SVD svd(H);
+
+    // R = V*U'
+    // This is a 2x2 rotation matrix, 2D rotation
+    Mat R = svd.vt.t() * svd.u.t();
+
+    // Build the 3x3 transformation matrix
+    Mat R33 = Mat::eye(3,3, CV_64F);
+    Mat T1 = Mat::eye(3,3, CV_64F); // bring points to centre of pts1
+    Mat T2 = Mat::eye(3,3, CV_64F); // bring points to centre of pts2
+
+    for(int y=0; y < 2; y++) {
+        for(int x=0; x < 2; x++) {
+            R33.at<double>(y,x) = R.at<double>(y,x);
+        }
+    }
+
+    T1.at<double>(0,2) = centre1.x;
+    T1.at<double>(1,2) = centre1.y;
+
+    T2.at<double>(0,2) = -centre2.x;
+    T2.at<double>(1,2) = -centre2.y;
+
+    Mat transform = T1*R33*T2;
+
+    yaw = transform.at<double>(0,2);
+    pitch = transform.at<double>(1,2);
+    roll = atan2(-R.at<double>(0,1), R.at<double>(0,0));
+}
+
+// Inline functions have to be declared in the header
+/******************************************************************************/
+/*
+double RAD_TO_DEG(double x)
+{
+    return x*180.0/M_PI;
+}
+*/
+/******************************************************************************/
+/*
+double SQ(double x)
+{
+    return x*x;
+}
+*/
+/******************************************************************************/
+// Force angle to lie between -180 and 180 degrees
+/*
+double BoundAngle(double x)
+{
+    if(x < -M_PI) {
+        x += 2*M_PI;
+    }
+
+    if(x > M_PI) {
+        x -= 2*M_PI;
+    }
+
+    return x;
+}
+*/
+/******************************************************************************/
+/*
+double Pixel2Yaw(int x, int width)
+{
+    // 0 degrees at x = 0
+    return 2.0*M_PI*x/width;
+}
+*/
+/******************************************************************************/
+/*
+double Pixel2Pitch(int y, int height)
+{
+    // -90 degrees at y = 0
+    return -M_PI_2 + M_PI*y/height;
+}
+*/
+/******************************************************************************/
+/*
+double Yaw2Pixel(double yaw, int width)
+{
+    return yaw*width/(2.0*M_PI);
+}
+*/
+/******************************************************************************/
+/*
+double Pitch2Pixel(double pitch, int height)
+{
+    return (pitch + M_PI_2) / (M_PI/height);
+}
+*/
+/******************************************************************************/
+void Pixel2Angles(double x, double y, double focal, double cx, double cy, double &yaw, double &pitch)
+{
+
+    double px = x - cx;
+    double py = y - cy;
+
+    yaw = atan2(px,focal);
+
+    double r = sqrt(focal*focal + px*px);
+
+    pitch = atan(py/r);
+}
+/******************************************************************************/
+bool Angles2Pixel(double yaw, double pitch, double roll, double focal, double cx, double cy, double &x, double &y)
+{
+    // Given 3 angles we want to find where this ray intersects on the rectilinear image
+
+    // Out of bounds for rectilinear images  180 degrees (-90, 90) FOV maximum
+    if(fabs(yaw) > M_PI_2) {
+        return false;
+    }
+
+    if(fabs(pitch) > M_PI_2) {
+        return false;
+    }
+
+    // Apply the roll to the yaw/pitch
+    roll = -roll;
+    double yaw2 = yaw*cos(roll) - pitch*sin(roll);
+    double pitch2 = yaw*sin(roll) + pitch*cos(roll);
+
+    double px = focal*tan(yaw2);
+    double r = sqrt(focal*focal + px*px);
+    double py = r*tan(pitch2);
+
+    x = cx + px;
+    y = cy + py;
+
+    return true;
+}
+
