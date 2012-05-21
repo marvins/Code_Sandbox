@@ -6,12 +6,12 @@
 #  RELEVANT LIBRARY FLAGS
 
 # Final Install Destination
-PREFIX = /opt/local
+PREFIX = build/test
 
 #Build directory   (DO NOT TOUCH -fPIC)
 BUILD = build
 
-GDAL_DIR = /usr
+GDAL_DIR = /opt/local
 
 # Build flags 
 CFLAGS = -Wall 
@@ -21,8 +21,8 @@ OFLAGS = $(CFLAGS) -O3
 #
 # GDAL LIBRARY
 #
-GDAL_LIBS 	= -L$(GDAL_DIR)/lib -lgdal1.7.0
-GDAL_INCLUDE 	= -I$(GDAL_DIR)/include/gdal
+GDAL_LIBS 	= -L$(GDAL_DIR)/lib -lgdal
+GDAL_INCLUDE 	= -I$(GDAL_DIR)/include
 GDAL         	= $(GDAL_LIBS) $(GDAL_INCLUDE)
 
 

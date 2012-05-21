@@ -66,6 +66,10 @@ au BufNewFile,BufRead *.frag,*.vert,*.fp,*.vp,*.glsl setf glsl
 " disable visual bell and audio bell
 " Enhanced keyboard mappings
 "
+
+map <C-n> :tabn
+map <C-p> :tabp
+
 " in normal mode F2 will save the file
 nmap <F2> :w<CR>
 " in insert mode F2 will exit insert, save, enters insert again
