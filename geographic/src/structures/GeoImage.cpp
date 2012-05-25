@@ -287,7 +287,7 @@ Mat GeoImage::get_image() {
             float* pafScanline;
             pafScanline = (float*) CPLMalloc(sizeof (float) *cols);
             band->RasterIO(GF_Read, 0, r, cols, 1, pafScanline, cols, 1, GDT_Float32, 0, 0);
-
+            
             for ( int c = 0; c < cols; c++) {
 
                 if (r == 0 && c == 0) {
@@ -300,19 +300,33 @@ Mat GeoImage::get_image() {
                 if (pafScanline[c] < minP) {
                     minP = pafScanline[c];
                 }
-
+                
+                //8 Bit Unsigned Character
                 if (depths[i] == CV_8U)
                     timg.at<uchar > (r, c) = pafScanline[c];
+                
+                //16 bit Unsigned Character
                 else if (depths[i] == CV_16U)
                     timg.at<ushort > (r, c) = pafScanline[c];
+                
+                //16 bit Signed Character
+                else if (depths[i] == CV_16S)
+                    timg.at<short>(r,c) = pafScanline[c];
+                
+                //32 bit signed integer
                 else if (depths[i] == CV_32S)
                     timg.at<int>(r, c) = pafScanline[c];
+                
                 else
                     throw std::string("Invalid pixel type");
+                
             }
+            
         }
+
         if (depths[i] == CV_16U && maxP < 4096)
             timg = timg.clone()*16;
+        
         else if (depths[i] == CV_16U && maxP < 16384)
             timg = timg.clone()*4;
 
@@ -320,8 +334,6 @@ Mat GeoImage::get_image() {
         gdal_data.adfMinMax[1] = maxP;
         imgStack[i] = timg.clone();
     }
-
-    
 
     //merge channels into single image
     Mat img = merge_bands(imgStack, colors, depths);

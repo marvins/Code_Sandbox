@@ -12,15 +12,15 @@ using namespace std;
 
 int cvDepthChannel2Type( const int Depth, const int Channels ){
 
-    cout << "i am: " << opencvDepth2string(Depth) << endl;
-    cout << " is " << Depth << "  -  " << Channels << endl;
-    
     if( Depth == CV_8U  && Channels == 3 )  return CV_8UC3;
     if( Depth == CV_8U  && Channels == 2 )  return CV_8UC2;
     if( Depth == CV_8U  && Channels == 1 )  return CV_8UC1;
     if( Depth == CV_16U && Channels == 3 ) return CV_16UC3;
     if( Depth == CV_16U && Channels == 2 ) return CV_16UC2;
     if( Depth == CV_16U && Channels == 1 ) return CV_16UC1;
+    if( Depth == CV_16S && Channels == 3 ) return CV_16SC3;
+    if( Depth == CV_16S && Channels == 2 ) return CV_16SC2;
+    if( Depth == CV_16S && Channels == 1 ) return CV_16SC1;
     if( Depth == CV_32S && Channels == 3 ) return CV_32SC3;
     if( Depth == CV_32S && Channels == 2 ) return CV_32SC2;
     if( Depth == CV_32S && Channels == 1 ) return CV_32SC1;
