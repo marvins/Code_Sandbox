@@ -6,7 +6,7 @@
 #  RELEVANT LIBRARY FLAGS
 
 # Final Install Destination
-PREFIX = build/test
+PREFIX = /opt/local
 
 #Build directory   (DO NOT TOUCH -fPIC)
 BUILD = build
@@ -68,7 +68,8 @@ GEO_INCLUDE = -Isrc/structures -Isrc/utilities
 UTEST_SOURCES = tests/unit_test.cpp \
 	        	tests/structures/TEST_structures.cpp \
 				tests/utilities/TEST_utilities.cpp \
-				tests/structures/HeaderData/TEST_headers.cpp
+				tests/structures/HeaderData/TEST_headers.cpp \
+				tests/structures/GeoImage/TEST_geoimage.cpp
 
 all: $(BUILD)/libgeoimage.so $(BUILD)/libgeoimage_DEBUG.so
 	mkdir -p $(BUILD)

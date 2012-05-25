@@ -17,9 +17,6 @@ int gdal2opencvPixelType( const int& gdalType ){
     if( gdalType == GDT_Byte ){
         return CV_8U;
     }
-    if( gdalType == GDT_UInt16 ){
-        return CV_16U;
-    }
     if( gdalType == GDT_UInt32 ){
         return CV_32S;
     }

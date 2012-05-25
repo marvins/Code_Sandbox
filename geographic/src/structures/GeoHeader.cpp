@@ -34,6 +34,11 @@ bool GeoHeader_Info::image_filename_exists()const{
    return false;
 }
 
+bool GeoHeader_Info::file_exists( string const& filename ){
+    return fs::exists( fs::path(filename) );
+}
+
+
 void GeoHeader_Info::set_pixel_type( PixelType const& pix){
    
     //copy pixel type

@@ -57,6 +57,14 @@ class GeoHeader_Info{
         bool image_filename_exists()const;
 
         /** 
+         * Static function which will verify if an input filename exists
+         * 
+         * @param[in] fname 
+         * @return    true if file exists, false otherwise
+        */
+        static bool file_exists( std::string const& filename );
+
+        /** 
          * Set the pixel type of the image.  The PixelType 
          * object must be one of the specified types in 
          * PixelType.h.

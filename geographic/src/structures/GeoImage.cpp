@@ -222,7 +222,7 @@ void GeoImage::load_image() {
 
     else 
         throw string(string("Unknown pixel depth: ") + opencvDepth2string(depth));
-    
+   
     header_data->set_pixel_type( pixelToSet );
 
 }
@@ -263,7 +263,7 @@ Mat GeoImage::get_image() {
     vector<int> depths(gdal_data.dataset->GetRasterCount());
 
 
-    for (size_t i = 0; i < gdal_data.dataset->GetRasterCount(); i++) {
+    for (int i = 0; i < gdal_data.dataset->GetRasterCount(); i++) {
 
         //create objects
         GDALRasterBand *band;
@@ -282,13 +282,13 @@ Mat GeoImage::get_image() {
 
         double minP = 0;
         double maxP = 0;
-        for (size_t r = 0; r < rows; r++) {
+        for ( int r = 0; r < rows; r++) {
 
             float* pafScanline;
             pafScanline = (float*) CPLMalloc(sizeof (float) *cols);
             band->RasterIO(GF_Read, 0, r, cols, 1, pafScanline, cols, 1, GDT_Float32, 0, 0);
 
-            for (size_t c = 0; c < cols; c++) {
+            for ( int c = 0; c < cols; c++) {
 
                 if (r == 0 && c == 0) {
                     minP = pafScanline[c];
