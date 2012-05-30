@@ -71,14 +71,6 @@ int TEST_dted_geoimage( string& note ){
     Mat img02 = img_dted02.get_image();
     Mat img03 = img_dted03.get_image();
     
-    for( int i=0; i<3; i++ )
-        for( int j=0; j<3; j++ ){
-            cout << "Pixel: ";
-            for( int c=0; c<3; c++ )
-                cout << img01.at<Vec3i>(i,j)[c] << " ";
-            cout << endl;
-        }
-
     note = "Successful Operation";
     return true;
 }
