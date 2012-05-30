@@ -15,24 +15,31 @@ int gdal2opencvPixelType( const int& gdalType ){
     
     //convert the pixel types
     if( gdalType == GDT_Byte ){
+        cout << "GDT_BYTE" << endl;
         return CV_8U;
     }
     if( gdalType == GDT_UInt32 ){
+        cout << "GDT_UInt32" << endl;
         return CV_32S;
     }
     if( gdalType == GDT_Float64 ){
+        cout << "GDT_Float64" << endl;
         return CV_64F;
     }
     if( gdalType == GDT_Float32 ){
+        cout << "GDT_Float32" << endl;
         return CV_32F;
     }
     if( gdalType == GDT_Int16 ){
+        cout << "GDT_Int16" << endl;
         return CV_16S;
     }
     if( gdalType == GDT_UInt16 ){
+        cout << "GDT_UInt16" << endl;
         return CV_16U;
     }
     
+    cout << "UNKNOWN" << endl;
     return 0;
 
 }
