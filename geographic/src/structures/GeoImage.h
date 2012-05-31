@@ -133,6 +133,8 @@ class GeoImage{
 
 };
 
+Point2d getElevationMeters( Point2d coordinate );
+
 } //end of GEO namespace 
 
 #endif
