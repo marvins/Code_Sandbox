@@ -44,7 +44,7 @@ public class SaveImagePlugin implements PlugInFilter{
     public void createAndShowGui( ImageProcessor ip ){
         
         JFrame frame = new JFrame("Save NITF Utility");
-        frame.setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+        frame.setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);//.DO_NOTHING_ON_CLOSE);
         
         NITF_Writer writer = new NITF_Writer( ip );
         writer.setOpaque(true);

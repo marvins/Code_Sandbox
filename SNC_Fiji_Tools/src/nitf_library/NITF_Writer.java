@@ -174,6 +174,7 @@ public class NITF_Writer extends JPanel implements ActionListener {
             JTextField source = (JTextField)e.getSource();
             headerFilenameField.setText(source.getText());
             header_info.image_filename = source.getText();
+            System.out.println("Image filename changed to : " + header_info.image_filename);
             
         }
         
