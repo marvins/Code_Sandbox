@@ -12,7 +12,7 @@ int main( int argc, char* argv[] ){
     if( argc < 2 )
         return 0;
 
-    GeoImage geoimg( argv[1], true );
+    GEO::GeoImage geoimg( argv[1], true );
 
     Mat img = geoimg.get_image();
     namedWindow("OUTPUT");
@@ -21,9 +21,9 @@ int main( int argc, char* argv[] ){
 
     //write the image to file
     string output_filename = "result.ntf";
-    GeoHeader_Info* header_info = geoimg.get_header();
+    GEO::GeoHeader_Info* header_info = geoimg.get_header();
     
-    GDAL_Data::write( output_filename, img, header_info );
+    GEO::GDAL_Data::write( output_filename, img, header_info );
 
 
     return 0;
