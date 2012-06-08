@@ -133,7 +133,7 @@ class GeoImage{
 
 };
 
-Point2d getElevationMeters( Point2d coordinate );
+cv::Point2f getElevationMeters( cv::Point2f coordinate );
 
 } //end of GEO namespace 
 

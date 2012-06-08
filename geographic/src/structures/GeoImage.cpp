@@ -207,7 +207,7 @@ void GeoImage::load_image() {
     //get the driver infomation
     gdal_data.driver = gdal_data.dataset->GetDriver();
     
-    int depth = gdal2opencvPixelType(gdal_data.dataset->GetRasterBand(1)->GetRasterDataType());
+    int depth = gdal2opencvPixelDepth(gdal_data.dataset->GetRasterBand(1)->GetRasterDataType());
     
     PixelType pixelToSet;
 
@@ -270,7 +270,7 @@ Mat GeoImage::get_image() {
         band = gdal_data.dataset->GetRasterBand(i + 1);
 
         //get datatype
-        depths[i] = gdal2opencvPixelType(band->GetRasterDataType());
+        depths[i] = gdal2opencvPixelDepth(band->GetRasterDataType());
 
         //get pixeltype
         colors[i] = band->GetColorInterpretation();
@@ -456,13 +456,13 @@ int GeoImage::getFileType( const string& fname ){
     throw string("ERROR: Unknown type");
 }
 
-Point2d getElevationMeters( Point2d coordinate ){
+Point2f getElevationMeters( Point2f coordinate ){
 
 
     //first we need to solve for which image this coordinate will belong to
     //  - round number to nearest integer
     int iLat = std::floor(coordinate.y + 0.5 );
-    int lLon = std::floor(coordinate.x + 0.5 );
+    int iLon = std::floor(coordinate.x + 0.5 );
 
     // - check if point is in southern or western hemisphere
     bool northern = true;
@@ -480,7 +480,7 @@ Point2d getElevationMeters( Point2d coordinate ){
 
 
 
-    Point2d output;
+    Point2f output;
     return output;
 
 }

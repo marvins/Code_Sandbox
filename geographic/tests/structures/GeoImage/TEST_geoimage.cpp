@@ -71,6 +71,15 @@ int TEST_dted_geoimage( string& note ){
     Mat img02 = img_dted02.get_image();
     Mat img03 = img_dted03.get_image();
     
+    //check 4 corners
+    int mx = img01.cols-1; 
+    int my = img01.rows-1;
+    note = "Corner values of DTED Data is incorrect";
+    if( img01.at<short>( 0, 0) != 1948 ) return false;
+    if( img01.at<short>( 0,mx) != 1395 ) return false;
+    if( img01.at<short>(my, 0) != 2186 ) return false;
+    if( img01.at<short>(my,mx) != 2348 ) return false;
+
     note = "Successful Operation";
     return true;
 }
