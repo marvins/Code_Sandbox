@@ -9,6 +9,7 @@ int main( int argc, char* argv[] ){
 
 
     cout << "usage: ./dted_example  <DTED Name>" << endl;
+    cout << " ex:   ./dted_example  ../../data/n37.dt2" << endl;
     if( argc < 2 )
         return 0;
 
