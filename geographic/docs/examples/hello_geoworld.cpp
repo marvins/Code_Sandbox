@@ -21,9 +21,9 @@ int main( int argc, char* argv[] ){
 
     //write the image to file
     string output_filename = "result.ntf";
-    GEO::GeoHeader_Info* header_info = geoimg.get_header();
+    //GEO::GeoHeader_Info* header_info = geoimg.get_header();
     
-    GEO::GDAL_Data::write( output_filename, img, header_info );
+    //GEO::GDAL_Data::write( output_filename, img, header_info );
 
 
     return 0;

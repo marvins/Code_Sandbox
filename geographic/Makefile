@@ -71,15 +71,23 @@ UTEST_SOURCES = tests/unit_test.cpp \
 				tests/structures/HeaderData/TEST_headers.cpp \
 				tests/structures/GeoImage/TEST_geoimage.cpp
 
-all: $(BUILD)/libgeoimage.so $(BUILD)/libgeoimage_DEBUG.so
+
+UNAME := $(shell uname)
+ifeq ($(UNAME),Darwin)
+	LIB_TYPE=dylib
+else
+	LIB_TYPE=so
+endif
+
+all: $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE)
 	mkdir -p $(BUILD)
 	mkdir -p $(BUILD)/bin
 	mkdir -p $(BUILD)/lib
 	mkdir -p $(BUILD)/include
 	mkdir -p $(BUILD)/include/geoimage
-	cp $(BUILD)/libgeoimage.so $(BUILD)/lib
-	cp $(BUILD)/libgeoimage_DEBUG.so $(BUILD)/lib
-	cp src/GeoImage.h	  $(BUILD)/include/GeoImage.h
+	cp $(BUILD)/libgeoimage.$(LIB_TYPE) 		$(BUILD)/lib
+	cp $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE) $(BUILD)/lib
+	cp src/GeoImage.h	  	 $(BUILD)/include/GeoImage.h
 	cp src/structures/*.h $(BUILD)/include/geoimage
 	cp src/utilities/*.h  $(BUILD)/include/geoimage
 
@@ -92,6 +100,15 @@ $(BUILD)/libgeoimage.so: $(OBJECTS)
 
 $(BUILD)/libgeoimage_DEBUG.so: $(OBJECTS_DEBUG)
 	g++ -o $@ $(OBJECTS_DEBUG) $(GDAL) $(OPENCV) $(BOOST) $(DFLAGS) -shared
+
+# Main Shared Libraries
+$(BUILD)/libgeoimage.dylib: $(OBJECTS)
+	g++ -dynamiclib -install_name $(PREFIX)/lib/libgeoimage.dylib -o $@ $(OBJECTS)  		$(GDAL) $(OPENCV) $(BOOST) $(OFLAGS)
+
+$(BUILD)/libgeoimage_DEBUG.dylib: $(OBJECTS_DEBUG)
+	g++ -dynamiclib -install_name $(PREFIX)/lib/libgeoimage.dylib -o $@ $(OBJECTS_DEBUG) $(GDAL) $(OPENCV) $(BOOST) $(DFLAGS)
+
+
 
 # GeoImage Core
 build/GeoImage.o:	src/structures/GeoImage.cpp $(HEADERS)
@@ -196,8 +213,8 @@ install:
 	cp -r $(BUILD)/include $(PREFIX)
 
 uninstall:
-	rm -r $(PREFIX)/lib/libgeoimage.so
-	rm -r $(PREFIX)/lib/libgeoimage_DEBUG.so
+	rm -r $(PREFIX)/lib/libgeoimage.$(LIB_TYPE)
+	rm -r $(PREFIX)/lib/libgeoimage_DEBUG.$(LIB_TYPE)
 	rm -r $(PREFIX)/include/GeoImage.h
 	rm -r $(PREFIX)/include/geoimage
 

@@ -1,3 +1,4 @@
+*.dSYM
 data\*
 build\*
 unit_test
