@@ -8,4 +8,4 @@ dted_example:   dted_example.cpp
 
 	
 clean:
-	rm hello_geoworld dted_example
+	rm -rf hello_geoworld dted_example *.dSYM
