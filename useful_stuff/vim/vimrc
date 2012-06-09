@@ -47,6 +47,9 @@ set comments=sl:/*,mb:\ *,elx:\ */
 " set mouse mode on
 set mouse=a
 
+"ensure the backspace works in any mode
+backspace=indent,eol,start
+
 "set tags+=~/.vim/systags
 "set tags+=~/.vim/tags
 

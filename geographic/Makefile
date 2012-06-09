@@ -60,12 +60,13 @@ TEST = $(TEST_INCLUDE) $(TEST_SOURCES)
 #
 HEADERS = src/structures/*.h src/utilities/*.h
 
-OBJECTS       = build/SRTMHeader.o       build/DTEDHeader.o	 	  build/NITFHeader.o       build/DEMHeader.o       build/ImageHeader.o	     build/GeoHeader.o 	     build/PixelType.o	      build/OpenCVUtils.o	    build/GDAL_Data.o	    build/GeoImage.o       build/GDAL2OpenCV.o	
-OBJECTS_DEBUG = build/SRTMHeader_DEBUG.o build/DTEDHeader_DEBUG.o build/NITFHeader_DEBUG.o build/DEMHeader_DEBUG.o build/ImageHeader_DEBUG.o build/GeoHeader_DEBUG.o build/PixelType_DEBUG.o  build/OpenCVUtils_DEBUG.o build/GDAL_Data_DEBUG.o build/GeoImage_DEBUG.o build/GDAL2OpenCV_DEBUG.o
+OBJECTS       = build/DEM.o 	   build/SRTMHeader.o       build/DTEDHeader.o	 	  build/NITFHeader.o       build/DEMHeader.o       build/ImageHeader.o	     build/GeoHeader.o 	     build/PixelType.o	      build/OpenCVUtils.o	    build/GDAL_Data.o	    build/GeoImage.o       build/GDAL2OpenCV.o	
+OBJECTS_DEBUG = build/DEM_DEBUG.o  build/SRTMHeader_DEBUG.o build/DTEDHeader_DEBUG.o build/NITFHeader_DEBUG.o build/DEMHeader_DEBUG.o build/ImageHeader_DEBUG.o build/GeoHeader_DEBUG.o build/PixelType_DEBUG.o  build/OpenCVUtils_DEBUG.o build/GDAL_Data_DEBUG.o build/GeoImage_DEBUG.o build/GDAL2OpenCV_DEBUG.o
 
 GEO_INCLUDE = -Isrc/structures -Isrc/utilities
 
 UTEST_SOURCES = tests/unit_test.cpp \
+				tests/dem/TEST_dem.cpp \
 	        	tests/structures/TEST_structures.cpp \
 				tests/utilities/TEST_utilities.cpp \
 				tests/structures/HeaderData/TEST_headers.cpp \
@@ -187,7 +188,12 @@ build/PixelType.o: 	 src/structures/PixelType.cpp $(HEADERS)
 build/PixelType_DEBUG.o: src/structures/PixelType.cpp $(HEADERS)
 	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(DFLAGS) $(GEO_INCLUDE) 
 
+# Dem model data
+build/DEM.o:       src/dem/DEM.cpp $(HEADERS)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
 
+build/DEM_DEBUG.o: src/dem/DEM.cpp $(HEADERS)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
 
 ###################################################################
 # 				MISC TOOLS
