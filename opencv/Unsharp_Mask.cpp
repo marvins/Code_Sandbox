@@ -1,104 +1,83 @@
-#include <cv.h>
-#include <cvaux.h>
-#include <highgui.h>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+
+#include <iostream>
+#include <vector>
 
 using namespace cv;
 
-void UnsharpFilter( Mat const& input_image, Mat& output_image, double sigma, double alpha ){
+/**
+ *  Compute the Unsharp Masked image. 
+ *
+ * @param[in] input_image  Image to be transformed
+ * @param[in/out] output_image Transformed Image.  Will retain same CV Type.
+ * @param[in] sigma Strength of Gaussian Blur.
+ * @param[in] gauss_window Width of Gaussian Window.
+ * @param[in] alpha 
+ */
+void UnsharpFilter( Mat const& input_image, Mat& output_image, Mat& high_image, Mat& low_image,  double sigma, Size const& gauss_window, double alpha ){
 
-   //set kernel size
-   int kernel_size = 5*sigma;
-   Size kernel( kernel_size, kernel_size);
-   
-   //split image into channels
-   vector<Mat> channels;
-   split( input_image, channels );
-   
-   //iterate over each channel
-   Mat gaussian, diff;
-   for( size_t i=0; i<channels.size(); i++ ){
+    //split image into channels
+    std::vector<Mat> channels, highpass, lowpass;
+    split( input_image.clone(), channels );
 
-      //compute gaussian kernel
-      GaussianBlur( channels[i], gaussian, kernel, sigma);
+    highpass.resize( channels.size());
+    lowpass.resize(  channels.size());
 
-      //subtract images
-      diff = channels[i] - gaussian;
+    //iterate over each channel
+    Mat gaussian, diff;
+    for( size_t i=0; i<channels.size(); i++ ){
 
-      //add images back in
-      channels[i] = channels[i] + alpha * diff;
-   }
+        //compute gaussian kernel
+        GaussianBlur( channels[i], gaussian, gauss_window, sigma);
 
-   //merge channels together
-   Mat merged_image;
-   merge( channels, merged_image );
+        //subtract images
+        diff = channels[i] - gaussian;
+        
+        //add images back in
+        lowpass[i]  = gaussian.clone();
+        highpass[i] = diff*10;
+        channels[i] = channels[i] + alpha * diff;
+    }
 
-   //return image to uchar
-   merged_image.convertTo( output_image, CV_8UC3);
+    //merge channels together
+    Mat merged_image, merged_highp, merged_lowp;
+    merge( channels, merged_image );
+    merge( highpass, merged_highp );
+    merge( lowpass,  merged_lowp  );
 
+    //return image to uchar
+    merged_image.convertTo( output_image, input_image.type());
+    merged_highp.convertTo( high_image  , input_image.type());
+    merged_lowp.convertTo ( low_image,    input_image.type());
 }
 
-
+/**
+ * Main Driver
+ */
 int main( int argc, char* argv[] ){
 
-   //some relevant variables
-   double sigma    = 1;
-   double alpha = 5;
+    //simple error checking
+    if( argc < 2 ){
+        std::cout << "usage:  ./Unsharp  <input image> <output image>" << std::endl;
+        return 0;
+    }
 
-   Mat image01 = imread( argv[1], 0);
-   Mat image02 = imread( argv[1], 1);
+    //some relevant variables
+    double sigma = 1;
+    int    width = 5*sigma;
+    double alpha = 4;
 
-   Mat imageout01, imageout02;
-   UnsharpFilter( image01, imageout01, 1, 5 );
-   UnsharpFilter( image02, imageout02, 1, 5 );
+    Mat image = imread( argv[1] );
 
-   namedWindow("WINDOW");
-   imshow("WINDOW", image01);
-   waitKey(0);
-   imshow("WINDOW", imageout01);
-   waitKey(0);
-   imshow("WINDOW", image02);
-   waitKey(0);
-   imshow("WINDOW", imageout02);
-   waitKey(0);
+    Mat imageout, highimage, lowimage;
+    UnsharpFilter( image, imageout, highimage, lowimage, sigma, Size(width,width), alpha );
 
-   //Mat gaussian, diff;
-   
-   //int kernel_size = 5*sigma;
-   //Size kernel( kernel_size, kernel_size);
+    //write result to file
+    imwrite("out.png", imageout);
+    imwrite("high.png", highimage);
+    imwrite("low.png", lowimage);
 
-   //read image in color
-   //Mat image = imread( argv[1]);
-
-   //convert to floating point
-   //Mat fimage;
-   //image.convertTo( fimage, CV_32FC3);
-
-   //split into 3 channels
-   //vector<Mat> fchannels;
-   //split( fimage, fchannels);
-
-   //iterate over each color channel
-   /*for( size_t i=0; i<fchannels.size(); i++){
-
-      //compute gaussian kernel
-      GaussianBlur( fchannels[i], gaussian, kernel, sigma);
-
-      //subtract images
-      diff = fchannels[i] - gaussian;
-
-      //add images back in
-      fchannels[i] = fchannels[i] + alpha * diff;
-   }
-
-   //merge channels together
-   merge( fchannels, fimage );
-
-   //return image to uchar
-   fimage.convertTo(image, CV_8UC3);
-
-   //write result to file
-   imwrite(argv[2], image);
-   */
-
-   return 0;
+    return 0;
 }

@@ -75,7 +75,7 @@ Corner_Harris_OpenCV: Corner_Harris_OpenCV.cpp
 	g++ Corner_Harris_OpenCV.cpp -o Corner_Harris_OpenCV $(OPENCV) $(FLAGS)
 
 ImageStitching: ImageStitching.cpp $(SOURCES) $(HEADERS)
-	g++ ImageStitching.cpp -o ImageStitching $(FLAGS) $(OPENCV)
+	g++ ImageStitching.cpp -o ImageStitching $(FLAGS) $(OPENCV) lmfit/lmmin.c
 
 clean: 
 	rm $(EXECS) *.o
