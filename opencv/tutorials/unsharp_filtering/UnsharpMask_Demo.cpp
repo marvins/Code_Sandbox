@@ -8,16 +8,20 @@
 
 using namespace cv;
 
-double alpha = 4;
-double sigma = 1.44;
+int alpha = 4;
+int sigma = 1.44;
 int    width = 5;
 Mat imageout;
 Mat image;
 
+
+void UnsharpFilter( Mat const& input_image, Mat& output_image, double sigma, Size const& gauss_window, double alpha );
+
+
 void on_trackbar( int, void* ){
 
     UnsharpFilter( image, imageout, sigma, Size(width,width), alpha);
-    imshow("Sharpening Results");
+    imshow("Sharpening Results", imageout);
 
 }
 
@@ -82,17 +86,15 @@ int main( int argc, char* argv[] ){
     UnsharpFilter( image, imageout, sigma, Size(width,width), alpha );
     
     //create trackbar
-    createTrackbar( "Alpha", "Sharpening Results", &alpha, 10, 0, on_trackbar);
-    createTrackbar( "Sigma", "Sharpening Results", &sigma,  5, 0, on_trackbar);
-    createTrackbar( "Width", "Sharpening Results", &width,  11,1, on_trackbar);
+    createTrackbar( "Alpha", "Sharpening Results", &alpha, 10, on_trackbar);
+    createTrackbar( "Sigma", "Sharpening Results", &sigma,  5, on_trackbar);
+    createTrackbar( "Width", "Sharpening Results", &width, 11, on_trackbar);
 
     //show stuff
     on_trackbar( alpha, 0);
     on_trackbar( sigma, 0);
     on_trackbar( width, 0);
-
-    //write result to file
-    imwrite(argv[2], imageout);
-
+    
+    waitKey(0);
     return 0;
 }
