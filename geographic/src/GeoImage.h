@@ -3,6 +3,7 @@
 
 #define GEOVERSION 1.0
 
+#include <geoimage/DEM.h>
 #include <geoimage/Enumerations.h>
 #include <geoimage/GeoImage.h>
 #include <geoimage/GeoHeader.h>

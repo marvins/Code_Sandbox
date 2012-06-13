@@ -89,6 +89,7 @@ all: $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE)
 	cp $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE) $(BUILD)/lib
 	cp src/GeoImage.h	  	 $(BUILD)/include/GeoImage.h
 	cp src/core/*.h		  $(BUILD)/include/geoimage
+	cp src/dem/*.h		  $(BUILD)/include/geoimage
 	cp src/structures/*.h $(BUILD)/include/geoimage
 	cp src/utilities/*.h  $(BUILD)/include/geoimage
 
