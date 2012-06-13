@@ -1,4 +1,6 @@
 *.dSYM
+data
 data\*
+build
 build\*
 unit_test

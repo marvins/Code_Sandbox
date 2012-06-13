@@ -1,3 +1,4 @@
+*.DS_Store
 /SNC_Fiji_Tools/nbproject/private/
 /geographic/nbproject/private/
 /SNC_Fiji_Tools/build/
