@@ -1,3 +1,6 @@
+/**
+ * Demonstration of simple block smoothing
+*/
 #include <cv.h>
 #include <cvaux.h>
 #include <highgui.h>

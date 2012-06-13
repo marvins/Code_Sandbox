@@ -26,17 +26,7 @@ namespace GEO{
  *
  */
 class GeoImage{
-
-    /**
-     * Enumeration useful for loading different image types. The
-     * only planned type considered now is the NITF.
-     */
-    enum GEO_IMAGE_TYPE{
-        NITF,
-        DTED,
-        SRTM
-    };
-
+    
     public:
 
     /** Default constructor */

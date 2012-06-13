@@ -4,19 +4,17 @@
 #include <cvaux.h>
 #include <highgui.h>
 
-#include <fstream>
 #include <iostream>
 
 #include <gdal_priv.h>
 #include <cpl_conv.h>
 
 //GeoImage includes
-#include <GeoImage.h> //<geoimage/OpenCVUtils.h>
+#include <GeoImage.h> 
 
 using namespace cv;
 using namespace std;
 
-#include <Assert.h>
 #include <Logger.h>
 #include <string_utilities.h>
 

@@ -44,8 +44,7 @@ BOOST		  = $(BOOST_INCLUDE) $(BOOST_LIBS)
 #
 #  Unit Test Library
 #
-TEST_SOURCES = ../unit_test/src/Assert.cpp \
-			   ../unit_test/src/Logger.cpp \
+TEST_SOURCES = ../unit_test/src/Logger.cpp \
 			   ../unit_test/src/Color.cpp \
 			   ../useful_stuff/string_functions/string_utilities.cpp
 
@@ -58,7 +57,7 @@ TEST = $(TEST_INCLUDE) $(TEST_SOURCES)
 #
 # Geographic NITF Libraries
 #
-HEADERS = src/structures/*.h src/utilities/*.h
+HEADERS = src/core/*.h src/structures/*.h src/utilities/*.h
 
 OBJECTS       = build/DEM.o 	   build/SRTMHeader.o       build/DTEDHeader.o	 	  build/NITFHeader.o       build/DEMHeader.o       build/ImageHeader.o	     build/GeoHeader.o 	     build/PixelType.o	      build/OpenCVUtils.o	    build/GDAL_Data.o	    build/GeoImage.o       build/GDAL2OpenCV.o	
 OBJECTS_DEBUG = build/DEM_DEBUG.o  build/SRTMHeader_DEBUG.o build/DTEDHeader_DEBUG.o build/NITFHeader_DEBUG.o build/DEMHeader_DEBUG.o build/ImageHeader_DEBUG.o build/GeoHeader_DEBUG.o build/PixelType_DEBUG.o  build/OpenCVUtils_DEBUG.o build/GDAL_Data_DEBUG.o build/GeoImage_DEBUG.o build/GDAL2OpenCV_DEBUG.o
@@ -66,11 +65,11 @@ OBJECTS_DEBUG = build/DEM_DEBUG.o  build/SRTMHeader_DEBUG.o build/DTEDHeader_DEB
 GEO_INCLUDE = -Isrc/structures -Isrc/utilities
 
 UTEST_SOURCES = tests/unit_test.cpp \
-				tests/dem/TEST_dem.cpp \
-	        	tests/structures/TEST_structures.cpp \
-				tests/utilities/TEST_utilities.cpp \
+	        	tests/dem/TEST_dem.cpp \
+				tests/structures/TEST_structures.cpp \
 				tests/structures/HeaderData/TEST_headers.cpp \
-				tests/structures/GeoImage/TEST_geoimage.cpp
+				tests/structures/GeoImage/TEST_geoimage.cpp \
+				tests/utilities/TEST_utilities.cpp 
 
 
 UNAME := $(shell uname)
@@ -89,6 +88,7 @@ all: $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE)
 	cp $(BUILD)/libgeoimage.$(LIB_TYPE) 		$(BUILD)/lib
 	cp $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE) $(BUILD)/lib
 	cp src/GeoImage.h	  	 $(BUILD)/include/GeoImage.h
+	cp src/core/*.h		  $(BUILD)/include/geoimage
 	cp src/structures/*.h $(BUILD)/include/geoimage
 	cp src/utilities/*.h  $(BUILD)/include/geoimage
 

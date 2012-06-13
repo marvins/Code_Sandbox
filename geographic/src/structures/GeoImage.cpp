@@ -2,6 +2,7 @@
 #include <OpenCVUtils.h>
 
 #include "GeoImage.h"
+#include "../core/Enumerations.h"
 
 #include <boost/filesystem.hpp>
 

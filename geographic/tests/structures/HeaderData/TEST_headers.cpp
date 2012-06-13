@@ -14,7 +14,6 @@
 #include <gdal_priv.h>
 #include <cpl_conv.h>
 
-#include <Assert.h>
 #include <Logger.h>
 #include <string_utilities.h>
 

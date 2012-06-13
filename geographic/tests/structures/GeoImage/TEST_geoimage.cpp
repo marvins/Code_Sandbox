@@ -4,7 +4,6 @@
 #include <cvaux.h>
 #include <highgui.h>
 
-#include <Assert.h>
 #include <Logger.h>
 #include <string_utilities.h>
 

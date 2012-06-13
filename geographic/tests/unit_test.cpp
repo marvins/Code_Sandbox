@@ -5,10 +5,9 @@
 #include <iostream>
 #include <string>
 
-#include <Assert.h>
 #include <Logger.h>
-#include <string_utilities.h>
 
+#include "dem/TEST_dem.h"
 #include "structures/TEST_structures.h"
 #include "utilities/TEST_utilities.h"
 
@@ -23,6 +22,9 @@ int main(int argc, char* argv[]) {
     try {
         print_module_header("GeoImage Unit Test Framework");
         
+        //begin dem module test
+        TEST_dem_module();
+
         //begin structure module test
         TEST_structures_module();
 

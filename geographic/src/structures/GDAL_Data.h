@@ -15,10 +15,6 @@
 
 namespace GEO{
 
-enum IMAGETYPE{
-   NITF = 123 
-};
-
 /** 
  * @class GDAL_Data
  *
