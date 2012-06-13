@@ -8,6 +8,22 @@
 
 using namespace cv;
 
+double alpha = 4;
+double sigma = 1.44;
+int    width = 5;
+Mat imageout;
+Mat image;
+
+void on_trackbar( int, void* ){
+
+    UnsharpFilter( image, imageout, sigma, Size(width,width), alpha);
+    imshow("Sharpening Results");
+
+}
+
+
+
+
 /**
  *  Compute the Unsharp Masked image. 
  *
@@ -51,35 +67,29 @@ void UnsharpFilter( Mat const& input_image, Mat& output_image, double sigma, Siz
 int main( int argc, char* argv[] ){
 
     //simple error checking
-    if( argc < 5 ){
-        std::cout << "usage:  ./Unsharp  <input image> <output image> <sigma> <alpha>" << std::endl;
+    if( argc < 2 ){
+        std::cout << "usage:  ./Unsharp  <input image>" << std::endl;
         return 0;
     }
-
-    //load sigma
-    double sigma = 1;
-    std::stringstream sin;
-    sin >> argv[3];
-    sin << sigma;
-    sin.clear();
-    sin.str("");
-
-    //load width
-    int    width = 5*sigma;
     
-    //load alpha
-    double alpha = 9;
-    sin >> argv[4];
-    sin << alpha;
-    sin.clear();
-    sin.str("");
+    //create window
+    namedWindow("Sharpening Results");
 
     //read image
-    Mat image = imread( argv[1] );
+    image = imread( argv[1] );
 
     //apply Unsharp Mask Filter
-    Mat imageout;
     UnsharpFilter( image, imageout, sigma, Size(width,width), alpha );
+    
+    //create trackbar
+    createTrackbar( "Alpha", "Sharpening Results", &alpha, 10, 0, on_trackbar);
+    createTrackbar( "Sigma", "Sharpening Results", &sigma,  5, 0, on_trackbar);
+    createTrackbar( "Width", "Sharpening Results", &width,  11,1, on_trackbar);
+
+    //show stuff
+    on_trackbar( alpha, 0);
+    on_trackbar( sigma, 0);
+    on_trackbar( width, 0);
 
     //write result to file
     imwrite(argv[2], imageout);
