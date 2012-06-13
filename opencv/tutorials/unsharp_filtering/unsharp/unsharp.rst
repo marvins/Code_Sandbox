@@ -1,6 +1,6 @@
 .. _unsharp:
 
-Unsharp Mask Filter
+Image Enhancement
 ********************
 
 Goal
@@ -10,7 +10,7 @@ In this tutorial you will learn how to:
 
 .. container:: enumeratevisibleitemswithsquare
 
-   * Use basic filtering operations to implement the Unsharp Mask Filter.
+   * Use basic filtering operations to enhance image details
 
 Theory
 =======
