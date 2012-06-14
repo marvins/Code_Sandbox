@@ -12,5 +12,6 @@
 #include <geoimage/PixelType.h>
 #include <geoimage/OpenCVUtils.h>
 #include <geoimage/GDAL2OpenCV.h>
+#include <geoimage/DTEDUtils.h>
 
 #endif

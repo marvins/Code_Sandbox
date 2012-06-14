@@ -18,6 +18,7 @@ using namespace std;
 #include <Logger.h>
 #include <string_utilities.h>
 
+int TEST_DTEDUtils_coord2str( string& note );
 int TEST_cvDepthChannel2Type( string& note );
 int TEST_opencvType2string(   string& note );
 int TEST_opencvDepth2string(  string& note );
@@ -52,6 +53,8 @@ void TEST_utilities_module(){
     result = TEST_opencvDepth2string(  note );
     print_test_results( "OpenCVUtils   opencvDepth2string", result, note );
 
+    result = TEST_DTEDUtils_coord2str( note );
+    print_test_results( "DTEDUtils      coordinate2filename", result, note );
     
 }
 
@@ -115,3 +118,9 @@ int TEST_opencvDepth2string( string& note ){
     return true;
 }
 
+int TEST_DTEDUtils_coord2str( string& note ){
+
+    GEO::DTEDUtils::coordinate2filename( 38.1, -108.2);
+    note = "Not Implemented";
+    return false;
+}
