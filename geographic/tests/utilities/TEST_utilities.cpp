@@ -120,7 +120,15 @@ int TEST_opencvDepth2string( string& note ){
 
 int TEST_DTEDUtils_coord2str( string& note ){
 
-    GEO::DTEDUtils::coordinate2filename( 38.1, -108.2);
-    note = "Not Implemented";
-    return false;
+    string expected01 = "w119/n020.dt2"; string actual01 = GEO::DTEDUtils::coordinate2filename( 20.01, -118.7);
+    string expected02 = "e048/s013.dt2"; string actual02 = GEO::DTEDUtils::coordinate2filename( -12.9,  48.8);
+    string expected03 = "w001/n001.dt2"; string actual03 = GEO::DTEDUtils::coordinate2filename(  1.0, -0.5);
+
+    note = "Conversion Failed";
+    if( expected01 != actual01 ) return false;
+    if( expected02 != actual02 ) return false;
+    if( expected03 != actual03 ) return false;
+    
+    note = "Successful Operation";
+    return true;
 }

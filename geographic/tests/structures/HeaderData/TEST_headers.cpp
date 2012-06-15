@@ -123,7 +123,7 @@ int TEST_GeoHeader_driver(   string& note ){
 int TEST_DEMHeader_core(     string& note ){
     
     //create DTED Image
-    string filename01 = "/opt/dted/w119/n036.dt2";
+    string filename01 = "/data/dted/w119/n036.dt2";
 
 
     note = "Not Implemented";
@@ -138,7 +138,7 @@ int TEST_ImageHeader_core(   string& note ){
 
 int TEST_DTEDHeader_core(    string& note ){
 
-    string filename01 = "/opt/dted/w119/n036.dt2";
+    string filename01 = "/data/dted/w119/n036.dt2";
 
     //create dted image
     GEO::GeoImage img01( filename01, true );

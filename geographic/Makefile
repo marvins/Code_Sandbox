@@ -198,10 +198,10 @@ build/DEM_DEBUG.o: src/dem/DEM.cpp $(HEADERS)
 
 # DTED Utilities
 build/DTEDUtils.o:   src/utilities/DTEDUtils.cpp $(HEADERS)
-	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(OFLAGS)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(OFLAGS) $(BOOST_INCLUDE)
 
 build/DTEDUtils_DEBUG.o:   src/utilities/DTEDUtils.cpp $(HEADERS)
-	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(DFLAGS)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(DFLAGS) $(BOOST_INCLUDE)
 
 ###################################################################
 # 				MISC TOOLS

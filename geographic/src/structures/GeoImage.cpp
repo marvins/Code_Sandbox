@@ -457,33 +457,4 @@ int GeoImage::getFileType( const string& fname ){
     throw string("ERROR: Unknown type");
 }
 
-Point2f getElevationMeters( Point2f coordinate ){
-
-
-    //first we need to solve for which image this coordinate will belong to
-    //  - round number to nearest integer
-    int iLat = std::floor(coordinate.y + 0.5 );
-    int iLon = std::floor(coordinate.x + 0.5 );
-
-    // - check if point is in southern or western hemisphere
-    bool northern = true;
-    bool eastern  = true;
-    if( iLat < 0 ){   
-        iLat = (iLat * -1)+1;
-        northern = false;
-    }
-    if( iLon < 0 ){
-        iLon = (iLon * -1)+1;
-        eastern = false;
-    }
-
-    // - compute the appropriate filename for the dted file
-
-
-
-    Point2f output;
-    return output;
-
 }
-
-} //end of GEO namespace 

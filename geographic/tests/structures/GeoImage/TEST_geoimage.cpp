@@ -33,9 +33,9 @@ void TEST_geoimage(){
 int TEST_dted_geoimage( string& note ){
 
     //create a geoimage object
-    GEO::GeoImage img_dted01("data/n37.dt2", true);
-    GEO::GeoImage img_dted02("data/n38.dt2", true);
-    GEO::GeoImage img_dted03("data/n39.dt2", true);
+    GEO::GeoImage img_dted01("data/dted/w119/n037.dt2", true);
+    GEO::GeoImage img_dted02("data/dted/w119/n038.dt2", true);
+    GEO::GeoImage img_dted03("data/dted/w119/n039.dt2", true);
 
     //make sure that the file exists
     if( GEO::GeoHeader_Info::file_exists( img_dted01.get_filename() ) == false ){

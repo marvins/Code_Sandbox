@@ -1,11 +1,16 @@
 #include "TEST_dem.h"
 
+#include <cv.h>
+#include <cvaux.h>
+#include <highgui.h>
+
 #include <string> 
 
 #include <Logger.h>
 
 #include <GeoImage.h>
 
+using namespace cv;
 using namespace std;
 
 
@@ -37,11 +42,13 @@ int TEST_dem_constructors( string& note ){
     
     //create DEM object
     double tl_lat =   38.1;
-    double tl_lon = -108.1;
+    double tl_lon = -118.1;
     double br_lat =   38.0;
-    double br_lon = -108.0;
+    double br_lon = -118.01;
 
-    GEO::DEM dem_01( tl_lat, tl_lon, br_lat, br_lon, GEO::DEM_Params( GEO::DTED, "/data/dted")); 
+    GEO::DEM dem_01( tl_lat, tl_lon, br_lat, br_lon, GEO::DEM_Params( GEO::DTED, "data/dted")); 
+
+    Mat tile01 = dem_01.get_raw();
 
     note = "Operation failed";
     return false;
