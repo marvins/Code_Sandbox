@@ -26,7 +26,18 @@ Theory
        +----------+----------+---------+
        |  |TXT01| |  |TXT02| | |TXT03| |
        +----------+----------+---------+
-       | Image
+        Image
+
+
+
+
+.. |TXT01| image:: images/original.jpg
+
+.. |TXT02| image:: images/highpass.jpg
+
+.. |TXT03| image:: images/sharpened.jpg
+
+
 
 
     This image is then subtracted from the original image, leaving high-frequency or "high-pass" information. By adding the remaining high-frequency information back to the original image, you can sharpen the image.
