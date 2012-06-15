@@ -12,6 +12,8 @@
 #include "cpl_conv.h"
 
 #include <string>
+#include <utility>
+#include <vector>
 
 namespace GEO{
 
@@ -33,6 +35,9 @@ class GDAL_Data{
         /** Write to output */
         void write( std::string const& outputFilename, std::string const& output_format );
         static void write( std::string const& outputFilename, cv::Mat const& image, GeoHeader_Info* header_data);
+        
+
+        std::vector<std::pair<std::string,std::string> >  retrieve_header_data()const;
 
         GDALDriver  *driver;    /*<  Driver Object */
         GDALDataset *dataset;   /*<  Dataset Object */

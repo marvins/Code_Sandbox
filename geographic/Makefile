@@ -135,10 +135,10 @@ build/OpenCVUtils_DEBUG.o: src/utilities/OpenCVUtils.cpp $(HEADERS)
 
 # GDAL_Data
 build/GDAL_Data.o:  src/structures/GDAL_Data.cpp $(HEADERS)
-	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(OFLAGS) $(GEO_INCLUDE) $(BOOST_INCLUDE)
 
 build/GDAL_Data_DEBUG.o:  src/structures/GDAL_Data.cpp $(HEADERS)
-	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(DFLAGS) $(GEO_INCLUDE) $(BOOST_INCLUDE)
 
 # NITF Header
 build/NITFHeader.o: src/structures/NITFHeader.cpp $(HEADERS)

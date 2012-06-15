@@ -225,7 +225,7 @@ void GeoImage::load_image() {
         throw string(string("Unknown pixel depth: ") + opencvDepth2string(depth));
    
     header_data->set_pixel_type( pixelToSet );
-
+    header_data->set_header_data( gdal_data.retrieve_header_data()); 
 }
 
 /**
