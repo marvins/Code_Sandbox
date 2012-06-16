@@ -17,7 +17,7 @@ int  alpha = 4;
 int  sigma = 1.44;
 int  width = 5;
 int  w_act = 5;
-int  thresh= 100;
+int  thresh= 1;
 
 ///Image list
 vector<Mat> image_list;
@@ -35,6 +35,7 @@ void on_trackbar( int, void* ){
     else                 width = w_act;
 
     UnsharpFilter(  );
+    imshow("Sharpening Results", image_list[mode]);
 }
 
 /**
@@ -42,6 +43,7 @@ void on_trackbar( int, void* ){
 */
 void thresh_trackbar( int, void* ){
     UnsharpFilter(  );
+    imshow("Sharpening Results", image_list[mode]);
 }
 
 /**
@@ -50,6 +52,7 @@ void thresh_trackbar( int, void* ){
 void modeChange( int state, void*  foo ){
     
     mode++;
+    UnsharpFilter(  );
     if( mode > 2 ) mode = 0;
     imshow("Sharpening Results", image_list[mode]);
 }
@@ -93,10 +96,13 @@ void UnsharpFilter(  ){
         GaussianBlur( channels[i], gaussian, Size( width, width), sigma);
 
         //subtract images
-        diff_list[i]= channels[i] - gaussian;
+        diff_list[i]= abs(alpha/10.0 * ( channels[i] - gaussian));
         
+        //threshold image
+        threshold( diff_list[i], diff_list[i], thresh, 0, THRESH_TOZERO );
+
         //add images back in
-        channels[i] = channels[i] + alpha * diff_list[i];
+        channels[i] = channels[i] + diff_list[i];
     }
 
     //merge channels together
@@ -123,7 +129,7 @@ int main( int argc, char* argv[] ){
     namedWindow("Sharpening Results", CV_WINDOW_AUTOSIZE );
 
     //create trackbar
-    createTrackbar( "Alpha" , "Sharpening Results",  &alpha,  10, on_trackbar);
+    createTrackbar( "Alpha" , "Sharpening Results",  &alpha,  100, on_trackbar);
     createTrackbar( "Sigma" , "Sharpening Results",  &sigma,   5, on_trackbar);
     createTrackbar( "Width" , "Sharpening Results",  &w_act,  11, on_trackbar);
     createTrackbar( "Thresh", "Sharpening Results", &thresh, 255, thresh_trackbar);
@@ -141,10 +147,10 @@ int main( int argc, char* argv[] ){
     UnsharpFilter(  );
     
     //show stuff
-    on_trackbar( alpha, 0);
-    on_trackbar( sigma, 0);
-    on_trackbar( width, 0);
-   
+    on_trackbar( alpha , 0);
+    on_trackbar( sigma , 0);
+    on_trackbar( width , 0);
+    on_trackbar( thresh, 0); 
     imshow("Sharpening Results", image_list[0]);
     char key;
     while( quit == false && key != 'q' ){
