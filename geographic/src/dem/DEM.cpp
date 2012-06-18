@@ -45,6 +45,10 @@ DEM::DEM( double const& tl_lat, double const& tl_lon, double const& br_lat, doub
         int br_lat_floor = floor(br_lat);
         int br_lon_floor = floor(br_lon);
 
+        //compute range
+        double minx = min( tl_lon, br_lon);  double maxx = max( tl_lon, br_lon);
+        double miny = min( tl_lat, br_lat);  double maxy = max( tl_lat, br_lat);
+
         //check to see if we have one file or multiple files
         if( tl_lat_floor == br_lat_floor && tl_lon_floor == br_lon_floor ){
 
@@ -62,39 +66,108 @@ DEM::DEM( double const& tl_lat, double const& tl_lon, double const& br_lat, doub
             GeoImage elevation_tile(act_filename, true);
             cv::Mat cv_tile = elevation_tile.get_image();
 
-            //compute range
-            double minx = min( tl_lon, br_lon);  double maxx = max( tl_lon, br_lon);
-            double miny = min( tl_lat, br_lat);  double maxy = max( tl_lat, br_lat);
-            
             int range_minx = (minx - std::floor(tl_lon))*cv_tile.cols;
             int range_maxx = (1-(std::ceil(tl_lon)  - maxx))*cv_tile.cols;
             int range_miny = (miny - std::floor(tl_lat))*cv_tile.rows;
             int range_maxy = (1-(std::ceil(tl_lat)  - maxy))*cv_tile.rows;
-            
+
             cv::Mat crop( cv::Size( range_maxx - range_minx, range_maxy - range_miny ), cv_tile.type());
-            if( cv_tile.type() == CV_8UC1  ) cout << "CV_8UC1"  << endl;
-            if( cv_tile.type() == CV_8UC3  ) cout << "CV_8UC3"  << endl;
-            if( cv_tile.type() == CV_16UC1 ) cout << "CV_16UC1" << endl;
-            if( cv_tile.type() == CV_16SC1 ) cout << "CV_16SC1" << endl;
-            if( cv_tile.type() == CV_32SC1 ) cout << "CV_32SC1" << endl;
             for( int x=range_minx; x< range_maxx; x++ )
                 for( int y=range_miny; y< range_maxy; y++ ){
+                    // CV_8UC1
                     if( cv_tile.type() == CV_8UC1 )
                         crop.at<uchar>(y-range_miny, x-range_minx) = cv_tile.at<uchar>(y, x);
+                    // CV_16UC1
                     else if( cv_tile.type() == CV_16UC1 )
                         crop.at<unsigned short>(y-range_miny, x-range_minx) = cv_tile.at<unsigned short>(y, x);
+                    // CV_16SC1
                     else if( cv_tile.type() == CV_16SC1 ){
                         crop.at<short>(y-range_miny, x-range_minx) = cv_tile.at<short>(y, x);
                     }
+                    // CV_8UC3
                     else if( cv_tile.type() == CV_8UC3 )
                         crop.at<Vec3b>(y-range_miny, x-range_minx) = cv_tile.at<Vec3b>(y, x);
                     else 
                         throw string("ERROR: unsupported pixel type");
                 }
-            
+
             tile = crop;
         }
         else{
+
+            //build list of images required
+            int lat_needed = 1 + fabs( std::floor(maxy) - std::floor(miny) );
+            int lon_needed = 1 + fabs( std::floor(maxx) - std::floor(minx) );
+
+            int img_width = 0;
+            int img_height= 0;
+            int current_width  = 0;
+            int current_height = 0;
+            vector<Mat> crops;
+            vector<pair<int,int> > pos_list;
+           
+            for( int i=0; i<lat_needed; i++ ){
+
+                current_width  = 0;
+                current_height = 0;
+                for( int j=0; j<lon_needed; j++ ){
+                    
+                    cout << "i = " << i << ", j = " << j << endl;
+                    //compute the required filename
+                    string exp_filename = DTEDUtils::coordinate2filename( std::floor(miny)+i+0.0001, std::floor(minx)+j+0.0001 );
+                    string act_filename = params.dted_root_dir + "/" + exp_filename;
+
+                    //make sure the filename exists
+                    if( bf::exists(bf::path(act_filename)) == false ){
+                        cout << act_filename << endl;
+                        throw string("Error: File does not exist");
+                    }
+
+                    //load crop
+                    Mat subcrop = GEO::GeoImage( act_filename, true ).get_image();
+
+                    //ensure crop tile is the same size as previous tile sizes
+                    if(      current_height == 0 ) current_height = subcrop.rows;
+                    else if( current_height != subcrop.rows )
+                        throw string("ERROR: tile is not the same size as the adjacent tile");
+
+                    //get crop range
+                    pair<double,double> lat_ran( std::max( std::floor(miny)+i, miny ), std::min( std::ceil(miny)+j, maxy));
+                    pair<double,double> lon_ran( std::max( std::floor(minx)+i, minx ), std::min( std::ceil(minx)+j, maxx));
+                    
+                    pair<double,double> lat_pct( lat_ran.first - std::floor(lat_ran.first), 1 - (std::ceil(lat_ran.second) - lat_ran.second));
+                    pair<double,double> lon_pct( lon_ran.first - std::floor(lon_ran.first), 1 - (std::ceil(lon_ran.second) - lon_ran.second));
+                    
+                    pair<int,int> lat_img_ran( lat_pct.first*subcrop.rows, lat_pct.second*subcrop.rows);
+                    pair<int,int> lon_img_ran( lon_pct.first*subcrop.cols, lon_pct.second*subcrop.cols);
+                    
+                    cout << "ran: " << lat_ran.first << ", " << lat_ran.second << "  x  " << lon_ran.first << ", " << lon_ran.second << endl;
+                    cout << "prop img size: " << lat_img_ran.first << ", " << lat_img_ran.second << "  vs  " << lon_img_ran.first << ", " << lon_img_ran.second << endl;
+                    Mat crop( lat_img_ran.second-lat_img_ran.first, lon_img_ran.second-lon_img_ran.first, subcrop.type());
+                    
+                    for( int ii=lat_img_ran.first; ii<lat_img_ran.second; ii++ )
+                        for( int jj=lon_img_ran.first; jj<lon_img_ran.second; jj++ ){
+                            if( subcrop.type() == CV_8UC1 ){
+                                crop.at<uchar>(ii-lat_img_ran.first, jj-lon_img_ran.first) = subcrop.at<uchar>(ii,jj);
+                            }
+                            else if( subcrop.type() == CV_16UC1 ){
+                                crop.at<ushort>(ii-lat_img_ran.first, jj-lon_img_ran.first) = subcrop.at<ushort>(ii,jj);
+                            }
+                            else if( subcrop.type() == CV_16SC1 ){
+                                crop.at<short>(ii-lat_img_ran.first, jj-lon_img_ran.first) = subcrop.at<short>(ii,jj);
+                            }
+                            else
+                                throw string("TYPE NOT SUPPORTED");
+                        }
+                    
+                    crops.push_back(crop.clone());
+                    pos_list.push_back(pair<int,int>(j,i));
+                }
+            }
+            
+            cout << "crop sizes" << endl;
+            for( size_t ii=0; ii<crops.size(); ii++ )
+                cout << crops[ii].cols << ", " << crops[ii].rows << " at position: " << pos_list[ii].first << ", " << pos_list[ii].second << endl;
 
             throw string("ERROR: Multiple files unsupported");
 
@@ -104,16 +177,17 @@ DEM::DEM( double const& tl_lat, double const& tl_lon, double const& br_lat, doub
     else{
         throw std::string("Error: unsupported DEM format");
     }
-    
+
 
 }
 
 
 cv::Mat DEM::get_raw()const{
-    
+
     if( !tile.data )
         throw string("Error: tile data uninitialized");
     return tile.clone();
 }
 
 }//end of GEO namespace
+
