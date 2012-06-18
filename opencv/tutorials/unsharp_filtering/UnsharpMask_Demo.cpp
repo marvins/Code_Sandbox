@@ -1,31 +1,75 @@
+///OpenCV Headers
 #include <opencv2/core/core.hpp>
 #include <opencv2/highgui/highgui.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 
+///STL Headers
 #include <iostream>
-#include <sstream>
 #include <vector>
 
 using namespace cv;
+using namespace std;
 
-int alpha = 4;
-int sigma = 1.44;
-int    width = 5;
-Mat imageout;
-Mat image;
+///Misc. Flags
+bool quit  = false;
+int  mode  = 0;
+int  alpha = 4;
+int  sigma = 1.44;
+int  width = 5;
+int  w_act = 5;
+int  thresh= 1;
 
+///Image list
+vector<Mat> image_list;
 
-void UnsharpFilter( Mat const& input_image, Mat& output_image, double sigma, Size const& gauss_window, double alpha );
+///Unsharp prototype
+void UnsharpFilter( );
 
-
+/**
+ * Trackbar function for image width
+*/
 void on_trackbar( int, void* ){
+    
+    /** Make sure the width is never even */
+    if( w_act % 2 == 0 ) width = w_act + 1;
+    else                 width = w_act;
 
-    UnsharpFilter( image, imageout, sigma, Size(width,width), alpha);
-    imshow("Sharpening Results", imageout);
-
+    UnsharpFilter(  );
+    imshow("Sharpening Results", image_list[mode]);
 }
 
+/**
+ * Trackbar function for threshold
+*/
+void thresh_trackbar( int, void* ){
+    UnsharpFilter(  );
+    imshow("Sharpening Results", image_list[mode]);
+}
 
+/**
+ * Change the type of image to show
+*/
+void modeChange( int state, void*  foo ){
+    
+    mode++;
+    UnsharpFilter(  );
+    if( mode > 2 ) mode = 0;
+    imshow("Sharpening Results", image_list[mode]);
+}
+
+/**
+ * Exit the program
+*/
+void quitProgram( int state, void* foo ){
+    exit(0);
+}
+
+/**
+ * Write the current image to file
+*/
+void writeImage( int state, void* foo ){
+    imwrite( "output.jpg", image_list[mode] );
+}
 
 
 /**
@@ -37,32 +81,37 @@ void on_trackbar( int, void* ){
  * @param[in] gauss_window Width of Gaussian Window.
  * @param[in] alpha Scale factor for high-pass image
  */
-void UnsharpFilter( Mat const& input_image, Mat& output_image, double sigma, Size const& gauss_window, double alpha ){
+void UnsharpFilter(  ){
 
     //split image into channels
-    std::vector<Mat> channels;
-    split( input_image, channels );
+    std::vector<Mat> channels, diff_list;
+    split( image_list[0], channels );
+    diff_list.resize(channels.size());
 
     //iterate over each channel
-    Mat gaussian, diff;
+    Mat gaussian;
     for( size_t i=0; i<channels.size(); i++ ){
 
         //compute gaussian kernel
-        GaussianBlur( channels[i], gaussian, gauss_window, sigma);
+        GaussianBlur( channels[i], gaussian, Size( width, width), sigma);
 
         //subtract images
-        diff = channels[i] - gaussian;
+        diff_list[i]= abs(alpha/10.0 * ( channels[i] - gaussian));
         
+        //threshold image
+        threshold( diff_list[i], diff_list[i], thresh, 0, THRESH_TOZERO );
+
         //add images back in
-        channels[i] = channels[i] + alpha * diff;
+        channels[i] = channels[i] + diff_list[i];
     }
 
     //merge channels together
     Mat merged_image;
-    merge( channels, merged_image );
+    merge(  channels, merged_image );
+    merge( diff_list, image_list[2]);
 
     //return image to uchar
-    merged_image.convertTo( output_image, input_image.type());
+    merged_image.convertTo( image_list[1], image_list[0].type());
 }
 
 /**
@@ -77,24 +126,36 @@ int main( int argc, char* argv[] ){
     }
     
     //create window
-    namedWindow("Sharpening Results");
+    namedWindow("Sharpening Results", CV_WINDOW_AUTOSIZE );
+
+    //create trackbar
+    createTrackbar( "Alpha" , "Sharpening Results",  &alpha,  100, on_trackbar);
+    createTrackbar( "Sigma" , "Sharpening Results",  &sigma,   5, on_trackbar);
+    createTrackbar( "Width" , "Sharpening Results",  &w_act,  11, on_trackbar);
+    createTrackbar( "Thresh", "Sharpening Results", &thresh, 255, thresh_trackbar);
+
+    //create buttons
+    cvCreateButton( "Change Image",  modeChange, NULL, CV_PUSH_BUTTON );
+    cvCreateButton( "Quit Program", quitProgram, NULL, CV_PUSH_BUTTON );
+    cvCreateButton( "Write Image" , writeImage , NULL, CV_PUSH_BUTTON );
 
     //read image
-    image = imread( argv[1] );
+    image_list.resize(3);
+    image_list[0] = imread( argv[1], 0 );
 
     //apply Unsharp Mask Filter
-    UnsharpFilter( image, imageout, sigma, Size(width,width), alpha );
+    UnsharpFilter(  );
     
-    //create trackbar
-    createTrackbar( "Alpha", "Sharpening Results", &alpha, 10, on_trackbar);
-    createTrackbar( "Sigma", "Sharpening Results", &sigma,  5, on_trackbar);
-    createTrackbar( "Width", "Sharpening Results", &width, 11, on_trackbar);
-
     //show stuff
-    on_trackbar( alpha, 0);
-    on_trackbar( sigma, 0);
-    on_trackbar( width, 0);
-    
-    waitKey(0);
+    on_trackbar( alpha , 0);
+    on_trackbar( sigma , 0);
+    on_trackbar( width , 0);
+    on_trackbar( thresh, 0); 
+    imshow("Sharpening Results", image_list[0]);
+    char key;
+    while( quit == false && key != 'q' ){
+        key = waitKey(0);
+    }
+        
     return 0;
 }

@@ -17,6 +17,9 @@ void NITFHeader_Info::copy_header_info( GeoHeader_Info*  other ){
 
     setValid( other->isValid() );
 
+    //move over header data
+    set_header_data( other->get_header_data());
+
 }
 
 GeoHeader_Info*& NITFHeader_Info::clone() const{
@@ -31,7 +34,10 @@ GeoHeader_Info*& NITFHeader_Info::clone() const{
 
     //move over image name
     output->set_image_filename(get_image_filename());
-    
+
+    //move over header data
+    output->set_header_data( get_header_data());
+
     return output;
 }
    

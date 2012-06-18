@@ -18,6 +18,7 @@ using namespace std;
 #include <Logger.h>
 #include <string_utilities.h>
 
+int TEST_DTEDUtils_coord2str( string& note );
 int TEST_cvDepthChannel2Type( string& note );
 int TEST_opencvType2string(   string& note );
 int TEST_opencvDepth2string(  string& note );
@@ -52,6 +53,8 @@ void TEST_utilities_module(){
     result = TEST_opencvDepth2string(  note );
     print_test_results( "OpenCVUtils   opencvDepth2string", result, note );
 
+    result = TEST_DTEDUtils_coord2str( note );
+    print_test_results( "DTEDUtils      coordinate2filename", result, note );
     
 }
 
@@ -115,3 +118,17 @@ int TEST_opencvDepth2string( string& note ){
     return true;
 }
 
+int TEST_DTEDUtils_coord2str( string& note ){
+
+    string expected01 = "w119/n020.dt2"; string actual01 = GEO::DTEDUtils::coordinate2filename( 20.01, -118.7);
+    string expected02 = "e048/s013.dt2"; string actual02 = GEO::DTEDUtils::coordinate2filename( -12.9,  48.8);
+    string expected03 = "w001/n001.dt2"; string actual03 = GEO::DTEDUtils::coordinate2filename(  1.0, -0.5);
+
+    note = "Conversion Failed";
+    if( expected01 != actual01 ) return false;
+    if( expected02 != actual02 ) return false;
+    if( expected03 != actual03 ) return false;
+    
+    note = "Successful Operation";
+    return true;
+}

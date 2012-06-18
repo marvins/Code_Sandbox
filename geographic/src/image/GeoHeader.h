@@ -2,6 +2,8 @@
 #define __GEO_HEADER_H__
 
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "PixelType.h"
 
@@ -121,11 +123,15 @@ class GeoHeader_Info{
          */
         void setValid( const bool& flag );
 
+        void set_header_data( std::vector<std::pair<std::string,std::string> >const& hdata ); 
+        std::vector<std::pair<std::string,std::string> > get_header_data()const;
+
     protected:
 
-        PixelType pixeltype;        /*<  Pixeltype of GDAL Data */
-        std::string image_filename; /*<  Image filename */
-        bool valid; 		        /*<  Validity flag signifying if data is loaded */
+        PixelType pixeltype;            /*<  Pixeltype of GDAL Data */
+        std::string image_filename;     /*<  Image filename */
+        bool valid; 		            /*<  Validity flag signifying if data is loaded */
+        std::vector<std::pair<std::string,std::string> >  header_data;  /*<  */
 
 };
 

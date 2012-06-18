@@ -1,5 +1,6 @@
-#include "GDAL_Data.h"
+#include <boost/algorithm/string.hpp>
 
+#include "GDAL_Data.h"
 #include <iostream>
 
 using namespace std;
@@ -103,4 +104,36 @@ void GDAL_Data::write( std::string const& image_filename, cv::Mat const& image, 
     
 
 }
+        
+vector<pair<string,string> >  GDAL_Data::retrieve_header_data()const{
+    
+    vector<pair<string,string> > headerList;
+    char ** metadata = dataset->GetMetadata();
+    
+    int idx = 0;
+    string original;
+    std::pair<string, string> item;
+    while( metadata[idx] != NULL ){
+        original = metadata[idx++];
+        vector<string> results;
+        boost::split(results, original, boost::is_any_of("="));
+       
+        if( results.size() < 2 )
+            throw string("ERROR: metadata tag is invalid, must contain at least one =");
+        
+        item.first = results[0];
+        item.second= results[1];
+
+        for(size_t i=2; i<results.size(); i++)
+            item.second += string("=") + results[i];
+
+        headerList.push_back(item);
+    }
+
+
+    return headerList;
+}
+
+
+
 } //end of GEO namespace 

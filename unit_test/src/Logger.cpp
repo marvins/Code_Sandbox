@@ -9,6 +9,10 @@ ostream& operator << (ostream& ostr, const Status& stat ){
    ostr << Color(BLUE) << "Function: " << Color(GREEN) << stat.func_name << Color(BLUE) << ", Result: ";
    if( stat.result == 1 )
       ostr << Color(GREEN) << "PASSED";
+   else if( stat.result < -1 )
+       ostr << Color(RED) << "CAUTION";
+   else if( stat.result < 0 )
+       ostr << Color(RED) << "WARNING";
    else
       ostr << Color(RED) << "FAILED";
    ostr << ", " << stat.note << color_end;
@@ -48,9 +52,13 @@ void print_module_footer( const string& header_name ){
 void print_test_results( const string& func_name, const int& result, const string& note ){
     
     if(result == 1)
-        cout << Color(GREEN) << "[PASSED] " << Color(BLUE) << func_name << " : " << Color(GREEN) << note << color_end << endl;
+        cout << Color(GREEN) << "[PASSED]  " << Color(BLUE) << func_name << " : " << Color(GREEN) << note << color_end << endl;
+    else if( result < -1 )
+        cout << Color(YELLOW) << "[WARNING]  " << Color(BLUE) << func_name << " : " << Color(GREEN) << note << color_end << endl;
+    else if( result < 0 )    
+        cout << Color(YELLOW) << "[CAUTION] " << Color(BLUE) << func_name << " : " << Color(GREEN) << note << color_end << endl;
     else    
-        cout << Color(RED)   << "[FAILED] " << Color(BLUE) << func_name << " : " << Color(RED)   << note << color_end << endl;
+        cout << Color(RED)   << "[FAILED]  " << Color(BLUE) << func_name << " : " << Color(RED)   << note << color_end << endl;
 }
 
 void print_subtest_results( const string& func_name, const int& result, const string& note ){

@@ -1,6 +1,6 @@
 .. _unsharp:
 
-Unsharp Mask Filter
+Image Enhancement
 ********************
 
 Goal
@@ -10,12 +10,36 @@ In this tutorial you will learn how to:
 
 .. container:: enumeratevisibleitemswithsquare
 
-   * Use basic filtering operations to implement the Unsharp Mask Filter.
+   * Use basic filtering operations to enhance image details
 
 Theory
 =======
 
-#. *Unsharp Masking* is an image enhancement technique commonly applied in modern photo manipulation software. The general concept is that an image is blurred, creating an "unsharp" version of the image.  This image is then subtracted from the original image, leaving high-frequency or "high-pass" information. By adding the remaining high-frequency information back to the original image, you can sharpen the image.
+#. *Unsharp Masking* is an image enhancement technique commonly applied in modern photo 
+    manipulation software.  Image enhancement or `image sharpening`, seeks to exaggerate
+    image details such as edges and color gradients. 
+
+    a. Unsharp masking achieves this by detecting regions with low detail and removing that detail
+       from the image. Regions with high amounts of change will remain, allowing for the remaining 
+       detail to be returned to the original image. The figure below illustrates this.
+
+       +----------+----------+---------+
+       |  |TXT01| |  |TXT02| | |TXT03| |
+       +----------+----------+---------+
+
+
+
+
+.. |TXT01| image:: images/original.jpg
+
+.. |TXT02| image:: images/highpass.jpg
+
+.. |TXT03| image:: images/sharpened.jpg
+
+
+
+
+    This image is then subtracted from the original image, leaving high-frequency or "high-pass" information. By adding the remaining high-frequency information back to the original image, you can sharpen the image.
 
     .. math::
 

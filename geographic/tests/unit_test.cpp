@@ -8,7 +8,8 @@
 #include <Logger.h>
 
 #include "dem/TEST_dem.h"
-#include "structures/TEST_structures.h"
+#include "extensions/TEST_extensions.h"
+#include "image/TEST_structures.h"
 #include "utilities/TEST_utilities.h"
 
 using namespace std;
@@ -24,6 +25,9 @@ int main(int argc, char* argv[]) {
         
         //begin dem module test
         TEST_dem_module();
+
+        //begin extensions module test
+        TEST_extensions_module();
 
         //begin structure module test
         TEST_structures_module();

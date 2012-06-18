@@ -209,7 +209,7 @@ In this section you will learn about the image processing (manipulation) functio
   .. cssclass:: toctableopencv
   
   ===================== ==============================================
-   |Unsharp Mask|       **Title:** :ref:`unsharp`
+   |Image Enhancement|  **Title:** :ref:`unsharp`
                         
                         *Compatibility:* > OpenCV 2.0
 
@@ -219,7 +219,7 @@ In this section you will learn about the image processing (manipulation) functio
 
   ===================== ==============================================
   
-  .. |Unsharp Mask| image:: images/imgtrans/Unsharp_Tutorial_Cover.jpg
+  .. |Image Enhancement| image:: images/imgtrans/Unsharp_Tutorial_Cover.jpg
                            :height: 90pt
                            :width:  90pt
   

@@ -59,4 +59,12 @@ void GeoHeader_Info::setValid( const bool& flag ){
     valid = flag;
 }
 
+void GeoHeader_Info::set_header_data( std::vector<std::pair<std::string, std::string> >const& hdata ){
+    header_data = hdata;
+}
+
+std::vector<std::pair<std::string,std::string> > GeoHeader_Info::get_header_data()const{
+    return header_data;
+}
+
 }//end of GEO namespace
