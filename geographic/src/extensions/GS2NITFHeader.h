@@ -1,13 +1,13 @@
-#ifndef __SRC_GEOGRAPHIC_NITF_HEADER_H__
-#define __SRC_GEOGRAPHIC_NITF_HEADER_H__
+#ifndef __SRC_GEOGRAPHIC_GS2NITF_HEADER_H__
+#define __SRC_GEOGRAPHIC_GS2NITF_HEADER_H__
 
 #include <string>
 
-#include "ImageHeader.h"
+#include <NITFHeader.h>
 
 namespace GEO{
 
-class GS2NITFHeader_Info : public NITFHeader_Info{
+class GS2NITFHeader_Info : public NITFHeader_Info {
 
    public:
 

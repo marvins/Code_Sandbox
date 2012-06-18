@@ -66,6 +66,7 @@ GEO_INCLUDE = -Isrc/core -Isrc/dem -Isrc/image -Isrc/extensions -Isrc/utilities
 
 UTEST_SOURCES = tests/unit_test.cpp \
 	        	tests/dem/TEST_dem.cpp \
+				tests/extensions/TEST_extensions.cpp \
 				tests/image/TEST_structures.cpp \
 				tests/image/HeaderData/TEST_headers.cpp \
 				tests/image/GeoImage/TEST_geoimage.cpp \

@@ -1,4 +1,4 @@
-#include "NITFHeader.h"
+#include "GS2NITFHeader.h"
 
 #include <iostream>
 using namespace std;
@@ -42,7 +42,7 @@ GeoHeader_Info*& GS2NITFHeader_Info::clone() const{
 }
    
 
-std::string NITFHeader_Info::get_driver_format() const{
+std::string GS2NITFHeader_Info::get_driver_format() const{
     return "IMG.NITF.GS2";
 }
 

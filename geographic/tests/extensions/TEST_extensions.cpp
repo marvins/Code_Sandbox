@@ -1,4 +1,4 @@
-#include "TEST_headers.h"
+#include "TEST_extensions.h"
 
 //GeoImage includes
 #include <GeoImage.h> 
@@ -27,7 +27,7 @@ int TEST_GS2NITFHeader_pixel(    string& note );
 int TEST_GS2NITFHeader_driver(   string& note );
 int TEST_GS2NITFHeader_header_meta(   string& note );
 
-void TEST_headers(){
+void TEST_extensions_module(){
     
     print_module_header("GeoImage extensions");
     
@@ -42,13 +42,13 @@ void TEST_headers(){
     print_test_results( "GS2NITFHeader   filename", result, note );
     
     result = TEST_GS2NITFHeader_pixel( note );
-    print_test_results( "GeoHeader   pixel", result, note );
+    print_test_results( "GS2NITFHeader   pixel", result, note );
     
     result = TEST_GS2NITFHeader_driver( note );
-    print_test_results( "GeoHeader   driver", result, note );
+    print_test_results( "GS2NITFHeader   driver", result, note );
     
     result = TEST_GS2NITFHeader_header_meta( note );
-    print_test_results( "GeoHeader   metadata", result, note );
+    print_test_results( "GS2NITFHeader   metadata", result, note );
 
     print_module_footer("GeoImage extensions");
 
@@ -56,14 +56,14 @@ void TEST_headers(){
 
 
 /** Run the unit test for the Core GeoHeader Module */
-int TEST_GeoHeader_core(     string& note ){
+int TEST_GS2NITFHeader_core(     string& note ){
 
     note = "Not Implemented";
     return false;
 }
 
 
-int TEST_GeoHeader_filename( string& note ){
+int TEST_GS2NITFHeader_filename( string& note ){
     
     GEO::GeoImage img01;
     GEO::GeoImage img02("data/U_1001A.NTF", true );
@@ -81,21 +81,21 @@ int TEST_GeoHeader_filename( string& note ){
     return true;
 }
 
-int TEST_GeoHeader_pixel(    string& note ){
+int TEST_GS2NITFHeader_pixel(    string& note ){
 
 
     note = "Not Implemented";
     return false;
 }
 
-int TEST_GeoHeader_driver(   string& note ){
+int TEST_GS2NITFHeader_driver(   string& note ){
 
 
     note = "Not Implemented";
     return false;
 }
 
-int TEST_GeoHeader_header_meta(   string& note ){
+int TEST_GS2NITFHeader_header_meta(   string& note ){
     
     string filename01 = "data/U_1001A.NTF";
     string filename02 = "data/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf";
@@ -130,4 +130,8 @@ int TEST_GeoHeader_header_meta(   string& note ){
     return -1;
 }
 
- 
+int TEST_GS2NITFHeader_tacid( string& note ){
+
+    note = "Not Implemented";
+    return false;
+}

@@ -2,7 +2,7 @@
 
 #include "DEM.h"
 #include "../core/Enumerations.h"
-#include "../structures/GeoImage.h"
+#include <GeoImage.h>
 #include "../utilities/DTEDUtils.h"
 
 #include <algorithm>
