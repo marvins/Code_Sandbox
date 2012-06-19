@@ -147,12 +147,6 @@ int TEST_GeoHeader_header_meta(   string& note ){
     vector<pair<string,string> > header02 = header_data02->get_header_data();
     vector<pair<string,string> > header03 = header_data03->get_header_data();
    
-    cout << "outputting metadata" << endl;
-    cout << "size is : " << header01.size() << endl;
-    for( size_t i=0; i<header01.size(); i++){
-        cout << header01[i].first << " = " << header01[i].second << endl;
-    }
-
     note = "Not Fully Implemented";
     return -1;
 }

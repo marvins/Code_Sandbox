@@ -12,8 +12,36 @@ In this tutorial you will learn how to:
 
    * Use basic filtering operations to enhance image details
 
-Theory
-=======
+Image Sharpening Theory
+=======================
+
+#. *Image Enhancement* is used in Image Processing to highlight details and transitions in image intensity [gonzalez]_.
+   It makes sense that a region with no color changes has very little detail.  Therefore, enhancement of these regions
+   makes very little sense.  In order to measure the change in detail, and therefore enhance the image, we must first 
+   compute the difference in intensity over some distance. For the mathematically inclined, this results in the computation
+   of the first-order derivative of the image intensity.  
+   
+
+.. math::
+
+    \bigtriangledown F = \left( \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y} \right) 
+
+a. In terms of practicality, the gradient of an image is achieved through a variety of methods.  Most techniques are
+supported by OpenCV and some examples include Canny, Sobel, Prewitt, and Laplacian. For this lesson, we will focus
+on Unsharp Mask Filtering.  
+
+
+    
+
+#. Once we know the details in an image, we can separate the details and re-apply them back onto the original image.
+
+
+.. [gonzalez] Gonzalez, Wood, "Digital Image Processing (3rd Edition)"
+
+
+Unsharp Masking Theory
+======================
+
 
 #. *Unsharp Masking* is an image enhancement technique commonly applied in modern photo 
     manipulation software.  Image enhancement or `image sharpening`, seeks to exaggerate
@@ -26,6 +54,8 @@ Theory
        +----------+----------+---------+
        |  |TXT01| |  |TXT02| | |TXT03| |
        +----------+----------+---------+
+
+    b. Once the high-pass information is determined from the original image, 
 
 
 

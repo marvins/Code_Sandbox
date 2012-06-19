@@ -41,7 +41,7 @@ void TEST_dem_module(){
 int TEST_dem_constructors( string& note ){
     
     //create DEM object
-    double tl_lat =   39.1;
+    double tl_lat =   37.8;
     double tl_lon = -118.1;
     double br_lat =   37.2;
     double br_lon = -118.01;

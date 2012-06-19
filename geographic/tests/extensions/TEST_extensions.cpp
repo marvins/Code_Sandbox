@@ -26,6 +26,7 @@ int TEST_GS2NITFHeader_filename( string& note );
 int TEST_GS2NITFHeader_pixel(    string& note );
 int TEST_GS2NITFHeader_driver(   string& note );
 int TEST_GS2NITFHeader_header_meta(   string& note );
+int TEST_GS2NITFHeader_tacid( string& note );
 
 void TEST_extensions_module(){
     
@@ -49,6 +50,9 @@ void TEST_extensions_module(){
     
     result = TEST_GS2NITFHeader_header_meta( note );
     print_test_results( "GS2NITFHeader   metadata", result, note );
+
+    result = TEST_GS2NITFHeader_tacid( note );
+    print_test_results( "GS2NITFHeader   TACID Parsing", result, note );
 
     print_module_footer("GeoImage extensions");
 
@@ -120,17 +124,24 @@ int TEST_GS2NITFHeader_header_meta(   string& note ){
     vector<pair<string,string> > header02 = header_data02->get_header_data();
     vector<pair<string,string> > header03 = header_data03->get_header_data();
    
-    cout << "outputting metadata" << endl;
-    cout << "size is : " << header01.size() << endl;
-    for( size_t i=0; i<header01.size(); i++){
-        cout << header01[i].first << " = " << header01[i].second << endl;
-    }
-
     note = "Not Fully Implemented";
     return -1;
 }
 
 int TEST_GS2NITFHeader_tacid( string& note ){
+
+    //create several images
+    GEO::GeoImage img01( "24FEB129Z0200700ZXGEO000GS0000004F482007.ntf", false );
+    GEO::GeoImage img02( "24FEB129Z0200887ZXGIRMOSGS0000004F481AAE.ntf", false );
+    GEO::GeoImage img03( "24FEB129Z0200899ZXGIRMOSGS0000004F481AB4.ntf", false );
+
+    GEO::GeoHeader_Info* hdr01 = img01.get_header();
+    GEO::GeoHeader_Info* hdr02 = img02.get_header();
+    GEO::GeoHeader_Info* hdr03 = img03.get_header();
+
+    GEO::GS2NITFHeader_Info gs2hdr01(*dynamic_cast<GEO::NITFHeader_Info*>(hdr01->clone()));
+    
+    cout << gs2hdr01.getTACID() << endl;
 
     note = "Not Implemented";
     return false;
