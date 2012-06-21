@@ -1,30 +1,50 @@
 #include "GS2NITFHeader.h"
 
 #include <iostream>
+#include <sstream>
 #include <string>
 
 using namespace std;
 
+static int str2int( string const& input ){
+    int out;
+    stringstream(input) >> out;
+    return out;
+}
+
 namespace GEO{
 
     string months[] = {"NONE","JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"};
-    
+   
+    /** TACID Default Constructor */
     TACID::TACID(){
         day = 0;
         month = 1900;
         year = 0;
-        program_code[0] = '2';
-        program_code[1] = 'Z';
+        program_code = "2Z";
         filename = "_NONE_SELECTED_";
     }
 
+    /** TACID Parameterized Constructor */
     TACID::TACID( std::string const& tacid ){
-
-        day = 0;
+        
+        //set the day (Acquisition Date)
+        day   = str2int( tacid.substr(0,2));
+        
+        //set the month (Acquisition Date)
         month = 0;
-        year = 0;
+        for( size_t i=1; i<13; i++ )
+            if( tacid.substr(2,3) == months[i] )
+                month = i;
+        
+        //set the year (Acquisition Date)
+        year = 2000 + str2int( tacid.substr(5,2));
+        
+        //set the Program Code
+        program_code = tacid.substr(7,2);
+        
+        //set the filename
         filename = tacid;
-        cout << "filename for tacid: " << tacid << endl;
     }
 
     ostream& operator << ( ostream& ostr, const TACID& tacid ){

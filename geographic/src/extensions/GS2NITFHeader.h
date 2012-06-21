@@ -8,26 +8,50 @@
 
 
 namespace GEO{
-
+    
+    /**
+     * @class TACID
+     *
+     * Abstraction for the GS2 TACID designator.
+    */
     class TACID{
 
         public:
-
+            
+            /**
+             * TACID Default Constructor
+            */
             TACID( );
+
+            /**
+             *  TACID Parameterized Constructor
+             *
+             * @param[in] tacid input string
+            */
             TACID( std::string const& tacid );
 
-            int day;
-            int month;
-            int year;
+            int day;                /*< Day of the month  */
+            int month;              /*< Month of the year */
+            int year;               /*< Year              */
 
-            char program_code[2];
-
-            std::string filename;
+            std::string program_code;    /*< Program Code      */
+            std::string filename;   /*< Filename of image */
 
     };
 
+    /** 
+      * Output stream operator
+      *
+      * ostr   Output stream
+      * tacid  TACID class
+    */
     std::ostream& operator << ( std::ostream& ostr, const TACID& tacid );
 
+    /**
+     *  @class GS2NITFHeader_Info
+     *
+     *  GS2 NITF Image Header
+    */
     class GS2NITFHeader_Info : public NITFHeader_Info {
 
         public:
