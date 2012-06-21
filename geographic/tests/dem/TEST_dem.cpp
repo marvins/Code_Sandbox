@@ -41,9 +41,9 @@ void TEST_dem_module(){
 int TEST_dem_constructors( string& note ){
     
     //create DEM object
-    double tl_lat =   37.8;
+    double tl_lat =   38.1;
     double tl_lon = -118.1;
-    double br_lat =   37.2;
+    double br_lat =   37.8;
     double br_lon = -118.01;
 
     GEO::DEM dem_01( tl_lat, tl_lon, br_lat, br_lon, GEO::DEM_Params( GEO::DTED, "data/dted")); 
