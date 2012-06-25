@@ -23,6 +23,7 @@ namespace GEO{
         year = 0;
         program_code = "2Z";
         filename = "_NONE_SELECTED_";
+        sortie_number = "00";
     }
 
     /** TACID Parameterized Constructor */
@@ -45,6 +46,9 @@ namespace GEO{
         
         //set the Program Code
         program_code = tacid.substr(7,2);
+
+        //set the sortie number
+        sortie_number = tacid.substr(9,2);
         
     }
 

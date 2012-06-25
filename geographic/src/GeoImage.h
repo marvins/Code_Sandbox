@@ -2,6 +2,7 @@
 #define __GEOIMAGE_CORE_H__
 
 #define GEOVERSION 1.0
+#define DEPLOYED
 
 #include <geoimage/GS2NITFHeader.h>
 #include <geoimage/DEM.h>

@@ -15,15 +15,15 @@ int main( int argc, char* argv[] ){
     GEO::GeoImage geoimg( argv[1], true );
 
     Mat img = geoimg.get_image();
-    namedWindow("OUTPUT");
-    imshow("OUTPUT", img);
-    waitKey(0);
 
     //write the image to file
     string output_filename = "result.ntf";
-    //GEO::GeoHeader_Info* header_info = geoimg.get_header();
-    
-    //GEO::GDAL_Data::write( output_filename, img, header_info );
+    GEO::GeoHeader_Info* header_info = geoimg.get_header();
+   
+    header_info->set_header_item("NITF_ISORCE","HELLO");
+    header_info->set_header_item("NITF_ISREL","WORLD");
+
+    GEO::GDAL_Data::write( output_filename, img, header_info );
 
 
     return 0;

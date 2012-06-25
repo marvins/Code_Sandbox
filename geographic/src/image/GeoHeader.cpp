@@ -80,4 +80,18 @@ bool GeoHeader_Info::get_header_item( std::string const& key, std::string& resul
     return false;
 }
 
+bool GeoHeader_Info::set_header_item( std::string const& key, std::string const& value ){
+
+    bool fndKey = false;
+    for( size_t i=0; i<header_data.size(); i++){
+        if( header_data[i].first == key ){
+            header_data[i].second = value;
+            fndKey = true;
+        }
+    }
+    if( fndKey == false )
+        header_data.push_back( pair<string,string>(key, value));
+    return true;
+}
+
 }//end of GEO namespace

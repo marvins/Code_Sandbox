@@ -4,8 +4,11 @@
 #include <iostream>
 #include <string>
 
+#ifdef DEPLOYED
+#include "NITFHeader.h"
+#else
 #include <NITFHeader.h>
-
+#endif
 
 namespace GEO{
     
