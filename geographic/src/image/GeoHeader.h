@@ -126,6 +126,9 @@ class GeoHeader_Info{
         void set_header_data( std::vector<std::pair<std::string,std::string> >const& hdata ); 
         std::vector<std::pair<std::string,std::string> > get_header_data()const;
 
+        bool get_header_item( std::string const& key, std::string& result );
+
+
     protected:
 
         PixelType pixeltype;            /*<  Pixeltype of GDAL Data */

@@ -67,4 +67,17 @@ std::vector<std::pair<std::string,std::string> > GeoHeader_Info::get_header_data
     return header_data;
 }
 
+bool GeoHeader_Info::get_header_item( std::string const& key, std::string& result ){
+    
+    for( size_t i=0; i<header_data.size(); i++ ){
+        if( header_data[i].first == key ){
+            result = header_data[i].second;
+            return true;
+        }
+    }
+
+    result = "";
+    return false;
+}
+
 }//end of GEO namespace
