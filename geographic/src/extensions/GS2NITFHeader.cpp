@@ -28,6 +28,9 @@ namespace GEO{
     /** TACID Parameterized Constructor */
     TACID::TACID( std::string const& tacid ){
         
+        //set the filename
+        filename = tacid;
+        
         //set the day (Acquisition Date)
         day   = str2int( tacid.substr(0,2));
         
@@ -43,16 +46,22 @@ namespace GEO{
         //set the Program Code
         program_code = tacid.substr(7,2);
         
-        //set the filename
-        filename = tacid;
     }
 
     ostream& operator << ( ostream& ostr, const TACID& tacid ){
 
         ostr << "TACID: " << endl;
-        ostr << "     Filename : " << tacid.filename << endl;
-        ostr << "     Acq Date : " << tacid.day << months[tacid.month] << tacid.year << endl;
-        ostr << "     Prog Code: " << tacid.program_code << endl;
+        ostr << "     Filename        : " << tacid.filename << endl;
+        ostr << "     Acq Date        : " << tacid.day << months[tacid.month] << tacid.year << endl;
+        ostr << "     Prog Code       : " << tacid.program_code << endl;
+        ostr << "     Sortie Number   : " << tacid.sortie_number << endl;
+        ostr << "     Scene Number    : " << tacid.scene_number << endl;
+        ostr << "     Producer Code   : " << tacid.producer_code << endl;
+        ostr << "     Product Number  : " << tacid.product_number << endl;
+        ostr << "     Project Code    : " << tacid.project_code << endl;
+        ostr << "     Replay Code     : " << tacid.replay_code << endl;
+        ostr << "     Producer SN     : " << tacid.producer_sn << endl;
+        ostr << "     Production DATIM: " << tacid.production_datim << endl;
         return ostr;
     }
 

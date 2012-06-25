@@ -30,13 +30,21 @@ namespace GEO{
             */
             TACID( std::string const& tacid );
         
-        private:
+        //private:
             int day;                /*< Day of the month  */
             int month;              /*< Month of the year */
             int year;               /*< Year              */
+            int scene_number;       /*< Scene Number */
 
-            std::string program_code;    /*< Program Code      */
-            std::string filename;   /*< Filename of image */
+            std::string program_code;       /*< Program Code      */
+            std::string filename;           /*< Filename of image */
+            std::string sortie_number;      /*< Sortie Number     */
+            std::string producer_code;      /*< Producer Code     */
+            std::string product_number;     /*< Product Number    */
+            std::string project_code;       /*< Project Code      */
+            std::string replay_code;        /*< Replay Code       */
+            std::string producer_sn;        /*< Producer SN       */
+            std::string production_datim;   /*< Production DATIM  */
 
     };
 
