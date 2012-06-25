@@ -29,7 +29,8 @@ namespace GEO{
              * @param[in] tacid input string
             */
             TACID( std::string const& tacid );
-
+        
+        private:
             int day;                /*< Day of the month  */
             int month;              /*< Month of the year */
             int year;               /*< Year              */

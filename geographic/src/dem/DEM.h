@@ -9,6 +9,12 @@
 
 namespace GEO{
 
+/**
+  * @class DEM_Params
+  *
+  * Typical parameters for the Digital Elevation Model
+  * object.
+*/
 class DEM_Params{
     
     public:
@@ -19,6 +25,11 @@ class DEM_Params{
 
 };
 
+/**
+ * @class DEM 
+ *
+ * Digital Elevation Model object
+ */
 class DEM{
 
     public:

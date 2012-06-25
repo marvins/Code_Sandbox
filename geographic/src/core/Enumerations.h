@@ -4,13 +4,13 @@
 namespace GEO{
 
     /**
-     * Enumeration useful for loading different image types. The
-     * only planned type considered now is the NITF.
+     * Enumerations useful for loading different image types.
+     *
      */
     enum GEO_IMAGE_TYPE{
-        NITF,
-        DTED,
-        SRTM
+        NITF  /*< NITF Imagery */,
+        DTED  /*< DTED Elevation Imagery */,
+        SRTM  /*< SRTM Elevation Imagery */
     };
 
 }
