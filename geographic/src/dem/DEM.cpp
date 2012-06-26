@@ -25,7 +25,7 @@ namespace GEO{
     }// end of DEM_Params constructor
 
     DEM::DEM( double const& tl_lat, double const& tl_lon, double const& br_lat, double const& br_lon, DEM_Params const& params ){
-
+        
         /** need to start looking at how many files we need
          * 
          * 1.  DTED uses 1 deg x 1 deg grids
@@ -44,13 +44,11 @@ namespace GEO{
             tl.x = max( tl_lon, br_lon);
             br.y = min( tl_lat, br_lat);  
             tl.y = max( tl_lat, br_lat);
-
+            
             //check to see if we have one file or multiple files
-
             //build list of images required
             int lat_needed = 1 + fabs( std::floor(tl.y) - std::floor(br.y) );
             int lon_needed = 1 + fabs( std::floor(tl.x) - std::floor(br.x) );
-
             vector<Mat> crops;
 
             //create size table
@@ -66,8 +64,8 @@ namespace GEO{
 
                     //compute the required filename
                     string exp_filename = DTEDUtils::coordinate2filename( 
-                            /** Lat */std::floor(br.y)+j+0.0001, 
-                            /** Lon */std::floor(br.x)+i+0.0001 
+                            /** Lat */std::floor(br.y)+(lat_needed - j - 1)+0.0001, 
+                            /** Lon */std::floor(br.x)+(lon_needed - i - 1)+0.0001 
                             );
 
                     string act_filename = params.dted_root_dir + "/" + exp_filename;
@@ -80,6 +78,21 @@ namespace GEO{
 
                     //load crop
                     Mat subcrop = GEO::GeoImage( act_filename, true ).get_image();
+                    
+                    if( subcrop.type() != CV_16SC1 )
+                        throw string("Image must be CV_16SC1" );
+                    //find largest
+                    int mx = 0;
+                    int I=0, J=0;
+                    for( size_t a=0; a<subcrop.cols; a++)
+                        for( size_t b=0; b<subcrop.rows; b++)
+
+                            if( subcrop.at<short>(b,a) > mx ){
+                                mx = subcrop.at<short>(b,a);
+                                I = a;
+                                J = b;
+                            }
+                     cout << "image max is " << mx << " at pos " << I << ", " << J << endl;
 
                     //get crop range
                     pair<double,double> lat_ran( std::max( std::floor(br.y)+j, br.y ), std::min( std::ceil(br.y)+j, tl.y));
@@ -111,34 +124,39 @@ namespace GEO{
                     crops.push_back(crop.clone());
                 }
             }
-
+            
+            //compute the expected width of the image
             vector<int> xlens;  xlens.push_back(0);
             for( size_t xx=0; xx<lon_needed; xx++ )
                 xlens.push_back( crops[xx].cols + xlens[xx]);
 
+            //compute the expected height of the image
             vector<int> ylens;  ylens.push_back(0);
             for( size_t yy=0; yy<lat_needed; yy++ )
-                ylens.push_back( crops[yy].rows + ylens[yy]);
+                ylens.push_back( crops[yy*lon_needed].rows + ylens[yy]);
 
             int cx = 0;
             int cy = 0;
             tile = Mat( Size( xlens.back(), ylens.back()), crops[0].type() );
+            tile = Scalar(0);
 
             for( size_t ii=0; ii<crops.size(); ii++){
 
                 cx = xlens[ii%lon_needed];
                 cy = ylens[ii/lon_needed];
-
+                
                 for( int xx =0; xx < crops[ii].cols; xx++ )
                     for( int yy =0; yy < crops[ii].rows; yy++ ){
+
                         if( crops[0].type() == CV_16UC1 )
-                            tile.at<ushort>( yy-cy, xx-cx) = crops[ii].at<ushort>( yy, xx);
+                            tile.at<ushort>( yy+cy, xx+cx) = crops[ii].at<ushort>( yy, xx);
                         else if( crops[0].type() == CV_16SC1 )
-                            tile.at<short>( yy-cy, xx-cx) = crops[ii].at<short>( yy, xx);
+                            tile.at<short>( yy+cy, xx+cx) = crops[ii].at<short>( yy, xx);
                         else
                             throw string("ERROR: unsupported dem format");
                     }
             }
+            return;
 
         }
         else{
@@ -148,7 +166,15 @@ namespace GEO{
 
     }
 
+    /**
+     * Destructor
+    */
+    DEM::~DEM(){
+    }
 
+    /**
+     * Pull the elevation data as an OpenCV Mat
+    */
     cv::Mat DEM::get_raw()const{
 
         if( !tile.data )
@@ -156,17 +182,20 @@ namespace GEO{
         return tile.clone();
     } //end of get_raw function
 
-
+    
+    /**
+      * Return the value and location of the highest elevation
+      * in the tile.
+    */
     double DEM::max_elevation( double& lat, double& lon )const{
         
-        cout << "Max elevation " << endl;
-        double Max = 0;
+        double _max = 0;
         int I = 0, J = 0;
         for( size_t i=0; i<tile.cols; i++)
             for( size_t j=0; j<tile.rows; j++ )
                 if( tile.type() == CV_16SC1 ){
-                    if( tile.at<short>(j,i) > Max ){
-                        Max = tile.at<short>(j,i);
+                    if( tile.at<short>(j,i) > _max ){
+                        _max = tile.at<short>(j,i);
                         I = i;
                         J = j;
                     }
@@ -174,9 +203,7 @@ namespace GEO{
          lat = J;
          lon = I;
 
-        cout << "Max is " << Max << endl;
-        cout << "end of Max elevation" << endl;
-        return Max;
+        return _max;
     }
 
 }//end of GEO namespace

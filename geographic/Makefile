@@ -227,7 +227,7 @@ clean:
 	rm unit_test
 
 check:
-	g++ -o build/unit_test $(UTEST_SOURCES) $(GDAL) $(OPENCV) $(TEST) -I$(PREFIX)/include -I$(PREFIX)/include/geoimage -L$(PREFIX)/lib -lgeoimage $(OFLAGS)
+	g++ -o build/unit_test $(UTEST_SOURCES) $(GDAL) $(OPENCV) $(TEST) -I$(PREFIX)/include -I$(PREFIX)/include/geoimage -L$(PREFIX)/lib -lgeoimage_DEBUG $(DFLAGS)
 	./build/unit_test
 
 install:
