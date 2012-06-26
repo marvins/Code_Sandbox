@@ -121,6 +121,10 @@ namespace GEO{
         return "IMG.NITF.GS2";
     }
 
+    std::string GS2NITFHeader_Info::get_gdal_driver_format() const{
+        return "NITF";
+    }
+
     TACID GS2NITFHeader_Info::getTACID()const{
         cout << "getTACID: " << m_TACID.filename << endl;
         return m_TACID;

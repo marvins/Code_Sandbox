@@ -103,6 +103,7 @@ class GeoHeader_Info{
          * @return Driver Format as String
          */
         virtual std::string get_driver_format()const = 0;
+        virtual std::string get_gdal_driver_format()const = 0;
 
         /** 
          * Check if the data is valid on the header.

@@ -73,7 +73,6 @@ void GDAL_Data::write( std::string const& image_filename, cv::Mat const& image, 
     
     for( size_t i=0; i<header_info.size(); i++ ){
        
-       cout << "Start of loop " << i << " of " << header_info.size() <<  endl;
         papszOptions[i] = new char[header_info[i].first.size() + header_info[i].second.size() + 2];
         for( size_t j=0; j<header_info[i].first.size(); j++)
             papszOptions[i][j] = header_info[i].first[j];
@@ -81,14 +80,11 @@ void GDAL_Data::write( std::string const& image_filename, cv::Mat const& image, 
         for( size_t j=0; j<header_info[i].second.size(); j++)
             papszOptions[i][j + header_info[i].first.size()+1] = header_info[i].second[j];
         papszOptions[i][ header_info[i].first.size() + header_info[i].second.size() + 1] = '\0';
-       cout << "End of loop " << i << endl;
     }
     papszOptions[header_info.size()] = NULL;
 
-    cout << "Driver name: " << header_data->get_driver_format().c_str() << endl;
-    GDALDriver* oDriver = GetGDALDriverManager()->GetDriverByName(header_data->get_driver_format().c_str());
+    GDALDriver* oDriver = GetGDALDriverManager()->GetDriverByName(header_data->get_gdal_driver_format().c_str());
     
-    cout << "begin of write" << endl;
     //create an output dataset
     GDALDataset *outputData = oDriver->Create( image_filename.c_str(), 
             image.cols, image.rows, image.channels(), header_data->get_pixel_type().get_gdal_type(),
@@ -96,7 +92,6 @@ void GDAL_Data::write( std::string const& image_filename, cv::Mat const& image, 
     
     outputData->SetMetadata(papszOptions);
     
-    cout << "end of write" << endl;
     GDALRasterBand* band;
 
 

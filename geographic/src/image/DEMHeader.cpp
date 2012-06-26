@@ -40,4 +40,7 @@ std::string DEMHeader_Info::get_driver_format() const{
     return "DEM";
 }
 
+std::string DEMHeader_Info::get_gdal_driver_format() const{
+    return "UNKNOWN";
+}
 }

@@ -40,4 +40,8 @@ std::string DTEDHeader_Info::get_driver_format() const{
     return "DEM.DTED";
 }
 
+std::string DTEDHeader_Info::get_gdal_driver_format() const{
+    return "DTED";
+}
+
 }

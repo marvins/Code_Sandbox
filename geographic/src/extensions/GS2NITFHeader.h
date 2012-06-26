@@ -78,6 +78,7 @@ namespace GEO{
             GeoHeader_Info*& clone()const;
 
             std::string get_driver_format()const;
+            std::string get_gdal_driver_format()const;
 
             TACID getTACID()const;
             void setTACID( const TACID& tacid );

@@ -37,9 +37,14 @@ class DEM{
         DEM( double const& lat, double const& lon, DEM_Params const& params );
     
         cv::Mat get_raw()const;
+    
+        double max_elevation( double& lat, double& lon )const;
 
     private:
         cv::Mat tile;
+        cv::Point2f tl;
+        cv::Point2f br;
+
 
 }; //end of DEM class
 

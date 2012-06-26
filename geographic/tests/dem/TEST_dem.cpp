@@ -40,15 +40,33 @@ void TEST_dem_module(){
 
 int TEST_dem_constructors( string& note ){
     
+    /**
+     *  Notes for development of unit tests
+     *
+     *  for w119/n037.dt2
+     *      max point is 4325  at  x= 2680, y= 1318
+     *      min point is 1166  at  x= 2814, y= 3600
+     *
+     *  for w119/n038.dt2
+     *      max point is 4325  at  x= 2680, y= 1318
+     *      min point is 1166  at  x= 2814, y= 3600
+    */
     //create DEM object
-    double tl_lat =   37.91;
+    double tl_lat =   39.1;
     double tl_lon = -118.1;
     double br_lat =   37.8;
     double br_lon = -118.01;
-
+    
+    cout << "Building Tile" << endl;
     GEO::DEM dem_01( tl_lat, tl_lon, br_lat, br_lon, GEO::DEM_Params( GEO::DTED, "data/dted")); 
 
+    cout << "Pulling Tile" << endl;
     Mat tile01 = dem_01.get_raw();
+    
+    cout << "Computing Max Elevation" << endl;
+    double lat01, lon01;
+    double elev = dem_01.max_elevation( lat01, lon01 );
+    cout << "Computed elevation is " << elev << endl;
 
     note = "Operation failed";
     return false;

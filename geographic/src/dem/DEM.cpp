@@ -40,14 +40,16 @@ namespace GEO{
              */
 
             //compute range
-            double minx = min( tl_lon, br_lon);  double maxx = max( tl_lon, br_lon);
-            double miny = min( tl_lat, br_lat);  double maxy = max( tl_lat, br_lat);
+            br.x = min( tl_lon, br_lon);  
+            tl.x = max( tl_lon, br_lon);
+            br.y = min( tl_lat, br_lat);  
+            tl.y = max( tl_lat, br_lat);
 
             //check to see if we have one file or multiple files
 
             //build list of images required
-            int lat_needed = 1 + fabs( std::floor(maxy) - std::floor(miny) );
-            int lon_needed = 1 + fabs( std::floor(maxx) - std::floor(minx) );
+            int lat_needed = 1 + fabs( std::floor(tl.y) - std::floor(br.y) );
+            int lon_needed = 1 + fabs( std::floor(tl.x) - std::floor(br.x) );
 
             vector<Mat> crops;
 
@@ -64,8 +66,8 @@ namespace GEO{
 
                     //compute the required filename
                     string exp_filename = DTEDUtils::coordinate2filename( 
-                            /** Lat */std::floor(miny)+j+0.0001, 
-                            /** Lon */std::floor(minx)+i+0.0001 
+                            /** Lat */std::floor(br.y)+j+0.0001, 
+                            /** Lon */std::floor(br.x)+i+0.0001 
                             );
 
                     string act_filename = params.dted_root_dir + "/" + exp_filename;
@@ -80,8 +82,8 @@ namespace GEO{
                     Mat subcrop = GEO::GeoImage( act_filename, true ).get_image();
 
                     //get crop range
-                    pair<double,double> lat_ran( std::max( std::floor(miny)+j, miny ), std::min( std::ceil(miny)+j, maxy));
-                    pair<double,double> lon_ran( std::max( std::floor(minx)+i, minx ), std::min( std::ceil(minx)+i, maxx));
+                    pair<double,double> lat_ran( std::max( std::floor(br.y)+j, br.y ), std::min( std::ceil(br.y)+j, tl.y));
+                    pair<double,double> lon_ran( std::max( std::floor(br.x)+i, br.x ), std::min( std::ceil(br.x)+i, tl.x));
 
                     pair<double,double> lat_pct( lat_ran.first - std::floor(lat_ran.first), 1 - (std::ceil(lat_ran.second) - lat_ran.second));
                     pair<double,double> lon_pct( lon_ran.first - std::floor(lon_ran.first), 1 - (std::ceil(lon_ran.second) - lon_ran.second));
@@ -153,6 +155,29 @@ namespace GEO{
             throw string("Error: tile data uninitialized");
         return tile.clone();
     } //end of get_raw function
+
+
+    double DEM::max_elevation( double& lat, double& lon )const{
+        
+        cout << "Max elevation " << endl;
+        double Max = 0;
+        int I = 0, J = 0;
+        for( size_t i=0; i<tile.cols; i++)
+            for( size_t j=0; j<tile.rows; j++ )
+                if( tile.type() == CV_16SC1 ){
+                    if( tile.at<short>(j,i) > Max ){
+                        Max = tile.at<short>(j,i);
+                        I = i;
+                        J = j;
+                    }
+                }
+         lat = J;
+         lon = I;
+
+        cout << "Max is " << Max << endl;
+        cout << "end of Max elevation" << endl;
+        return Max;
+    }
 
 }//end of GEO namespace
 

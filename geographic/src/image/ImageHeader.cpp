@@ -37,7 +37,10 @@ GeoHeader_Info*& ImageHeader_Info::clone() const{
    
 
 std::string ImageHeader_Info::get_driver_format() const{
-    return "IMAGE";
+    return "IMG";
+}
+std::string ImageHeader_Info::get_gdal_driver_format() const{
+    return "IMG";
 }
 
 }
