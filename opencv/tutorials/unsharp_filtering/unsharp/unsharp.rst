@@ -15,25 +15,21 @@ In this tutorial you will learn how to:
 Image Sharpening Theory
 =======================
 
-#. *Image Enhancement* is used in Image Processing to highlight details and transitions in image intensity [gonzalez]_.
-   It makes sense that a region with no color changes has very little detail.  Therefore, enhancement of these regions
-   makes very little sense.  In order to measure the change in detail, and therefore enhance the image, we must first 
+   *Image Enhancement* is used in Image Processing to highlight details and transitions in image intensity [gonzalez]_.
+   In order to measure the change in detail, and therefore enhance an image, we must first 
    compute the difference in intensity over some distance. For the mathematically inclined, this results in the computation
-   of the first-order derivative of the image intensity.  
+   of the gradient of the image intensity.  
    
 
-.. math::
-
-    \bigtriangledown F = \left( \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y} \right) 
-
-a. In terms of practicality, the gradient of an image is achieved through a variety of methods.  Most techniques are
-supported by OpenCV and some examples include Canny, Sobel, Prewitt, and Laplacian. For this lesson, we will focus
-on Unsharp Mask Filtering.  
-
-
+.. math:: \bigtriangledown F = \left( \frac{\partial f}{\partial x}, \frac{\partial f}{\partial y} \right) 
     
+#. In terms of practicality, the gradient of an image is achieved through a variety of methods.  Most techniques are
+   supported by OpenCV and some examples include Canny, Sobel, Prewitt, and Laplacian. For this lesson, we will focus
+   on Unsharp Mask Filtering.  
 
-#. Once we know the details in an image, we can separate the details and re-apply them back onto the original image.
+   a.  Once we can determine relevant image features, we can enhance an image by reapplying that data back into the 
+       original image.  This has the effect of increasing the image intensity along areas with high detail and in
+       effect enhancing detail. 
 
 
 .. [gonzalez] Gonzalez, Wood, "Digital Image Processing (3rd Edition)"
@@ -44,16 +40,16 @@ Unsharp Masking Theory
 
 
 #. *Unsharp Masking* is an image enhancement technique commonly applied in modern photo 
-    manipulation software.  Image enhancement or `image sharpening`, seeks to exaggerate
-    image details such as edges and color gradients. 
+   manipulation software.  Image enhancement or `image sharpening`, seeks to exaggerate
+   image details such as edges and color gradients. 
 
-    a. Unsharp masking achieves this by detecting regions with low detail and removing that detail
-       from the image. Regions with high amounts of change will remain, allowing for the remaining 
-       detail to be returned to the original image. The figure below illustrates this.
+   a. Unsharp masking achieves enhancement by detecting regions with low detail and removing that detail
+      from the image. Regions with high amounts of change will remain, allowing for the remaining 
+      detail to be returned to the original image. The figure below illustrates this.
 
-       +----------+----------+---------+
-       |  |TXT01| |  |TXT02| | |TXT03| |
-       +----------+----------+---------+
+      +----------+----------+---------+
+      |  |TXT01| |  |TXT02| | |TXT03| |
+      +----------+----------+---------+
 
     b. Once the high-pass information is determined from the original image, 
 
