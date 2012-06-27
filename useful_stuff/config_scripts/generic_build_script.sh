@@ -1,5 +1,9 @@
 #! /usr/bin/env bash
 
+EXECUTABLE_NAME=gdal
+
+
+
 echo running gdal script
 
 
@@ -20,6 +24,13 @@ case "$1" in
 
     install )
         echo installing recent gdal
+        
+        echo checking for present locations
+        
+
+        echo checking out repository
+        
+        
         ;;
 
     update )
