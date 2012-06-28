@@ -28,7 +28,8 @@ case "$1" in
 
     update )
         svn up
-    
+        ;;
+
     * )
         usage
 
