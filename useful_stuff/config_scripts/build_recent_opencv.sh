@@ -2,7 +2,7 @@
 
 echo running opencv config
 
-OPENCV_REPO_LOCATION="http://code.opencv.org/svn/opencv/trunk/"
+OPENCV_REPO_LOCATION="http://code.opencv.org/svn/opencv"
 
 echo OpenCV Management Script
 
