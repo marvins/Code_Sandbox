@@ -1,5 +1,75 @@
 #! /usr/bin/env bash
 
+#------------------------------------------------------------------------------
+#----    GDAL Management Screen
+#------------------------------------------------------------------------------
+gdal_manager()
+{
+
+position=0
+while :
+    do  
+        clear
+        
+        echo GDAL Management Menu
+
+        echo Press q to exit
+
+        read -n1 response
+
+        case "${response}" in
+            
+            q|Q)
+                echo
+                return
+                ;;
+
+            *)
+                echo ${response}
+                exit 1
+                ;;
+
+        esac
+    done
+    return 
+
+}
+
+#------------------------------------------------------------------------------
+#----    OpenCV Management Screen
+#------------------------------------------------------------------------------
+opencv_manager()
+{
+
+position=0
+while :
+    do  
+        clear
+        
+        echo OpenCV Management Menu
+
+        echo Press q to exit
+
+        read -n1 response
+
+        case "${response}" in
+            
+            q|Q)
+                echo
+                return
+                ;;
+
+            *)
+                echo ${response}
+                exit 1
+                ;;
+
+        esac
+    done
+    return 
+
+}
+
 #-------------------------------------------------------------------------------
 #-- Procedure to display main menu
 #-------------------------------------------------------------------------------
@@ -35,7 +105,8 @@ else
     echo "Q           Quit"
 fi
 
-echo "Use [ ] keys or select letters to navigate"
+echo "Use <[ ]> keys for <up down> or select letters to navigate"
+echo "Use <x> for selection"
 echo
 }
 
@@ -78,6 +149,15 @@ while :
                 position=$[ position - 1 ]
                 if [ "$position" -lt "0" ]; then
                     position=2
+                fi
+                ;;
+            x|X)
+                if [ "$position" -eq "0" ]; then
+                    opencv_manager
+                elif [ "$position" -eq "1" ]; then
+                    gdal_manager
+                else
+                    exit 1
                 fi
                 ;;
 
