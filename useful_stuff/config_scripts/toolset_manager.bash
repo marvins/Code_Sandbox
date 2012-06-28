@@ -1,5 +1,7 @@
 #! /usr/bin/env bash
 
+# good command 
+#cat toolset_manager.cfg | grep OPENCV_BUILD_LOCATION | sed -e 's/OPENCV_BUILD_LOCATION=//g'
 #------------------------------------------------------------------------------
 #----    GDAL Management Screen
 #------------------------------------------------------------------------------
