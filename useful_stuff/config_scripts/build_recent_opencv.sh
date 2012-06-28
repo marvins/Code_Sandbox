@@ -26,6 +26,9 @@ case "$1" in
         svn checkout ${OPENCV_REPO_LOCATION}
         ;;
 
+    update )
+        svn up
+    
     * )
         usage
 
