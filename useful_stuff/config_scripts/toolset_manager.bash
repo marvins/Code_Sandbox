@@ -175,4 +175,8 @@ while :
 }
 
 
-main
+
+# Parsing agent
+if [ -z "$1" ]
+    main
+
