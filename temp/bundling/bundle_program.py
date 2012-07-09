@@ -35,12 +35,12 @@ class ConfigOptions:
 		"""
 		
 		# Load the ini file
-		inifilename = os.path.split(sys.argv[0])[0] + '/bundle_program.ini'
+		inifilename = os.path.split(sys.argv[0])[0] + '/bundle_program.cfg'
 
 		# make sure it exists
 		if os.path.exists( inifilename ) == False:
 			print 'Error: could not find config file'
-			return -1
+			sys.exit(-1)
 		
 		###############################
 		#      LOAD CONFIG FILE       #
@@ -139,13 +139,14 @@ class ConfigOptions:
 			# help
 			elif command_args[0][:6] == '--help' or command_args[0][:5] == '-help' or command_args[0][:4] == 'help':
 				self.usage()
-				quit()
+				sys.exit(-1)
 
 			# throw an exception if an option is not recognized
 			else:
+				print('ERROR: Unknown parameter: ' + command_args[0]);
 				self.usage()
-				raise Exception('ERROR: Unknown parameter: ' + command_args[0]);
-		
+				sys.exit(-1)
+
 	
 		# make sure everything we need is present
 		if self.input_directory == '_NONE_':
@@ -154,7 +155,7 @@ class ConfigOptions:
 			sys.exit(-1)
 
 		elif self.camera_set == False:
-			print('ERROR: camera_type must be set in either .ini config file or command-line options')
+			print('ERROR: camera_type must be set in either .cfg config file or command-line options')
 			self.usage()
 			sys.exit(-1)
 	
@@ -166,7 +167,10 @@ class ConfigOptions:
 			print('')
 			raw_input("HOLDING")
 
-		
+	
+	################################################
+	#-      Print Instructions On How To Use 	  -#
+	################################################
 	def usage( self ):
 		"""
 		Usage function for the program
@@ -294,6 +298,27 @@ class TACID:
 		output += 'production_datim : ' + str(self.production_datim) + '\n'
 
 		return output
+	
+	################################
+	#-     Get the Camera Type    -#
+	################################
+	def getCameraType( self ):
+		"""
+		This function will return the first three characters from the product number.
+		If the camera is EO, it should return GEO. If the camera is IR, it should 
+		return GIR.  All other options will throw exceptions until adequetly debugged.
+		"""
+		
+		if len( self.product_number ) != 6:
+			raise Exception('ERROR: Product Number for Image is Not 6 characters')
+
+		ctype = self.product_number[:3]
+		ctype = ctype[1:]
+		
+		if ctype != 'EO' and ctype != 'IR':
+			raise Exception('ERROR: Product Number does not contain an adequate Camera Type')
+
+		return ctype
 
 
 def nodesEqual( nodeA, nodeB ):
@@ -349,7 +374,7 @@ def validityCheckPost( camera_roots, options ):
 			print 'ERROR: directory does not have enough cam directories to satisfy expected requirement'
 			sys.exit(-1)
 		elif len(camera_roots) > options.num_ir_camera_directories:
-			cam_lists = cam_lists[:options.num_ir_camera_directories]
+			camera_roots = camera_roots[:options.num_ir_camera_directories]
 	
 	# Test EO Cameras
 	elif options.camera_type == 'EO':
@@ -361,6 +386,9 @@ def validityCheckPost( camera_roots, options ):
 	else:
 		raise Exception('unexpected camera type: ' + options.camera_type)
 
+	# make sure we got something useful
+	if camera_roots == None or len(camera_roots) <= 0:
+		raise Exception('Error: directory contains no camera directories')
 
 
 
@@ -432,6 +460,7 @@ def sort_image_list( root_dir ):
 		y = 0
 		i = -1
 		FLG = False
+		
 		while y < x:
 	    	
 			# set anchor at where the test point become less than
@@ -447,11 +476,11 @@ def sort_image_list( root_dir ):
 					root_dir.pop(x)
 					FLG = True
 					break
+			
 			y += 1
-		
+			
 
-		if ( FLG == True ) or (y == x):
-			x += 1
+		if FLG == True :
 			continue
 		
 		if y < x:
@@ -462,11 +491,20 @@ def sort_image_list( root_dir ):
 				root_dir[z] = root_dir[z-1]
 				z = z - 1
 			root_dir[i] = temp
-
+		
 		x += 1
+		
 
 
-def build_image_list( root_dir ):
+
+#------------------------------------------------------------#
+#-   				Build Image List						-#
+#------------------------------------------------------------#
+def build_image_list( root_dir, options ):
+	"""
+	This function takes an image directory and searches for all images matching a required pattern. 
+	If they exist, it will parse the image name and add the image to the list for that image directory.
+	"""
 
 	# create an empty list
 	images = []
@@ -481,7 +519,7 @@ def build_image_list( root_dir ):
 		if os.path.isdir( root_dir + '/' + item ) == True:
 
 			# enter directory recursively
-			images = images + build_image_list( root_dir + '/' + item )
+			images = images + build_image_list( root_dir + '/' + item, options )
 
 		# otherwise, check if file matches
 		elif os.path.isfile( root_dir + '/' + item ) == True:
@@ -489,7 +527,16 @@ def build_image_list( root_dir ):
 			# check if the extension is a nitf
 			if os.path.splitext( item )[1] == ".ntf" or os.path.splitext( item )[1] == ".NTF":
 				
-				images = images +  [[TACID(root_dir + '/' + item)]]
+				IMG = TACID(root_dir + '/' + item)
+				
+				# ensure the image has the proper camera type
+				ctype = IMG.getCameraType()
+
+				if ctype == options.camera_type:
+					images = images +  [[IMG]]
+				
+				else:
+					pass
 
 		else:
 			raise Exception("ERROR: must be file or directory")
@@ -498,7 +545,9 @@ def build_image_list( root_dir ):
 	return images
 
 
-
+#------------------------------------------------------------#
+#-        			Image Tuple Match      					-#
+#------------------------------------------------------------#
 def image_tuple_match( cam_lists ):
 	""" 
 	This function determines if the top items in each camera array are from the same 
@@ -520,8 +569,16 @@ def image_tuple_match( cam_lists ):
 	
 	return True
 
+
+#--------------------------------------------------------#
+#-					Pop Earliest Image					-#
+#--------------------------------------------------------#
 def pop_earliest_image( cam_lists ):
-	
+	"""
+	Remove the earliest image from the list of image lists.  This 
+	is basically just popping the top item from a list of stacks.
+	"""
+
 	top_item = cam_lists[0][0][0]
 	top_sn   = cam_lists[0][0][0].scene_number
 	top_pn   = cam_lists[0][0][0].producer_sn
@@ -559,9 +616,16 @@ def pop_earliest_image( cam_lists ):
 	cam_lists[top_idx].pop(0)
 
 
+######################################
+#-      Prune The Camera List       -#
+######################################
+def prune_camera_list( cam_lists, options ):
+	""" 
+	Prune that camera list to remove all images which don't match
+	between each required camera directory of don't have enough images
+	per camera step.
+	"""
 
-def prune_camera_list( cam_lists ):
-	
 	# find the length of the shortest camera directory
 	min_len = len( cam_lists[0] )
 	for x in range( 1, len( cam_lists )):
@@ -575,16 +639,21 @@ def prune_camera_list( cam_lists ):
 	
 	while True:
 		
+		# break the loop if a camera list is empty. That means the rest of the lists are junk
 		for x in range( 0, len( cam_lists )):
 			if len( cam_lists[x] ) <= 0:
 				breakNow = True
 				break
+
+		# If a list is empty or another mode request a break, then exit the while loop
 		if breakNow == True:
 			break
 
 		# if all cam top images don't match, then pop the youngest until they do
 		if  image_tuple_match( cam_lists ) == False:
 			pop_earliest_image( cam_lists )
+		
+		# If they do match, then add it to the output list
 		else:
 			st = []
 			for x in range( 0, len(cam_lists)):
@@ -595,9 +664,9 @@ def prune_camera_list( cam_lists ):
 	return output
 
 
-#------------------------------------------------#
+##################################################
 #-					Main Driver					-#
-#------------------------------------------------#
+##################################################
 def main():
 
 	# Parse command-line options
@@ -610,30 +679,28 @@ def main():
 	camera_roots = find_camera_directory( options.input_directory )
 	
 	# make sure that we have an expected number of camera directories
-	validityCheckPost( cam_roots, options );
+	validityCheckPost( camera_roots, options );
 
 
-	
-
-	# make sure we got something useful
-	if camera_roots == None or len(camera_roots) <= 0:
-		raise Exception('Error: directory contains no camera directories')
-	
 	# we need to build an array which contains the list of files for each camera folder
 	cam_lists = []
+	
 	if options.debug_level >= 1:
 		print 'building camera array'
 	
 	for x in range( 0, len(camera_roots)):
 		
 		# create image list
-		cam_lists.append( build_image_list( camera_roots[x] ))
+		cam_lists.append( build_image_list( camera_roots[x], options ))
+		
 		sort_image_list( cam_lists[x] )
 	
+
 	# next, we need to ensure that each camera folder contains only matching image pairs
 	if options.debug_level >= 1:
 		print 'pruning the list'
-	image_tuples = prune_camera_list( cam_lists )
+	
+	image_tuples = prune_camera_list( cam_lists, options )
 
 	# now that we have a list of images, we need to start dividing image sets
 	bundle_step = len(image_tuples) / options.num_bundles
