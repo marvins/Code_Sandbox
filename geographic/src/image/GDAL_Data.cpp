@@ -72,7 +72,6 @@ void GDAL_Data::write( std::string const& image_filename, cv::Mat const& image, 
     char ** papszOptions = new char*[header_info.size()+1];
     
     for( size_t i=0; i<header_info.size(); i++ ){
-       
         papszOptions[i] = new char[header_info[i].first.size() + header_info[i].second.size() + 2];
         for( size_t j=0; j<header_info[i].first.size(); j++)
             papszOptions[i][j] = header_info[i].first[j];
@@ -89,8 +88,8 @@ void GDAL_Data::write( std::string const& image_filename, cv::Mat const& image, 
     GDALDataset *outputData = oDriver->Create( image_filename.c_str(), 
             image.cols, image.rows, image.channels(), header_data->get_pixel_type().get_gdal_type(),
             NULL);
-    
-    outputData->SetMetadata(papszOptions);
+     
+    //outputData->SetMetadata(papszOptions);
     
     GDALRasterBand* band;
 

@@ -6,11 +6,7 @@ months  = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DE
 cameras = ['cam1','cam2','cam3','cam4','cam5']
 
 
-EO_camera_directories = 5
-IR_camera_directories = 4
 
-EO_images_per_step = 1
-IR_images_per_step = 4
 
 
 ###########################################
@@ -29,6 +25,8 @@ class ConfigOptions:
 	num_bundles      = 2
 	debug_level      = 0
 	prefix_dir       = '.'
+	num_eo_camera_directories = -1
+	num_ir_camera_directories = -1
 
 	def __init__( self ):
 		"""
@@ -47,13 +45,23 @@ class ConfigOptions:
 		inidata= inifile.read().split()	
 		
 		for str in inidata:
+
 			hdr, dta = str.split('=')
 			if   hdr == 'prefix_dir':
 				self.prefix_dir = dta
+			
 			elif hdr == 'debug_level':
 				self.debug_level = int(dta)
+			
+			elif hdr == 'num_eo_dir':
+				self.num_eo_camera_directories = int(dta)
+			
+			elif hdr == 'num_ir_dir':
+				self.num_ir_camera_directories = int(dta)
+			
+			elif hdr == 'camera_type':
+				self.camera_type = dta
 
-		
 		# begin sweeping over items, looking for matching parameters
 		command_args = sys.argv[1:]
 		while( len(command_args) > 0 ):
@@ -137,8 +145,8 @@ class ConfigOptions:
 		print '   .ini config options'
 		print '       prefix_dir=<value>   -- Where you want to start with the input path'
 		print '       input_dir=<value>    -- Name of input directory to bundle'
-		print '       output_dir=<value>   -- Where to place the results with respect to the input
-		print '       
+		print '       output_dir=<value>   -- Where to place the results with respect to the input'
+		print '     ' 
 
 	def __str__( self ):
 		"""
@@ -146,13 +154,15 @@ class ConfigOptions:
 		"""
 
 		strout  = 'Command-Line Options ' + '\n'
-		strout += '     Prefix Directory : ' + self.prefix_dir      + '\n'
-		strout += '     Input Directory  : ' + self.input_directory + '\n'
-		strout += '     Output Directory : ' + self.output_directory + '\n'
-		strout += '     Number Bundles   : ' + str(self.num_bundles) + '\n'
-		strout += '     Camera Type      : ' + self.camera_type + '\n'
-		strout += '     Camera Set       : ' + str(self.camera_set)  + '\n'
-		strout += '     Debug Level      : ' + str(self.debug_level) + '\n'
+		strout += '     Prefix Directory   : ' + self.prefix_dir      + '\n'
+		strout += '     Input Directory    : ' + self.input_directory + '\n'
+		strout += '     Output Directory   : ' + self.output_directory + '\n'
+		strout += '     Number Bundles     : ' + str(self.num_bundles) + '\n'
+		strout += '     Camera Type        : ' + self.camera_type + '\n'
+		strout += '     Camera Set         : ' + str(self.camera_set)  + '\n'
+		strout += '     Debug Level        : ' + str(self.debug_level) + '\n'
+		strout += '     Num EO Directories : ' + str(self.num_eo_camera_directories) + '\n'
+		strout += '     Num IR Directories : ' + str(self.num_ir_camera_directories) + '\n'
 		return strout
 
 
@@ -265,15 +275,27 @@ def isValidTACID( node ):
 
 def validityCheck( directory ):
 	
-	# make sure you have a file
-	if os.path.isdir(directory) == False:
-		raise Exception(directory + ' is not a directory');
+	# Make sure that the directory we are searching for exists
+	if os.path.exists( directory ) == False:
+		print 'Error: ' + directory + ' does not exist'
+		sys.exit(-1)
 
+	# make sure that it is a directory
+	if os.path.isdir(directory) == False:
+		print 'Error: ' + directory + ' is not a directory '
+		sys.exit(-1)
 	
 	return True
 
+#------------------------------------------------#
+#-    Find Camera Directory						-#
+#-												-#
+#-    Look for the baseline camera directory    -#
+#------------------------------------------------#
 def find_camera_directory( directory ):
 	
+
+
 	# extract the contents of the directory
 	contents = os.listdir(directory);
 
@@ -493,21 +515,44 @@ def prune_camera_list( cam_lists ):
 	return output
 
 
+#------------------------------------------------#
+#-					Main Driver					-#
+#------------------------------------------------#
 def main():
 
 	# Parse command-line options
 	options = ConfigOptions()
 	
-	# check that directory conforms to expected format
-	validityCheck( options.input_directory )
+	# make sure the data is in an intelligible format
+	validityCheck( options.input_directory);
 
 	# do recursive traversal to find the camera directory location
 	camera_roots = find_camera_directory( options.input_directory )
 	
+	# make sure that we have an expected number of camera directories
+	if 	options.camera_type == 'IR':
+		if len(camera_roots) < options.num_ir_camera_directories:
+			print 'ERROR: directory does not have enough cam directories to satisfy expected requirement'
+			sys.exit(-1)
+		elif len(camera_roots) > options.num_ir_camera_directories:
+			cam_lists = cam_lists[:options.num_ir_camera_directories]
+	
+	elif options.camera_type == 'EO':
+		if len(camera_roots) < options.num_eo_camera_directories:
+			print 'ERROR: directory does not have enough cam directories to satisfy expected requirement'
+			sys.exit(-1)
+		elif len(camera_roots) > options.num_eo_camera_directories:
+			camera_roots = camera_roots[:options.num_eo_camera_directories]
+	else:
+		raise Exception('unexpected camera type: ' + options.camera_type)
+	
+	print camera_roots
+	sys.exit(0)
+
 	# make sure we got something useful
 	if camera_roots == None or len(camera_roots) <= 0:
-		raise Exception('Error: directory contains no camera directories')	
-
+		raise Exception('Error: directory contains no camera directories')
+	
 	# we need to build an array which contains the list of files for each camera folder
 	cam_lists = []
 	if options.debug_level >= 1:
