@@ -1,12 +1,9 @@
 #! /usr/bin/env python
 
-import sys, os, time, tarfile
+import sys, os, time, tarfile, zipfile
 
 months  = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
 cameras = ['cam1','cam2','cam3','cam4','cam5']
-
-
-
 
 
 ###########################################
@@ -20,13 +17,19 @@ class ConfigOptions:
 	# List all of the command line options and assign initial values
 	camera_type      = '_NONE_'
 	camera_set       = False
-	input_directory  = '_NONE_'
-	output_directory = './image_output'
+	
+	input_base 		 = '.'
+	input_path  	 = '_NONE_'
+	output_base 	 = '.'
+	output_path		 = 'bundle'
+	
 	num_bundles      = 2
 	debug_level      = 0
-	prefix_dir       = '.'
 	num_eo_camera_directories = -1
 	num_ir_camera_directories = -1
+	num_eo_images_per_cam = 1
+	num_ir_images_per_cam = 1
+	compression_type = '_NONE_'
 
 	#-     Constructor    -#
 	def __init__( self ):
@@ -71,8 +74,16 @@ class ConfigOptions:
 				dta = dta.strip()
 
 				# Parse the Prefix Directory
-				if   hdr == 'prefix_dir':
-					self.prefix_dir = dta
+				if   hdr == 'input_base':
+					self.input_base = dta
+
+				elif hdr == 'output_base':
+					if dta[-1] == '/':
+						dta = dta[:-1]
+					self.output_base = dta
+
+				elif hdr == 'output_path':
+					self.output_path = dta
 				
 				elif hdr == 'debug_level':
 					self.debug_level = int(dta)
@@ -83,6 +94,20 @@ class ConfigOptions:
 				elif hdr == 'num_ir_dir':
 					self.num_ir_camera_directories = int(dta)
 				
+				elif hdr == 'eo_images_per_camera':
+					self.num_eo_images_per_cam = int(dta)
+				
+				elif hdr == 'ir_images_per_camera':
+					self.num_ir_images_per_cam = int(dta)
+				
+				elif hdr == 'compression_type':
+					if dta[0] != '.':
+						dta = '.' + dta
+					self.compression_type = dta
+				
+				elif hdr == 'num_bundles':
+					self.num_bundles = int(dta)
+
 				elif hdr == 'camera_type':
 					if self.camera_set == True:
 						print 'Conflicting messages, camera_type already set, ignoring'
@@ -98,15 +123,27 @@ class ConfigOptions:
 		while( len(command_args) > 0 ):
 			
 			# input camera directory
-			if command_args[0][:7] == '-input=':
-				self.input_directory = command_args[0][7:]
-				if self.input_directory[len(self.input_directory)-1] == '/':
-					self.input_directory = self.input_directory[:len(self.input_directory)-1]
+			if command_args[0][:12] == '-input_path=':
+				self.input_path = command_args[0][12:]
+
+				if self.input_path[-1] == '/':
+					self.input_path = self.input_path[:-1]
+				
+				command_args = command_args[1:]
+			
+			# prefix directory
+			elif command_args[0][:12] == '-input_base=':
+				self.input_base = command_args[12:]
 				command_args = command_args[1:]
 			
 			# output camera directory
-			elif command_args[0][:8] == '-output=':
-				self.output_directory = command_args[0][8:]
+			elif command_args[0][:13] == '-output_base=':
+				self.output_base = command_args[0][13:]
+				command_args = command_args[1:]
+			
+			# output camera bundle
+			elif command_args[0][:13] == '-output_path=':
+				self.output_path = command_args[0][13:]
 				command_args = command_args[1:]
 
 			# debugging level
@@ -146,26 +183,42 @@ class ConfigOptions:
 				print('ERROR: Unknown parameter: ' + command_args[0]);
 				self.usage()
 				sys.exit(-1)
-
 	
+		# do some management
+		if len(self.input_path) >= 1 and self.input_path[0] == '/':
+			self.input_base = '/'
+			self.input_path = self.input_path[1:]
+
+		if len(self.output_path) >= 1 and self.output_path[0] == '/':
+			self.output_base = '/'
+			self.output_path      = self.output_path[1:]
+		
+		if len(self.input_base) >= 1 and self.input_base[-1] != '/':
+			self.input_base += '/'
+
+		if len(self.output_base) >= 1 and self.output_base[-1] != '/':
+			self.output_base += '/'
+
 		# make sure everything we need is present
-		if self.input_directory == '_NONE_':
+		if self.input_path == '_NONE_':
 			print('ERROR: input camera directory must be defined')
 			self.usage()
 			sys.exit(-1)
 
+		elif self.compression_type != '.zip':
+			self.error_kill( 'ERROR: Invalid compression format, must be .zip')
+
 		elif self.camera_set == False:
-			print('ERROR: camera_type must be set in either .cfg config file or command-line options')
-			self.usage()
-			sys.exit(-1)
-	
+			self.error_kill( 'ERROR: camera_type must be set in either .cfg config file or command-line options', -1)	
 		
 		if self.debug_level >= 1:
 			print('Printing Current Configuration Options')
 			print self
 			print('')
 			print('')
-			raw_input("HOLDING")
+			
+			if self.debug_level >= 2:
+				raw_input("HOLDING")
 
 	
 	################################################
@@ -179,17 +232,23 @@ class ConfigOptions:
 		print sys.argv[0] + ' [options]'
 		print ''
 		print '   options:'
-		print '       -input=<input file>'
-		print '       -output=<output file>  (output will be tar.gz so don\'t add it to the string'
-		print '       -num_bundles=<number of desired image bundles>'
+		print '       -input_base=<directory> 		- Prefix of where the directory will be'
+		print '       -input_path=<input file>			- Directory you want to bundle'
+		print '       -output_path=<output file>  			- (output will be tar.gz so don\'t add it to the string)'
+		print '       -num_bundles=< integer >              - number of desired image bundles'
 		print '       -cam_type=<EO or IR>'
 		print '       -debug_level=<0 default>  [0 - only fatal, 1 - everything]'
 		print ''
 		print '   .ini config options'
-		print '       prefix_dir=<value>   -- Where you want to start with the input path'
-		print '       input_dir=<value>    -- Name of input directory to bundle'
-		print '       output_dir=<value>   -- Where to place the results with respect to the input'
-		print '     ' 
+		print '       input_base=<value>   -- Where you want to start with the input path'
+		print '       input_path=<value>    -- Name of input directory to bundle'
+		print '       output_base=<value>   -- Where to place the results with respect to the input'
+		print '     '
+		print ''
+		print '   Notes: '
+		print '      - Prefix Directory and Output Directory will default to .'
+		print '      - If you make the input directory absolute, the prefix will be ignored'
+		print '      - If you make the output file absolute, the output_base will be ignored'
 
 	def __str__( self ):
 		"""
@@ -197,16 +256,30 @@ class ConfigOptions:
 		"""
 
 		strout  = 'Command-Line Options ' + '\n'
-		strout += '     Prefix Directory   : ' + self.prefix_dir      + '\n'
-		strout += '     Input Directory    : ' + self.input_directory + '\n'
-		strout += '     Output Directory   : ' + self.output_directory + '\n'
+		strout += '     Prefix Directory   : ' + self.input_base + '\n'
+		strout += '     Input Directory    : ' + self.input_path  + '\n'
+		strout += '     Output Directory   : ' + self.output_base + '\n'
+		strout += '     Output File        : ' + self.output_path      + '\n'
 		strout += '     Number Bundles     : ' + str(self.num_bundles) + '\n'
-		strout += '     Camera Type        : ' + self.camera_type + '\n'
+		strout += '     Camera Type        : ' + self.camera_type      + '\n'
 		strout += '     Camera Set         : ' + str(self.camera_set)  + '\n'
 		strout += '     Debug Level        : ' + str(self.debug_level) + '\n'
 		strout += '     Num EO Directories : ' + str(self.num_eo_camera_directories) + '\n'
+		strout += '     Num EO Img Per Cam : ' + str(self.num_eo_images_per_cam) + '\n'
 		strout += '     Num IR Directories : ' + str(self.num_ir_camera_directories) + '\n'
+		strout += '     Num IR Img Per Cam : ' + str(self.num_ir_images_per_cam) + '\n'
+		strout += '\n'
+		strout += '     Input Dir Path     : ' + self.input_base + self.input_path + '\n'
+		strout += '     Output file will be: ' + self.output_base + self.output_path + self.compression_type + '\n'
 		return strout
+
+	###########################################
+	#        Default Error Function			  #
+	###########################################
+	def error_kill( self, msg, output_code ):
+		print(msg)
+		self.usage()
+		sys.exit(output_code)
 
 
 #####################################
@@ -366,6 +439,17 @@ def validityCheckPost( camera_roots, options ):
 	to the requirements of the specific camera type. The primary assumption made 
 	here is that the camera type has been set.
 	"""
+	
+	# sort camera roots
+	camera_roots.sort()
+	
+	if options.debug_level >= 2:
+		print 'detected directories pre validation'
+		for img in camera_roots:
+			print img
+		raw_input('hold')
+		print ''
+
 
 	# Test IR Cameras
 	if 	options.camera_type == 'IR':
@@ -373,6 +457,7 @@ def validityCheckPost( camera_roots, options ):
 		if len(camera_roots) < options.num_ir_camera_directories:
 			print 'ERROR: directory does not have enough cam directories to satisfy expected requirement'
 			sys.exit(-1)
+		
 		elif len(camera_roots) > options.num_ir_camera_directories:
 			camera_roots = camera_roots[:options.num_ir_camera_directories]
 	
@@ -390,6 +475,15 @@ def validityCheckPost( camera_roots, options ):
 	if camera_roots == None or len(camera_roots) <= 0:
 		raise Exception('Error: directory contains no camera directories')
 
+	if options.debug_level >= 2:
+		print 'detected directories post validation'
+		for img in camera_roots:
+			print img
+		raw_input('hold')
+		print ''
+
+
+	return camera_roots
 
 
 #------------------------------------------------#
@@ -548,7 +642,7 @@ def build_image_list( root_dir, options ):
 #------------------------------------------------------------#
 #-        			Image Tuple Match      					-#
 #------------------------------------------------------------#
-def image_tuple_match( cam_lists ):
+def image_tuple_match( cam_lists, options ):
 	""" 
 	This function determines if the top items in each camera array are from the same 
 	time step.  If they are, then it returns true.  Otherwise, it returns false.
@@ -558,12 +652,26 @@ def image_tuple_match( cam_lists ):
 	top_item = cam_lists[0][0][0]
 	
 	for lst in cam_lists:
+
+		# make sure the required number of images exist per frame
+		if options.camera_type == 'EO':
+			if len(lst[0]) != options.num_eo_images_per_cam:
+				return False
+		elif options.camera_type == 'IR':
+			if len(lst[0]) != options.num_ir_images_per_cam:
+				return False
+		else:
+			raise Exception('Unknown camera type')
+
+		# check scene number
 		if top_item.scene_number != lst[0][0].scene_number:
 			return False
 
+		# check product number
 		if top_item.product_number[:3] != lst[0][0].product_number[:3]:
 			return False
 
+		# check producer serial number
 		if top_item.producer_sn != lst[0][0].producer_sn:
 			return False
 	
@@ -597,7 +705,7 @@ def pop_earliest_image( cam_lists ):
 				top_pn   = cam_lists[idx][0][0].producer_sn
 				top_idx  = idx
 			else:
-				raise Exception("EROR")
+				raise Exception("ERROR")
 		
 		elif top_pn < cam_lists[idx][0][0].producer_sn:
 			continue
@@ -650,7 +758,7 @@ def prune_camera_list( cam_lists, options ):
 			break
 
 		# if all cam top images don't match, then pop the youngest until they do
-		if  image_tuple_match( cam_lists ) == False:
+		if  image_tuple_match( cam_lists, options ) == False:
 			pop_earliest_image( cam_lists )
 		
 		# If they do match, then add it to the output list
@@ -659,6 +767,7 @@ def prune_camera_list( cam_lists, options ):
 			for x in range( 0, len(cam_lists)):
 				st = st + cam_lists[x][0]
 				cam_lists[x] = cam_lists[x][1:]
+			
 			output.append(st)
 
 	return output
@@ -673,13 +782,13 @@ def main():
 	options = ConfigOptions()
 	
 	# make sure the data is in an intelligible format
-	validityCheckPre( options.input_directory);
+	validityCheckPre( options.input_base + options.input_path);
 
 	# do recursive traversal to find the camera directory location
-	camera_roots = find_camera_directory( options.input_directory )
+	camera_roots = find_camera_directory( options.input_base + options.input_path )
 	
 	# make sure that we have an expected number of camera directories
-	validityCheckPost( camera_roots, options );
+	camera_roots = validityCheckPost( camera_roots, options );
 
 
 	# we need to build an array which contains the list of files for each camera folder
@@ -694,19 +803,42 @@ def main():
 		cam_lists.append( build_image_list( camera_roots[x], options ))
 		
 		sort_image_list( cam_lists[x] )
-	
+		
+		if options.debug_level >= 2:
+			print 'images for list ' + str(x) + ' in directory ' + camera_roots[x]
+			for y in range( 0, len(cam_lists[x])):
+				print 'scene number: ' + str(cam_lists[x][y][0].scene_number) + '   with size: ' + str(len(cam_lists[x][y]))
+			raw_input('hold')
+			print ''
 
 	# next, we need to ensure that each camera folder contains only matching image pairs
 	if options.debug_level >= 1:
 		print 'pruning the list'
 	
 	image_tuples = prune_camera_list( cam_lists, options )
+	
+	
+	if options.debug_level >= 2:
+		print 'printing the pruned tree'
+		for x in range( 0, len(image_tuples)):
+			print '   bundle: ' + str(x) + '  --> len ' + str(len(image_tuples[x]))
+		raw_input('hold')
+		print ''
+
+	#  A potential problem exists where we may not have enough image sets to satisfy the 
+	# request given in number of bundles variable.  This means that we must bundle what we 
+	# and send an error back notifying that we only sent 'N' values
+	options.num_bundles = min( options.num_bundles, len(image_tuples))
+
 
 	# now that we have a list of images, we need to start dividing image sets
-	bundle_step = len(image_tuples) / options.num_bundles
-	
+	bundle_step = len(image_tuples) / options.num_bundles	
+
 	# create output data
-	tarball = tarfile.open( name=options.output_directory, mode='w:gz' )
+	zf = zipfile.ZipFile( options.output_base + options.output_path + options.compression_type, 'w')
+	
+	if options.debug_level >= 1:
+		print 'writing files to : ' + options.output_base + options.output_path + options.compression_type
 
 	# create current position pointer
 	current_pos = 0
@@ -717,11 +849,11 @@ def main():
 		for y in range( 0, len(image_tuples[current_pos])):
 			
 			# add file to tarball
-			if options.debug_level >= 1:
+			if options.debug_level >= 2:
 				print image_tuples[current_pos][y].raw_input
-			tarball.add( image_tuples[current_pos][y].raw_input)
+			zf.write( image_tuples[current_pos][y].raw_input, 'bundles/bundle'+str(x)+'/'+image_tuples[current_pos][y].input_string)
 
-
+	zf.close()
 	
 
 if __name__ == "__main__":
