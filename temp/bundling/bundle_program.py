@@ -28,6 +28,7 @@ class ConfigOptions:
 	num_eo_camera_directories = -1
 	num_ir_camera_directories = -1
 
+	#-     Constructor    -#
 	def __init__( self ):
 		"""
 		Default Constructor for the Configuration Options 
@@ -40,28 +41,58 @@ class ConfigOptions:
 		if os.path.exists( inifilename ) == False:
 			print 'Error: could not find config file'
 			return -1
-
+		
+		###############################
+		#      LOAD CONFIG FILE       #
+		###############################
 		inifile=open(inifilename, 'r')
-		inidata= inifile.read().split()	
+		inidata= inifile.readlines()
 		
 		for str in inidata:
+			
+			# Strip Whitespace from Line			
+			str = str.strip()
 
-			hdr, dta = str.split('=')
-			if   hdr == 'prefix_dir':
-				self.prefix_dir = dta
-			
-			elif hdr == 'debug_level':
-				self.debug_level = int(dta)
-			
-			elif hdr == 'num_eo_dir':
-				self.num_eo_camera_directories = int(dta)
-			
-			elif hdr == 'num_ir_dir':
-				self.num_ir_camera_directories = int(dta)
-			
-			elif hdr == 'camera_type':
-				self.camera_type = dta
+			# Ignore Empty Lines
+			if   len(str) <= 0:
+				pass
 
+			# Ignore comments
+			elif str[0] == '#':
+				pass
+
+			else:
+				
+				# Split line into item & object
+				hdr, dta = str.split('=')
+
+				# Strip whitespace from item and object
+				hdr = hdr.strip()
+				dta = dta.strip()
+
+				# Parse the Prefix Directory
+				if   hdr == 'prefix_dir':
+					self.prefix_dir = dta
+				
+				elif hdr == 'debug_level':
+					self.debug_level = int(dta)
+				
+				elif hdr == 'num_eo_dir':
+					self.num_eo_camera_directories = int(dta)
+				
+				elif hdr == 'num_ir_dir':
+					self.num_ir_camera_directories = int(dta)
+				
+				elif hdr == 'camera_type':
+					if self.camera_set == True:
+						print 'Conflicting messages, camera_type already set, ignoring'
+					else:
+						self.camera_type = dta
+						self.camera_set = True
+
+		##########################################
+		#       PARSE COMMAND-LINE OPTIONS       #
+		##########################################
 		# begin sweeping over items, looking for matching parameters
 		command_args = sys.argv[1:]
 		while( len(command_args) > 0 ):
@@ -118,14 +149,22 @@ class ConfigOptions:
 	
 		# make sure everything we need is present
 		if self.input_directory == '_NONE_':
+			print('ERROR: input camera directory must be defined')
 			self.usage()
-			raise Exception('ERROR: input camera directory must be defined')
-		
-		self.output_directory += '.tar.gz'
-		
+			sys.exit(-1)
+
+		elif self.camera_set == False:
+			print('ERROR: camera_type must be set in either .ini config file or command-line options')
+			self.usage()
+			sys.exit(-1)
 	
-		print self
-		raw_input("HOLDING")
+		
+		if self.debug_level >= 1:
+			print('Printing Current Configuration Options')
+			print self
+			print('')
+			print('')
+			raw_input("HOLDING")
 
 		
 	def usage( self ):
@@ -273,8 +312,16 @@ def isValidTACID( node ):
 	return True
 
 
-def validityCheck( directory ):
-	
+
+#------------------------------------------------#
+#-    			Basic Error Checking  			-#
+#------------------------------------------------#
+def validityCheckPre( directory ):
+	"""
+	This function does a basic check to make sure that the directory we have passed into the program
+	actually exists and furthermore that the directory is actually a directory. 
+	"""
+
 	# Make sure that the directory we are searching for exists
 	if os.path.exists( directory ) == False:
 		print 'Error: ' + directory + ' does not exist'
@@ -286,6 +333,36 @@ def validityCheck( directory ):
 		sys.exit(-1)
 	
 	return True
+
+
+def validityCheckPost( camera_roots, options ):
+	"""
+	This function checks that the root camera directories we have located conform
+	to the requirements of the specific camera type. The primary assumption made 
+	here is that the camera type has been set.
+	"""
+
+	# Test IR Cameras
+	if 	options.camera_type == 'IR':
+		
+		if len(camera_roots) < options.num_ir_camera_directories:
+			print 'ERROR: directory does not have enough cam directories to satisfy expected requirement'
+			sys.exit(-1)
+		elif len(camera_roots) > options.num_ir_camera_directories:
+			cam_lists = cam_lists[:options.num_ir_camera_directories]
+	
+	# Test EO Cameras
+	elif options.camera_type == 'EO':
+		if len(camera_roots) < options.num_eo_camera_directories:
+			print 'ERROR: directory does not have enough cam directories to satisfy expected requirement'
+			sys.exit(-1)
+		elif len(camera_roots) > options.num_eo_camera_directories:
+			camera_roots = camera_roots[:options.num_eo_camera_directories]
+	else:
+		raise Exception('unexpected camera type: ' + options.camera_type)
+
+
+
 
 #------------------------------------------------#
 #-    Find Camera Directory						-#
@@ -327,14 +404,17 @@ def find_camera_directory( directory ):
 					return dir_stack
 				else:
 					pass
-			
+
+	# Recursive Exit Condition		
 	else:
 		return dir_stack
 
 
 
 
-
+#--------------------------------------------#
+#-      Sort the image list by history		-#
+#--------------------------------------------#
 def sort_image_list( root_dir ):
 
 	# set x to the starting point
@@ -524,30 +604,16 @@ def main():
 	options = ConfigOptions()
 	
 	# make sure the data is in an intelligible format
-	validityCheck( options.input_directory);
+	validityCheckPre( options.input_directory);
 
 	# do recursive traversal to find the camera directory location
 	camera_roots = find_camera_directory( options.input_directory )
 	
 	# make sure that we have an expected number of camera directories
-	if 	options.camera_type == 'IR':
-		if len(camera_roots) < options.num_ir_camera_directories:
-			print 'ERROR: directory does not have enough cam directories to satisfy expected requirement'
-			sys.exit(-1)
-		elif len(camera_roots) > options.num_ir_camera_directories:
-			cam_lists = cam_lists[:options.num_ir_camera_directories]
+	validityCheckPost( cam_roots, options );
+
+
 	
-	elif options.camera_type == 'EO':
-		if len(camera_roots) < options.num_eo_camera_directories:
-			print 'ERROR: directory does not have enough cam directories to satisfy expected requirement'
-			sys.exit(-1)
-		elif len(camera_roots) > options.num_eo_camera_directories:
-			camera_roots = camera_roots[:options.num_eo_camera_directories]
-	else:
-		raise Exception('unexpected camera type: ' + options.camera_type)
-	
-	print camera_roots
-	sys.exit(0)
 
 	# make sure we got something useful
 	if camera_roots == None or len(camera_roots) <= 0:
