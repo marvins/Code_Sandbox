@@ -14,6 +14,8 @@ class ConfigOptions:
 	Configuration Options for the Calibration Collection Program
 	"""
 	
+	output_code = 0
+
 	# List all of the command line options and assign initial values
 	camera_type      = '_NONE_'
 	camera_set       = False
@@ -196,6 +198,30 @@ class ConfigOptions:
 
 				command_args = command_args[1:]
 			
+			# do ssh
+			elif command_args[0][:5]  == '-ssh=':
+				
+				if command_args[0][5:] == 'YES':
+					self.ssh = True
+				else:
+					self.ssh = False
+				command_args = command_args[1:]
+			
+			# ssh user
+			elif command_args[0][:10] == '-ssh_user=':
+				self.ssh_user = command_args[0][10:]
+				command_args = command_args[1:]
+			
+			# ssh host
+			elif command_args[0][:10] == '-ssh_host=':
+				self.ssh_host = command_args[0][10:]
+				command_args = command_args[1:]
+
+			# ssh password
+			elif command_args[0][:14] == '-ssh_password=':
+				self.ssh_password = command_args[0][14:]
+				command_args = command_args[1:]
+
 			# help
 			elif command_args[0][:6] == '--help' or command_args[0][:5] == '-help' or command_args[0][:4] == 'help':
 				self.usage()
@@ -291,6 +317,10 @@ class ConfigOptions:
 		strout += '     Num EO Img Per Cam : ' + str(self.num_eo_images_per_cam) + '\n'
 		strout += '     Num IR Directories : ' + str(self.num_ir_camera_directories) + '\n'
 		strout += '     Num IR Img Per Cam : ' + str(self.num_ir_images_per_cam) + '\n'
+		strout += '     SSH				   : ' + str(self.ssh) + '\n'
+		strout += '     SSH_User		   : ' + self.ssh_user + '\n'
+		strout += '     SSH_Host		   : ' + self.ssh_host + '\n'
+		strout += '     SSH_Password       : ' + self.ssh_password + '\n'
 		strout += '\n'
 		strout += '     Input Dir Path     : ' + self.input_base + self.input_path + '\n'
 		strout += '     Output file will be: ' + self.output_base + self.output_path + self.compression_type + '\n'
@@ -851,6 +881,13 @@ def main():
 	#  A potential problem exists where we may not have enough image sets to satisfy the 
 	# request given in number of bundles variable.  This means that we must bundle what we 
 	# and send an error back notifying that we only sent 'N' values
+	if options.num_bundles > len(image_tuples):
+		if options.debug_level >= 1:
+			print 'WARNING: image data has fewer image sets than requested.  Returning ' + str(len(image_tuples)) + ' of ' + str(options.num_bundles)
+			print ''
+
+		options.output_code = len(image_tuples)
+	
 	options.num_bundles = min( options.num_bundles, len(image_tuples))
 
 
@@ -910,6 +947,8 @@ def main():
 
 	else:
 		pass
+	
+	sys.exit(options.output_code)
 
 if __name__ == "__main__":
 	main()
