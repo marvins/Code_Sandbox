@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-import sys, os, time, tarfile, zipfile
+import sys, os, time, tarfile, zipfile, paramiko
 
 months  = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
 cameras = ['cam1','cam2','cam3','cam4','cam5']
@@ -30,6 +30,11 @@ class ConfigOptions:
 	num_eo_images_per_cam = 1
 	num_ir_images_per_cam = 1
 	compression_type = '_NONE_'
+	
+	ssh 			= False
+	ssh_user		= 'root'
+	ssh_password    = ''
+	ssh_host		= ''
 
 	#-     Constructor    -#
 	def __init__( self ):
@@ -76,6 +81,9 @@ class ConfigOptions:
 				# Parse the Prefix Directory
 				if   hdr == 'input_base':
 					self.input_base = dta
+				
+				if   hdr == 'input_path':
+					self.input_path = dta
 
 				elif hdr == 'output_base':
 					if dta[-1] == '/':
@@ -105,6 +113,21 @@ class ConfigOptions:
 						dta = '.' + dta
 					self.compression_type = dta
 				
+				elif hdr == 'ssh':
+					if dta == 'True':
+						self.ssh = True
+					else:
+						self.ssh = False
+
+				elif hdr == 'ssh_user':
+					self.ssh_user = dta
+
+				elif hdr == 'ssh_host':
+					self.ssh_host = dta
+
+				elif hdr == 'ssh_password':
+					self.ssh_password = dta
+
 				elif hdr == 'num_bundles':
 					self.num_bundles = int(dta)
 
@@ -834,11 +857,18 @@ def main():
 	# now that we have a list of images, we need to start dividing image sets
 	bundle_step = len(image_tuples) / options.num_bundles	
 
+	# Here we need to consider if we are going to transfer the file via scp or if we will
+	# write it to local disk
+	if options.ssh == True:
+		zip_filename = './bundle' + options.compression_type
+	else:
+		zip_filename = options.output_base + options.output_path + options.compression_type
+
 	# create output data
-	zf = zipfile.ZipFile( options.output_base + options.output_path + options.compression_type, 'w')
+	zf = zipfile.ZipFile( zip_filename , 'w')
 	
 	if options.debug_level >= 1:
-		print 'writing files to : ' + options.output_base + options.output_path + options.compression_type
+		print 'writing files to : ' + zip_filename
 
 	# create current position pointer
 	current_pos = 0
@@ -854,7 +884,30 @@ def main():
 			zf.write( image_tuples[current_pos][y].raw_input, 'bundles/bundle'+str(x)+'/'+image_tuples[current_pos][y].input_string)
 
 	zf.close()
-	
+
+	# If we need to send the file via scp, then we need to create the objects for passing it
+	print options.ssh
+	if options.ssh == True:
+
+		# create the SSH object
+		ssh = paramiko.SSHClient()
+		ssh.set_missing_host_key_policy( paramiko.AutoAddPolicy() )
+		ssh.connect( options.ssh_host, username=options.ssh_user, password=options.ssh_password)
+		
+		# create path for destination
+		ssh_path = options.output_base + options.output_path + options.compression_type
+		
+		if options.debug_level >= 1:
+			print 'destination for sftp: ' + ssh_path
+
+		# create sftp process
+		sftp = ssh.open_sftp()
+		sftp.put( './bundle'+options.compression_type, ssh_path)
+		sftp.close()
+		ssh.close()
+
+	else:
+		pass
 
 if __name__ == "__main__":
 	main()
