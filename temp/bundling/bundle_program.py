@@ -906,7 +906,7 @@ def main():
 		sftp.close()
 		ssh.close()
 
-		os.remove('./bundle'+options.compression_type, ssh_path)
+		os.remove('./bundle'+options.compression_type)
 
 	else:
 		pass
