@@ -923,7 +923,6 @@ def main():
 	zf.close()
 
 	# If we need to send the file via scp, then we need to create the objects for passing it
-	print options.ssh
 	if options.ssh == True:
 
 		# create the SSH object
