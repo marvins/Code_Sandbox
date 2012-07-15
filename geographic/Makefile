@@ -10,6 +10,7 @@ PREFIX = /opt/local
 
 #Build directory   (DO NOT TOUCH -fPIC)
 BUILD = build
+BIN   = bin
 
 GDAL_DIR = /opt/local
 
@@ -40,6 +41,12 @@ BOOST_INCLUDE = -I/opt/local/include
 BOOST_LIBS    = -L/opt/local/lib -lboost_filesystem -lboost_system
 BOOST		  = $(BOOST_INCLUDE) $(BOOST_LIBS)
 
+#
+# OpenGL Libraries
+#
+OPENGL_INCLUDE = -I/opt/local/include
+OPENGL_LIBS    = -L/opt/local/lib -lglut -lGLEW -lGL
+OPENGL = $(OPENGL_INCLUDE) $(OPENGL_LIBS)
 
 #
 #  Unit Test Library
@@ -80,7 +87,8 @@ else
 	LIB_TYPE=so
 endif
 
-all: $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE)
+all: $(BIN)/geo_viewer $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE)
+	mkdir -p $(BIN)
 	mkdir -p $(BUILD)
 	mkdir -p $(BUILD)/bin
 	mkdir -p $(BUILD)/lib
@@ -98,12 +106,17 @@ all: $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE)
 ###################################################################
 #				BUILD SEQUENCE		
 ###################################################################
+# Viewer Program
+$(BIN)/geo_viewer: src/tools/geo_viewer.cpp src/tools/geo_viewer/*.cpp
+	g++ -o $@ $<  $(OPENGL) src/tools/geo_viewer/*.cpp
+
 # Main Shared Libraries
 $(BUILD)/libgeoimage.so: $(OBJECTS)
 	g++ -o $@ $(OBJECTS)       $(GDAL) $(OPENCV) $(BOOST) $(OFLAGS) -shared
 
 $(BUILD)/libgeoimage_DEBUG.so: $(OBJECTS_DEBUG)
 	g++ -o $@ $(OBJECTS_DEBUG) $(GDAL) $(OPENCV) $(BOOST) $(DFLAGS) -shared
+
 
 # Main Shared Libraries
 $(BUILD)/libgeoimage.dylib: $(OBJECTS)
