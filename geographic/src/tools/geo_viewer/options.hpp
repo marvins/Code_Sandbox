@@ -45,7 +45,7 @@ class Options {
         /****************************/
         /*        Test Object       */
         /****************************/
-        MapObject test_box;
+        MapObject* test_box;
 
 };
 

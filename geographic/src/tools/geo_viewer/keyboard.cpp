@@ -71,8 +71,10 @@ void cameraTimer(int value)
         options.camera.rotateVert(action.rotateVert*options.cam_lookStep);
     if ( action.rotateHoriz != 0 )
         options.camera.rotateHoriz(action.rotateHoriz*options.cam_lookStep);
-    if ( action.moveStraight != 0 )
+    if ( action.moveStraight != 0 ){
         options.camera.moveStraight(action.moveStraight*options.cam_moveStep);
+        //action.moveStraight--;
+    }
     if ( action.moveHoriz != 0 )
         options.camera.moveHoriz(action.moveHoriz*options.cam_moveStep);
     if ( action.moveVert != 0 )

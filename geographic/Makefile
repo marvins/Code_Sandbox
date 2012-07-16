@@ -108,7 +108,7 @@ all: $(BIN)/geo_viewer $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEB
 ###################################################################
 # Viewer Program
 $(BIN)/geo_viewer: src/tools/geo_viewer.cpp src/tools/geo_viewer/*.cpp
-	g++ -o $@ $<  $(OPENGL) src/tools/geo_viewer/*.cpp
+	g++ -o $@ $<  $(OPENGL) src/tools/geo_viewer/*.cpp -g
 
 # Main Shared Libraries
 $(BUILD)/libgeoimage.so: $(OBJECTS)
@@ -237,7 +237,8 @@ clean:
 	rm -r build/bin
 	rm -r build/lib
 	rm -r build/include
-	rm unit_test
+	rm -r bin/geo_viewer
+	rm -r build/unit_test
 
 check:
 	g++ -o build/unit_test $(UTEST_SOURCES) $(GDAL) $(OPENCV) $(TEST) -I$(PREFIX)/include -I$(PREFIX)/include/geoimage -L$(PREFIX)/lib -lgeoimage_DEBUG $(DFLAGS)

@@ -1,9 +1,48 @@
 #include "MapObject.h"
+
+#define BUFFER_OFFSET( offset )  ((GLvoid*)offset) 
    
-void Load_Model_Data( vertices, normals, ambients, diffuses, speculars, shins, vertex_count ){
+void Load_Model_Data( vector<vec4>& verts, vector<vec4>& norms, 
+                      vector<vec4>& ambis, vector<vec4>& diffs, 
+                      vector<vec4>& specs, vector<GLfloat>& shins, 
+                      GLuint& vert_count ){
 
+    vec4  ambi_val(1, 0, 0, 1);
+    vec4 diff_val(1, 0, 0, 1);
+    vec4 spec_val(1, 0, 0, 1);
+    float shin_val = 0.5;
 
+    //front face`
+    verts.push_back( vec4(  1,  1, -1, 1.0));  norms.push_back( vec4( 0, 0, -1, 1.0));
+    verts.push_back( vec4(  1, -1, -1, 1.0));  norms.push_back( vec4( 0, 0, -1, 1.0));
+    verts.push_back( vec4( -1, -1, -1, 1.0));  norms.push_back( vec4( 0, 0, -1, 1.0));
+    verts.push_back( vec4(  1,  1, -1, 1.0));  norms.push_back( vec4( 0, 0, -1, 1.0));
+    verts.push_back( vec4( -1, -1, -1, 1.0));  norms.push_back( vec4( 0, 0, -1, 1.0));
+    verts.push_back( vec4( -1,  1, -1, 1.0));  norms.push_back( vec4( 0, 0, -1, 1.0));
+    
+    for( size_t i=0; i<6; i++){
+        ambis.push_back( ambi_val );
+        diffs.push_back( diff_val );
+        specs.push_back( spec_val );
+        shins.push_back( shin_val); 
+    }
+    
+    //bottom face
+    verts.push_back( vec4( -1,  0, -1, 1.0));  norms.push_back( vec4( 0, 1, 0, 1.0));
+    verts.push_back( vec4(  1,  0, -1, 1.0));  norms.push_back( vec4( 0, 1, 0, 1.0));
+    verts.push_back( vec4(  1,  0,  1, 1.0));  norms.push_back( vec4( 0, 1, 0, 1.0));
+    verts.push_back( vec4( -1,  0, -1, 1.0));  norms.push_back( vec4( 0, 1, 0, 1.0));
+    verts.push_back( vec4(  1,  0,  1, 1.0));  norms.push_back( vec4( 0, 1, 0, 1.0));
+    verts.push_back( vec4( -1,  0,  1, 1.0));  norms.push_back( vec4( 0, 1, 0, 1.0));
+    
+    for( size_t i=0; i<6; i++){
+        ambis.push_back( ambi_val );
+        diffs.push_back( diff_val );
+        specs.push_back( spec_val );
+        shins.push_back( shin_val); 
+    }
 
+    vert_count = verts.size();
 
 }
 
@@ -13,6 +52,7 @@ void Load_Model_Data( vertices, normals, ambients, diffuses, speculars, shins, v
 MapObject::MapObject( const GLuint prog ){
 
    program  = prog;
+   vao = 0;
 
 }
 
@@ -20,8 +60,11 @@ MapObject::~MapObject(){
 
 }
 
+/**
+ * Initialize OpenGL Buffers for the specified object.
+*/
 void MapObject::init_buffers( const vec4& lpos, const vec4& l_amb, const vec4& l_diff, const vec4& l_spec, bool load_shader, int rotate){
-
+    
    vector<GLfloat> shins;
    
    //build rotation matrix
@@ -33,7 +76,7 @@ void MapObject::init_buffers( const vec4& lpos, const vec4& l_amb, const vec4& l
    
    //load vbo array data
    Load_Model_Data( vertices, normals, ambients, diffuses, speculars, shins, vertex_count );
-   
+
    vertices_size  = sizeof(vec4)*vertex_count;
    shininess_size = sizeof(GLfloat)*vertex_count;
    
@@ -74,6 +117,7 @@ void MapObject::init_buffers( const vec4& lpos, const vec4& l_amb, const vec4& l
    centroid = vec3(  (x_max-x_min)/2.0+x_min,
                      (y_max-y_min)/2.0+y_min,
                      (z_max-z_min)/2.0+z_min);
+    
 
    // in case we just want to read the model file
    if ( !load_shader )
@@ -83,7 +127,7 @@ void MapObject::init_buffers( const vec4& lpos, const vec4& l_amb, const vec4& l
    // Create a vertex array object
    glGenVertexArrays( 1, &vao );
    glBindVertexArray( vao ); 
-
+    
    // Create and initialize a buffer object
    glGenBuffers( 1, &vbo );
    glBindBuffer( GL_ARRAY_BUFFER, vbo );
@@ -94,7 +138,7 @@ void MapObject::init_buffers( const vec4& lpos, const vec4& l_amb, const vec4& l
    glBufferSubData( GL_ARRAY_BUFFER, 3*vertices_size, vertices_size, &diffuses[0]  );
    glBufferSubData( GL_ARRAY_BUFFER, 4*vertices_size, vertices_size, &speculars[0] );
    glBufferSubData( GL_ARRAY_BUFFER, 5*vertices_size, shininess_size, &shininess[0] );
-
+    
    //load program
    glUseProgram( program );
 
@@ -133,13 +177,16 @@ void MapObject::init_buffers( const vec4& lpos, const vec4& l_amb, const vec4& l
    rotation_id = glGetUniformLocation( program, "rotation" );
 
    translation = vec4(0,0,0,1);
+
 }
 
-void Object::draw_shape( mat4 const& worldviewMat, mat4 const& proj, vec4 const& l_pos ){
-
+void MapObject::draw_shape( mat4 const& worldviewMat, mat4 const& proj, vec4 const& l_pos ){
+    
+    cout << "drawing" << endl;
+     
    glUseProgram(program);
    glBindVertexArray( vao ); 
-   
+  
    glUniform4fv(        translation_id, 1,          translation );
    glUniformMatrix4fv(  rotation_id,    1, GL_TRUE, rotation );
    glUniform4fv(        light_position, 1,          l_pos );
@@ -149,20 +196,18 @@ void Object::draw_shape( mat4 const& worldviewMat, mat4 const& proj, vec4 const&
    glUniform1i( drawmode, (GLint)TRIANGLES );
    glDrawArrays( GL_TRIANGLES, 0, vertex_count );
 
-#ifdef DEBUG_DRAW_NORMALS
    glUniform1i( drawmode, (GLint)LINES );
    glDrawArrays( GL_LINES, vertex_count, vertex_count*2 );
-#endif
 
 }
       
-double Object::get_x_width()const{
+double MapObject::get_x_width()const{
    return x_width;
 }
-double Object::get_y_width()const{
+double MapObject::get_y_width()const{
    return y_width;
 }
-double Object::get_z_width()const{
+double MapObject::get_z_width()const{
    return z_width;
 }
 

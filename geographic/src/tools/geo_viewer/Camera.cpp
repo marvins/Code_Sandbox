@@ -1,7 +1,8 @@
 #include "Camera.h"
 
 Camera::Camera(vec4 position, CameraMode mode) :
-   m_orientation(0.0,0.0,-1.0,1.0),
+   
+   m_orientation(0.0,0.0, 1.0,1.0),
    m_up(0.0,1.0,0.0,1.0),
    m_normal(1.0,0.0,0.0,1.0),
    m_last_direction(NONE),
@@ -95,109 +96,109 @@ void Camera::rotateVert(GLfloat theta)
 
 void Camera::rotateHoriz(GLfloat theta)
 {
-   if ( m_last_direction != HORIZ || m_last_theta != theta )
-   {
-      if ( m_mode == CAMERA_FREE )
-         m_last_rot = RotateAround( theta, m_up, false );
-      else
-         m_last_rot = RotateY( theta );
+    if ( m_last_direction != HORIZ || m_last_theta != theta )
+    {
+        if ( m_mode == CAMERA_FREE )
+            m_last_rot = RotateAround( theta, m_up, false );
+        else
+            m_last_rot = RotateY( theta );
 
-      m_last_direction = HORIZ;
-      m_last_theta = theta;
-   }
-   
-   m_orientation = m_last_rot*m_orientation;
-   m_normal = m_last_rot*m_normal;
-  
-   // need to transform up vector during Y-lock mode
-   if ( m_mode == CAMERA_Y_LOCK_VERT || m_mode == CAMERA_Y_LOCK_BOTH )
-      m_up = m_last_rot*m_up;
+        m_last_direction = HORIZ;
+        m_last_theta = theta;
+    }
 
-   m_rotation = LookAt( vec4(0.0,0.0,0.0,1.0), m_orientation, m_up );
-   
-   updateTransform();
+    m_orientation = m_last_rot*m_orientation;
+    m_normal = m_last_rot*m_normal;
+
+    // need to transform up vector during Y-lock mode
+    if ( m_mode == CAMERA_Y_LOCK_VERT || m_mode == CAMERA_Y_LOCK_BOTH )
+        m_up = m_last_rot*m_up;
+
+    m_rotation = LookAt( vec4(0.0,0.0,0.0,1.0), m_orientation, m_up );
+
+    updateTransform();
 }
 
 void Camera::moveStraight(GLfloat dist)
-{
-   if ( m_mode == CAMERA_FREE || m_mode == CAMERA_Y_LOCK_VERT )
-   {
-      vec4 translate = m_orientation*dist;
+{  
+    if ( m_mode == CAMERA_FREE || m_mode == CAMERA_Y_LOCK_VERT )
+    {
+        vec4 translate = m_orientation*dist;
 
-      m_translation[0][3] -= translate.x;
-      m_translation[1][3] -= translate.y;
-      m_translation[2][3] -= translate.z;
-   }
-   else // CAMERA_Y_LOCK_BOTH
-   {
-      // move forward along the y plane
-      vec3 translate = cross(vec4(0.0,1.0,0.0,1.0), m_normal)*dist;
+        m_translation[0][3] -= translate.x;
+        m_translation[1][3] -= translate.y;
+        m_translation[2][3] -= translate.z;
+    }
+    else // CAMERA_Y_LOCK_BOTH
+    {
+        // move forward along the y plane
+        vec3 translate = cross(vec4(0.0,1.0,0.0,1.0), m_normal)*dist;
 
-      m_translation[0][3] -= translate.x;
-      m_translation[1][3] -= translate.y; // should be zero
-      m_translation[2][3] -= translate.z;
-   }
+        m_translation[0][3] -= translate.x;
+        m_translation[1][3] -= translate.y; // should be zero
+        m_translation[2][3] -= translate.z;
+    }
 
-   updateTransform();
+    updateTransform();
 }
 
 void Camera::moveHoriz(GLfloat dist)
 {
-   // same for free and y locked camera
-   vec4 translate = m_normal*dist;
+    // same for free and y locked camera
+    vec4 translate = m_normal*dist;
 
-   m_translation[0][3] -= translate.x;
-   m_translation[1][3] -= translate.y;
-   m_translation[2][3] -= translate.z;
-   
-   updateTransform();
+    m_translation[0][3] -= translate.x;
+    m_translation[1][3] -= translate.y;
+    m_translation[2][3] -= translate.z;
+
+    updateTransform();
 }
 
 void Camera::moveVert(GLfloat dist)
 {
-   if ( CAMERA_FREE )
-   {
-      vec4 translate = m_up*dist;
+    if ( CAMERA_FREE )
+    {
+        vec4 translate = m_up*dist;
 
-      m_translation[0][3] -= translate.x;
-      m_translation[1][3] -= translate.y; 
-      m_translation[2][3] -= translate.z;
-   }
-   else
-   {
-      // move up the y axis
-      m_translation[1][3] -= dist;
-   }
+        m_translation[0][3] -= translate.x;
+        m_translation[1][3] -= translate.y; 
+        m_translation[2][3] -= translate.z;
+    }
+    else
+    {
+        // move up the y axis
+        m_translation[1][3] -= dist;
+    }
 
-   updateTransform();
+    updateTransform();
 }
 
 void Camera::setPosition(vec4 position)
 {
-   m_translation[0][3] = -position.x;
-   m_translation[1][3] = -position.y;
-   m_translation[2][3] = -position.z;
+    m_translation[0][3] = -position.x;
+    m_translation[1][3] = -position.y;
+    m_translation[2][3] = -position.z;
 
-   updateTransform();
+    updateTransform();
 }
 
 mat4 Camera::getTranslation() const
 {
-   return m_translation;
+    return m_translation;
 }
 
 mat4 Camera::getRotation() const
 {
-   return m_rotation;
+    return m_rotation;
 }
 
 const mat4& Camera::getTransform()
 {
-   return m_transform;
+    return m_transform;
 }
 
 void Camera::updateTransform()
 {
-   m_transform = m_rotation*m_translation;
+    m_transform = m_rotation*m_translation;
 }
 

@@ -35,6 +35,7 @@ void init( int argc, char* argv[] ){
     glutSetKeyRepeat( GLUT_KEY_REPEAT_OFF );
 
     // initialize the OpenGL extention wrangler
+    glewExperimental = GL_TRUE;
     glewInit();
 
     /*********************************************/
@@ -57,16 +58,20 @@ void init( int argc, char* argv[] ){
     /*********************************************/
 
     // set perspective
-    options.zNear = 0.25;
-    options.zFar  = 50.0;
-    options.fova  = 30.0;
+    options.zNear =  0.25;
+    options.zFar  =  1.0;
+    options.fova  = 60.0;
     options.ratio = 1.0 * options_GLUT_WIN_Y / options_GLUT_WIN_X;
 
     // TODO this probably shouldn't be done manually (make a function somewhere)
     options.projectionMatrix = Perspective(options.fova, options.ratio, options.zNear, options.zFar);
 
     // set up initial camera position
-    options.camera = Camera(vec4(0.0,-5.0,10.0,1.0), options.cam_mode);
+    options.cam_mode = CAMERA_FREE;  
+    options.camera = Camera(vec4(0.0,0.0,-1,1.0), options.cam_mode);
+    options.cam_moveStep = 0.01;
+    options.cam_lookStep = 0.01;
+
     //   options.camera.rotateHoriz(90);
     //   options.camera.rotateVert(-35);
 
@@ -78,7 +83,7 @@ void init( int argc, char* argv[] ){
     /*********************************************/
     /*               Model Loader                */
     /*********************************************/
-
+    
     // load models from file
     options.test_box = new MapObject( options.program );
     
@@ -91,8 +96,8 @@ void init( int argc, char* argv[] ){
     // function registration
     glutDisplayFunc( display_function );
     glutKeyboardFunc( keyboardPress );
+    glutKeyboardUpFunc( keyboardUp );
     /*
-       glutKeyboardUpFunc( keyboardUp );
        glutSpecialFunc( special_keys);
        glutSpecialUpFunc( special_Upkeys);
        glutMouseFunc( mouseEvent );
