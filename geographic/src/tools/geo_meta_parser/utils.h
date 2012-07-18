@@ -10,6 +10,15 @@ class geoTuple{
         std::string type;
 };
 
+class Options{
+    public:
+        
+        Options();
+
+        std::string filename;
+        bool file_set;
+};
+
 
 std::string int2str( int const& val );
 int         str2int( std::string const& val );

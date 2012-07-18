@@ -1,6 +1,5 @@
 #include "ui.h"
 #include "geo_forms.h"
-#include "utils.h"
 
 #include <string>
 
@@ -12,7 +11,7 @@ using namespace std;
 const int program_header_row = 0;
 const int menu_header_row    = 2;
 
-void init_gui( ){
+void init_gui( Options const& configuration ){
 
     //take the console
     initscr();
@@ -28,7 +27,7 @@ void init_gui( ){
 
 }
 
-void stop_gui( ){
+void stop_gui( Options const& configuration ){
 
     //return the console back to bash
     endwin();
@@ -36,7 +35,7 @@ void stop_gui( ){
 }
 
 
-void main_menu( ){
+void main_menu( const vector<string>& args, Options const& configuration ){
     
     int con_size_x, con_size_y;
     int input = 0;
@@ -99,3 +98,18 @@ void main_menu( ){
 
 }
 
+void process_arguments( std::vector<std::string>const& args, Options& configuration ){
+
+    //iterate through arguments evaluating for flags
+    for( size_t i=1; i<args.size(); i++){
+
+        if( args[i][0] == '-' ){ //process item as flag
+
+        }
+        else{ //process item as a filename
+
+        }
+
+    }
+
+}

@@ -9,6 +9,10 @@
 
 using namespace std;
 
+Options::Options(){
+    file_set = false;
+}
+
 int str2int( std::string const& value ){
     std::stringstream sin;
     int result;
@@ -41,5 +45,6 @@ void get_console_size( int& x, int& y ){
     y = 50;
 #endif
 
-
 }
+
+

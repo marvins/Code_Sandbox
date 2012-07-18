@@ -1,12 +1,17 @@
 #ifndef __SRC_TOOLS_GEO_META_PARSER_UI_H__
 #define __SRC_TOOLS_GEO_META_PARSER_UI_H__
 
-void init_gui( );
+#include <string>
+#include <vector>
+#include "utils.h"
 
-void stop_gui( );
+void init_gui( Options const& configuration );
 
-void main_menu( );
+void stop_gui( Options const& configuration );
 
+void main_menu( const std::vector<std::string>& args, Options const& configuration );
+
+void process_arguments( std::vector<std::string>const& args, Options& configuration );
 
 #endif
 
