@@ -122,7 +122,7 @@ $(BIN)/geo_viewer: src/tools/geo_viewer.cpp src/tools/geo_viewer/*.cpp src/tools
 
 # Geo Metadata Parser Program
 $(BIN)/geo_meta_parser:  src/tools/geo_meta_parser.cpp  src/tools/geo_meta_parser/*.cpp src/tools/geo_meta_parser/*.h
-	g++ -o $@ $<  -I$(PREFIX)/include -L$(PREFIX)/lib -lgeoimage $(OPENCV)
+	g++ -o $@ $<  -I$(PREFIX)/include -L$(PREFIX)/lib -lgeoimage $(OPENCV) -L/usr/local/lib -lncurses src/tools/geo_meta_parser/*.cpp
 
 # Main Shared Libraries
 $(BUILD)/libgeoimage.so: $(OBJECTS)
