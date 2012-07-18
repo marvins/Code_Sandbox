@@ -1,125 +1,138 @@
-#include <ctime>
-#include <iostream>
+//
+// Display a color cube
+//
+// Colors are assigned to each vertex and then the rasterizer interpolates
+//   those colors across the triangles.  We us an orthographic projection
+//   as the default projetion.
+#include <algorithm>
+#include <iomanip>
 
-#include <GL/glew.h>
-#include <GL/glut.h>
+// math/
+#include "geo_viewer/mat.h"
+#include "geo_viewer/vector.h"
 
-#include "geo_viewer/configuration.h"
+// opengl/
+#include "geo_viewer/shader_processing.h"
 #include "geo_viewer/display.h"
 #include "geo_viewer/keyboard.h"
-#include "geo_viewer/MapObject.h"
-#include "geo_viewer/options.hpp"
-#include "geo_viewer/shader_processing.h"
+#include "geo_viewer/mouse.h"
 #include "geo_viewer/timer.h"
+#include "geo_viewer/reshape.h"
 
-using namespace std;
+// structures/
+#include "geo_viewer/Parameters.h"
 
-Options options;
+Parameters options;
 
-/**
- *  Initialize Important GLUT and GLEW Variables
- */
-void init( int argc, char* argv[] ){
+//----------------------------------------------------------------------------
+// OpenGL initialization
+void init()
+{   
 
-    /*********************************************/
-    /*                 GLUT Setup                */
-    /*********************************************/
-    // glut initialization
-    glutInit( &argc, argv );
-    glutInitDisplayMode( GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH );
-    glutInitWindowSize(     options_GLUT_WIN_X ,  options_GLUT_WIN_Y );
-    glutInitWindowPosition( options_GLUT_INIT_X,  options_GLUT_INIT_Y );
-    glutCreateWindow(       options_GLUT_WINDOW_NAME.c_str() );
 
-    // glut settings
-    glutSetKeyRepeat( GLUT_KEY_REPEAT_OFF );
-
-    // initialize the OpenGL extention wrangler
-    glewExperimental = GL_TRUE;
-    glewInit();
-
-    /*********************************************/
-    /*               OpenGL Setup                */
-    /*********************************************/
     // enable anti-aliasing (and transparency)
     glEnable(GL_LINE_SMOOTH);
     glEnable(GL_POLYGON_SMOOTH);
     glEnable(GL_BLEND);
     glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-    glEnable( GL_DEPTH_TEST );
-    glClearColor( 0.5, 0.5, 0.5, 1.0 );
+
+    //// Camera Setup
+    // set perspective
+    options.zNear = 0.25;
+    options.zFar  = 50.0;
+    options.fova  = 30.0;
+    options.ratio = 1.0; 
+
+    options.projectionMatrix = Perspective(options.fova, options.ratio,
+            options.zNear, options.zFar);
+
+    // set up initial camera position
+    options.cam_timerStep = 10;
+    options.cam_lookStep = 1.0;
+    options.cam_moveStep = 0.06;
+
+    options.camera = Camera(vec4(5.0,2.0,5.0,1.0), options.cam_mode);
+    options.camera.rotateHoriz(43.8);
+    options.camera.rotateVert(-14);
+
+    // set up initial light position
+    options.light_timerStep = 10;
+    options.light_moveStep = 0.06;
+
 
     // Load shaders and use the resulting shader program
     options.program = InitShader( "data/shaders/vshader.glsl", "data/shaders/fshader.glsl" );
     glUseProgram( options.program );
 
-    /*********************************************/
-    /*                View Setup                 */
-    /*********************************************/
+    glEnable( GL_DEPTH_TEST );
+    glClearColor( 0.5, 0.5, 0.5, 1.0 );
 
-    // set perspective
-    options.zNear =  0.25;
-    options.zFar  =  1.0;
-    options.fova  = 60.0;
-    options.ratio = 1.0 * options_GLUT_WIN_Y / options_GLUT_WIN_X;
+    //initialize Air Hockey Board
 
-    // TODO this probably shouldn't be done manually (make a function somewhere)
-    options.projectionMatrix = Perspective(options.fova, options.ratio, options.zNear, options.zFar);
-
-    // set up initial camera position
-    options.cam_mode = CAMERA_FREE;  
-    options.camera = Camera(vec4(0.0,0.0,-1,1.0), options.cam_mode);
-    options.cam_moveStep = 0.01;
-    options.cam_lookStep = 0.01;
-
-    //   options.camera.rotateHoriz(90);
-    //   options.camera.rotateVert(-35);
-
-    // set up initial light position
-    options.light.m_position = vec3(0.0,-5.0,10);
-    options.light_timerStep = 10;
-    options.light_moveStep = 0.06;
-
-    /*********************************************/
-    /*               Model Loader                */
-    /*********************************************/
-    
-    // load models from file
-    options.test_box = new MapObject( options.program );
-    
-    // init buffers for models
-    options.test_box->init_buffers(     options.light.m_position, 
-                                        options.light.m_ambient, 
-                                        options.light.m_diffuse, 
-                                        options.light.m_specular );
-    
-    // function registration
-    glutDisplayFunc( display_function );
-    glutKeyboardFunc( keyboardPress );
-    glutKeyboardUpFunc( keyboardUp );
-    /*
-       glutSpecialFunc( special_keys);
-       glutSpecialUpFunc( special_Upkeys);
-       glutMouseFunc( mouseEvent );
-       glutMotionFunc( mouseMove );
-       glutReshapeFunc( reshape );
-     */
-
-    glutTimerFunc( 17, timerHandle, 0);
+    options.board = new Object("data/models/Airhockey.obj", 0.5, options.program);
+    options.board->init_buffers( options.light.m_position, options.light.m_ambient, options.light.m_diffuse, options.light.m_specular);
 
 }
 
-int main( int argc, char* argv[] ){
+//----------------------------------------------------------------------------
+int main( int argc, char **argv )
+{
+    cout << "================ Camera Controls ================" << endl
+        << "============ (w,a,s,d,q,e) movement =============" << endl
+        << " w - Move Forward          s - Move Backwards    " << endl
+        << " a - Move Left             d - Move Right        " << endl
+        << " q - Move Up               e - Move Down         " << endl
+        << "============== (u,h,j,k,y,i) look ===============" << endl
+        << " i - Look Up               k - Look Down         " << endl
+        << " j - Look Left             l - Look Right        " << endl
+        << "== Twist works only if camera is in free mode ===" << endl
+        << " u - Twist CCW             o - Twist CW          " << endl
+        << "=================== lighting model ==============" << endl 
+        << " n - move light -z axis   m - move light +z axis " << endl
+        << " , - move light -x axis   . - move light +x axis " << endl
+        << "=================================================" << endl << endl;
 
-    // Process Arguments
+    //set up some initial window parameters
+    options.glut_window_x = 700;
+    options.glut_window_y = 700;
+
+    options.glut_initial_x = 40;
+    options.glut_initial_y = 5;
+
+    options.glut_window_name = "Geo Viewer";
     srand(time(0));
-    init( argc, argv );
 
+    glutInit( &argc, argv );
+    glutInitDisplayMode( GLUT_RGBA | GLUT_DOUBLE | GLUT_DEPTH );
+    glutInitWindowSize( options.glut_window_x, options.glut_window_y );
+    glutInitWindowPosition(options.glut_initial_x,options.glut_initial_y);
+    glutCreateWindow( options.glut_window_name.c_str() );
 
-    //parse_arguements( argc, argv, options );
+#ifndef __APPLE__
+    glewInit();
+#endif
+    init();
 
-    //process the gui
+    glutSetKeyRepeat( GLUT_KEY_REPEAT_OFF );
+
+    glutDisplayFunc( display_function );
+
+    // Keyboard down/up functions
+    glutKeyboardFunc( keyboardPress );
+    glutKeyboardUpFunc( keyboardUp );
+
+    // Mouse func
+    glutMouseFunc( mouseEvent );
+
+    // Dragging the mouse
+    glutMotionFunc( mouseMove );
+
+    // When the screen is resized
+    glutReshapeFunc( reshape );
+
+    // timer function
+    glutTimerFunc( 20, timerHandle, 0);
+
     glutMainLoop();
-
     return 0;
 }

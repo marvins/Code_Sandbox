@@ -3,24 +3,27 @@
   * @brief File containing keyboard processing
   * @author Marvin Smith
 */
-#ifndef __SRC_TOOLS_GEOVIEWER_KEYBOARD_H__
-#define __SRC_TOOLS_GEOVIEWER_KEYBOARD_H__
+#ifndef __SRC_OPENGL_MANAGEMENT_KEYBOARD_H__
+#define __SRC_OPENGL_MANAGEMENT_KEYBOARD_H__
 
 #include <cstdlib>
 #include <fstream>
 #include <iostream>
 #include <string>
 
-#include "vec.h"
+// ../math/
+#include "vector.h"
 
-#include "options.hpp"
+// ../structures/
+#include "Parameters.h"
 #include "Camera.h"
 
+// bullet physics engine
 
 using namespace std;
 
 /** Global Variable Container */
-extern Options options;
+extern Parameters options;
 
 /**
   * keyboard processing function 
@@ -30,7 +33,5 @@ extern Options options;
 */
 void keyboardPress( unsigned char key, int x, int y );
 void keyboardUp( unsigned char key, int x, int y );
-void special_keys( int key, int x, int y );
-void special_Upkeys( int key, int x, int y );
 
 #endif

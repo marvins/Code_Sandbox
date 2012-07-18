@@ -1,12 +1,14 @@
 /**
  * @file mat.h
- * @brief Useful OpenGL Matrix Class
+ * @brief Matrix class for pong game
  */
-#ifndef __SRC_TOOLS_GEOVIEWER_MAT_H__
-#define __SRC_TOOLS_GEOVIEWER_MAT_H__
+#ifndef __SRC_STRUCTURES_MATH_MAT_H__
+#define __SRC_STRUCTURES_MATH_MAT_H__
 
-#include "vec.h"
-
+#include "vector.h"
+#include <iostream>
+#include <stdio.h>
+#include <cmath>
 using namespace std;
 
 //----------------------------------------------------------------------------

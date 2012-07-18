@@ -1,10 +1,8 @@
 #ifndef __LIGHT_STRUCTURE_OBJECT_FOR_AIRHOCKEY_AND_STUFF__DOT_H_
 #define __LIGHT_STRUCTURE_OBJECT_FOR_AIRHOCKEY_AND_STUFF__DOT_H_
 
-#include <GL/glew.h>
-#include <GL/glut.h>
-
-#include "vec.h"
+#include "GL.h"
+#include "vector.h"
 #include "mat.h"
 
 #include <iostream>

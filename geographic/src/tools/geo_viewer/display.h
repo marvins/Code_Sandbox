@@ -1,13 +1,21 @@
-#ifndef __SRC_TOOLS_GEOVISION_H__
-#define __SRC_TOOLS_GEOVISION_H__
+#ifndef __SRC_OPENGL_MANAGEMENT_DISPLAY_H__
+#define __SRC_OPENGL_MANAGEMENT_DISPLAY_H__
 
-#include <GL/glew.h>
-#include <GL/glut.h>
+#include "GL.h"
 
-#include "options.hpp"
+#include "Parameters.h"
 
-extern Options options;
+#include <sstream>
+#include <string>
 
-void display_function( void );
+using namespace std;
+
+extern Parameters options;
+
+void display_function( );
+
+void init_menu();
+
+void ReSizeGLScene(int Width, int Height);
 
 #endif

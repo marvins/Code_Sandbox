@@ -3,12 +3,15 @@
   * Timer functions for opengl Pong
   * @author Marvin Smith
 */
-#ifndef __SRC_TOOLS_GEOVIEWER_TIMER_H__
-#define __SRC_TOOLS_GEOVIEWER_TIMER_H__
+#ifndef __SRC_OPENGL_MANAGEMENT_TIMER_H__
+#define __SRC_OPENGL_MANAGEMENT_TIMER_H__
 
-#include "options.hpp"
+#include "display.h"
+#include "Parameters.h"
 
-extern Options options;
+// bullet physics engine
+
+extern Parameters options;
 
 void timerHandle( int state );
 

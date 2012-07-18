@@ -44,9 +44,19 @@ BOOST		  = $(BOOST_INCLUDE) $(BOOST_LIBS)
 #
 # OpenGL Libraries
 #
-OPENGL_INCLUDE = -I/opt/local/include
-OPENGL_LIBS    = -L/opt/local/lib -lglut -lGLEW -lGL
-OPENGL = $(OPENGL_INCLUDE) $(OPENGL_LIBS)
+UNAME := $(shell uname)
+ifeq ($(UNAME),Darwin)
+  OPENGL_INCLUDE = 
+  OPENGL_LIBS    = -framework OpenGL -framework GLUT
+  OPENGL         = $(OPENGL_INCLUDE) $(OPENGL_LIBS)
+else
+  OPENGL_INCLUDE = -I/usr/include
+  OPENGL_LIBS    = -L/usr/lib -lglut -lGLU -lGL -lGLEW
+  OPENGL         = $(OPENGL_INCLUDE) $(OPENGL_LIBS)
+endif
+
+
+all: $(BIN)/geo_viewer $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE)
 
 #
 #  Unit Test Library
@@ -108,7 +118,7 @@ all: $(BIN)/geo_viewer $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEB
 ###################################################################
 # Viewer Program
 $(BIN)/geo_viewer: src/tools/geo_viewer.cpp src/tools/geo_viewer/*.cpp
-	g++ -o $@ $<  $(OPENGL) src/tools/geo_viewer/*.cpp -g
+	g++ -o $@ $<  $(OPENGL) src/tools/geo_viewer/*.cpp $(BOOST)
 
 # Main Shared Libraries
 $(BUILD)/libgeoimage.so: $(OBJECTS)

@@ -1,8 +1,13 @@
-#ifndef __SRC_TOOLS_GEOVIEWER_SHADER_PROCESSING_H__
-#define __SRC_TOOLS_GEOVIEWER_SHADER_PROCESSING_H__
+#ifndef __SHADER_PROCESSING_H__
+#define __SHADER_PROCESSING_H__
 
-#include <GL/glew.h>
-#include <GL/glut.h>
+#include <cstdlib>
+#include <iostream>
+#include <stdio.h>
+
+#include "GL.h"
+
+using namespace std;
 
 char* readShaderSource(const char* shaderFile);
 
