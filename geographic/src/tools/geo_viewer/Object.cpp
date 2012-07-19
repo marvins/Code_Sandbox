@@ -104,7 +104,7 @@ void Object::init_buffers( const vec4& lpos, const vec4& l_amb, const vec4& l_di
    glGenVertexArraysAPPLE( 1, &vao );
    glBindVertexArrayAPPLE( vao );
    #else
-   glGenVertexArrays( 1, &vao );
+   glGenVertexArrays( (GLuint)1, &vao );
    glBindVertexArray( vao ); 
    #endif
 

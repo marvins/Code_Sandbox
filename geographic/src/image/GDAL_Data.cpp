@@ -55,77 +55,70 @@ void GDAL_Data::write( std::string const& image_filename, std::string const& ima
             dataset, FALSE, papszOptions, NULL, NULL);
     
     //load dataset with appropriate metadata
-    
-    
-    
+
+
+
     //close dataset and flush data to file
     GDALClose((GDALDatasetH) outputData);
-    
+
 
 }
 
 void GDAL_Data::write( std::string const& image_filename, cv::Mat const& image, GeoHeader_Info* header_data){
-    
+
     /// This is where we should set any internal flags
     vector<pair<string,string> > header_info = header_data->get_header_data();
 
-    char ** papszOptions = new char*[header_info.size()+1];
-    
-    for( size_t i=0; i<header_info.size(); i++ ){
-        papszOptions[i] = new char[header_info[i].first.size() + header_info[i].second.size() + 2];
-        for( size_t j=0; j<header_info[i].first.size(); j++)
-            papszOptions[i][j] = header_info[i].first[j];
-        papszOptions[i][header_info[i].first.size()] = '=';
-        for( size_t j=0; j<header_info[i].second.size(); j++)
-            papszOptions[i][j + header_info[i].first.size()+1] = header_info[i].second[j];
-        papszOptions[i][ header_info[i].first.size() + header_info[i].second.size() + 1] = '\0';
-    }
-    papszOptions[header_info.size()] = NULL;
+    // Set all parameters
+    char ** papszOptions = NULL;
+    for( size_t i=0; i<header_info.size(); i++ )
+        papszOptions = CSLSetNameValue( papszOptions, header_info[i].first.c_str(), header_info[i].second.c_str());
 
+
+    //Retrieve the driver
     GDALDriver* oDriver = GetGDALDriverManager()->GetDriverByName(header_data->get_gdal_driver_format().c_str());
-    
+
     //create an output dataset
-    GDALDataset *outputData = oDriver->Create( image_filename.c_str(), 
-            image.cols, image.rows, image.channels(), header_data->get_pixel_type().get_gdal_type(),
-            NULL);
-     
-    //outputData->SetMetadata(papszOptions);
-    
+    GDALDataset *outputData = oDriver->Create( image_filename.c_str(), image.cols, image.rows, image.channels(), header_data->get_pixel_type().get_gdal_type(), NULL );
+
+    //Set the metadata
+    outputData->SetMetadata(papszOptions);
+
     GDALRasterBand* band;
 
 
     //load dataset with appropriate metadata
     for( int c=0; c<image.channels(); c++){
-        
+
         //fetch band
         band = outputData->GetRasterBand(c+1);
-        
+
         for( int y=0; y<image.rows; y++){
             for( int x=0; x<image.cols; x++){
                 int* value = new int;
-                
+
                 *value  = header_data->get_pixel_type().convert( image, x, y, c);
 
-                band->RasterIO( GF_Write, x, y, 1, 1, value, 
-                        1, 1, header_data->get_pixel_type().get_gdal_type(), 0, 0);
-                
+                band->RasterIO( GF_Write, x, y, 1, 1, value, 1, 1, header_data->get_pixel_type().get_gdal_type(), 0, 0);
+
                 delete value;
             }
         }
-        
+
     }
-    
+
     //close dataset and flush data to file
     GDALClose((GDALDatasetH) outputData);
-    
+    CSLDestroy( papszOptions );
+
 
 }
-        
+
 vector<pair<string,string> >  GDAL_Data::retrieve_header_data()const{
-    
+
     vector<pair<string,string> > headerList;
     char ** metadata = dataset->GetMetadata();
-    
+
     int idx = 0;
     string original;
     std::pair<string, string> item;
@@ -133,10 +126,10 @@ vector<pair<string,string> >  GDAL_Data::retrieve_header_data()const{
         original = metadata[idx++];
         vector<string> results;
         boost::split(results, original, boost::is_any_of("="));
-       
+
         if( results.size() < 2 )
             throw string("ERROR: metadata tag is invalid, must contain at least one =");
-        
+
         item.first = results[0];
         item.second= results[1];
 

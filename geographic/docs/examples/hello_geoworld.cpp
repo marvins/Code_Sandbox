@@ -17,6 +17,19 @@ int main( int argc, char* argv[] ){
 
     //pull out the OpenCV Mat Object
     Mat img = geoimg.get_image();
+    
+    if( img.type() == CV_16UC1 )
+        cout << "CV_16UC1" << endl;
+    if( img.type() == CV_16SC1 )
+        cout << "CV_16US1" << endl;
+    
+    imwrite("out1.jpg", img);
+    for( int i=0; i<img.rows; i++)
+    for( int j=0; j<img.cols; j++)
+        img.at<ushort>(j,i) = abs(img.at<ushort>(j,i) - 255*255);
+
+    
+    imwrite("out2.jpg", img);
 
     //create an output filename
     string output_filename = "result.ntf";

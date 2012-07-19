@@ -56,7 +56,6 @@ else
 endif
 
 
-
 #
 #  Unit Test Library
 #
@@ -97,7 +96,6 @@ else
 endif
 
 all: $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE)
-	mkdir -p $(BIN)
 	mkdir -p $(BUILD)
 	mkdir -p $(BUILD)/bin
 	mkdir -p $(BUILD)/lib
@@ -112,14 +110,19 @@ all: $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE)
 	cp src/image/*.h 		$(BUILD)/include/geoimage
 	cp src/utilities/*.h  	$(BUILD)/include/geoimage
 
-viewer: $(BIN)/geo_viewer
+tools: $(BIN)/geo_viewer $(BIN)/geo_meta_parser
+	mkdir -p $(BIN)
 
 ###################################################################
 #				BUILD SEQUENCE		
 ###################################################################
 # Viewer Program
-$(BIN)/geo_viewer: src/tools/geo_viewer.cpp src/tools/geo_viewer/*.cpp
-	g++ -o $@ $<  src/tools/geo_viewer/*.cpp $(OPENGL) $(BOOST) $(OPENCV) -I$(PREFIX)/include -L$(PREFIX)/lib -lgeoimage
+$(BIN)/geo_viewer: src/tools/geo_viewer.cpp src/tools/geo_viewer/*.cpp src/tools/geo_viewer/*.h
+	g++ -o $@ $<  $(OPENGL) src/tools/geo_viewer/*.cpp $(BOOST)
+
+# Geo Metadata Parser Program
+$(BIN)/geo_meta_parser:  src/tools/geo_meta_parser.cpp  src/tools/geo_meta_parser/*.cpp src/tools/geo_meta_parser/*.h
+	g++ -o $@ $<  -I$(PREFIX)/include -L$(PREFIX)/lib -lgeoimage $(OPENCV) -L/usr/local/lib -lncurses src/tools/geo_meta_parser/*.cpp
 
 # Main Shared Libraries
 $(BUILD)/libgeoimage.so: $(OBJECTS)
