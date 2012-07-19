@@ -4,8 +4,7 @@ BUILD_PATH=/opt/local
 
 GDAL_REPOSITORY="https://svn.osgeo.org/gdal/trunk/gdal"
 
-GDAL_CONFIGURE_FLAGS="--prefix=${BUILD_PATH}   --with-java=$JAVA_HOME \
-                      --with-jasper=/opt/local --with-jpeg12"
+GDAL_CONFIGURE_FLAGS="--prefix=${BUILD_PATH} --with-pic=yes --with-poppler=yes"
 
 
 
@@ -39,10 +38,15 @@ case "$1" in
     build )
         echo building gdal
         make -j2
+
+        if [ "$?" -ne 0 ]; then echo "make failed"; exit 1; fi
+        sudo make install
+
         ;;
 
     update )
         echo updating recent gdal
+        svn up
         ;;
 
     * )
