@@ -5,8 +5,10 @@
 #include "mat.h"
 #include "GL.h"
 
+#include <cv.h>
 #include <string>
 
+using namespace cv;
 using namespace std;
 
 class Object{
@@ -40,7 +42,7 @@ class Object{
       // defined before drawing so shader knows how to handle vertices
       enum SHAD_DRAW_MODE {TRIANGLES=0, LINES=1};
 
-      void build_arrays( const vec4& lpos, const vec4& l_amb, const vec4& l_dif, const vec4& l_spec );
+      void build_arrays( const vec4& lpos, const vec4& l_amb, const vec4& l_dif, const vec4& l_spec, const Mat& img );
       
       // attribute types
       GLuint vAngle;

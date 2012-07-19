@@ -56,7 +56,6 @@ else
 endif
 
 
-all: $(BIN)/geo_viewer $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE)
 
 #
 #  Unit Test Library
@@ -97,7 +96,7 @@ else
 	LIB_TYPE=so
 endif
 
-all: $(BIN)/geo_viewer $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE)
+all: $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE)
 	mkdir -p $(BIN)
 	mkdir -p $(BUILD)
 	mkdir -p $(BUILD)/bin
@@ -113,12 +112,14 @@ all: $(BIN)/geo_viewer $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEB
 	cp src/image/*.h 		$(BUILD)/include/geoimage
 	cp src/utilities/*.h  	$(BUILD)/include/geoimage
 
+viewer: $(BIN)/geo_viewer
+
 ###################################################################
 #				BUILD SEQUENCE		
 ###################################################################
 # Viewer Program
 $(BIN)/geo_viewer: src/tools/geo_viewer.cpp src/tools/geo_viewer/*.cpp
-	g++ -o $@ $<  $(OPENGL) src/tools/geo_viewer/*.cpp $(BOOST)
+	g++ -o $@ $<  src/tools/geo_viewer/*.cpp $(OPENGL) $(BOOST) $(OPENCV) -I$(PREFIX)/include -L$(PREFIX)/lib -lgeoimage
 
 # Main Shared Libraries
 $(BUILD)/libgeoimage.so: $(OBJECTS)
@@ -130,7 +131,7 @@ $(BUILD)/libgeoimage_DEBUG.so: $(OBJECTS_DEBUG)
 
 # Main Shared Libraries
 $(BUILD)/libgeoimage.dylib: $(OBJECTS)
-	g++ -dynamiclib -install_name $(PREFIX)/lib/libgeoimage.dylib -o $@ $(OBJECTS)  		$(GDAL) $(OPENCV) $(BOOST) $(OFLAGS)
+	g++ -dynamiclib -install_name $(PREFIX)/lib/libgeoimage.dylib -o $@ $(OBJECTS)       $(GDAL) $(OPENCV) $(BOOST) $(OFLAGS)
 
 $(BUILD)/libgeoimage_DEBUG.dylib: $(OBJECTS_DEBUG)
 	g++ -dynamiclib -install_name $(PREFIX)/lib/libgeoimage.dylib -o $@ $(OBJECTS_DEBUG) $(GDAL) $(OPENCV) $(BOOST) $(DFLAGS)

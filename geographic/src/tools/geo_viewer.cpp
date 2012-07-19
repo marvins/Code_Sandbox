@@ -22,6 +22,8 @@
 // structures/
 #include "geo_viewer/Parameters.h"
 
+using namespace std;
+
 Parameters options;
 
 //----------------------------------------------------------------------------

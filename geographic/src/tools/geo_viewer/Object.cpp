@@ -1,5 +1,8 @@
 #include "Object.h"
 
+// geoimage
+#include <GeoImage.h>
+
 // Draw the normals for the object
 //#define DEBUG_DRAW_NORMALS
 
@@ -40,14 +43,16 @@ void Object::make_empty(){
 
 void Object::init_buffers( const vec4& lpos, const vec4& l_amb, const vec4& l_diff, const vec4& l_spec){
 
-
-   //load data from model
-   //model_data.load(model_name.c_str());
-  
+    cout << "A" << endl;
+    GEO::GeoImage img("data/24FEB129Z0200893ZXGIRMOSGS0000004F481AB1.ntf", true);
+    cv::Mat  res = img.get_image();
+    cout << "B" << endl;
+    
    //load model sizes
    //vertex_count = model_data.faceCount*3;
-   vertex_count = 6;
-
+   vertex_count = (res.cols-1)*(res.rows-1)*6;
+    
+   cout << "VC: " << vertex_count << endl;
    //compute shininess and vertex array size
    vertices_size = sizeof(vec4)*vertex_count;
    shininess_size = sizeof(GLfloat)*vertex_count;
@@ -61,7 +66,8 @@ void Object::init_buffers( const vec4& lpos, const vec4& l_amb, const vec4& l_di
    shininess = new GLfloat[vertex_count];
    
    //Copy model data into arrays
-   build_arrays( lpos, l_amb, l_diff, l_spec);
+   cout << "Building" << endl;
+   build_arrays( lpos, l_amb, l_diff, l_spec, res );
 
    ///Get width of object
    double x_min = vertices[0].x;
@@ -189,15 +195,31 @@ vec3 Object::get_centroid()const{
    return centroid+get_translation();  
 }
 
-void Object::build_arrays( const vec4& lpos, const vec4& l_amb, const vec4& l_dif, const vec4& l_spec ){
+void Object::build_arrays( const vec4& lpos, const vec4& l_amb, const vec4& l_dif, const vec4& l_spec, const Mat& img ){
     
-    size_t vsize = 6;
-    vertices[0] = vec4( 0, 0, 0, 1); normals[0] = vec4( 0, 0, -1, 1);
-    vertices[1] = vec4( 1, 0, 0, 1); normals[1] = vec4( 0, 0, -1, 1);
-    vertices[2] = vec4( 1, 1, 0, 1); normals[1] = vec4( 0, 0, -1, 1);
-    vertices[3] = vec4( 0, 0, 0, 1); normals[1] = vec4( 0, 0, -1, 1);
-    vertices[4] = vec4( 1, 1, 0, 1); normals[1] = vec4( 0, 0, -1, 1);
-    vertices[5] = vec4( 0, 1, 0, 1); normals[1] = vec4( 0, 0, -1, 1);
+    if( img.type() != CV_16SC1 ){
+        cout << "Bad type" << endl;
+
+        throw string("ERROR: Unknown type");
+    }
+    else {
+        cout << "okay" << endl;
+    }
+    size_t vsize = vertex_count;
+    
+    for( size_t i=0; i<img.cols-1; i++ )
+        for( size_t j=0; j<img.rows-1; j++ ){
+            
+            vertices[3*(j*img.rows+i)+0] = vec4( i  , 0, j  , 1); normals[ 3*(j*img.rows+i)+0] = vec4( 0, 1, 0, 1);
+            vertices[3*(j*img.rows+i)+1] = vec4( i+1, 0, j  , 1); normals[ 3*(j*img.rows+i)+1] = vec4( 0, 1, 0, 1);
+            vertices[3*(j*img.rows+i)+2] = vec4( i  , 0, j+1, 1); normals[ 3*(j*img.rows+i)+2] = vec4( 0, 1, 0, 1);
+            vertices[3*(j*img.rows+i)+3] = vec4( i  , 0, j+1, 1); normals[ 3*(j*img.rows+i)+3] = vec4( 0, 1, 0, 1);
+            vertices[3*(j*img.rows+i)+4] = vec4( i+1, 0, j  , 1); normals[ 3*(j*img.rows+i)+4] = vec4( 0, 1, 0, 1);
+            vertices[3*(j*img.rows+i)+5] = vec4( i+1, 0, j+1, 1); normals[ 3*(j*img.rows+i)+5] = vec4( 0, 1, 0, 1);
+            
+            //diffuses[i] = vec4( 
+        }
+
 
     for( size_t i=0; i<vsize; i++){
         diffuses[i]  = vec4(1,1,1,1);
