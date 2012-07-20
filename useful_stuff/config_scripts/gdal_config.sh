@@ -4,7 +4,7 @@ BUILD_PATH=/opt/local
 
 GDAL_REPOSITORY="https://svn.osgeo.org/gdal/trunk/gdal"
 
-GDAL_CONFIGURE_FLAGS="--prefix=${BUILD_PATH} --with-pic=yes --with-poppler=yes --with-java=$JAVA_HOME --with-python=yes"
+GDAL_CONFIGURE_FLAGS="--prefix=${BUILD_PATH} --with-pic=yes --with-poppler=yes --with-java=$JAVA_HOME --with-python=yes --with-jasper=yes"
 
 
 
