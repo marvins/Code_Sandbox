@@ -29,6 +29,11 @@ case "$1" in
     update )
         svn up
         ;;
+    
+    build )
+        mkdir -p release
+        cd release
+        cmake .. 
 
     * )
         usage
