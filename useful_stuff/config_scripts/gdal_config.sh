@@ -4,7 +4,7 @@ BUILD_PATH=/opt/local
 
 GDAL_REPOSITORY="https://svn.osgeo.org/gdal/trunk/gdal"
 
-GDAL_CONFIGURE_FLAGS="--prefix=${BUILD_PATH} --with-pic=yes --with-poppler=yes"
+GDAL_CONFIGURE_FLAGS="--prefix=${BUILD_PATH} --with-pic=yes --with-poppler=yes --with-java=$JAVA_HOME --with-python=yes"
 
 
 
@@ -31,12 +31,16 @@ case "$1" in
         ;;
 
     configure )
+        echo Configuring java with the following flags
+        echo $GDAL_CONFIGURE_FLAGS
         ./configure  ${GDAL_CONFIGURE_FLAGS}
         
         ;;
     
     build )
         echo building gdal
+        make clean
+
         make -j2
 
         if [ "$?" -ne 0 ]; then echo "make failed"; exit 1; fi
