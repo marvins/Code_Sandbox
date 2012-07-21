@@ -5,6 +5,11 @@
 
 #include <ncurses.h>
 
+#include <cv.h>
+#include <highgui.h>
+#include <cvaux.h>
+
+using namespace cv;
 
 using namespace std;
 
@@ -49,7 +54,10 @@ void main_menu( Options& configuration ){
     if( configuration.current_image.get_init() == false ){
         throw string(string("Error: image ")+configuration.filename+string(" did not load properly"));
     }
-
+    
+    namedWindow("WOW");
+    imshow("WOW",configuration.current_image.get_image());
+    waitKey(0);
 
     //set timeout function
     timeout( MAIN_MENU_TIMEOUT );
