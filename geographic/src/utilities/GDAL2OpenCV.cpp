@@ -3,9 +3,7 @@
 #include "gdal_priv.h"
 #include "cpl_conv.h"
 
-#include <cv.h>
-#include <cvaux.h>
-#include <highgui.h>
+#include <opencv2/core/core.hpp>
 
 #include <string>
 

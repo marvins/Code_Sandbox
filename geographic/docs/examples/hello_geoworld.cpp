@@ -1,5 +1,8 @@
 #include <iostream>
 
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+
 #include <GeoImage.h>
 
 using namespace cv;
@@ -12,24 +15,25 @@ int main( int argc, char* argv[] ){
     if( argc < 2 )
         return 0;
     
+    cout << "a" << endl;
     //create a GeoImage using the input filename
     GEO::GeoImage geoimg( argv[1], true );
 
+    cout << "b" << endl;
     //pull out the OpenCV Mat Object
     Mat img = geoimg.get_image();
     
-    if( img.type() == CV_16UC1 )
-        cout << "CV_16UC1" << endl;
+    cout << "c" << endl;
+    if( img.type() == CV_8UC1 )
+        cout << "CV_8UC1" << endl;
     if( img.type() == CV_16SC1 )
-        cout << "CV_16US1" << endl;
+        cout << "CV_8US1" << endl;
     
-    imwrite("out1.jpg", img);
+    cout << "d" << endl;
     for( int i=0; i<img.rows; i++)
     for( int j=0; j<img.cols; j++)
-        img.at<ushort>(j,i) = abs(img.at<ushort>(j,i) - 255*255);
+        img.at<uchar>(j,i) = abs(img.at<uchar>(j,i) - 255*255);
 
-    
-    imwrite("out2.jpg", img);
 
     //create an output filename
     string output_filename = "result.ntf";

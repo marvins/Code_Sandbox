@@ -12,7 +12,7 @@ PREFIX = /opt/local
 BUILD = build
 BIN   = bin
 
-GDAL_DIR = /opt/local
+GDAL_DIR = /usr
 
 # Build flags 
 CFLAGS = -Wall 
@@ -23,15 +23,14 @@ OFLAGS = $(CFLAGS) -O3
 # GDAL LIBRARY
 #
 GDAL_LIBS 	= -L$(GDAL_DIR)/lib -lgdal
-GDAL_INCLUDE 	= -I$(GDAL_DIR)/include
+GDAL_INCLUDE 	= -I$(GDAL_DIR)/include/gdal
 GDAL         	= $(GDAL_LIBS) $(GDAL_INCLUDE)
 
 
 #
 # OpenCV Libraries
 #
-OPENCV = `pkg-config opencv --cflags --libs`
-OPENCV_INCLUDE = `pkg-config opencv --cflags`
+OPENCV = -I/usr/include `pkg-config opencv --cflags --libs`
 
 
 #
@@ -118,11 +117,11 @@ tools: $(BIN)/geo_viewer $(BIN)/geo_meta_parser
 ###################################################################
 # Viewer Program
 $(BIN)/geo_viewer: src/tools/geo_viewer.cpp src/tools/geo_viewer/*.cpp src/tools/geo_viewer/*.h
-	g++ -o $@ $<  $(OPENGL) src/tools/geo_viewer/*.cpp $(BOOST)
+	g++ -o $@ $<  $(OPENGL) src/tools/geo_viewer/*.cpp $(BOOST) -lgdal
 
 # Geo Metadata Parser Program
 $(BIN)/geo_meta_parser:  src/tools/geo_meta_parser.cpp  src/tools/geo_meta_parser/*.cpp src/tools/geo_meta_parser/*.h
-	g++ -o $@ $<  -I$(PREFIX)/include -L$(PREFIX)/lib -lgeoimage $(OPENCV) -L/usr/local/lib -lncurses src/tools/geo_meta_parser/*.cpp
+	g++ -o $@ $<  -I/usr/include/gdal -I$(PREFIX)/include -L$(PREFIX)/lib  -lgeoimage $(OPENCV) src/tools/geo_meta_parser/*.cpp -lncurses
 
 # Main Shared Libraries
 $(BUILD)/libgeoimage.so: $(OBJECTS)

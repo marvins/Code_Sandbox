@@ -1,9 +1,7 @@
 #include "OpenCVUtils.h"
 
 
-#include <cv.h>
-#include <cvaux.h>
-#include <highgui.h>
+#include <opencv2/core/core.hpp>
 
 using namespace cv;
 

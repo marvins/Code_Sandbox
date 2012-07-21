@@ -1,9 +1,7 @@
 #ifndef __GDAL_DATA_H__
 #define __GDAL_DATA_H__
 
-#include <cv.h>
-#include <cvaux.h>
-#include <highgui.h>
+#include <opencv2/core/core.hpp>
 
 #include "NITFHeader.h"
 #include "GeoHeader.h"

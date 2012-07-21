@@ -1,9 +1,7 @@
 #ifndef __SRC_NITF_HEADER_H__
 #define __SRC_NITF_HEADER_H__
 
-#include <cv.h>
-#include <cvaux.h>
-#include <highgui.h>
+#include <opencv2/core/core.hpp>
 
 #include <iostream>
 #include <string>
