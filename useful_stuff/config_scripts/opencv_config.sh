@@ -34,7 +34,7 @@ case "$1" in
         mkdir -p release
         cd release
         cmake .. 
-
+        ;;
     * )
         usage
 
