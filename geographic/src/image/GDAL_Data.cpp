@@ -43,18 +43,25 @@ void GDAL_Data::write( std::string const& image_filename, std::string const& ima
     
     /// This is where we should set any internal flags
     char ** papszOptions = NULL;
-
-    //create an output dataset
-    //GDALDataset *outputData = driver->Create( image_filename.c_str(), 
-    //        dataset->GetRasterXSize(), dataset->GetRasterYSize(),
-    //        dataset->GetRasterCount(), GDALGetRasterDataType(dataset->GetRasterBand(1)),
-    //        papszOptions);
     
     //copy an output dataset
     GDALDataset *outputData = driver->CreateCopy( image_filename.c_str(), 
             dataset, FALSE, papszOptions, NULL, NULL);
     
-    //load dataset with appropriate metadata
+    /*
+    for( size_t i=0; i<header_info.size(); i++ )
+        papszOptions = CSLSetNameValue( papszOptions, header_info[i].first.c_str(), header_info[i].second.c_str());
+
+
+    //Retrieve the driver
+    GDALDriver* oDriver = GetGDALDriverManager()->GetDriverByName(header_data->get_gdal_driver_format().c_str());
+
+    //create an output dataset
+    GDALDataset *outputData = oDriver->Create( image_filename.c_str(), image.cols, image.rows, image.channels(), header_data->get_pixel_type().get_gdal_type(), NULL );
+*/
+
+    //Set the metadata
+    outputData->SetMetadata( driver->GetMetadata() );
 
 
 

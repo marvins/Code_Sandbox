@@ -6,6 +6,16 @@
 #include <ncurses.h>
 
 using namespace std;
+    
+const int modify_offset = 5;
+const string tag_hdr = "Tag: ";
+const string val_hdr = "Val: ";
+
+geo_header_item::geo_header_item( ){
+    header_type = -1;
+    header_tag  = "";
+    header_val  = "";
+}
 
 geo_header_item::geo_header_item( const int& idx, const string& type, const string& val ){
     header_type = idx;
@@ -22,7 +32,7 @@ void print_header( std::string const& input_message, const int& start_y, const i
 }
 
 void print_tag( const string& data, const int& window_start, const int& length, const int& row ){
-    
+
     //compute text start
     int text_start = 0;
     if( data.size() <= length )
@@ -32,7 +42,7 @@ void print_tag( const string& data, const int& window_start, const int& length, 
 
     //move cursor to start of field
     move( row, window_start );
-    
+
     //print until length is reached
     for( size_t i=0; i<length; i++){
         if( i < text_start )
@@ -43,7 +53,7 @@ void print_tag( const string& data, const int& window_start, const int& length, 
 }
 
 void print_field( const string& data, const int& window_start, const int& length, const int& row ){
-    
+
     //move cursor to start of field
     move( row, window_start );
 
@@ -60,23 +70,23 @@ void print_field( const string& data, const int& window_start, const int& length
 /**
  *  Find the largest width of the headers to ensure that we select sizes for the field parameters which maximize
  *  space usage.
-*/
+ */
 void find_max_header_widths( vector<geo_header_item> const& header_metadata, int& tag_width_max, int& val_width_max ){
 
     //set defaults
     tag_width_max = 1;
     val_width_max = 1;
-    
+
     //just in case we get an empty list
     if( header_metadata.size() <= 0 ){  return;  }
-    
+
     //iterate through the list
     for( size_t i=0; i<header_metadata.size(); i++ ){
-        
+
         //compare the tag item
         if( header_metadata[i].header_tag.size() > tag_width_max ) 
             tag_width_max = header_metadata[i].header_tag.size();
-        
+
         //compare the value item
         if( header_metadata[i].header_val.size() > val_width_max ) 
             val_width_max = header_metadata[i].header_val.size();
@@ -115,7 +125,7 @@ void print_metadata( vector<geo_header_item>const& header_metadata, const int& s
     attroff( A_STANDOUT );
 
     for( size_t i=0; i<WINDOW_HEIGHT; i++ ){
-        
+
         //compute the current index
         idx = window_top + i;
         if( idx >= header_metadata.size() )
@@ -129,9 +139,9 @@ void print_metadata( vector<geo_header_item>const& header_metadata, const int& s
         //iterate over the var variable, printing the data
         print_tag  ( header_metadata[idx].header_tag, TAG_X_START, TAG_WIDTH, start_y + i );
         print_field( header_metadata[idx].header_val, VAL_X_START, VAL_WIDTH, start_y + i );
-        
+
         attroff( A_STANDOUT );
-    
+
     }
     attroff( A_BOLD );
     attron ( COLOR_PAIR( backg_window_pair )  | A_NORMAL);
@@ -143,6 +153,211 @@ void print_footer( const int& con_width, const int& con_height ){
 
     attron( COLOR_PAIR( backg_window_pair ));
     mvprintw( con_height - 2, 2, "Press [up/down] or [,/.] - navigate,  [q/ESC] - quit immediately"); 
-    mvprintw( con_height - 1, 2, "Press [c] - Modify Parameter");
+    mvprintw( con_height - 1, 2, "Press [c] - Modify Parameter,  [s] - Save Current Image");
 
 }
+
+
+/** Clear the bottom 4 lines of the ui */
+void clear_footer( const int& width, const int& height ){
+
+    for( size_t i=0; i<width; i++)
+        for( size_t j=(height-5); j<height; j++)
+            mvaddch(j,i,' ');
+
+}
+
+/** Print item to screen */
+void print_line( string const& tag, string const& val, const int& width, const int& height, const int cx, const int cy ){
+
+    //
+    int cursor_line = height - 4;
+
+    int curs_y = cy + (cursor_line);
+    int curs_x = tag_hdr.size() + modify_offset + cx;
+
+    mvprintw( height-1, modify_offset+5, "Options:  [ESC]: exit, [ENTER]: save and exit");
+    mvprintw( cursor_line+0, modify_offset, tag_hdr.c_str());  mvprintw( cursor_line+0, modify_offset + 5, tag.c_str());
+    mvprintw( cursor_line+1, modify_offset, val_hdr.c_str());  mvprintw( cursor_line+1, modify_offset + 5, val.c_str());
+    move( curs_y, curs_x);
+    
+
+}
+
+
+bool change_screen( geo_header_item& item, const int& width, const int& height ){
+
+    int input1;
+    int input2;
+    bool exit_modify = false;
+
+    int cursor_x = 0;
+    int cursor_y = 0;
+    string temp_tag = item.header_tag;
+    string temp_val = item.header_val;
+
+    /*  Print the change screen ui */
+    clear_footer( width, height );
+
+
+    while( exit_modify == false ){
+
+        //print the line to the screen
+        print_line( temp_tag, temp_val, width, height, cursor_x, cursor_y );
+
+        refresh(); //refresh the screen
+
+        //pull the character
+        input1 = getch();
+
+        switch( input1 ){
+
+            //escape key 
+            case 27:
+
+                //pull the secondary character
+                input2 = getch();
+                if( input2 != ERR){  // You have alt key
+
+                }
+                else{ // You have escape key
+                    exit_modify = true;
+                }
+                break;
+            
+            //enter key
+            case 10:
+                item.header_tag = temp_tag;
+                item.header_val = temp_val;
+                return true;
+                break;
+
+            //backspace
+            case 127:
+            case 263:
+                if(      cursor_y == 0 && cursor_x > 0 ){ 
+                    temp_tag.erase( --cursor_x, 1); 
+                    clear_footer( width, height);
+                } 
+                else if( cursor_y == 1 && cursor_x > 0 ){ 
+                    temp_val.erase( --cursor_x, 1); 
+                    clear_footer( width, height);
+                }
+                break;
+
+            //key_up
+            case KEY_UP:
+                if(      cursor_y == 0 && cursor_x <= temp_val.size() ) cursor_y = 1;
+                else if( cursor_y == 1 && cursor_x <= temp_tag.size() ) cursor_y = 0;
+                break;
+
+            case KEY_DOWN:
+                if(      cursor_y == 0 && cursor_x <= temp_val.size() ) cursor_y = 1;
+                else if( cursor_y == 1 && cursor_x <= temp_tag.size() ) cursor_y = 0;
+                break;
+
+            case KEY_LEFT:
+
+                if( cursor_x > 0 )
+                    cursor_x--;
+                break;
+
+            case KEY_RIGHT:
+                if( cursor_y == 0 && cursor_x < temp_tag.size() ) cursor_x++;
+                if( cursor_y == 1 && cursor_x < temp_val.size() ) cursor_x++;
+                break;
+
+            /** Default behavior will be to insert a character */
+            default:
+
+                if( ( input1 >= 'a' && input1 <= 'z' ) ||
+                    ( input1 >= 'A' && input1 <= 'Z' ) ||
+                    ( input1 >= '0' && input1 <= '9' ) ||
+                    ( input1 == ' ' || input1 == '.' ) ||
+                    ( input1 == ',' || input1 == '/' )   ){
+                    if( cursor_y == 0 ){ 
+                        temp_tag.insert( cursor_x, 1, (char)input1 ); 
+                        cursor_x++;
+                    }
+                    if( cursor_y == 1 ){ 
+                        temp_val.insert( cursor_x, 1, (char)input1 ); 
+                        cursor_x++;
+                    }
+                }
+                break;
+
+
+        }
+
+    }
+    return false;
+}
+
+
+
+int save_screen( const int& width, const int& height ){
+
+    int input1;
+    int input2;
+    bool exit_modify = false;
+
+    string line1 = "Would you like to save to";
+    string line2 = "the current file or write";
+    string line3 = "     a new file?         ";
+    string line4 = "                         ";
+    string line5 = "[N]: new  [C]: current   ";
+    string line6 = "[any other key to cancel]";
+
+    int xmin = (width/2)  - std::min((width/8),  (int)line1.size()/2);
+    int xmax = (width/2)  + std::min((width/8),  (int)line1.size()/2);
+    int ymin = (height/2) - std::min((height/8), 3);
+    int ymax = (height/2) + std::min((height/8), 3);
+
+    while( exit_modify == false ){
+
+        //print the line to the screen
+        for( size_t i=xmin-2; i<=xmax+2; i++) 
+        for( size_t j=ymin-2; j<=ymax+2; j++) 
+            mvaddch(j,i,' ');
+        
+        attron( COLOR_PAIR(13) | A_BOLD ); 
+        mvprintw(ymin+0, xmin, line1.c_str());
+        mvprintw(ymin+1, xmin, line2.c_str());
+        mvprintw(ymin+2, xmin, line3.c_str());
+        mvprintw(ymin+3, xmin, line4.c_str());
+        mvprintw(ymin+4, xmin, line5.c_str());
+        mvprintw(ymin+5, xmin, line6.c_str());
+        attron( COLOR_PAIR(11) | A_BOLD ); 
+
+        refresh(); //refresh the screen
+
+        //pull the character
+        input1 = getchar();
+
+        switch( input1 ){
+
+            case 'N':
+            case 'n':
+                throw string("ERROR: feature not supported");
+                return 2;
+                break;
+
+            case 'C':
+            case 'c':
+                return 1;
+
+
+            /** Default behavior will be to insert a character */
+            default:
+                return 0;
+                break;
+
+
+        }
+
+    }
+    return false;
+}
+
+
+

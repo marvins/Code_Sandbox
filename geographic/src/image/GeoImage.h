@@ -82,6 +82,16 @@ class GeoImage{
     /** Return a copy of the header data */
     GeoHeader_Info*& get_header()const;
 
+    /** Modify the header of the image 
+     *  ACTION PARAMETERS
+     *  1.  SEARCH FOR TAG AND REPLACE VALUE
+     *  2.  SEARCH FOR VALUE AND REPLACE TAG
+     *  3.  ADD TAG AND VALUE PAIR
+     *  4.  DELETE FIRST ENTRY WHICH MATCHES TAG
+     *  5.  DELETE FIRST ENTRY WHICH MATCHES VALUE
+    */
+    void modify_header_metadata( const std::string& tag, const std::string& val, const int& action );
+
     private:
 
     /** Load The Image Into Memory

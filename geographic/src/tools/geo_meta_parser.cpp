@@ -45,7 +45,7 @@ int main( int argc, char * argv[] ){
 
         init_pair( active_window_pair, GEO_WHITE, GEO_BLACK );
         init_pair(  backg_window_pair, GEO_BLUE , GEO_BLACK);
-        
+        init_pair( warning_window_pair, GEO_BLUE, GEO_WHITE );    
         
         /**
          * Start the main menu
@@ -63,8 +63,6 @@ int main( int argc, char * argv[] ){
         cout << e << endl;
     }
 
-    
-    cout << "EXITING NOW" << endl;
     
     return 0;
 }

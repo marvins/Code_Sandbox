@@ -80,7 +80,8 @@ void main_menu( Options& configuration ){
     int skey = 0;
     bool exit_program = false;
     int window_height;
-    bool lock_screen_modify = false;
+    bool change_result = false;
+    int  save_result   = 0;
 
     //initialize GeoImage object
     configuration.current_image.set_init( true );
@@ -133,15 +134,10 @@ void main_menu( Options& configuration ){
         //wait on user input and take action
         input  = getch();
         
+        string old_tag, new_tag, old_val, new_val;
+        geo_header_item tmp;
+
         switch (input){
-
-            case 'c':
-            case 'C':
-
-                //we should lock the screen and allow for modification of the field
-                lock_screen_modify = true;
-
-                break;
 
             case 27: // ALT OR ESCAPE
 
@@ -153,43 +149,71 @@ void main_menu( Options& configuration ){
                     exit_program = true;
                 }
                 break;
+            
+            case 'c':
+            case 'C':
+                
+                old_tag = header_metadata[configuration.cursor_pos].header_tag;
+                old_val = header_metadata[configuration.cursor_pos].header_val;
+                tmp     = header_metadata[configuration.cursor_pos];
+                
+                change_result = change_screen( tmp, con_size_x, con_size_y );
+                
+                new_tag = tmp.header_tag;
+                new_val = tmp.header_val;
+                
+                //if the change screen function returns true, then we need to go ahead and add it back to the image
+                
+                if( change_result == true ){
+
+                    if( old_tag == new_tag && old_val != new_val ){
+                        
+                        header_metadata[configuration.cursor_pos].header_val = new_val;
+                        configuration.current_image.modify_header_metadata( header_metadata[configuration.cursor_pos].header_tag,
+                                                                            header_metadata[configuration.cursor_pos].header_val, 1);
+                    }   
+                }
+
+
+                break;
+            
+            case 's':
+            case 'S':
+                
+                save_result = save_screen( con_size_x, con_size_y );
+                if( save_result == 1 ){
+                    configuration.current_image.write_image();
+                }
+                if( save_result == 2 ){
+                    throw string("ERROR: feature not supported");
+                }
+
+                break;
 
             case 'q':
             case 'Q':
                 exit_program = true;
                 break;
 
-                /**
-                  KEY VALUES
-                 */
-            case 10:
-
-                if( lock_screen_modify == true )
-                    lock_screen_modify = false;
-                break;
-
+                /**  KEY VALUES  */
             case KEY_UP:
 
                 //make sure that the screen isn't locked for various parameters
-                if( lock_screen_modify == false ){
 
-                    //decrement cursor position
-                    configuration.cursor_pos--;
-                    if( configuration.cursor_pos < 0 )
-                        configuration.cursor_pos = ((int)header_metadata.size()) + configuration.cursor_pos;
-                }
+                //decrement cursor position
+                configuration.cursor_pos--;
+                if( configuration.cursor_pos < 0 )
+                    configuration.cursor_pos = ((int)header_metadata.size()) + configuration.cursor_pos;
                 break;
 
             case KEY_DOWN:
 
                 //make sure that the screen isn't locked for various parameters
-                if( lock_screen_modify == false ){
 
-                    //decrement cursor position
-                    configuration.cursor_pos++;
-                    if( configuration.cursor_pos >= header_metadata.size())
-                        configuration.cursor_pos = ((int)header_metadata.size()) - configuration.cursor_pos;
-                }
+                //decrement cursor position
+                configuration.cursor_pos++;
+                if( configuration.cursor_pos >= header_metadata.size())
+                    configuration.cursor_pos = ((int)header_metadata.size()) - configuration.cursor_pos;
                 break;
 
             default:;

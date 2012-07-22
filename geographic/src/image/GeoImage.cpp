@@ -416,7 +416,10 @@ void GeoImage::write_image(const std::string& imgFilename) {
 
 
     /** Create output dataset */
-    gdal_data.write(imgFilename, "NITF");
+    if( imgFilename == "__NONE__" )
+        gdal_data.write( get_filename(), "NITF" );
+    else
+        gdal_data.write(imgFilename, "NITF");
 
 }
 
@@ -455,6 +458,23 @@ int GeoImage::getFileType( const string& fname ){
     if( ( ext == ".NTF" ) == true ) return NITF;
     
     throw string("ERROR: Unknown type");
+}
+
+/** Modify the header of the image 
+ *  ACTION PARAMETERS
+ *  1.  SEARCH FOR TAG AND REPLACE VALUE
+ *  2.  SEARCH FOR VALUE AND REPLACE TAG
+ *  3.  ADD TAG AND VALUE PAIR
+ *  4.  DELETE FIRST ENTRY WHICH MATCHES TAG
+ *  5.  DELETE FIRST ENTRY WHICH MATCHES VALUE
+ */
+void GeoImage::modify_header_metadata( const string& tag, const string& val, const int& action ){
+    
+    if( action == 1 ){
+        cout << "Setting metadata" << endl;
+        gdal_data.driver->SetMetadataItem(tag.c_str(),val.c_str()); 
+    }
+
 }
 
 }

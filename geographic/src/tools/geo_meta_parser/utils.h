@@ -12,6 +12,7 @@ const short GEO_BLUE  = 4;
 const short GEO_WHITE = 7;
 const int   active_window_pair = 11;
 const int   backg_window_pair  = 12;
+const int   warning_window_pair= 13;
 
 class geoTuple{
     public:
