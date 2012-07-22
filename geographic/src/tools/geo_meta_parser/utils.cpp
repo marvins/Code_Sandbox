@@ -5,6 +5,8 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
+#include <ncurses.h>
+
 #include <sstream>
 
 using namespace std;
@@ -12,6 +14,10 @@ using namespace std;
 Options::Options(){
     file_set = false;
     debug_level = 0;
+
+    cursor_pos = 0;
+    window_top = 0;
+
 }
 
 void Options::print(){
@@ -38,12 +44,12 @@ std::string int2str( int const& value ){
 void get_console_size( int& x, int& y ){
 
 
-#ifdef __APPLE__ && defined(TIOCGSIZE)
-    struct ttysize ts;
-    ioctl( STDIN_FILENO, TIOCGSIZE, &ts);
-    x = (int)ts.ts_cols;
-    y = (int)ts.ts_lines;
-#elif TIOCGSIZE
+//#ifdef __APPLE__ && defined(TIOCGSIZE)
+//    struct ttysize ts;
+//    ioctl( STDIN_FILENO, TIOCGSIZE, &ts);
+//    x = (int)ts.ts_cols;
+//    y = (int)ts.ts_lines;
+#ifdef TIOCGSIZE
     struct ttysize ts;
     ioctl( STDIN_FILENO, TIOCGSIZE, &ts);
     x = ts.ws_col;

@@ -4,13 +4,14 @@
 #include <string>
 #include <vector>
 
+#include <ncurses.h>
+
 #include "geo_meta_parser/ui.h"
 #include "geo_meta_parser/utils.h"
 
 using namespace std;
 
 int main( int argc, char * argv[] ){
-
 
     /**
      * Convert args to vector list
@@ -27,9 +28,11 @@ int main( int argc, char * argv[] ){
      * Process Arguments
      */
     Options configuration;
-    process_arguments( args, configuration );
-
+    
     try{
+
+        process_arguments( args, configuration );
+
         if( configuration.debug_level >= 2 ){
             configuration.print();
             cin.get();
@@ -40,6 +43,10 @@ int main( int argc, char * argv[] ){
          */
         init_gui( configuration );
 
+        init_pair( active_window_pair, GEO_WHITE, GEO_BLACK );
+        init_pair(  backg_window_pair, GEO_BLUE , GEO_BLACK);
+        
+        
         /**
          * Start the main menu
          */
@@ -56,6 +63,8 @@ int main( int argc, char * argv[] ){
         cout << e << endl;
     }
 
-
+    
+    cout << "EXITING NOW" << endl;
+    
     return 0;
 }

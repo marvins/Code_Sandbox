@@ -6,6 +6,13 @@
 
 #include <GeoImage.h>
 
+const short GEO_GRAY  = 3;
+const short GEO_BLACK = 0;
+const short GEO_BLUE  = 4;
+const short GEO_WHITE = 7;
+const int   active_window_pair = 11;
+const int   backg_window_pair  = 12;
+
 class geoTuple{
     public:
         std::string id;
@@ -15,7 +22,7 @@ class geoTuple{
 
 class Options{
     public:
-        
+
         Options();
 
         std::string filename;
@@ -24,8 +31,12 @@ class Options{
         int debug_level;
 
         void print( );
-        
+
         GEO::GeoImage current_image;
+
+        int cursor_pos;
+        int window_top;
+
 };
 
 

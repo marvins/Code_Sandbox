@@ -30,7 +30,7 @@ GDAL         	= $(GDAL_LIBS) $(GDAL_INCLUDE)
 #
 # OpenCV Libraries
 #
-OPENCV = -I/usr/include `pkg-config opencv --cflags --libs`
+OPENCV = `pkg-config opencv --cflags --libs`
 
 
 #
@@ -121,7 +121,7 @@ $(BIN)/geo_viewer: src/tools/geo_viewer.cpp src/tools/geo_viewer/*.cpp src/tools
 
 # Geo Metadata Parser Program
 $(BIN)/geo_meta_parser:  src/tools/geo_meta_parser.cpp  src/tools/geo_meta_parser/*.cpp src/tools/geo_meta_parser/*.h
-	g++ -o $@ $<  -I/usr/include/gdal -I$(PREFIX)/include -L$(PREFIX)/lib  -lgeoimage $(OPENCV) src/tools/geo_meta_parser/*.cpp -lncurses
+	g++ -o $@ $<  src/tools/geo_meta_parser/*.cpp -I/opt/local/include -I/usr/include/gdal  -lgeoimage -lncurses `pkg-config opencv --cflags --libs`
 
 # Main Shared Libraries
 $(BUILD)/libgeoimage.so: $(OBJECTS)
