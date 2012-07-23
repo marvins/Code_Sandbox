@@ -621,10 +621,8 @@ mat4 RotateZ( const GLfloat theta )
 
 // normalize should be false ONLY when axis is known to be a unit vector
 // function added by Joshua Gleason (content from wikipedia)
-   inline
-mat4 RotateAround( const GLfloat theta, vec4 axis, bool normalize=true );
-   inline
-mat4 RotateAround( const GLfloat theta, vec4 axis, bool normalize )
+inline mat4 RotateAround( const GLfloat theta, vec4 axis, bool normalize=true );
+inline mat4 RotateAround( const GLfloat theta, vec4 axis, bool normalize )
 {
    GLfloat angle = DegreesToRadians * theta;
    GLfloat c = cos(angle);

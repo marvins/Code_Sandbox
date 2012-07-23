@@ -1,7 +1,14 @@
-#ifndef __STRUCTURES_MATH_VECTOR_H__
-#define __STRUCTURES_MATH_VECTOR_H__
+#ifndef __SRC_VECTOR_H__
+#define __SRC_VECTOR_H__
 
-#include "GL.h"
+#ifdef __APPLE__
+#include <OpenGL/OpenGL.h>
+#include <GLUT/glut.h>
+#else
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
+#endif
 
 #include <cmath>
 #include <iostream>
@@ -72,7 +79,7 @@ class vec2 {
         * @param i item in array to access
         * @return const value of index
       */
-      const GLfloat operator [] ( int i ) const { return *(&x + i); }
+      GLfloat operator [] ( int i ) const;
 
       /**
         * Unary Subtraction Operator
@@ -269,8 +276,9 @@ inline vec2 normalize( const vec2& v ) { return v / length(v); }
 //
 //////////////////////////////////////////////////////////////////////////////
 
-struct vec3 {
+class vec3 {
 
+    public:
    /**  x/First paramter  */
    GLfloat  x;
    /**  y/Second parameter */
@@ -285,27 +293,29 @@ struct vec3 {
    /** Default/Parameterized Constructor
      * @param[in] s Default Constructor
    */
-   vec3( GLfloat s = GLfloat(0.0) ) :
-      x(s), y(s), z(s) {}
+   vec3( GLfloat s = GLfloat(0.0) );
+
+
 
    /** Parameterized Constructor
      * @param[in] x x/First parameter 
      * @param[in] y y/Second parameter
      * @param[in] z z/Third parameter
    */
-   vec3( GLfloat x, GLfloat y, GLfloat z ) :
-      x(x), y(y), z(z) {}
+   vec3( GLfloat x, GLfloat y, GLfloat z );
+
 
    /** Copy Constructor
      * @param[in] v Vector to be copied
    */
-   vec3( const vec3& v ) { x = v.x;  y = v.y;  z = v.z; }
+   vec3( const vec3& v );
 
    /** Copy Constructor
      * @param[in] v Vector to be copied
      * @param[in] f value of z
    */
-   vec3( const vec2& v, const float f ) { x = v.x;  y = v.y;  z = f; }
+   vec3( const vec2& v, const float f );
+
 
    /**
      * Indexing Operator
@@ -313,7 +323,7 @@ struct vec3 {
      * @param[in] i Index to be accessed
      * @return value of the indexed array 
    */
-   GLfloat& operator [] ( int i ) { return *(&x + i); }
+   GLfloat& operator [] ( int i );
    
    /**
      * Indexing Operator
@@ -321,7 +331,8 @@ struct vec3 {
      * @param[in] i Index to be accessed
      * @return value of the indexed array 
    */
-   const GLfloat operator [] ( int i ) const { return *(&x + i); }
+   const GLfloat operator [] ( int i ) const;
+
 
    //
    //  --- (non-modifying) Arithematic Operators ---
@@ -332,8 +343,8 @@ struct vec3 {
      * 
      * @return negated vector
    */
-   vec3 operator - () const  // unary minus operator
-   { return vec3( -x, -y, -z ); }
+   vec3 operator - () const;  // unary minus operator
+
 
    /**
      * Addition Operator
@@ -341,8 +352,8 @@ struct vec3 {
      * @param[in] v vector to be added
      * @return added vector
    */
-   vec3 operator + ( const vec3& v ) const
-   { return vec3( x + v.x, y + v.y, z + v.z ); }
+   vec3 operator + ( const vec3& v ) const;
+
 
    /**
      * Subtraction Operator
@@ -350,8 +361,8 @@ struct vec3 {
      * @param[in] v vector to be subtracted
      * @return subtracted vector
    */
-   vec3 operator - ( const vec3& v ) const
-   { return vec3( x - v.x, y - v.y, z - v.z ); }
+   vec3 operator - ( const vec3& v ) const;
+
 
    /**
      * Multiplication Operator
@@ -359,8 +370,8 @@ struct vec3 {
      * @param[in] s scalar to be multiplied
      * @return Multiplied Vector
    */
-   vec3 operator * ( const GLfloat s ) const
-   { return vec3( s*x, s*y, s*z ); }
+   vec3 operator * ( const GLfloat s ) const;
+
 
    /**
      * Multiplication Operator
@@ -368,8 +379,8 @@ struct vec3 {
      * @param[in] v Vector to be multiplied
      * @return Multiplied Vector
    */
-   vec3 operator * ( const vec3& v ) const
-   { return vec3( x*v.x, y*v.y, z*v.z ); }
+   vec3 operator * ( const vec3& v ) const;
+
 
    /**
      * Multiplication Operator
@@ -378,8 +389,8 @@ struct vec3 {
      * @param[in] v Vector to be multiplied
      * @return Multiplied Vector
    */
-   friend vec3 operator * ( const GLfloat s, const vec3& v )
-   { return v * s; }
+   friend vec3 operator * ( const GLfloat s, const vec3& v );
+
 
    /**
      * Division Operator
@@ -387,29 +398,15 @@ struct vec3 {
      * @param[in] s scalar to be divided 
      * @return return vector
    */
-   vec3 operator / ( const GLfloat s ) const {
-      if ( std::fabs(s) < DivideByZeroTolerance ) {
-         std::cerr << "[" << __FILE__ << ":" << __LINE__ << "] "
-            << "Division by zero" << std::endl;
-         return vec3();
-      }
-
-      GLfloat r = GLfloat(1.0) / s;
-      return *this * r;
-   }
-
+   vec3 operator / ( const GLfloat s ) const;
+   
    //
    //  --- (modifying) Arithematic Operators ---
    //
 
-   vec3& operator += ( const vec3& v )
-   { x += v.x;  y += v.y;  z += v.z;  return *this; }
-
-   vec3& operator -= ( const vec3& v )
-   { x -= v.x;  y -= v.y;  z -= v.z;  return *this; }
-
-   vec3& operator *= ( const GLfloat s )
-   { x *= s;  y *= s;  z *= s;  return *this; }
+   vec3& operator += ( const vec3& v );
+   vec3& operator -= ( const vec3& v );
+   vec3& operator *= ( const GLfloat s );
 
    /**
      * Vector Times Equal Operator
@@ -417,50 +414,24 @@ struct vec3 {
      * @param[in] v Vector to be multiplied
      * @return multiplied vector
    */
-   vec3& operator *= ( const vec3& v )
-   { x *= v.x;  y *= v.y;  z *= v.z;  return *this; }
-
-   vec3& operator /= ( const GLfloat s ) {
-      if ( std::fabs(s) < DivideByZeroTolerance ) {
-         std::cerr << "[" << __FILE__ << ":" << __LINE__ << "] "
-            << "Division by zero" << std::endl;
-      }
-
-      GLfloat r = GLfloat(1.0) / s;
-      *this *= r;
-
-      return *this;
-   }
+   vec3& operator *= ( const vec3& v );
+   vec3& operator /= ( const GLfloat s );
 
    /** Extraction Operator
      * @param[in] os output stream
      * @param[in] v Vector to output
      * @return output stream
    */
-   friend std::ostream& operator << ( std::ostream& os, const vec3& v ) {
-      return os << "( " << v.x << ", " << v.y << ", " << v.z <<  " )";
-   }
+   friend std::ostream& operator << ( std::ostream& os, const vec3& v );
 
    /** Insertion Operator
      * @param[in] is input stream
      * @param[in] v Vector to input
      * @return input stream
    */
-   friend std::istream& operator >> ( std::istream& is, vec3& v )
-   { return is >> v.x >> v.y >> v.z ; }
+   friend std::istream& operator >> ( std::istream& is, vec3& v );
 
 
-   /** Conversion Operator
-     * @return GLfloat pointer
-   */
-   operator const GLfloat* () const
-   { return static_cast<const GLfloat*>( &x ); }
-
-   /** Conversion Operator
-     * @return GLfloat pointer
-   */
-   operator GLfloat* ()
-   { return static_cast<GLfloat*>( &x ); }
 };
 
 //----------------------------------------------------------------------------
@@ -474,9 +445,8 @@ struct vec3 {
   * @param[in] v second vector
   * @return dot product of the two vectors
 */
-inline GLfloat dot( const vec3& u, const vec3& v ) {
-   return u.x*v.x + u.y*v.y + u.z*v.z ;
-}
+GLfloat dot( const vec3& u, const vec3& v );
+
 
 /**
   * Vector magnitude
@@ -503,12 +473,7 @@ inline vec3 normalize( const vec3& v ) {
   * @param[in] b second vector
   * @return result from cross product
 */
-inline vec3 cross(const vec3& a, const vec3& b )
-{
-   return vec3( a.y * b.z - a.z * b.y,
-         a.z * b.x - a.x * b.z,
-         a.x * b.y - a.y * b.x );
-}
+inline vec3 cross(const vec3& a, const vec3& b );
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -558,8 +523,7 @@ struct vec4 {
      * @param[in] v Vector to be copied
      * @param[in] w homogenous coordinate
    */
-   vec4( const vec3& v, const float w = 1.0 ) : w(w)
-   { x = v.x;  y = v.y;  z = v.z; }
+   vec4( const vec3& v, const float w = 1.0 );
 
    /**
      * Copy Constructor

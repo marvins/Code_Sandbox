@@ -1,11 +1,22 @@
-/**
- * @file keyboard.cpp
- * @brief File containing keyboard processing
- * @author Marvin Smith
- */
 #include "keyboard.h"
-#include "Parameters.h"
 
+#include <cstdlib>
+#include <cstdio>
+#include <unistd.h>
+
+#ifdef __APPLE__
+#include <OpenGL/OpenGL.h>
+#include <GLUT/glut.h>
+#else
+#include <GL/glut.h>
+#include <GL/glu.h>
+#include <GL/gl.h>
+#endif
+
+
+/**
+ * Camera Class
+*/
 struct CameraAction
 {
    CameraAction() :
@@ -28,266 +39,184 @@ struct CameraAction
    int keysPressed;
 };
 
-struct LightAction
-{
-   LightAction() : 
-      move_x(0),
-      move_z(0){}
-
-   int move_x;
-   int move_z;
-
-   int keysPressed;
-};
-
-struct PaddleAction
-{
-   PaddleAction() : 
-      move_x(0),
-      move_z(0){}
-
-   int move_x;
-   int move_z;
-
-   int keysPressed;
-};
 
 CameraAction action;
-LightAction  laction;
-PaddleAction paction;
 
-void lightTimer(int value){
-
-   if ( laction.move_x != 0 )
-      options.light.move_x(laction.move_x*options.light_moveStep);
-   if ( laction.move_z != 0 )
-      options.light.move_z(laction.move_z*options.light_moveStep);
    
-   if ( laction.keysPressed > 0 )
-      glutTimerFunc( options.light_timerStep, lightTimer, value);
-
-   glutPostRedisplay();
-}
-
 void cameraTimer(int value)
 {
-   if ( action.rotateStraight != 0 )
-      options.camera.rotateStraight(action.rotateStraight*options.cam_lookStep);
-   if ( action.rotateVert != 0 )
-      options.camera.rotateVert(action.rotateVert*options.cam_lookStep);
-   if ( action.rotateHoriz != 0 )
-      options.camera.rotateHoriz(action.rotateHoriz*options.cam_lookStep);
-   if ( action.moveStraight != 0 )
-      options.camera.moveStraight(action.moveStraight*options.cam_moveStep);
-   if ( action.moveHoriz != 0 )
-      options.camera.moveHoriz(action.moveHoriz*options.cam_moveStep);
-   if ( action.moveVert != 0 )
-      options.camera.moveVert(action.moveVert*options.cam_moveStep);
+    if ( action.moveHoriz != 0 ){
+        options.camera.shift_horizontal(action.moveHoriz*options.cam_moveStep);
+    }
+    if ( action.moveStraight != 0 ){
+        options.camera.shift_straight(action.moveStraight*options.cam_moveStep);
+    }
+    if ( action.moveVert != 0 ){
+        options.camera.shift_vertical(action.moveVert*options.cam_moveStep);
+    }
+    if ( action.rotateVert != 0 ){
+        options.camera.rotate_vertical(action.rotateVert*options.cam_moveStep);
+    }
+    if ( action.rotateHoriz != 0 ){
+        options.camera.rotate_horizontal(action.rotateHoriz*options.cam_moveStep);
+    }
 
-   if ( action.keysPressed > 0 )
-      glutTimerFunc(options.cam_timerStep, cameraTimer, value);
+    if ( action.keysPressed > 0 )
+        glutTimerFunc(options.cam_timerStep, cameraTimer, value);
 
-   glutPostRedisplay();
+    glutPostRedisplay();
 }
 
 void keyboardPress( unsigned char key, int x, int y ){
 
-   /** Process for the key */
-   bool cameraKeyPressed = false;
-   bool lightKeyPressed  = false;
+    /** Process for the key */
+    bool cameraKeyPressed = false;
 
-   switch( key ){
-      
-      /********************************/
-      /*         Light Actions        */
-      /********************************/
-      case 'n': //move light -z
-         laction.move_z--;
-         laction.keysPressed++;
-         lightKeyPressed = true;
-         break;
-      case 'm': //move light +z
-         laction.move_z++;
-         laction.keysPressed++;
-         lightKeyPressed = true;
-         break;
-      case ',': //move light -x
-         laction.move_x--;
-         laction.keysPressed++;
-         lightKeyPressed = true;
-         break;
-      case '.': //move light +x
-         laction.move_x++;
-         laction.keysPressed++;
-         lightKeyPressed = true;
-         break;
-      
-      /********************************/
-      /*        Camera Actions        */
-      /********************************/
-      case 'w':
-         action.moveStraight++;
-         action.keysPressed++;
-         cameraKeyPressed = true;
-         break;
-      case 's':
-         action.moveStraight--;
-         action.keysPressed++;
-         cameraKeyPressed = true;
-         break;
-      case 'a':
-         action.moveHoriz--;
-         action.keysPressed++;
-         cameraKeyPressed = true;
-         break;
-      case 'd':
-         action.moveHoriz++;
-         action.keysPressed++;
-         cameraKeyPressed = true;
-         break;
-      case 'q':
-         action.moveVert++;
-         action.keysPressed++;
-         cameraKeyPressed = true;
-         break;
-      case 'e':
-         action.moveVert--;
-         action.keysPressed++;
-         cameraKeyPressed = true;
-         break;
-      case 'i':
-         action.rotateVert++;
-         action.keysPressed++;
-         cameraKeyPressed = true;
-         break;
-      case 'k':
-         action.rotateVert--;
-         action.keysPressed++;
-         cameraKeyPressed = true;
-         break;
-      case 'j':
-         action.rotateHoriz++;
-         action.keysPressed++;
-         cameraKeyPressed = true;
-         break;
-      case 'l':
-         action.rotateHoriz--;
-         action.keysPressed++;
-         cameraKeyPressed = true;
-         break;
-      case 'u':
-         action.rotateStraight--;
-         action.keysPressed++;
-         cameraKeyPressed = true;
-         break;
-      case 'o':
-         action.rotateStraight++;
-         action.keysPressed++;
-         cameraKeyPressed = true;
-         break;
-      /**********************/
-      /*    Quit Program    */
-      /**********************/
-      case 033: //escape key
-         exit( EXIT_SUCCESS );     
-   }
+    switch( key ){
 
-   if ( cameraKeyPressed ) {
-      // enable the timer
-      if ( action.keysPressed == 1 )
-         glutTimerFunc(options.cam_timerStep, cameraTimer, 0);
-   }
-   if ( lightKeyPressed ) {
-      // enable the timer
-      if ( laction.keysPressed == 1 )
-         glutTimerFunc(options.light_timerStep, lightTimer, 0);
-   }
-   
+        /********************************/
+        /*        Camera Actions        */
+        /********************************/
+        case 'a':
+            action.moveHoriz--;
+            action.keysPressed++;
+            cameraKeyPressed = true;
+            break;
+
+        case 'd':
+            action.moveHoriz++;
+            action.keysPressed++;
+            cameraKeyPressed = true;
+            break;
+
+        case 'w':
+            action.moveStraight++;
+            action.keysPressed++;
+            cameraKeyPressed = true;
+            break;
+
+        case 's':
+            action.moveStraight--;
+            action.keysPressed++;
+            cameraKeyPressed = true;
+            break;
+        
+        case 'e':
+            action.moveVert++;
+            action.keysPressed++;
+            cameraKeyPressed = true;
+            break;
+        
+        case 'q':    
+            action.moveVert--;
+            action.keysPressed++;
+            cameraKeyPressed = true;
+            break;
+
+        case 'i':
+            action.rotateVert++;
+            action.keysPressed++;
+            cameraKeyPressed = true;
+            break;
+        
+        case 'k':
+            action.rotateVert--;
+            action.keysPressed++;
+            cameraKeyPressed = true;
+            break;
+        
+        case 'l':
+            action.rotateHoriz++;
+            action.keysPressed++;
+            cameraKeyPressed = true;
+            break;
+        
+        case 'j':
+            action.rotateHoriz--;
+            action.keysPressed++;
+            cameraKeyPressed = true;
+            break;
+            
+            /**********************/
+            /*    Quit Program    */
+            /**********************/
+        case 033: //escape key
+            exit( EXIT_SUCCESS );     
+    }
+
+    if ( cameraKeyPressed ) {
+        // enable the timer
+        if ( action.keysPressed == 1 )
+            glutTimerFunc(options.cam_timerStep, cameraTimer, 0);
+    }
+
 }
 
 void keyboardUp( unsigned char key, int x, int y )
 {
-   /** Process for the key */
-   switch( key ){
-      
-      
-      /********************************/
-      /*         Light Actions        */
-      /********************************/
-      case 'n': //move light -z
-         laction.move_z++;
-         laction.keysPressed--;
-         break;
-      case 'm': //move light +z
-         laction.move_z--;
-         laction.keysPressed--;
-         break;
-      case ',': //move light -x
-         laction.move_x++;
-         laction.keysPressed--;
-         break;
-      case '.': //move light +x
-         laction.move_x--;
-         laction.keysPressed--;
-         break;
-      /********************************/
-      /*        Camera Actions        */
-      /********************************/
-      case 'w':
-         action.moveStraight--;
-         action.keysPressed--;
-         break;
-      case 's':
-         action.moveStraight++;
-         action.keysPressed--;
-         break;
-      case 'a':
-         action.moveHoriz++;
-         action.keysPressed--;
-         break;
-      case 'd':
-         action.moveHoriz--;
-         action.keysPressed--;
-         break;
-      case 'q':
-         action.moveVert--;
-         action.keysPressed--;
-         break;
-      case 'e':
-         action.moveVert++;
-         action.keysPressed--;
-         break;
-      case 'i':
-         action.rotateVert--;
-         action.keysPressed--;
-         break;
-      case 'k':
-         action.rotateVert++;
-         action.keysPressed--;
-         break;
-      case 'j':
-         action.rotateHoriz--;
-         action.keysPressed--;
-         break;
-      case 'l':
-         action.rotateHoriz++;
-         action.keysPressed--;
-         break;
-      case 'u':
-         action.rotateStraight++;
-         action.keysPressed--;
-         break;
-      case 'o':
-         action.rotateStraight--;
-         action.keysPressed--;
-         break;
-         
-      /**********************/
-      /*    Quit Program    */
-      /**********************/
-      case 033: //escape key
-         exit( EXIT_SUCCESS );     
-   }
+    /** Process for the key */
+    switch( key ){
+
+
+        /********************************/
+        /*        Camera Actions        */
+        /********************************/
+        case 'a':
+            action.moveHoriz++;
+            action.keysPressed--;
+            break;
+
+        case 'd':
+            action.moveHoriz--;
+            action.keysPressed--;
+            break;
+        
+        case 'w':
+            action.moveStraight--;
+            action.keysPressed--;
+            break;
+        
+        case 's':
+            action.moveStraight++;
+            action.keysPressed--;
+            break;
+        
+        case 'q':
+            action.moveVert++;
+            action.keysPressed--;
+            break;
+
+        case 'e':
+            action.moveVert--;
+            action.keysPressed--;
+            break;
+
+        case 'i':
+            action.rotateVert--;
+            action.keysPressed--;
+            break;
+
+        case 'k':
+            action.rotateVert++;
+            action.keysPressed--;
+            break;
+        
+        case 'l':
+            action.rotateHoriz--;
+            action.keysPressed--;
+            break;
+
+        case 'j':
+            action.rotateHoriz++;
+            action.keysPressed--;
+            break;
+        
+            /**********************/
+            /*    Quit Program    */
+            /**********************/
+        case 033: //escape key
+            exit( EXIT_SUCCESS );     
+    }
 
 }
 

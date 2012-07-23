@@ -1,37 +1,25 @@
-/**
-  * @file keyboard.h
-  * @brief File containing keyboard processing
-  * @author Marvin Smith
-*/
 #ifndef __SRC_OPENGL_MANAGEMENT_KEYBOARD_H__
 #define __SRC_OPENGL_MANAGEMENT_KEYBOARD_H__
 
-#include <cstdlib>
-#include <fstream>
-#include <iostream>
-#include <string>
+//OpenGL Libraries
+#ifdef __APPLE__
+#include <OpenGL/OpenGL.h>
+#include <GLUT/glut.h>
+#else
+#include <GL/gl.h>
+#include <GL/glu.h>
+#include <GL/glut.h>
+#endif
 
-// ../math/
-#include "vector.h"
+#include "Options.h"
 
-// ../structures/
-#include "Parameters.h"
-#include "Camera.h"
+/* ASCII code for the escape key. */
+#define ESCAPE 27
 
-// bullet physics engine
+extern Options options;
 
-using namespace std;
-
-/** Global Variable Container */
-extern Parameters options;
-
-/**
-  * keyboard processing function 
-  * @param[in] key value from handle
-  * @param[in] x x value
-  * @param[in] y y value
-*/
 void keyboardPress( unsigned char key, int x, int y );
 void keyboardUp( unsigned char key, int x, int y );
+
 
 #endif

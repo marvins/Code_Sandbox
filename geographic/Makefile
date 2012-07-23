@@ -115,9 +115,13 @@ tools: $(BIN)/geo_viewer $(BIN)/geo_meta_parser
 ###################################################################
 #				BUILD SEQUENCE		
 ###################################################################
+VIEWER_HDR=                       src/tools/geo_viewer/visualization.h  src/tools/geo_viewer/camera.h  src/tools/geo_viewer/Cube.h    src/tools/geo_viewer/vector.h  src/tools/geo_viewer/initialization.h   src/tools/geo_viewer/keyboard.h  src/tools/geo_viewer/Options.h
+VIEWER_OBJ=$(BUILD)/geo_viewer.o  $(BUILD)/visualization.o              $(BUILD)/camera.o              $(BUILD)/Cube.o                $(BUILD)/vector.o              $(BUILD)/initialization.o               $(BUILD)/keyboard.o              $(BUILD)/Options.o
+
 # Viewer Program
-$(BIN)/geo_viewer: src/tools/geo_viewer.cpp src/tools/geo_viewer/*.cpp src/tools/geo_viewer/*.h
-	g++ -o $@ $<  $(OPENGL) src/tools/geo_viewer/*.cpp $(BOOST) -lgdal
+$(BIN)/geo_viewer: $(VIEWER_OBJ) $(VIEWER_HDR)
+	g++ -o $@ $(VIEWER_OBJ) $(OPENGL) $(BOOST) -lgdal
+
 
 # Geo Metadata Parser Program
 $(BIN)/geo_meta_parser:  src/tools/geo_meta_parser.cpp  src/tools/geo_meta_parser/*.cpp src/tools/geo_meta_parser/*.h
@@ -237,6 +241,34 @@ build/GS2NITFHeader.o:       src/extensions/GS2NITFHeader.cpp $(HEADERS)
 
 build/GS2NITFHeader_DEBUG.o: src/extensions/GS2NITFHeader.cpp $(HEADERS)
 	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
+
+
+###################################################################
+#				   		      Geo Viewer						  #
+###################################################################
+$(BUILD)/geo_viewer.o: src/tools/geo_viewer.cpp $(VIEWER_HDR)
+	g++ $< -c -o $@  $(OPENGL_INCLUDE)
+
+$(BUILD)/initialization.o: src/tools/geo_viewer/initialization.cpp $(VIEWER_HDR)
+	g++ $< -c -o $@  $(OPENGL_INCLUDE)
+
+$(BUILD)/keyboard.o: src/tools/geo_viewer/keyboard.cpp $(VIEWER_HDR)
+	g++ $< -c -o $@  $(OPENGL_INCLUDE)
+
+$(BUILD)/Options.o:  src/tools/geo_viewer/Options.cpp $(VIEWER_HDR)
+	g++ $< -c -o $@  
+
+$(BUILD)/vector.o:   src/tools/geo_viewer/vector.cpp  $(VIEWER_HDR)
+	g++ $< -c -o $@ $(OPENGL_INCLUDE)
+
+$(BUILD)/Cube.o:	 src/tools/geo_viewer/Cube.cpp    $(VIEWER_HDR)
+	g++ $< -c -o $@ $(OPENGL_INCLUDE)
+
+$(BUILD)/camera.o:	 src/tools/geo_viewer/camera.cpp    $(VIEWER_HDR)
+	g++ $< -c -o $@ $(OPENGL_INCLUDE)
+
+$(BUILD)/visualization.o:	 src/tools/geo_viewer/visualization.cpp    $(VIEWER_HDR)
+	g++ $< -c -o $@ $(OPENGL_INCLUDE)
 
 ###################################################################
 # 				MISC TOOLS
