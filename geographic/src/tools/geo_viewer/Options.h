@@ -5,6 +5,8 @@
 //#include <iostream>
 #include <string>
 
+#include <GeoImage.h>
+
 #include "vector.h"
 #include "Cube.h"
 #include "camera.h"
@@ -47,7 +49,7 @@ class Options{
         GLfloat cam_moveStep;
         unsigned int cam_timerStep;
 
-
+        GEO::GeoImage dted_tile;
 };
 
 

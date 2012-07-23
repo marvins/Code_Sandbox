@@ -60,10 +60,15 @@ void init_viewer( ){
     options.cam_moveStep = 0.05;
     options.cam_timerStep = 10;
 
+    options.dted_tile.set_filename("data/dted/w119/n037.dt2");
+    options.dted_tile.set_init(true);
+
 }
 
 int main( int argc, char* argv[] ){
     srand(time(NULL));
+    
+    try{
 
     /* Initialize everything */
     init_viewer( );
@@ -114,7 +119,9 @@ int main( int argc, char* argv[] ){
 
     /* Start Event Processing Engine */ 
     glutMainLoop();  
-
+    } catch( string e ){
+        cout << e << endl;
+    }
     return 1;
 }
 

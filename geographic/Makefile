@@ -7,6 +7,9 @@
 
 # Final Install Destination
 PREFIX = /opt/local
+GEOIMAGE_INCLUDE=-I$(PREFIX)/include
+GEOIMAGE_LIBS=-L$(PREFIX)/lib -lgeoimage
+
 
 #Build directory   (DO NOT TOUCH -fPIC)
 BUILD = build
@@ -120,7 +123,7 @@ VIEWER_OBJ=$(BUILD)/geo_viewer.o  $(BUILD)/Quaternion.o             $(BUILD)/vis
 
 # Viewer Program
 $(BIN)/geo_viewer: $(VIEWER_OBJ) $(VIEWER_HDR)
-	g++ -o $@ $(VIEWER_OBJ) $(OPENGL) $(BOOST) -lgdal
+	g++ -o $@ $(VIEWER_OBJ) $(OPENGL) $(BOOST) -lgdal -I/opt/local/include -L/opt/local/lib -lgeoimage
 
 
 # Geo Metadata Parser Program
@@ -247,16 +250,16 @@ build/GS2NITFHeader_DEBUG.o: src/extensions/GS2NITFHeader.cpp $(HEADERS)
 #				   		      Geo Viewer						  #
 ###################################################################
 $(BUILD)/geo_viewer.o: src/tools/geo_viewer.cpp $(VIEWER_HDR)
-	g++ $< -c -o $@  $(OPENGL_INCLUDE)
+	g++ $< -c -o $@  $(OPENGL_INCLUDE) $(GDAL_INCLUDE) $(GEOIMAGE_INCLUDE)
 
 $(BUILD)/initialization.o: src/tools/geo_viewer/initialization.cpp $(VIEWER_HDR)
 	g++ $< -c -o $@  $(OPENGL_INCLUDE)
 
 $(BUILD)/keyboard.o: src/tools/geo_viewer/keyboard.cpp $(VIEWER_HDR)
-	g++ $< -c -o $@  $(OPENGL_INCLUDE)
+	g++ $< -c -o $@  $(OPENGL_INCLUDE) $(GDAL_INCLUDE) $(GEOIMAGE_INCLUDE)
 
 $(BUILD)/Options.o:  src/tools/geo_viewer/Options.cpp $(VIEWER_HDR)
-	g++ $< -c -o $@  
+	g++ $< -c -o $@  $(GDAL_INCLUDE) $(GEOIMAGE_INCLUDE)
 
 $(BUILD)/vector.o:   src/tools/geo_viewer/vector.cpp  $(VIEWER_HDR)
 	g++ $< -c -o $@ $(OPENGL_INCLUDE)
@@ -268,7 +271,7 @@ $(BUILD)/camera.o:	 src/tools/geo_viewer/camera.cpp    $(VIEWER_HDR)
 	g++ $< -c -o $@ $(OPENGL_INCLUDE)
 
 $(BUILD)/visualization.o:	 src/tools/geo_viewer/visualization.cpp    $(VIEWER_HDR)
-	g++ $< -c -o $@ $(OPENGL_INCLUDE)
+	g++ $< -c -o $@ $(OPENGL_INCLUDE) $(GDAL_INCLUDE) $(GEOIMAGE_INCLUDE)
 
 $(BUILD)/Quaternion.o:  src/tools/geo_viewer/Quaternion.cpp $(VIEWER_HDR)
 	g++ $< -c -o $@ 
