@@ -115,8 +115,8 @@ tools: $(BIN)/geo_viewer $(BIN)/geo_meta_parser
 ###################################################################
 #				BUILD SEQUENCE		
 ###################################################################
-VIEWER_HDR=                       src/tools/geo_viewer/visualization.h  src/tools/geo_viewer/camera.h  src/tools/geo_viewer/Cube.h    src/tools/geo_viewer/vector.h  src/tools/geo_viewer/initialization.h   src/tools/geo_viewer/keyboard.h  src/tools/geo_viewer/Options.h
-VIEWER_OBJ=$(BUILD)/geo_viewer.o  $(BUILD)/visualization.o              $(BUILD)/camera.o              $(BUILD)/Cube.o                $(BUILD)/vector.o              $(BUILD)/initialization.o               $(BUILD)/keyboard.o              $(BUILD)/Options.o
+VIEWER_HDR=                       src/tools/geo_viewer/Quaternion.h src/tools/geo_viewer/visualization.h  src/tools/geo_viewer/camera.h  src/tools/geo_viewer/Cube.h    src/tools/geo_viewer/vector.h  src/tools/geo_viewer/initialization.h   src/tools/geo_viewer/keyboard.h  src/tools/geo_viewer/Options.h
+VIEWER_OBJ=$(BUILD)/geo_viewer.o  $(BUILD)/Quaternion.o             $(BUILD)/visualization.o              $(BUILD)/camera.o              $(BUILD)/Cube.o                $(BUILD)/vector.o              $(BUILD)/initialization.o               $(BUILD)/keyboard.o              $(BUILD)/Options.o
 
 # Viewer Program
 $(BIN)/geo_viewer: $(VIEWER_OBJ) $(VIEWER_HDR)
@@ -269,6 +269,9 @@ $(BUILD)/camera.o:	 src/tools/geo_viewer/camera.cpp    $(VIEWER_HDR)
 
 $(BUILD)/visualization.o:	 src/tools/geo_viewer/visualization.cpp    $(VIEWER_HDR)
 	g++ $< -c -o $@ $(OPENGL_INCLUDE)
+
+$(BUILD)/Quaternion.o:  src/tools/geo_viewer/Quaternion.cpp $(VIEWER_HDR)
+	g++ $< -c -o $@ 
 
 ###################################################################
 # 				MISC TOOLS

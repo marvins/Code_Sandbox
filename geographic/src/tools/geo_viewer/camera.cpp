@@ -2,6 +2,8 @@
 
 #include "mat.h"
 
+#include "Quaternion.h"
+
 Camera::Camera(){
     eye = vec4( 0,0,-5);
     at  = vec4(0,0,0);
@@ -61,11 +63,20 @@ void Camera::shift_vertical( GLfloat const& amt ){
 
 void Camera::rotate_vertical( GLfloat const& theta ){
 
+    //compute the diff vector
+    vec4 diff = at - eye;
+
     //compute the axis of rotation
-    vec4 axisRotation = normalize(cross( up, eye));
+    vec4 axisRotation = normalize(cross( up, diff));
     
     //rotate point about axis of rotation
-    at = RotateAround( theta, axisRotation, true )*at;
+    Quaternion rot( theta*3.14152/180.0, axisRotation);
+    Quaternion valA( diff );
+    Quaternion valU( up );
+
+    at = (rot*valA*rot.conj()).imag() + eye;
+    //up = (rot*valU*rot.conj()).imag();
+    //at = RotateAround( theta, axisRotation, true )*at;
 
 }
 

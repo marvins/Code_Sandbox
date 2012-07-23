@@ -16,7 +16,11 @@ void DrawGLScene()
    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
    glLoadIdentity();				// Reset The View
 
-
+    
+    cout << "Camera" << endl;
+    cout << "EYE: " << options.camera.eye << endl;
+    cout << "AT : " << options.camera.at  << endl;
+    cout << "UP : " << options.camera.up  << endl;
    //change camera perspective
    gluLookAt(options.camera.eye.x,
            options.camera.eye.y,

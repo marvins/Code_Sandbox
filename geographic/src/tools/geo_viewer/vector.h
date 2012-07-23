@@ -18,6 +18,7 @@ using namespace std;
 const GLfloat  DivideByZeroTolerance = GLfloat(1.0e-07);
 
 
+
 /**
    @class vec2
    @brief 2 Dimensional Vector
@@ -706,6 +707,9 @@ struct vec4 {
    operator GLfloat* ()
    { return static_cast<GLfloat*>( &x ); }
 };
+
+typedef vec4 vec;
+
 
 //----------------------------------------------------------------------------
 //
