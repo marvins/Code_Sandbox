@@ -5,6 +5,7 @@
 
 extern Options options;
 
+void DrawGLTimer( int value );
 void DrawGLScene();
 
 #endif

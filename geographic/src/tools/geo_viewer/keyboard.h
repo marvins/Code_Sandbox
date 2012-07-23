@@ -18,6 +18,8 @@
 
 extern Options options;
 
+void cameraTimer( int value );
+
 void keyboardPress( unsigned char key, int x, int y );
 void keyboardUp( unsigned char key, int x, int y );
 

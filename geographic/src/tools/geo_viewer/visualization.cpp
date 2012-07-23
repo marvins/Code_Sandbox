@@ -9,6 +9,14 @@
 #include <GL/glut.h>
 #endif
 
+void DrawGLTimer( int value ){
+
+    glutPostRedisplay();
+    glutTimerFunc(10, DrawGLTimer, 0);
+
+}
+
+
 /* The main drawing function. */
 void DrawGLScene()
 {
@@ -17,10 +25,6 @@ void DrawGLScene()
    glLoadIdentity();				// Reset The View
 
     
-    cout << "Camera" << endl;
-    cout << "EYE: " << options.camera.eye << endl;
-    cout << "AT : " << options.camera.at  << endl;
-    cout << "UP : " << options.camera.up  << endl;
    //change camera perspective
    gluLookAt(options.camera.eye.x,
            options.camera.eye.y,

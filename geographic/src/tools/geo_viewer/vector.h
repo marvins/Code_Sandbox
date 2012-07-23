@@ -474,7 +474,7 @@ inline vec3 normalize( const vec3& v ) {
   * @param[in] b second vector
   * @return result from cross product
 */
-inline vec3 cross(const vec3& a, const vec3& b );
+vec3 cross(const vec3& a, const vec3& b );
 
 
 //////////////////////////////////////////////////////////////////////////////

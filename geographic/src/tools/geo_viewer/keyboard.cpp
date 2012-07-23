@@ -45,6 +45,7 @@ CameraAction action;
    
 void cameraTimer(int value)
 {
+    cout << action.rotateStraight << endl;
     if ( action.moveHoriz != 0 ){
         options.camera.shift_horizontal(action.moveHoriz*options.cam_moveStep);
     }
@@ -60,18 +61,19 @@ void cameraTimer(int value)
     if ( action.rotateHoriz != 0 ){
         options.camera.rotate_horizontal(action.rotateHoriz*options.cam_moveStep);
     }
+    if ( action.rotateStraight != 0 ){
+        options.camera.rotate_straight( action.rotateStraight*options.cam_moveStep);
+    }
+ 
+    glutTimerFunc( 10, cameraTimer, value);
 
-    if ( action.keysPressed > 0 )
-        glutTimerFunc(options.cam_timerStep, cameraTimer, value);
-
-    glutPostRedisplay();
 }
 
 void keyboardPress( unsigned char key, int x, int y ){
 
     /** Process for the key */
     bool cameraKeyPressed = false;
-
+    
     switch( key ){
 
         /********************************/
@@ -136,7 +138,19 @@ void keyboardPress( unsigned char key, int x, int y ){
             action.keysPressed++;
             cameraKeyPressed = true;
             break;
-            
+        
+        case 'u':
+            action.rotateStraight = -1;
+            action.keysPressed++;
+            cameraKeyPressed = true;
+            break;
+
+        case 'o':
+            action.rotateStraight = 1;
+            action.keysPressed++;
+            cameraKeyPressed = true;
+            break;
+
             /**********************/
             /*    Quit Program    */
             /**********************/
@@ -144,11 +158,6 @@ void keyboardPress( unsigned char key, int x, int y ){
             exit( EXIT_SUCCESS );     
     }
 
-    if ( cameraKeyPressed ) {
-        // enable the timer
-        if ( action.keysPressed == 1 )
-            glutTimerFunc(options.cam_timerStep, cameraTimer, 0);
-    }
 
 }
 
@@ -211,11 +220,23 @@ void keyboardUp( unsigned char key, int x, int y )
             action.keysPressed--;
             break;
         
+        case 'u':
+            action.rotateStraight = 0;
+            action.keysPressed--;
+            break;
+
+        case 'o':
+            action.rotateStraight = 0;
+            action.keysPressed--;
+            break;
+        
             /**********************/
             /*    Quit Program    */
             /**********************/
         case 033: //escape key
             exit( EXIT_SUCCESS );     
+        
+        action.keysPressed = 0;
     }
 
 }

@@ -52,9 +52,9 @@ void init_viewer( ){
 
     options.debug_mode    = 1;
     
-    options.camera.eye = vec4( 0, 0, -4, 1);
-    options.camera.at  = vec4( 0, 0,  0, 1);
-    options.camera.up  = vec4( 0, 1,  0, 1);
+    options.camera.eye = vec3( 0, 0, -4);
+    options.camera.at  = vec3( 0, 0,  0);
+    options.camera.up  = vec3( 0, 1,  0);
     
     options.cam_lookStep = 0.1;
     options.cam_moveStep = 0.05;
@@ -99,8 +99,9 @@ int main( int argc, char* argv[] ){
     //glutMotionFunc(mouseMove);
 
     /* Even if there are no events, redraw our gl scene. */
-    glutIdleFunc(&DrawGLScene);
-
+    glutTimerFunc(1, DrawGLTimer, 0);
+    glutTimerFunc(6, cameraTimer, 0);
+    
     /* Register the function called when our window is resized. */
     glutReshapeFunc(&ReSizeGLScene);
 

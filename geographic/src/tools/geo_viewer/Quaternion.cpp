@@ -9,20 +9,20 @@
 
 Quaternion::Quaternion(){
     real() = 0;
-    imag() = vec4(0,0,0);
+    imag() = vec3(0,0,0);
 }
 
 Quaternion::Quaternion(const float& realVal, const float& i1, const float& i2, const float& i3){
     real() = realVal;
-    imag() = vec4( i1, i2, i3);
+    imag() = vec3( i1, i2, i3);
 }
 
-Quaternion::Quaternion( const vec4& q){
+Quaternion::Quaternion( const vec3& q){
     imag() = q;
     real() = 0;
 }
 
-Quaternion::Quaternion( const float theta, const vec4& axis ){
+Quaternion::Quaternion( const float theta, const vec3& axis ){
     real() = cos(theta/2);
     imag() = sin(theta/2)*axis;
 }
@@ -58,11 +58,11 @@ float& Quaternion::real(){
     return d;
 }
 
-vec4 Quaternion::imag()const{
+vec3 Quaternion::imag()const{
     return i;
 }
 
-vec4& Quaternion::imag(){
+vec3& Quaternion::imag(){
     return i;
 }
 
@@ -87,11 +87,11 @@ Quaternion Quaternion::conj()const{
     return out;
 }
 
-Quaternion operator* (const Quaternion& qa, vec4 const& qb ){
+Quaternion operator* (const Quaternion& qa, vec3 const& qb ){
     Quaternion other(qb);
     return (qa*other);
 }
-Quaternion operator* (const vec4& qa, Quaternion const& qb ){
+Quaternion operator* (const vec3& qa, Quaternion const& qb ){
     Quaternion other(qa);
     return (other*qb);
 }
