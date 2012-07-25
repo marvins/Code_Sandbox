@@ -45,6 +45,20 @@ Options options;
   @date 7/19/2012
  */
 void init_viewer( ){
+    
+    glShadeModel( GL_SMOOTH );
+    glEnable(GL_LIGHTING);
+    glEnable(GL_LIGHT0);
+
+    GLfloat light_ambient[] = {0.2, 0.2, 0.2, 1.0};
+    GLfloat light_diffuse[] = {0.7, 0.0, 0.5, 1.0};
+    GLfloat light_specular[] = {0.7, 0.5, 0.5, 1.0};
+    GLfloat light_position[] = {1000.0, 1000.0, 80.0, 1.0};
+
+    glLightfv(GL_LIGHT0, GL_AMBIENT, light_ambient);
+    glLightfv(GL_LIGHT0, GL_DIFFUSE, light_diffuse);
+    glLightfv(GL_LIGHT0, GL_SPECULAR, light_specular);
+    glLightfv(GL_LIGHT0, GL_POSITION, light_position);
 
     ///initialize parameters
     options.window_width  = 600;
@@ -75,8 +89,8 @@ void init_viewer( ){
     options.shape.set_structure( options.dted_tile.get_image(), ul, br, GEO::DTED );
     
     cout << "Setting eye: " << options.shape.get_center() << endl;
-    options.camera.eye = vec3(  999,   995,  1 );//options.shape.get_center().x,  options.shape.get_center().y, -1);
-    options.camera.at  = vec3(  999,  1000,  1 );//options.shape.get_center().x,  options.shape.get_center().y, 0);
+    options.camera.eye = vec3(  999,   995,  90 );//options.shape.get_center().x,  options.shape.get_center().y, -1);
+    options.camera.at  = vec3(  999,  1000,  90 );//options.shape.get_center().x,  options.shape.get_center().y, 0);
     options.camera.up  = vec3(  0,  0,  1);
 
     options.znear = 1;

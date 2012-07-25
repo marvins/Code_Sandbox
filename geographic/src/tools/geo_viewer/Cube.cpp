@@ -105,24 +105,24 @@ void Cube::draw_shape( ){
         for( size_t idx=0; idx<indeces.size(); idx++ ){
             
             int i = indeces[idx];
-            if( idx % 3 == 0 )
+            if( idx % 3 == 0 ){
+                
                 glColor3f( elevation_info[i].val.x, elevation_info[i].val.y, elevation_info[i].val.z);
+
+                //vec3 A = vec3( elevation_info[i+0].x, elevation_info[i+0].y, elevation_info[i+0].z);
+                //vec3 B = vec3( elevation_info[i+1].x, elevation_info[i+1].y, elevation_info[i+1].z);
+                //vec3 C = vec3( elevation_info[i+2].x, elevation_info[i+2].y, elevation_info[i+2].z);
+                //vec3 nor = normalize(cross( (A-B), (C-B)));
+                glNormal3f( 0, 0, 1);//nor.x, nor.y, nor.z);
+            }
             glVertex3f( elevation_info[i].x, elevation_info[i].y, elevation_info[i].z);
-              
+
             //cout << elevation_info[i].x << ", " << elevation_info[i].y << ", " << elevation_info[i].z << endl;
             //if( idx % 3 == 0 )
-                //cin.get();
+            //cin.get();
 
             if( elevation_info[i].x < 400 || elevation_info[i].y < 400 )
-            {   
-                cout << "start" << endl;
-                cout << elevation_info.size() << endl;
-                cout << indeces.size() << endl;
-                cout << idx << endl;
-                cout << i << endl;
-                cout << elevation_info[i].x << ", " << elevation_info[i].y << ", " << elevation_info[i].z << endl;
                 throw string("FAIL");
-            }
         }
 
     }
@@ -148,14 +148,12 @@ void Cube::set_structure( cv::Mat const& dted_image, cv::Point2f const& ul, cv::
     double minC = dted_image.at<short>(0,0);
     double maxC = dted_image.at<short>(0,0);
     for( size_t i=0; i<dted_image.cols; i++)
-    for( size_t j=0; j<dted_image.rows; j++){
-        if( dted_image.at<short>(j,i) < minC )
-            minC = dted_image.at<short>(j,i);
-        if( dted_image.at<short>(j,i) > maxC )
-            maxC = dted_image.at<short>(j,i);
-    }
-    cout << "Max: " << maxC << endl;
-    cout << "Min: " << minC << endl;
+        for( size_t j=0; j<dted_image.rows; j++){
+            if( dted_image.at<short>(j,i) < minC )
+                minC = dted_image.at<short>(j,i);
+            if( dted_image.at<short>(j,i) > maxC )
+                maxC = dted_image.at<short>(j,i);
+        }
 
     //make sure the data format is consistent
     if( dted_image.type() != CV_8UC1 && dted_image.type() != CV_16SC1 ) throw string("ERROR: Wrong type");
@@ -181,7 +179,7 @@ void Cube::set_structure( cv::Mat const& dted_image, cv::Point2f const& ul, cv::
             }
             else
                 throw string("ERROR: Wrong type");
-            
+
 
             if( i< (startx+wx) && j< (starty+wy) ){
                 indeces.push_back( (j-starty+0)*(wx+1) + (i-startx+0) );

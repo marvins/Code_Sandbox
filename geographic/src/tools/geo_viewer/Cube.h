@@ -21,6 +21,7 @@ class DEMPoint{
         double x;
         double y;
         double z;
+        vec3 nor;
         vec3 val;
 };
 
