@@ -17,10 +17,11 @@ class DEMPoint{
         DEMPoint();
         DEMPoint( int a, int b, int l );
         DEMPoint( int a, int b, int l, double col );
+        DEMPoint( int a, int b, int l, vec3 col );
         double x;
         double y;
         double z;
-        double c;
+        vec3 val;
 };
 
 class Cube {
@@ -30,7 +31,7 @@ class Cube {
       Cube(vector<vec4>const& a );
       Cube(Cube const& a );
       
-      void set_structure( cv::Mat const& dted_image, cv::Point2f const& ul, cv::Point2f const& br );
+      void set_structure( cv::Mat const& dted_image, cv::Point2f const& ul, cv::Point2f const& br, const int& fileType );
 
       virtual ~Cube( );
 

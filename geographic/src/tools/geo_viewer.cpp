@@ -47,20 +47,20 @@ Options options;
 void init_viewer( ){
 
     ///initialize parameters
-    options.window_width  = 640;
-    options.window_height = 480;
+    options.window_width  = 600;
+    options.window_height = 600;
     options.start_x       =   5;
     options.start_y       =  40;
 
     options.debug_mode    = 1;
     
     options.cam_lookStep = 0.1;
-    options.cam_moveStep = 5;
+    options.cam_moveStep = 3;
     options.cam_timerStep = 10;
     
     cout << "Setting nitf tile" << endl;
-    options.nitf_tile.set_filename("data/nitf/U_1001A.NTF");
-    options.nitf_tile.set_init(true);
+    //options.nitf_tile.set_filename("data/nitf/U_1001A.NTF");
+    //options.nitf_tile.set_init(true);
     cout << "end of program" << endl;
     options.dted_tile.set_filename("data/dted/w119/n037.dt2");
     options.dted_tile.set_init(true);
@@ -68,16 +68,16 @@ void init_viewer( ){
 
 
     Point2f  ul, br;
-    options.nitf_tile.get_corner_coordinates( ul, br );
-    options.shape.set_structure( options.nitf_tile.get_image(), ul, br );
+    //options.nitf_tile.get_corner_coordinates( ul, br );
+    //options.shape.set_structure( options.nitf_tile.get_image(), ul, br, GEO::NITF );
 
-    //options.dted_tile.get_corner_coordinates( ul, br );
-    //options.shape.set_structure( options.dted_tile.get_image(), ul, br );
+    options.dted_tile.get_corner_coordinates( ul, br );
+    options.shape.set_structure( options.dted_tile.get_image(), ul, br, GEO::DTED );
     
     cout << "Setting eye: " << options.shape.get_center() << endl;
-    options.camera.eye = vec3( 10, 10, 1 );//options.shape.get_center().x,  options.shape.get_center().y, -1);
-    options.camera.at  = vec3( 10, 10, 0 );//options.shape.get_center().x,  options.shape.get_center().y, 0);
-    options.camera.up  = vec3( 0,  1,  0);
+    options.camera.eye = vec3(  999,   995,  1 );//options.shape.get_center().x,  options.shape.get_center().y, -1);
+    options.camera.at  = vec3(  999,  1000,  1 );//options.shape.get_center().x,  options.shape.get_center().y, 0);
+    options.camera.up  = vec3(  0,  0,  1);
 
     options.znear = 1;
     options.zfar  = 10;

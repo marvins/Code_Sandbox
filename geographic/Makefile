@@ -123,7 +123,7 @@ VIEWER_OBJ=$(BUILD)/geo_viewer.o  $(BUILD)/Quaternion.o             $(BUILD)/vis
 
 # Viewer Program
 $(BIN)/geo_viewer: $(VIEWER_OBJ) $(VIEWER_HDR)
-	g++ -o $@ $(VIEWER_OBJ) $(OPENGL) $(BOOST) -lgdal -I/opt/local/include -L/opt/local/lib -lgeoimage
+	g++ -o $@ $(VIEWER_OBJ) $(OPENGL) $(BOOST) -lgdal -I/opt/local/include -L/opt/local/lib `pkg-config opencv --cflags --libs` -lgeoimage
 
 
 # Geo Metadata Parser Program
@@ -265,7 +265,7 @@ $(BUILD)/vector.o:   src/tools/geo_viewer/vector.cpp  $(VIEWER_HDR)
 	g++ $< -c -o $@ $(OPENGL_INCLUDE)
 
 $(BUILD)/Cube.o:	 src/tools/geo_viewer/Cube.cpp    $(VIEWER_HDR)
-	g++ $< -c -o $@ $(OPENGL_INCLUDE)
+	g++ $< -c -o $@ $(OPENGL_INCLUDE) $(GDAL_INCLUDE) $(GEOIMAGE_INCLUDE)
 
 $(BUILD)/camera.o:	 src/tools/geo_viewer/camera.cpp    $(VIEWER_HDR)
 	g++ $< -c -o $@ $(OPENGL_INCLUDE)

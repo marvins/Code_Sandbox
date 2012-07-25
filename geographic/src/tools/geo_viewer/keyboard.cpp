@@ -45,7 +45,6 @@ CameraAction action;
    
 void cameraTimer(int value)
 {
-    cout << action.rotateStraight << endl;
     if ( action.moveHoriz != 0 ){
         options.camera.shift_horizontal(action.moveHoriz*options.cam_moveStep);
     }
