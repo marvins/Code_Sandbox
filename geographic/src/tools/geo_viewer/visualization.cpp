@@ -23,8 +23,23 @@ void DrawGLScene()
 
    glClear(GL_DEPTH_BUFFER_BIT | GL_COLOR_BUFFER_BIT);	// Clear The Screen And The Depth Buffer
    glLoadIdentity();				// Reset The View
-
     
+    options.zfar = 1000;
+    //options.zfar  = fabs( options.camera.eye.z ) +1;
+    //options.znear = fabs( options.camera.eye.z ) -0;
+    
+
+    cout << "--------------------" << endl;
+    cout << "Camera Parameters" << endl;
+    cout << "AT : " << options.camera.at << endl;
+    cout << "EYE: " << options.camera.eye << endl;
+    cout << "UP : " << options.camera.up  << endl;
+    cout << "ZNEAR: " << options.znear << ", ZFAR: " << options.zfar << endl;
+    
+    cout << endl;
+
+    gluPerspective( 45, 1, options.znear, options.zfar );
+
    //change camera perspective
    gluLookAt(options.camera.eye.x,
            options.camera.eye.y,

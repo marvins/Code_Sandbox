@@ -91,6 +91,8 @@ class GeoImage{
      *  5.  DELETE FIRST ENTRY WHICH MATCHES VALUE
     */
     void modify_header_metadata( const std::string& tag, const std::string& val, const int& action );
+    
+    void get_corner_coordinates( cv::Point2f& ul, cv::Point2f& br );
 
     private:
 

@@ -50,6 +50,10 @@ class Options{
         unsigned int cam_timerStep;
 
         GEO::GeoImage dted_tile;
+        GEO::GeoImage nitf_tile;
+
+        double znear, zfar;
+
 };
 
 

@@ -150,6 +150,19 @@ void keyboardPress( unsigned char key, int x, int y ){
             action.keysPressed++;
             cameraKeyPressed = true;
             break;
+        
+        case '7':
+            options.znear -= 1;
+            break;
+        case '8':
+            options.znear += 1;
+            break;
+        case '9':
+            options.zfar -= 1;
+            break;
+        case '0':
+            options.zfar += 1;
+            break;
 
             /**********************/
             /*    Quit Program    */

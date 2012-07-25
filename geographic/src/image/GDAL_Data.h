@@ -34,6 +34,7 @@ class GDAL_Data{
         void write( std::string const& outputFilename, std::string const& output_format );
         static void write( std::string const& outputFilename, cv::Mat const& image, GeoHeader_Info* header_data);
         
+        void get_corner_coordinates( double& ul_lat, double& ul_lon, double& br_lat, double& br_lon );
 
         std::vector<std::pair<std::string,std::string> >  retrieve_header_data()const;
 

@@ -3,6 +3,8 @@
 #include "GDAL_Data.h"
 #include <iostream>
 
+#include <cstdio>
+
 using namespace std;
 
 namespace GEO{
@@ -150,6 +152,22 @@ vector<pair<string,string> >  GDAL_Data::retrieve_header_data()const{
     return headerList;
 }
 
+void GDAL_Data::get_corner_coordinates( double& ul_lat, double& ul_lon, double& br_lat, double& br_lon ){
+
+    double adfGeoTransform[6];
+    if( dataset->GetGeoTransform( adfGeoTransform ) == CE_None )
+    {
+        ul_lat = adfGeoTransform[3];
+        ul_lon = adfGeoTransform[0];
+
+        int xS = dataset->GetRasterXSize()-1;
+        int yS = dataset->GetRasterYSize()-1;
+        
+        br_lon = adfGeoTransform[0] + xS*adfGeoTransform[1] + yS*adfGeoTransform[2];
+        br_lat = adfGeoTransform[3] + xS*adfGeoTransform[4] + yS*adfGeoTransform[5];
+    }
+
+}
 
 
 } //end of GEO namespace 
