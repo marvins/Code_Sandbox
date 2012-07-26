@@ -34,7 +34,7 @@ GDAL         	= $(GDAL_LIBS) $(GDAL_INCLUDE)
 # OpenCV Libraries
 #
 OPENCV = `pkg-config opencv --cflags --libs`
-
+OPENCV_INCLUDE = `pkg-config opencv --cflags`
 
 #
 # Boost Libraries
