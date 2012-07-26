@@ -37,6 +37,8 @@ class GDAL_Data{
         void get_corner_coordinates( double& ul_lat, double& ul_lon, double& br_lat, double& br_lon );
 
         std::vector<std::pair<std::string,std::string> >  retrieve_header_data()const;
+        
+        void set_img_data( const cv::Mat& img );
 
         GDALDriver  *driver;    /*<  Driver Object */
         GDALDataset *dataset;   /*<  Dataset Object */

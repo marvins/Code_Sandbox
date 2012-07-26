@@ -342,6 +342,11 @@ Mat GeoImage::get_image() {
     return img;
 }
 
+void GeoImage::set_image( const Mat& img ){
+    gdal_data.set_img_data( img ); 
+}
+
+
 /**
   * Check if an image is in a valid OpenCV Format.
   *
