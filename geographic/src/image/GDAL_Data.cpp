@@ -154,7 +154,7 @@ namespace GEO{
         return headerList;
     }
 
-    void GDAL_Data::get_corner_coordinates( double& ul_lat, double& ul_lon, double& br_lat, double& br_lon ){
+    void GDAL_Data::get_corner_coordinates( double& ul_lat, double& ul_lon, double& br_lat, double& br_lon )const{
 
         double adfGeoTransform[6];
         if( dataset->GetGeoTransform( adfGeoTransform ) == CE_None )

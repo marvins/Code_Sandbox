@@ -41,14 +41,32 @@ std::string int2str( int const& value ){
     return sin.str();
 }
 
+
+std::string float2str( float const& val ){
+
+    std::stringstream sin;
+    sin << val;
+    return sin.str();
+}
+
+float       str2float( std::string const& val ){
+
+    std::stringstream sin;
+    float result;
+    sin << val;
+    sin >> result;
+    return result;
+
+}
+
+
 void get_console_size( int& x, int& y ){
 
-
-//#ifdef __APPLE__ && defined(TIOCGSIZE)
-//    struct ttysize ts;
-//    ioctl( STDIN_FILENO, TIOCGSIZE, &ts);
-//    x = (int)ts.ts_cols;
-//    y = (int)ts.ts_lines;
+    //#ifdef __APPLE__ && defined(TIOCGSIZE)
+    //    struct ttysize ts;
+    //    ioctl( STDIN_FILENO, TIOCGSIZE, &ts);
+    //    x = (int)ts.ts_cols;
+    //    y = (int)ts.ts_lines;
 #ifdef TIOCGSIZE
     struct ttysize ts;
     ioctl( STDIN_FILENO, TIOCGSIZE, &ts);
@@ -63,7 +81,7 @@ void get_console_size( int& x, int& y ){
     x = 80;
     y = 50;
 #endif
-
 }
+
 
 

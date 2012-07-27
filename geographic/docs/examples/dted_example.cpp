@@ -13,6 +13,7 @@ int main( int argc, char* argv[] ){
     if( argc < 2 )
         return 0;
 
+    /** Load DTED File */
     GEO::GeoImage geoimg( argv[1], true );
 
     Mat img = geoimg.get_image();

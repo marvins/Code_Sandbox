@@ -43,6 +43,8 @@ class Options{
 
 std::string int2str( int const& val );
 int         str2int( std::string const& val );
+std::string float2str( float const& val );
+float       str2float( std::string const& val );
 
 void get_console_size( int& x, int& y );
 

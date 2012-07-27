@@ -1,5 +1,6 @@
 #include "ui.h"
 #include "geo_forms.h"
+#include "utils.h"
 
 #include <string>
 
@@ -274,13 +275,23 @@ vector<geo_header_item>  pull_header_metadata( GEO::GeoImage const& img ){
 
     //pull the GeoHeader
     vector<pair<string,string> >  hdr_dat = img.get_header()->get_header_data(); 
-
     vector<geo_header_item>  output;
 
+    //get header metadata
     for( size_t i=0; i<hdr_dat.size(); i++ ){
         output.push_back( geo_header_item( 1, hdr_dat[i].first, hdr_dat[i].second));
     }
 
+    //get corner information
+    Point2f ul, br;
+    img.get_corner_coordinates( ul, br );
+    
+    output.push_back( geo_header_item( 2, "UPPER_LEFT_LAT", float2str(ul.y)));
+    output.push_back( geo_header_item( 2, "UPPER_LEFT_LON", float2str(ul.x)));
+    output.push_back( geo_header_item( 2, "LOWER_RIGHT_LAT", float2str(br.y)));
+    output.push_back( geo_header_item( 2, "LOWER_RIGHT_LON", float2str(br.x)));
+
     return output;
 }
+
 

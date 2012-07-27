@@ -482,7 +482,7 @@ void GeoImage::modify_header_metadata( const string& tag, const string& val, con
 
 }
 
-void GeoImage::get_corner_coordinates( Point2f& ul, Point2f& br ){
+void GeoImage::get_corner_coordinates( Point2f& ul, Point2f& br )const{
     
     double ulx, uly, brx, bry;
     gdal_data.get_corner_coordinates( uly, ulx, bry, brx );
