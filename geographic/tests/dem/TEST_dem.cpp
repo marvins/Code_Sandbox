@@ -23,21 +23,27 @@ using namespace std;
 */
 int TEST_dem_constructors( string& note );
 
+
+/** DEM Module Unit Test Suite */
 void TEST_dem_module(){
    
     int result;
     string note;
 
+    /** Print Module Header */
     print_module_header("DEM");
 
+    /** DEM Constructor     */
     result = TEST_dem_constructors( note );
     print_test_results( "DEM    Constructors", result, note );
 
-
+    /** DEM Footer          */
     print_module_footer("DEM");   
 
 }
 
+
+/** DEM Constructors        */
 int TEST_dem_constructors( string& note ){
     
     /**
@@ -52,11 +58,12 @@ int TEST_dem_constructors( string& note ){
      *      min point is 1166  at  x= 2814, y= 3600
     */
     //create DEM object
-    double tl_lat =   38.9;
+    double tl_lat =   39.1;
     double tl_lon = -118.01;
     double br_lat =   38.00;
     double br_lon = -118.91;
-    
+   
+    cout << "start of operation" << endl;
     GEO::DEM dem_01( tl_lat, tl_lon, br_lat, br_lon, GEO::DEM_Params( GEO::DTED, "data/dted")); 
 
     Mat tile01 = dem_01.get_raw();
