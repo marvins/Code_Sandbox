@@ -59,9 +59,9 @@ int TEST_dem_constructors( string& note ){
     */
     //create DEM object
     double tl_lat =   39.1;
-    double tl_lon = -118.01;
+    double tl_lon = -118.91;
     double br_lat =   38.00;
-    double br_lon = -118.91;
+    double br_lon = -118.01;
    
     cout << "start of operation" << endl;
     GEO::DEM dem_01( tl_lat, tl_lon, br_lat, br_lon, GEO::DEM_Params( GEO::DTED, "data/dted")); 
