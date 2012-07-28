@@ -61,7 +61,6 @@ namespace GEO{
                             );
                     
                     string act_filename = params.dted_root_dir + "/" + exp_filename;
-                    cout << "loading : " << act_filename << endl;
 
                     //make sure the filename exists
                     if( bf::exists(bf::path(act_filename)) == false ){
@@ -78,9 +77,9 @@ namespace GEO{
                    
                    
                     //get crop range
-                    pair<double,double> lat_ran( std::max( std::floor(br.y)+j, br.y ), std::min( std::ceil(br.y)+j, tl.y));
-                    pair<double,double> lon_ran( std::max( std::floor(tl.x)+i, tl.x ), std::min( std::ceil(tl.x)+i, br.x));
-                   
+                    pair<double,double> lat_ran( std::max( std::floor(br.y+j), br.y ), std::min( std::ceil(br.y+j)+1, tl.y));
+                    pair<double,double> lon_ran( std::max( std::floor(tl.x)+i, tl.x ), std::min( std::ceil(tl.x+i)+1, br.x));
+                    
                     //compute the percentage of the image you are using
                     pair<double,double> lat_pct( lat_ran.first - std::floor(lat_ran.first), 1 - (std::ceil(lat_ran.second) - lat_ran.second));
                     pair<double,double> lon_pct( lon_ran.first - std::floor(lon_ran.first), 1 - (std::ceil(lon_ran.second) - lon_ran.second));
@@ -88,9 +87,6 @@ namespace GEO{
                     //given the percentage, compute the pixel range you need
                     pair<int,int> lat_img_ran( lat_pct.first*subcrop.rows, lat_pct.second*subcrop.rows);
                     pair<int,int> lon_img_ran( lon_pct.first*subcrop.cols, lon_pct.second*subcrop.cols);
-                    
-                    cout << "pixel range x: " << lon_img_ran.first << ", " << lon_img_ran.second << endl;
-                    cout << "pixel range y: " << lat_img_ran.first << ", " << lat_img_ran.second << endl;
                     
                     //create the actual final image
                     Mat crop( lat_img_ran.second-lat_img_ran.first, 
@@ -122,9 +118,8 @@ namespace GEO{
 
             /** We have now compiled a list of required tiles 
              *  - Now we need to merge them into a single image
-            */
-            
-            cout << "HERE" << endl;
+             */
+
             //compute the expected width and height of the image
             int final_x = 0;
             int final_y = 0;
@@ -132,17 +127,7 @@ namespace GEO{
                 final_x += image_set[i][0].cols;
             for( int i=0; i<lat_needed; i++ )
                 final_y += image_set[0][i].rows;
-            
-            cout << "Final Image Statistics" << endl;
-            cout << "Image Width : " << final_x << endl;
-            cout << "Image Height: " << final_y << endl;
-            cout << endl;
-            cout << "Individual image sizes" << endl;
-            for( size_t i=0; i<image_set.size(); i++)
-                for( size_t j=0; j<image_set[i].size(); j++)
-                    cout << "image (" << i << ", " << j << ") is " << image_set[i][j].cols << " by " << image_set[i][j].rows << endl;
-            exit(0);
-
+        
             //create final tile
             tile = Mat( Size( final_x, final_y), image_set[0][0].type() );
             tile = Scalar(0);
@@ -151,75 +136,79 @@ namespace GEO{
             int cy = 0;
 
             //start loading each image in image set into final tile
-            for( size_t i=0; i<image_set.size(); i++)
-            for( size_t j=0; j<image_set[i].size(); j++){
+            for( size_t i=0; i<image_set.size(); i++){
+                cy = 0;
+                for( size_t j=0; j<image_set[i].size(); j++){
 
-                //iterate over specific image
-                for( int x =0; x < image_set[i][j].cols; x++ )
-                for( int y =0; y < image_set[i][j].rows; y++ ){
+                    //iterate over specific image
+                    for( int x =0; x < image_set[i][j].cols; x++ ){
+                        for( int y =0; y < image_set[i][j].rows; y++ ){
 
-                    if( image_set[0][0].type() == CV_16UC1 )
-                        tile.at<ushort>( y+cy, x+cx) = image_set[i][j].at<ushort>( y, x);
-                    else if( image_set[0][0].type() == CV_16SC1 )
-                        tile.at<short>(  y+cy, x+cx) = image_set[i][j].at<short>(  y, x);
-                    else
-                        throw string("ERROR: unsupported dem format");
+                            if( y+cy >= tile.rows ) throw string("ROWS FAILED");
+                            if( x+cx >= tile.cols ) throw string("COLS FAILED");
+
+                            if( image_set[0][0].type() == CV_16UC1 )
+                                tile.at<ushort>( y+cy, x+cx) = image_set[i][j].at<ushort>( y, x);
+                            else if( image_set[0][0].type() == CV_16SC1 )
+                                tile.at<short>(  y+cy, x+cx) = image_set[i][j].at<short>(  y, x);
+                            else
+                                throw string("ERROR: unsupported dem format");
+
+                        }}
+
+                    //update cx, cy
+                    cy += image_set[i][j].rows;
                 }
-
-                //update cx, cy
-                cx += image_set[i][j].cols;
-                cy += image_set[i][j].rows;
+                cx += image_set[i][0].cols;
             }
-
-
-            return;
 
         }
         else{
             throw std::string("Error: unsupported DEM format");
         }
 
-}
+    }
 
-/**
- * Destructor
- */
-DEM::~DEM(){
-}
+    /**
+     * Destructor
+     */
+    DEM::~DEM(){
+        cout << "Destructing" << endl;//throw string("ERROR: NOT IMPLEMENTED");
+    }
 
-/**
- * Pull the elevation data as an OpenCV Mat
- */
-cv::Mat DEM::get_raw()const{
+    /**
+     * Pull the elevation data as an OpenCV Mat
+     */
+    cv::Mat DEM::get_raw()const{
 
-    if( !tile.data )
-        throw string("Error: tile data uninitialized");
-    return tile.clone();
-} //end of get_raw function
+        if( !tile.data )
+            throw string("Error: tile data uninitialized");
+        return tile.clone();
+    } //end of get_raw function
 
 
-/**
- * Return the value and location of the highest elevation
- * in the tile.
- */
-double DEM::max_elevation( double& lat, double& lon )const{
+    /**
+     * Return the value and location of the highest elevation
+     * in the tile.
+     */
+    double DEM::max_elevation( double& lat, double& lon )const{
 
-    double _max = 0;
-    int I = 0, J = 0;
-    for( size_t i=0; i<tile.cols; i++)
-        for( size_t j=0; j<tile.rows; j++ )
-            if( tile.type() == CV_16SC1 ){
-                if( tile.at<short>(j,i) > _max ){
-                    _max = tile.at<short>(j,i);
-                    I = i;
-                    J = j;
+        double _max = 0;
+        int I = 0, J = 0;
+        for( size_t i=0; i<tile.cols; i++)
+            for( size_t j=0; j<tile.rows; j++ )
+                if( tile.type() == CV_16SC1 ){
+                    if( tile.at<short>(j,i) > _max ){
+                        _max = tile.at<short>(j,i);
+                        I = i;
+                        J = j;
+                    }
                 }
-            }
-    lat = J;
-    lon = I;
+        lat = J;
+        lon = I;
 
-    return _max;
-}
+        return _max;
+    }
 
 }//end of GEO namespace
 
