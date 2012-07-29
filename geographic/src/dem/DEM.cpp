@@ -136,16 +136,20 @@ namespace GEO{
             int cy = 0;
 
             //start loading each image in image set into final tile
-            for( size_t i=0; i<image_set.size(); i++){
+            for( int i=0; i<(int)image_set.size(); i++){
                 cy = 0;
-                for( size_t j=0; j<image_set[i].size(); j++){
-
+                for( int j=image_set[i].size()-1; j>=0; j--){
+                    
                     //iterate over specific image
                     for( int x =0; x < image_set[i][j].cols; x++ ){
                         for( int y =0; y < image_set[i][j].rows; y++ ){
-
-                            if( y+cy >= tile.rows ) throw string("ROWS FAILED");
-                            if( x+cx >= tile.cols ) throw string("COLS FAILED");
+                            
+                            if( y+cy >= tile.rows ){ 
+                                cout << x << ", " << y << " vs " << cx << ", " << cy << endl;
+                                throw string("ROWS FAILED"); }
+                            if( x+cx >= tile.cols ){ 
+                                cout << x << ", " << y << " vs " << cx << ", " << cy << endl;
+                                throw string("COLS FAILED"); }
 
                             if( image_set[0][0].type() == CV_16UC1 )
                                 tile.at<ushort>( y+cy, x+cx) = image_set[i][j].at<ushort>( y, x);
