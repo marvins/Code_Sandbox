@@ -1,7 +1,7 @@
 all: hello_geoworld dted_example simple_writer
 
 GDAL = -I/usr/include/gdal -lgdal
-GEOIMAGE = -I/opt/local/lib -L/opt/local/lib -lgeoimage
+GEOIMAGE = -I/opt/local/include -L/opt/local/lib -lgeoimage
 OPENCV   = `pkg-config opencv --cflags --libs`
 
 hello_geoworld: hello_geoworld.cpp

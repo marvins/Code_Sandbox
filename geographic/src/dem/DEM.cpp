@@ -26,7 +26,9 @@ namespace GEO{
 
 
     //DEM Constructor
-    DEM::DEM( double const& tl_lat, double const& tl_lon, double const& br_lat, double const& br_lon, DEM_Params const& params ){
+    DEM::DEM( double const& tl_lat, double const& tl_lon, 
+              double const& br_lat, double const& br_lon, 
+              DEM_Params const& params ){
         
         /** need to start looking at how many files we need
          * 
@@ -173,6 +175,28 @@ namespace GEO{
 
     }
 
+    DEM::DEM( cv::Point2f const& point, DEM_Params const& params ){
+
+        //compute the proper dted filename
+        string exp_filename = DTEDUtils::coordinate2filename( 
+                /** Lat */std::floor(point.y)+0.0001, 
+                /** Lon */std::floor(point.x)+0.0001 );
+        
+        //append the dted root directory
+        string act_filename = params.dted_root_dir + "/" + exp_filename;
+
+        //load the GeoImage
+        GEO::GeoImage gimg( act_filename, true );
+
+        //since we are dealing with DTED, we want 1 deg by 1 deg squares
+        int pctX = (     point.x - std::floor(point.x)) *3601;
+        int pctY = (1 - (point.y - std::floor(point.y)))*3601;
+        
+        current   = Point2f( pctX, pctY);
+        elevation = (gimg.get_image().at<short>(pctY, pctX));
+        
+    }
+
     /**
      * Destructor
      */
@@ -212,6 +236,10 @@ namespace GEO{
         lon = I;
 
         return _max;
+    }
+
+    double DEM::get_elevation()const{
+        return elevation;
     }
 
 }//end of GEO namespace
