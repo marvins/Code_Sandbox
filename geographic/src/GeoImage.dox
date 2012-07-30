@@ -1,0 +1,15 @@
+/**
+\mainpage 
+
+
+The library is divided into several modules:
+- GeoImage
+    -# Primary Image File IO
+    -# Conversion to/from OpenCV Format
+    -# Interacts with GDAL
+- DEM 
+    -# Provides tools for Digital Elevation Model File IO.
+    -# Allows Read Only.  Build GeoImage for output.
+- Utilities
+    
+*/
