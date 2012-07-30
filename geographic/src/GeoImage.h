@@ -1,3 +1,6 @@
+/**
+ * \include GeoImage.md
+*/
 #ifndef __GEOIMAGE_CORE_H__
 #define __GEOIMAGE_CORE_H__
 
