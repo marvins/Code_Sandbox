@@ -21,8 +21,7 @@ namespace GEO{
  * Geographic Image Type
  *
  * @brief Stores and manipulates geographic images
- *
- */
+*/
 class GeoImage{
     
     public:
