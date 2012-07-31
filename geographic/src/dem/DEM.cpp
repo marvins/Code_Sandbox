@@ -31,6 +31,7 @@ namespace GEO{
               double const& br_lat, double const& br_lon, 
               DEM_Params const& params ){
         
+        cout << "00" << endl;
         /** need to start looking at how many files we need
          * 
          * 1.  DTED uses 1 deg x 1 deg grids
@@ -59,27 +60,39 @@ namespace GEO{
                 for( int i=0; i<lon_needed; i++ ){
                     
                     //compute the required filename
+                    cout << "filename: " << std::floor(br.y)+(lat_needed - j - 1)+0.0001 << ", "; 
+                    cout <<                 std::floor(br.x)+(-i)+0.0001 << endl; 
+                    cout << "br: " << br << endl;
+                    cout << "ln: " << lon_needed << endl;
+                    cout << "i : " << i << endl;
+
                     string exp_filename = DTEDUtils::coordinate2filename( 
                             /** Lat */std::floor(br.y)+(lat_needed - j - 1)+0.0001, 
-                            /** Lon */std::floor(br.x)+(lon_needed - i - 1)+0.0001 
+                            /** Lon */std::floor(br.x)+(-i)+0.0001 
                             );
                     
                     string act_filename = params.dted_root_dir + "/" + exp_filename;
-
+                    
+                    cout << "loading: " << act_filename << endl;
                     //make sure the filename exists
                     if( bf::exists(bf::path(act_filename)) == false ){
                         cout << act_filename << endl;
                         throw string("Error: File does not exist");
                     }
-
+                    
+                    cout << "loading subcrop" << endl;
                     //load crop
                     Mat subcrop = GEO::GeoImage( act_filename, true ).get_image();
-                   
+                    
+                    cout << "Image loaded" << endl;
                     //make sure that pixel type is proper
                     if( subcrop.type() != CV_16SC1 )
                         throw string("Image must be CV_16SC1" );
                    
-                   
+                    
+                    cout << "tl: " << tl << endl;
+                    cout << "br: " << br << endl;
+
                     //get crop range
                     pair<double,double> lat_ran( std::max( std::floor(br.y+j), br.y ), std::min( std::ceil(br.y+j)+1, tl.y));
                     pair<double,double> lon_ran( std::max( std::floor(tl.x)+i, tl.x ), std::min( std::ceil(tl.x+i)+1, br.x));
@@ -96,6 +109,11 @@ namespace GEO{
                     pair<int,int> lat_img_ran( lat_pct.first*subcrop.rows, lat_pct.second*subcrop.rows);
                     pair<int,int> lon_img_ran( lon_pct.first*subcrop.cols, lon_pct.second*subcrop.cols);
                     
+                    cout << "image range" << endl;
+                    cout << lon_img_ran.first << ", " << lon_img_ran.second << endl;
+                    cout << lat_img_ran.first << ", " << lat_img_ran.second << endl;
+                    cout << endl;
+
                     //create the actual final image
                     Mat crop( lat_img_ran.second-lat_img_ran.first, 
                               lon_img_ran.second-lon_img_ran.first, 
@@ -137,6 +155,7 @@ namespace GEO{
                 final_y += image_set[0][i].rows;
         
             //create final tile
+            cout << "04" << endl;
             tile = Mat( Size( final_x, final_y), image_set[0][0].type() );
             tile = Scalar(0);
 
@@ -179,6 +198,7 @@ namespace GEO{
             throw std::string("Error: unsupported DEM format");
         }
 
+        cout << "99" << endl;
     }
 
     DEM::DEM( cv::Point2f const& point, DEM_Params const& params ){

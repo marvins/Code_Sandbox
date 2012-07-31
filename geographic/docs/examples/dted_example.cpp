@@ -23,16 +23,16 @@ int main( int argc, char* argv[] ){
         //lets pull a dted tile set which requires 4 tiles
         Point2f ul_nw( -119.2500, 37.2500);
         Point2f br_nw( -119.0001, 37.0000);
-        
+
         Point2f ul_ne( -119.0000, 37.2500);
         Point2f br_ne( -118.7500, 37.0000);
-        
+
         Point2f ul_se( -119.0000, 36.9999);
         Point2f br_se( -118.7500, 36.7500);
-        
+
         Point2f ul_sw( -119.2500, 36.9999);
         Point2f br_sw( -119.0001, 36.7500);
-        
+
 
         //build 4 topo maps
         GEO::DEM topo_map_nw( ul_nw.y, ul_nw.x, br_nw.y, br_nw.x, params);
@@ -40,16 +40,50 @@ int main( int argc, char* argv[] ){
         GEO::DEM topo_map_sw( ul_sw.y, ul_sw.x, br_sw.y, br_sw.x, params);
         GEO::DEM topo_map_se( ul_se.y, ul_se.x, br_se.y, br_se.x, params);
 
-        Mat color_map_nw = topo_map_nw.relief_map();
-        Mat color_map_ne = topo_map_ne.relief_map();
-        Mat color_map_sw = topo_map_sw.relief_map();
-        Mat color_map_se = topo_map_se.relief_map();
+        Mat nw = topo_map_nw.relief_map();
+        Mat ne = topo_map_ne.relief_map();
+        Mat sw = topo_map_sw.relief_map();
+        Mat se = topo_map_se.relief_map();
 
-        //write images to file
-        imwrite( "nw.png", color_map_nw);
-        imwrite( "ne.png", color_map_ne);
-        imwrite( "sw.png", color_map_sw);
-        imwrite( "se.png", color_map_se);
+        //create pano
+        int width  = nw.cols + ne.cols;
+        int height = nw.rows + sw.rows;
+        cv::Mat pano( height, width, CV_8UC3 );
+
+        //load images into mat
+        for( size_t i=0; i<nw.cols; i++ )
+            for( size_t j=0; j<nw.rows; j++ )
+                pano.at<Vec3b>(j,i) = nw.at<Vec3b>(j,i);
+
+        for( size_t i=0; i<ne.cols; i++ )
+            for( size_t j=0; j<ne.rows; j++ )
+                pano.at<Vec3b>(j,i+nw.cols) = ne.at<Vec3b>(j,i);
+
+        for( size_t i=0; i<sw.cols; i++ )
+            for( size_t j=0; j<sw.rows; j++ )
+                pano.at<Vec3b>(j+nw.rows,i) = sw.at<Vec3b>(j,i);
+
+        for( size_t i=0; i<se.cols; i++ )
+            for( size_t j=0; j<se.rows; j++ )
+                pano.at<Vec3b>(j+nw.rows,i+nw.cols) = se.at<Vec3b>(j,i);
+
+
+        imwrite("pano.png", pano);
+        cout << pano.cols << ", " << pano.rows << endl; 
+
+        //build a single pano from a single stitch
+        Point2f ul_big( -119.2500, 37.2500);
+        Point2f br_big( -118.7500, 36.7500);
+        cout << "A" << endl;
+        GEO::DEM topo_map_big( ul_big.y, ul_big.x, 
+                               br_big.y, br_big.x, 
+                               params);
+
+        cout << "B" << endl;
+        Mat big_topo = topo_map_big.relief_map();
+        cout << big_topo.cols << ", " << big_topo.rows << endl;
+        imwrite("big_topo.png", big_topo);
+        
 
     } catch ( string str ){
         cout << str << endl;
