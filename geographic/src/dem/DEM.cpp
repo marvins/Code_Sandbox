@@ -69,10 +69,8 @@ namespace GEO{
                     
                     string act_filename = params.dted_root_dir + "/" + exp_filename;
                     
-                    cout << "loading: " << act_filename << endl;
                     //make sure the filename exists
                     if( bf::exists(bf::path(act_filename)) == false ){
-                        cout << act_filename << endl;
                         throw string("Error: File does not exist");
                     }
                     
@@ -88,9 +86,6 @@ namespace GEO{
                     pair<double,double> lat_ran( std::max( std::floor(tl.y-j), br.y ), std::min( std::ceil(tl.y-j), tl.y));
                     pair<double,double> lon_ran( std::max( std::floor(tl.x+i), tl.x ), std::min( std::ceil(tl.x+i), br.x));
                     
-                    cout << "ran" << endl;
-                    cout << lat_ran.first << ", " << lat_ran.second << endl;
-                    cout << lon_ran.first << ", " << lon_ran.second << endl;
 
                     //compute the percentage of the image you are using
                     pair<double,double> lat_pct( lat_ran.first - std::floor(lat_ran.first), 1 - (std::ceil(lat_ran.second) - lat_ran.second));
@@ -104,17 +99,10 @@ namespace GEO{
                     pair<int,int> lat_img_ran( lat_pct.first*subcrop.rows, lat_pct.second*subcrop.rows);
                     pair<int,int> lon_img_ran( lon_pct.first*subcrop.cols, lon_pct.second*subcrop.cols);
                     
-                    cout << "image range" << endl;
-                    cout << lon_img_ran.first << ", " << lon_img_ran.second << endl;
-                    cout << lat_img_ran.first << ", " << lat_img_ran.second << endl;
-                    cout << endl;
-
                     //create the actual final image
                     Mat crop( lat_img_ran.second-lat_img_ran.first, 
                               lon_img_ran.second-lon_img_ran.first, 
                               subcrop.type());
-                    cout << "crop size: " << crop.cols << ", " << crop.rows << endl;
-                    cout << endl;
 
                     //load pixels
                     for( int x=lon_img_ran.first; x<lon_img_ran.second; x++ ){
@@ -152,7 +140,6 @@ namespace GEO{
                 final_y += image_set[0][i].rows;
         
             //create final tile
-            cout << "04" << endl;
             tile = Mat( Size( final_x, final_y), image_set[0][0].type() );
             tile = Scalar(0);
 
@@ -195,7 +182,6 @@ namespace GEO{
             throw std::string("Error: unsupported DEM format");
         }
 
-        cout << "99" << endl;
     }
 
     DEM::DEM( cv::Point2f const& point, DEM_Params const& params ){
@@ -224,7 +210,7 @@ namespace GEO{
      * Destructor
      */
     DEM::~DEM(){
-        cout << "Destructing" << endl;//throw string("ERROR: NOT IMPLEMENTED");
+    
     }
 
     /**
