@@ -31,7 +31,6 @@ namespace GEO{
               double const& br_lat, double const& br_lon, 
               DEM_Params const& params ){
         
-        cout << "00" << endl;
         /** need to start looking at how many files we need
          * 
          * 1.  DTED uses 1 deg x 1 deg grids
@@ -44,6 +43,9 @@ namespace GEO{
             br.x = max( tl_lon, br_lon);  br.y = min( tl_lat, br_lat);  
             tl.x = min( tl_lon, br_lon);  tl.y = max( tl_lat, br_lat);
             
+            if( fabs(tl.x)-std::floor(fabs(tl.x)) < 0.00001 )
+                tl.x += 0.00001;
+
             //check to see if we have one file or multiple files
             //build list of images required
             int lat_needed = 1 + fabs( std::floor(tl.y) - std::floor(br.y) );
@@ -60,15 +62,9 @@ namespace GEO{
                 for( int i=0; i<lon_needed; i++ ){
                     
                     //compute the required filename
-                    cout << "filename: " << std::floor(br.y)+(lat_needed - j - 1)+0.0001 << ", "; 
-                    cout <<                 std::floor(br.x)+(-i)+0.0001 << endl; 
-                    cout << "br: " << br << endl;
-                    cout << "ln: " << lon_needed << endl;
-                    cout << "i : " << i << endl;
-
                     string exp_filename = DTEDUtils::coordinate2filename( 
                             /** Lat */std::floor(br.y)+(lat_needed - j - 1)+0.0001, 
-                            /** Lon */std::floor(br.x)+(-i)+0.0001 
+                            /** Lon */std::floor(tl.x)+(i)+0.0001 
                             );
                     
                     string act_filename = params.dted_root_dir + "/" + exp_filename;
@@ -80,23 +76,22 @@ namespace GEO{
                         throw string("Error: File does not exist");
                     }
                     
-                    cout << "loading subcrop" << endl;
                     //load crop
                     Mat subcrop = GEO::GeoImage( act_filename, true ).get_image();
                     
-                    cout << "Image loaded" << endl;
                     //make sure that pixel type is proper
                     if( subcrop.type() != CV_16SC1 )
                         throw string("Image must be CV_16SC1" );
                    
                     
-                    cout << "tl: " << tl << endl;
-                    cout << "br: " << br << endl;
-
                     //get crop range
-                    pair<double,double> lat_ran( std::max( std::floor(br.y+j), br.y ), std::min( std::ceil(br.y+j)+1, tl.y));
-                    pair<double,double> lon_ran( std::max( std::floor(tl.x)+i, tl.x ), std::min( std::ceil(tl.x+i)+1, br.x));
+                    pair<double,double> lat_ran( std::max( std::floor(tl.y-j), br.y ), std::min( std::ceil(tl.y-j), tl.y));
+                    pair<double,double> lon_ran( std::max( std::floor(tl.x+i), tl.x ), std::min( std::ceil(tl.x+i), br.x));
                     
+                    cout << "ran" << endl;
+                    cout << lat_ran.first << ", " << lat_ran.second << endl;
+                    cout << lon_ran.first << ", " << lon_ran.second << endl;
+
                     //compute the percentage of the image you are using
                     pair<double,double> lat_pct( lat_ran.first - std::floor(lat_ran.first), 1 - (std::ceil(lat_ran.second) - lat_ran.second));
                     pair<double,double> lon_pct( lon_ran.first - std::floor(lon_ran.first), 1 - (std::ceil(lon_ran.second) - lon_ran.second));
@@ -118,6 +113,8 @@ namespace GEO{
                     Mat crop( lat_img_ran.second-lat_img_ran.first, 
                               lon_img_ran.second-lon_img_ran.first, 
                               subcrop.type());
+                    cout << "crop size: " << crop.cols << ", " << crop.rows << endl;
+                    cout << endl;
 
                     //load pixels
                     for( int x=lon_img_ran.first; x<lon_img_ran.second; x++ ){
@@ -165,7 +162,7 @@ namespace GEO{
             //start loading each image in image set into final tile
             for( int i=0; i<(int)image_set.size(); i++){
                 cy = 0;
-                for( int j=image_set[i].size()-1; j>=0; j--){
+                for( int j=0; j<(int)image_set[i].size(); j++){
                     
                     //iterate over specific image
                     for( int x =0; x < image_set[i][j].cols; x++ ){
@@ -188,7 +185,7 @@ namespace GEO{
                         }}
 
                     //update cx, cy
-                    cy += image_set[i][j].rows;
+                    cy += image_set[0][j].rows;
                 }
                 cx += image_set[i][0].cols;
             }
