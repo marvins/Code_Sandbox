@@ -5,26 +5,34 @@ using namespace cv;
 
 int main( ){
 
-    cv::Mat upper = imread("upper.png");
-    cv::Mat lower = imread("lower.png");
+    //read images from file
+    cv::Mat nw = imread("nw.png");
+    cv::Mat ne = imread("ne.png");
+    cv::Mat sw = imread("sw.png");
+    cv::Mat se = imread("se.png");
 
-    cv::Mat pano( upper.rows+lower.rows, upper.cols, CV_8UC3 );
+    //create pano
+    int width  = nw.cols + ne.cols;
+    int height = nw.rows + sw.rows;
+    cv::Mat pano( height, width, CV_8UC3 );
     
-    for( size_t i=0; i<upper.cols; i++ )
-    for( size_t j=0; j<upper.rows; j++ )
-        pano.at<Vec3b>(j,i) = upper.at<Vec3b>(j,i);
+    //load images into mat
+    for( size_t i=0; i<nw.cols; i++ )
+    for( size_t j=0; j<nw.rows; j++ )
+        pano.at<Vec3b>(j,i) = nw.at<Vec3b>(j,i);
 
-    for( size_t i=0; i<lower.cols; i++ )
-    for( size_t j=0; j<lower.rows; j++ )
-        pano.at<Vec3b>(j+upper.rows,i) = lower.at<Vec3b>(j,i);
-    
-    Point pointupL(          0, upper.rows-8);
-    Point pointupR( upper.cols, upper.rows-8);
-    Point pointdnL(          0, upper.rows+8);
-    Point pointdnR( upper.cols, upper.rows+8);
+    for( size_t i=0; i<ne.cols; i++ )
+    for( size_t j=0; j<ne.rows; j++ )
+        pano.at<Vec3b>(j,i+nw.cols) = ne.at<Vec3b>(j,i);
 
-    //line( pano, pointupL, pointupR, Scalar(0,0,255), 2 );
-    //line( pano, pointdnL, pointdnR, Scalar(0,0,255), 2 );
+    for( size_t i=0; i<sw.cols; i++ )
+    for( size_t j=0; j<sw.rows; j++ )
+        pano.at<Vec3b>(j+nw.rows,i) = sw.at<Vec3b>(j,i);
+
+    for( size_t i=0; i<se.cols; i++ )
+    for( size_t j=0; j<se.rows; j++ )
+        pano.at<Vec3b>(j+nw.rows,i+nw.cols) = se.at<Vec3b>(j,i);
+
 
     imwrite("pano.png", pano);
 
