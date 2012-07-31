@@ -41,7 +41,14 @@ class DEM{
         double max_elevation( double& lat, double& lon )const;
         
         double get_elevation()const;
-    
+
+        cv::Mat relief_map()const;
+        
+        cv::Point get_pixel_coordinate( cv::Point2f const& coordinate );
+        
+        cv::Point2f getUL()const;
+        cv::Point2f getBR()const;
+
     private:
         cv::Mat tile;   /*< Loaded Image Tile            */
         cv::Point2f tl; /*< Top Left Corner of Image     */

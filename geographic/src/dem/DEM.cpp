@@ -23,6 +23,7 @@ namespace GEO{
         filetype      = ftype;
         dted_root_dir = root_dir;
     }// end of DEM_Params constructor
+    
 
 
     //DEM Constructor
@@ -34,6 +35,7 @@ namespace GEO{
          * 
          * 1.  DTED uses 1 deg x 1 deg grids
          */
+        double tempD;
         if( params.filetype == DTED ){
 
 
@@ -85,8 +87,12 @@ namespace GEO{
                     //compute the percentage of the image you are using
                     pair<double,double> lat_pct( lat_ran.first - std::floor(lat_ran.first), 1 - (std::ceil(lat_ran.second) - lat_ran.second));
                     pair<double,double> lon_pct( lon_ran.first - std::floor(lon_ran.first), 1 - (std::ceil(lon_ran.second) - lon_ran.second));
-                    
-                    //given the percentage, compute the pixel range you need
+                  
+                    tempD  = 1 - lat_pct.first;
+                    lat_pct.first = 1 - lat_pct.second;
+                    lat_pct.second= tempD;
+
+                   //given the percentage, compute the pixel range you need
                     pair<int,int> lat_img_ran( lat_pct.first*subcrop.rows, lat_pct.second*subcrop.rows);
                     pair<int,int> lon_img_ran( lon_pct.first*subcrop.cols, lon_pct.second*subcrop.cols);
                     
@@ -241,6 +247,55 @@ namespace GEO{
     double DEM::get_elevation()const{
         return elevation;
     }
+
+
+Vec3b color_relief( double elevation, double minC, double maxC ){
+
+    double maxR = maxC;
+    double minR = minC;
+
+    double x = ((maxR - minR)-(elevation - minR))/(maxR - minR)*255;
+    double y = 255 - x;
+    double z = 0;
+
+    if( x > 255 ) x = 255;
+    if( y > 255 ) y = 255;
+    if( z > 255 ) z = 255;
+    if( x < 0 )   x = 0;
+    if( y < 0 )   y = 0;
+    if( z < 0 )   z = 0;
+    
+    return Vec3b( x, y, z);
+}
+
+
+
+Mat DEM::relief_map()const{
+
+    //create a 3 channel image
+    Mat output( tile.size(), CV_8UC3);
+
+    //iterate over the image applying the new pixel values
+    for( size_t i=0; i<tile.cols; i++)
+    for( size_t j=0; j<tile.rows; j++)
+        output.at<Vec3b>(j,i) = color_relief( tile.at<short>(j,i), 1000, 4450 );
+
+    return output;
+    
+}
+
+Point DEM::get_pixel_coordinate( Point2f const& coordinate ){
+
+    //find the percentage of the image from the tl to br
+    double pctX = tile.cols*(coordinate.x - tl.x )/(br.x - tl.x);
+    double pctY = tile.rows*(1.0-(coordinate.y - br.y )/(tl.y - br.y));
+
+    return Point( pctX, pctY);
+
+}
+
+Point2f DEM::getUL()const{  return tl; }
+Point2f DEM::getBR()const{  return br; }
 
 }//end of GEO namespace
 
