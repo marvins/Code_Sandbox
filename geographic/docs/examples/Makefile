@@ -12,6 +12,12 @@ dted_example:   dted_example.cpp
 
 simple_writer:  simple_writer.cpp
 	g++ simple_writer.cpp -o simple_writer   $(OPENCV) $(GDAL) $(GEOIMAGE)
-	
+
+advanced_usage: advanced_usage.cpp
+	g++ advanced_usage.cpp -o advanced_usage $(OPENCV) $(GDAL) $(GEOIMAGE)
+
+coordinate_conversion: coordinate_conversion.cpp
+	g++ coordinate_conversion.cpp -o coordinate_conversion $(GEOIMAGE)
+
 clean:
 	rm -rf hello_geoworld dted_example simple_writer *.dSYM
