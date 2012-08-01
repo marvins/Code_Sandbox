@@ -10,6 +10,9 @@ The library is divided into several modules:
 - DEM 
     -# Provides tools for Digital Elevation Model File IO.
     -# Allows Read Only.  Build GeoImage for output.
+- Extensions
+	-# TACID
+	  -# TACID Parsing for GS2
 - Utilities
     
 */

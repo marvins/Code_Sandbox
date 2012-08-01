@@ -36,9 +36,18 @@ namespace GS2{
         
             /** 
              * Return TACID as a complete string
+             *
+             * @return tacid filename
             */
             std::string toString()const;
             
+            /**
+             * Return the modified input filename 
+             *
+             * @return tacid output filename
+            */
+            std::string toFilename()const;
+
             /**
              * Check to see if a possible TACID is valid 
              *
@@ -56,21 +65,45 @@ namespace GS2{
              * tacid  TACID class
              */
             friend std::ostream& operator << ( std::ostream& ostr, const TACID& tacid );
+            
+
+            /**
+             * Get the day (Acquisition Date)
+             *
+             * @return day
+            */
+            int getDay()const;
+
+            /**
+             * Set the day (Acquisition Date)
+             *
+             * @param[in] day
+            */
+            void setDay( const int& day );
+
+            /**
+             * Set the month (Acquisition Month)
+             *
+             * @param[in] month
+            */
+            void setMonth( const int& month );
 
         private:
-            std::string day;                /*< Day of the month  */
-            std::string month;              /*< Month of the year */
-            std::string year;               /*< Year              */
-            std::string scene_number;       /*< Scene Number      */
-            std::string program_code;       /*< Program Code      */
-            std::string filename;           /*< Filename of image */
-            std::string sortie_number;      /*< Sortie Number     */
-            std::string producer_code;      /*< Producer Code     */
-            std::string product_number;     /*< Product Number    */
-            std::string project_code;       /*< Project Code      */
-            std::string replay_code;        /*< Replay Code       */
-            std::string producer_sn;        /*< Producer SN       */
-            std::string production_datim;   /*< Production DATIM  */
+            std::string extension;          /*< Extension          */
+            std::string dirname;            /*< Original Directory */
+            std::string day;                /*< Day of the month   */
+            std::string month;              /*< Month of the year  */
+            std::string year;               /*< Year               */
+            std::string scene_number;       /*< Scene Number       */
+            std::string program_code;       /*< Program Code       */
+            std::string filename;           /*< Filename of image  */
+            std::string sortie_number;      /*< Sortie Number      */
+            std::string producer_code;      /*< Producer Code      */
+            std::string product_number;     /*< Product Number     */
+            std::string project_code;       /*< Project Code       */
+            std::string replay_code;        /*< Replay Code        */
+            std::string producer_sn;        /*< Producer SN        */
+            std::string production_datim;   /*< Production DATIM   */
 
     };
 

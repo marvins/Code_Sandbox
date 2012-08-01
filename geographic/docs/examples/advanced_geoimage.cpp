@@ -7,7 +7,8 @@ using namespace std;
 namespace fs = boost::filesystem;
 
 int main( int argc, char* argv[] ){
-
+    
+    cout << endl;
     //load the appropriate image
     GEO::GeoImage img( argv[1], true);
 
@@ -21,13 +22,18 @@ int main( int argc, char* argv[] ){
     
     //create the TACID object
     GEO::GS2::TACID tacid( img.get_filename() );
+    cout << "TACID Before: " << tacid.toFilename() << endl;
     
     //modify some tacid information
     //  - note: See GS2 ITT ICD for specification information
+    int day = tacid.getDay();
+    if( day > 31 ) day = 0;
+    else           day++;
+    tacid.setDay(day);
     
-
-    //swap EO / IR flag
-
+    tacid.setMonth(3);
+    
+    cout << "TACID After : " << tacid.toFilename() << endl;
 
     //modify image metadata
 

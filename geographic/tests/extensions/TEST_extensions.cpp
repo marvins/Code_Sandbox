@@ -60,12 +60,15 @@ int TEST_TACID_core(     string& note ){
 
 int TEST_TACID_toString( string& note ){
 
-    string input = "24FEB129Z0200700ZXGEO000GS0000004F482007.ntf";
+    string input01 = "24FEB129Z0200700ZXGEO000GS0000004F482007.ntf";
+    string input02 = "data/dted/nitf/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf";
         
     note = "unmodified TACID output from toString did not equal input";
-    G2::TACID tacid(input);
+    G2::TACID tacid01(input01);
+    G2::TACID tacid02(input02);
     
-    if( tacid.toString() != input ){ return false; }
+    if( tacid01.toString() != input01 ){ return false; }
+    if( tacid02.toString() != input01 ){ return false; }
 
     note = "Successful Operation";
     return true;
