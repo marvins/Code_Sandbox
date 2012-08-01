@@ -18,6 +18,7 @@ int main( int argc, char* argv[] ){
     
     //modify some tacid information
     //  - note: See GS2 ITT ICD for specification information
+    
 
     //swap EO / IR flag
     if( tacid.

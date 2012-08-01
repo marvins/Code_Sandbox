@@ -76,8 +76,8 @@ TEST = $(TEST_INCLUDE) $(TEST_SOURCES)
 #
 HEADERS = src/core/*.h src/dem/*.h src/extensions/*.h src/image/*.h src/utilities/*.h
 
-OBJECTS       = build/GS2NITFHeader.o		build/DTEDUtils.o   	build/DEM.o 	   build/SRTMHeader.o       build/DTEDHeader.o	 	  build/NITFHeader.o       build/DEMHeader.o       build/ImageHeader.o	     build/GeoHeader.o 	     build/PixelType.o	      build/OpenCVUtils.o	    build/GDAL_Data.o	    build/GeoImage.o       build/GDAL2OpenCV.o	
-OBJECTS_DEBUG = build/GS2NITFHeader_DEBUG.o build/DTEDUtils_DEBUG.o build/DEM_DEBUG.o  build/SRTMHeader_DEBUG.o build/DTEDHeader_DEBUG.o build/NITFHeader_DEBUG.o build/DEMHeader_DEBUG.o build/ImageHeader_DEBUG.o build/GeoHeader_DEBUG.o build/PixelType_DEBUG.o  build/OpenCVUtils_DEBUG.o build/GDAL_Data_DEBUG.o build/GeoImage_DEBUG.o build/GDAL2OpenCV_DEBUG.o
+OBJECTS       = build/TACID.o		build/DTEDUtils.o   	build/DEM.o 	   build/SRTMHeader.o       build/DTEDHeader.o	 	  build/NITFHeader.o       build/DEMHeader.o       build/ImageHeader.o	     build/GeoHeader.o 	     build/PixelType.o	      build/OpenCVUtils.o	    build/GDAL_Data.o	    build/GeoImage.o       build/GDAL2OpenCV.o	
+OBJECTS_DEBUG = build/TACID_DEBUG.o build/DTEDUtils_DEBUG.o build/DEM_DEBUG.o  build/SRTMHeader_DEBUG.o build/DTEDHeader_DEBUG.o build/NITFHeader_DEBUG.o build/DEMHeader_DEBUG.o build/ImageHeader_DEBUG.o build/GeoHeader_DEBUG.o build/PixelType_DEBUG.o  build/OpenCVUtils_DEBUG.o build/GDAL_Data_DEBUG.o build/GeoImage_DEBUG.o build/GDAL2OpenCV_DEBUG.o
 
 GEO_INCLUDE = -Isrc/core -Isrc/dem -Isrc/image -Isrc/extensions -Isrc/utilities
 
@@ -239,10 +239,10 @@ build/DTEDUtils_DEBUG.o:   src/utilities/DTEDUtils.cpp $(HEADERS)
 	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(DFLAGS) $(BOOST_INCLUDE)
 
 # GS2 NITF header
-build/GS2NITFHeader.o:       src/extensions/GS2NITFHeader.cpp $(HEADERS)
+build/TACID.o:       src/extensions/TACID.cpp $(HEADERS)
 	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
 
-build/GS2NITFHeader_DEBUG.o: src/extensions/GS2NITFHeader.cpp $(HEADERS)
+build/TACID_DEBUG.o: src/extensions/TACID.cpp $(HEADERS)
 	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
 
 
