@@ -1,5 +1,6 @@
-all: hello_geoworld dted_example simple_writer
+all: hello_geoworld dted_example simple_writer advanced_geoimage coordinate_conversion
 
+BOOST    = -lboost_system -lboost_filesystem
 GDAL = -I/usr/include/gdal -lgdal
 GEOIMAGE = -I/opt/local/include -L/opt/local/lib -lgeoimage
 OPENCV   = `pkg-config opencv --cflags --libs`
@@ -13,11 +14,11 @@ dted_example:   dted_example.cpp
 simple_writer:  simple_writer.cpp
 	g++ simple_writer.cpp -o simple_writer   $(OPENCV) $(GDAL) $(GEOIMAGE)
 
-advanced_usage: advanced_usage.cpp
-	g++ advanced_usage.cpp -o advanced_usage $(OPENCV) $(GDAL) $(GEOIMAGE)
+advanced_geoimage: advanced_geoimage.cpp
+	g++ advanced_geoimage.cpp -o advanced_geoimage $(BOOST) $(OPENCV) $(GDAL) $(GEOIMAGE)
 
 coordinate_conversion: coordinate_conversion.cpp
-	g++ coordinate_conversion.cpp -o coordinate_conversion $(GEOIMAGE)
+	g++ coordinate_conversion.cpp -o coordinate_conversion $(GDAL) $(GEOIMAGE)
 
 clean:
-	rm -rf hello_geoworld dted_example simple_writer *.dSYM
+	rm -rf hello_geoworld dted_example simple_writer advanced_geoimage coordinate_conversion *.dSYM

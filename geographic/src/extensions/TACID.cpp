@@ -138,7 +138,7 @@ namespace GS2{
 
     /** Check to make sure that a TACID is valie */    
     bool TACID::isValidTACID( const std::string& tacid ){
-        
+       
         //check size
         if( tacid.size() != 44 && tacid.size() != 40 ) return false;
         
@@ -151,7 +151,6 @@ namespace GS2{
             }
         if( mon_set != true ) return false;
         
-
 
         return true;
     }

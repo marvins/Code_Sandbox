@@ -1,6 +1,10 @@
 #include <GeoImage.h>
 
+#include <boost/filesystem.hpp>
+
 using namespace std;
+
+namespace fs = boost::filesystem;
 
 int main( int argc, char* argv[] ){
 
@@ -8,7 +12,9 @@ int main( int argc, char* argv[] ){
     GEO::GeoImage img( argv[1], true);
 
     //check if the image is a GS2 TACID
-    if( GEO::GS2::isTACID( img.get_filename()) == false ){
+    string base_filename = fs::basename(fs::path(argv[1]));
+
+    if( GEO::GS2::TACID::isValidTACID( base_filename ) == false ){
         cout << "Not valid GS2 Image" << endl;
         return -1;
     }
@@ -21,7 +27,6 @@ int main( int argc, char* argv[] ){
     
 
     //swap EO / IR flag
-    if( tacid.
 
 
     //modify image metadata
