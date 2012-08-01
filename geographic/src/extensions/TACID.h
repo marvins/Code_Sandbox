@@ -11,7 +11,8 @@
 #endif
 
 namespace GEO{
-    
+namespace GS2{
+
     /**
      * @class TACID
      *
@@ -33,7 +34,30 @@ namespace GEO{
             */
             TACID( std::string const& tacid );
         
-        //private:
+            /** 
+             * Return TACID as a complete string
+            */
+            std::string toString()const;
+            
+            /**
+             * Check to see if a possible TACID is valid 
+             *
+             * @param[in] tacid TACID to test
+             * 
+             * @return True if TACID is valid, false otherwise
+            */
+            static bool isValidTACID( const std::string& tacid );
+
+
+            /** 
+             * Output stream operator
+             *
+             * ostr   Output stream
+             * tacid  TACID class
+             */
+            friend std::ostream& operator << ( std::ostream& ostr, const TACID& tacid );
+
+        private:
             std::string day;                /*< Day of the month  */
             std::string month;              /*< Month of the year */
             std::string year;               /*< Year              */
@@ -50,14 +74,9 @@ namespace GEO{
 
     };
 
-    /** 
-      * Output stream operator
-      *
-      * ostr   Output stream
-      * tacid  TACID class
-    */
-    std::ostream& operator << ( std::ostream& ostr, const TACID& tacid );
 
+} // end of GS2 namespace 
 } // end of geo namespace 
+
 
 #endif

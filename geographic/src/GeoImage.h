@@ -7,7 +7,7 @@
 #define GEOVERSION 1.0
 #define DEPLOYED
 
-#include <geoimage/GS2NITFHeader.h>
+#include <geoimage/TACID.h>
 #include <geoimage/DEM.h>
 #include <geoimage/Enumerations.h>
 #include <geoimage/GeoImage.h>

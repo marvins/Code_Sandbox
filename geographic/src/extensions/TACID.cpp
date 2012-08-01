@@ -13,6 +13,7 @@ static int str2int( string const& input ){
 }
 
 namespace GEO{
+namespace GS2{
 
     string months[] = {"NONE","JAN","FEB","MAR","APR","MAY","JUN","JUL","AUG","SEP","OCT","NOV","DEC"};
    
@@ -28,47 +29,94 @@ namespace GEO{
 
     /** TACID Parameterized Constructor */
     TACID::TACID( std::string const& tacid ){
-        
+       
+        int pos = 0;
+        int len = 2;
         //set the filename
         filename = tacid;
         
         //set the day (Acquisition Date)
-        day   = tacid.substr(0,2);
+        day   = tacid.substr(pos,len);
         
         //set the month (Acquisition Date)
-        month = tacid.substr(2,3);
+        pos += len;
+        len = 3;
+        month = tacid.substr(pos,len);
         
         //set the year (Acquisition Date)
-        year = tacid.substr(5,2);
+        pos += len;
+        len = 2;
+        year = tacid.substr(pos,len);
         
         //set the Program Code
-        program_code = tacid.substr(7,2);
+        pos += len;
+        len = 2;
+        program_code = tacid.substr(pos,len);
 
         //set the sortie number
-        sortie_number = tacid.substr(9,2);
+        pos += len;
+        len = 2;
+        sortie_number = tacid.substr(pos,len);
         
         //set the scene number
-        scene_number  = tacid.substr(11, 5);
+        pos += len;
+        len = 5;
+        scene_number  = tacid.substr(pos,len);
         
         //set DoD producer code
-		producer_code = tacid.substr(16, 2);
+        pos += len;
+        len = 2;
+		producer_code = tacid.substr(pos,len);
 
 		//set product number
-		product_number = tacid.substr(18, 6);
+        pos += len;
+        len = 6;
+		product_number = tacid.substr(pos,len);
 		
 		//set the NGA Project Code
-		project_code = tacid.substr( 24, 2);
+        pos += len;
+        len = 2;
+		project_code = tacid.substr(pos,len);
 
 		//set the replay (reprocessed or retransmitted state flag)
-		replay_code = tacid.substr(27, 3);
+		pos += len;
+        len = 3;
+        replay_code = tacid.substr(pos,len);
 		
         //set the producer serial number
-		producer_sn = tacid.substr(30, 3);
+        pos += len;
+        len = 3;
+		producer_sn = tacid.substr(pos,len);
 	
 		//set the production datim
-		production_datim = tacid.substr( 33, 8);
+        pos += len;
+        len = 8;
+		production_datim = tacid.substr(pos,len);
     
     }
+
+    /**
+     * Output the TACID to a filename
+    */
+    string TACID::toString()const{
+
+        return ( day
+               + month
+               + year
+               + program_code
+               + sortie_number
+               + scene_number
+               + producer_code
+               + product_number
+      	       + project_code
+               + replay_code
+		       + producer_sn
+		       + production_datim
+               + string(".ntf"));
+    }
+        
+
+
 
     ostream& operator << ( ostream& ostr, const TACID& tacid ){
 
@@ -88,5 +136,27 @@ namespace GEO{
     }
 
 
+    /** Check to make sure that a TACID is valie */    
+    bool TACID::isValidTACID( const std::string& tacid ){
+        
+        //check size
+        if( tacid.size() != 44 && tacid.size() != 40 ) return false;
+        
+        //check month
+        bool mon_set = false;
+        for( size_t i=1; i<=12; i++)
+            if( tacid.substr(2,3) == months [i] ){
+                mon_set = true;
+                break;
+            }
+        if( mon_set != true ) return false;
+        
+
+
+        return true;
+    }
+
+
+}// end of GS2 Namespace
 }// end of GEO Namespace
 

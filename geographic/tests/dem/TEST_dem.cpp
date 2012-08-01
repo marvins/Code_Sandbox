@@ -63,16 +63,12 @@ int TEST_dem_constructors( string& note ){
     double br_lat =   38.00;
     double br_lon = -118.01;
    
-    cout << "start of operation" << endl;
     GEO::DEM dem_01( tl_lat, tl_lon, br_lat, br_lon, GEO::DEM_Params( GEO::DTED, "data/dted")); 
     
-    cout << "pulling raw" << endl;
     Mat tile01 = dem_01.get_raw();
     
     double lat01, lon01;
     double elev = dem_01.max_elevation( lat01, lon01 );
-    
-
     
     note = "Operation failed";
     return false;

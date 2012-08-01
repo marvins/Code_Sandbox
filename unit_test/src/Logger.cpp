@@ -35,7 +35,6 @@ void Logger::print_log( ){
 }
 
 void print_module_header( const string& header_name ){
-    cout << endl;
     cout << Color(BLUE) << "----------" << endl;
     cout << Color(BLUE) << "| Module : " << Color(GREEN) << header_name << endl;
     cout << Color(BLUE) << "----------" << color_end << endl;
