@@ -3,10 +3,19 @@
 
 #include <string>
 
+/**
+ * @class CoordinateBase
+*/
 class CoordinateBase{
 
     public:
-    std::string toString()const = 0;
+        
+        /**
+         * To String Function
+         *
+         * @return String output
+        */
+        std::string toString()const = 0;
 
 };
 
