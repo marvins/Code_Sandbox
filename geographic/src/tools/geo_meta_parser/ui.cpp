@@ -75,6 +75,9 @@ void resolve_window_range( int& top_win, int& bot_win, int const& cur_pos , cons
 }
 
 
+/**
+  * Return true if the string is a double
+*/
 bool isDouble( const string& value ){
 
     double output;
@@ -95,7 +98,9 @@ void main_menu( Options& configuration ){
     //initialize GeoImage object
     configuration.current_image.set_init( true );
     if( configuration.current_image.get_init() == false ){
-        throw string(string("Error: image ")+configuration.filename+string(" did not load properly"));
+
+        //NOTE: Need to comment this out as we want blank images to load
+        //throw string(string("Error: image ")+configuration.filename+string(" did not load properly"));
     }
 
     /* Pull Header Metadata */
@@ -277,8 +282,6 @@ void process_arguments( std::vector<pair<std::string,std::string> >const& args, 
             throw string(string("Error: unknown flag -> ") + args[i].second );
     }
 
-    if( configuration.file_set == false )
-        throw string("Error: no filename set on image");
 
 }
 
@@ -290,24 +293,39 @@ void usage(){
 
 vector<geo_header_item>  pull_header_metadata( GEO::GeoImage const& img ){
 
-
+    //create output data container
+    vector<geo_header_item>  output;
+    
     //pull the GeoHeader
     vector<pair<string,string> >  hdr_dat = img.get_header()->get_header_data(); 
-    vector<geo_header_item>  output;
+    
+    //create header value 
+    output.push_back( geo_header_item(-1, "",""));
+    output.push_back( geo_header_item( 0, "Image Information", "Value" ));
 
-    //get header metadata
-    for( size_t i=0; i<hdr_dat.size(); i++ ){
-        output.push_back( geo_header_item( 1, hdr_dat[i].first, hdr_dat[i].second));
-    }
+    //get image filename
+    output.push_back( geo_header_item( 4, "Image Filename", img.get_filename() )); 
 
+    //get image type
+    output.push_back( geo_header_item( 3, "Image Type", img.getImageTypeName() ));
+    
     //get corner information
     Point2f ul, br;
     img.get_corner_coordinates( ul, br );
+    output.push_back( geo_header_item(-1, "",""));
     
     output.push_back( geo_header_item( 2, "UPPER_LEFT_LAT", float2str(ul.y)));
     output.push_back( geo_header_item( 2, "UPPER_LEFT_LON", float2str(ul.x)));
     output.push_back( geo_header_item( 2, "LOWER_RIGHT_LAT", float2str(br.y)));
     output.push_back( geo_header_item( 2, "LOWER_RIGHT_LON", float2str(br.x)));
+
+    output.push_back( geo_header_item(-1, "",""));
+    output.push_back( geo_header_item( 0, "Header Information", "Value" ));
+    //get header metadata
+    for( size_t i=0; i<hdr_dat.size(); i++ ){
+        output.push_back( geo_header_item( 1, hdr_dat[i].first, hdr_dat[i].second));
+    }
+
 
     return output;
 }

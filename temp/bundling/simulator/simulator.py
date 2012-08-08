@@ -37,7 +37,6 @@ for x in range(1,8+1):
 		
 		for z in range( 0, 12 ):
 			camdir = actual + "/cam" + str(current).zfill(3);
-			print camdir
-			current += 1
+			create_directory( camdir );
 
 

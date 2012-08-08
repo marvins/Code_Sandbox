@@ -4,6 +4,16 @@
 #include <string>
 #include <vector>
 
+enum  meta_format{
+        
+        META_INFORMATIONAL  = 0,
+        META_GAP            = -1,
+        META_GENERIC        = 1,
+        META_COORDINATE     = 2,
+        META_IMAGE_TYPE     = 3,
+        META_IMAGE_FILENAME = 4,
+};
+
 class geo_header_item{
     public:
         
@@ -11,7 +21,10 @@ class geo_header_item{
         geo_header_item( const int& idx, const std::string& type, const std::string& val );
 
         /** Header Types
-            1. Generic Metadata
+            1. Generic Metadata  (string)
+            2. Geographic Corner (double)
+            3. Image Type        (int)
+            4. Image Filename    (string)
         */
         int         header_type;
 

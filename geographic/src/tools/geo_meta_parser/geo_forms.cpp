@@ -131,17 +131,31 @@ void print_metadata( vector<geo_header_item>const& header_metadata, const int& s
         if( idx >= header_metadata.size() )
             idx = idx - header_metadata.size();
 
-        if( idx == cursor_pos ){
+        //skip the space for the gap
+        if( header_metadata[idx].header_type == META_GAP ){
+            attron ( COLOR_PAIR( backg_window_pair )  | A_NORMAL);
+        }
+        //use the proper color if its a header
+        else if( header_metadata[idx].header_type == META_INFORMATIONAL ){
+            attron ( COLOR_PAIR( backg_window_pair )  | A_NORMAL);
+        }
+        else if( idx == cursor_pos ){
             mvprintw( start_y + i, 1, "->");
             attron( A_STANDOUT );
         }
+
 
         //iterate over the var variable, printing the data
         print_tag  ( header_metadata[idx].header_tag, TAG_X_START, TAG_WIDTH, start_y + i );
         print_field( header_metadata[idx].header_val, VAL_X_START, VAL_WIDTH, start_y + i );
 
         attroff( A_STANDOUT );
-
+        
+        //skip the space for the gap
+        if( header_metadata[idx].header_type == META_GAP || 
+            header_metadata[idx].header_type == META_INFORMATIONAL ){
+            attroff ( COLOR_PAIR( backg_window_pair )  | A_NORMAL);
+        }
     }
     attroff( A_BOLD );
     attron ( COLOR_PAIR( backg_window_pair )  | A_NORMAL);
