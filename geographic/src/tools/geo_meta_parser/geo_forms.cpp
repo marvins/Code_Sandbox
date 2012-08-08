@@ -185,6 +185,9 @@ void print_line( string const& tag, string const& val, const int& width, const i
 }
 
 
+/**
+ * Change the value of a geo header item
+*/
 bool change_screen( geo_header_item& item, const int& width, const int& height ){
 
     int input1;

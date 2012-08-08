@@ -40,12 +40,14 @@ class GeoHeader_Info{
          *
          * @brief Set the image filename. 
          *
-         * @param[in] desired image filename.
+         * @param[in] filename desired image filename.
          */
         void set_image_filename( std::string const& filename );
 
         /**
          * Copy the header information. Performs a deep copy.
+         *
+         * @param[in] other GeoImage pointer to copy
          *
          * @brief Copy the header data. 
          */
@@ -61,7 +63,7 @@ class GeoHeader_Info{
         /** 
          * Static function which will verify if an input filename exists
          * 
-         * @param[in] fname 
+         * @param[in] filename 
          * @return    true if file exists, false otherwise
         */
         static bool file_exists( std::string const& filename );

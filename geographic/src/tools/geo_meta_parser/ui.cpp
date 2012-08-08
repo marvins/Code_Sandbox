@@ -74,6 +74,14 @@ void resolve_window_range( int& top_win, int& bot_win, int const& cur_pos , cons
 
 }
 
+
+bool isDouble( const string& value ){
+
+    double output;
+    stringstream( value ) >> output;
+    return output;
+}
+
 void main_menu( Options& configuration ){
     
     int con_size_x, con_size_y;
@@ -137,6 +145,7 @@ void main_menu( Options& configuration ){
         
         string old_tag, new_tag, old_val, new_val;
         geo_header_item tmp;
+        bool systemWorks = true;
 
         switch (input){
 
@@ -151,9 +160,12 @@ void main_menu( Options& configuration ){
                 }
                 break;
             
+            /****************************************************************/
+            /*              Change the current metadata item                */
+            /****************************************************************/
             case 'c':
             case 'C':
-                
+               
                 old_tag = header_metadata[configuration.cursor_pos].header_tag;
                 old_val = header_metadata[configuration.cursor_pos].header_val;
                 tmp     = header_metadata[configuration.cursor_pos];
@@ -163,10 +175,16 @@ void main_menu( Options& configuration ){
                 new_tag = tmp.header_tag;
                 new_val = tmp.header_val;
                 
-                //if the change screen function returns true, then we need to go ahead and add it back to the image
+                if( header_metadata[configuration.cursor_pos].header_type == 2 ){ //since we are dealing with a coordinate, do the appropriate check
+                    
+                    //check for a double
+                    if( isDouble( tmp.header_val ) == false ){
+                        systemWorks = false;
+                    }
+                }
                 
-                if( change_result == true ){
-
+                //if the change screen function returns true, then we need to go ahead and add it back to the image
+                if( change_result == true && systemWorks == true ){
                     if( old_tag == new_tag && old_val != new_val ){
                         
                         header_metadata[configuration.cursor_pos].header_val = new_val;
