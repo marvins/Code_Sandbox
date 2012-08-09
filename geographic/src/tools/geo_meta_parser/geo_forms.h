@@ -41,7 +41,8 @@ void print_footer( const int& con_size_x, const int& con_size_y );
 
 bool change_screen( geo_header_item& item, const int& width, const int& height  );
 
-int save_screen( const int& width, const int& height );
+int    save_screen( const int& width, const int& height );
+std::string load_screen(  );
 
 #endif
 

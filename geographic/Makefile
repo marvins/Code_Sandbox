@@ -128,7 +128,7 @@ $(BIN)/geo_viewer: $(VIEWER_OBJ) $(VIEWER_HDR)
 
 # Geo Metadata Parser Program
 $(BIN)/geo_meta_parser:  src/tools/geo_meta_parser.cpp  src/tools/geo_meta_parser/*.cpp src/tools/geo_meta_parser/*.h
-	g++ -o $@ $<  src/tools/geo_meta_parser/*.cpp -I/opt/local/include -I/usr/include/gdal  -L/opt/local/lib -lgeoimage -lncurses `pkg-config opencv --cflags --libs` -g
+	g++ -o $@ $<  src/tools/geo_meta_parser/*.cpp -I/opt/local/include -I/usr/include/gdal  -L/opt/local/lib -lgeoimage -lncurses `pkg-config opencv --cflags --libs` -g -lboost_system -lboost_filesystem
 
 # Main Shared Libraries
 $(BUILD)/libgeoimage.so: $(OBJECTS)

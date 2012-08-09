@@ -1,11 +1,15 @@
 #include "geo_forms.h"
 #include "utils.h"
 
+#include <boost/filesystem.hpp>
+
 #include <string> 
 
 #include <ncurses.h>
 
 using namespace std;
+    
+namespace fs = boost::filesystem;
     
 const int modify_offset = 5;
 const string tag_hdr = "Tag: ";
@@ -166,7 +170,7 @@ void print_footer( const int& con_width, const int& con_height ){
 
     attron( COLOR_PAIR( backg_window_pair ));
     mvprintw( con_height - 2, 2, "Press [up/down] or [,/.] - navigate,  [q/ESC] - quit immediately"); 
-    mvprintw( con_height - 1, 2, "Press [c] - Modify Parameter,  [s] - Save Current Image");
+    mvprintw( con_height - 1, 2, "Press [c] - Modify Parameter,  [s] - Save Current Image,  [L] - Load New Image");
 
 }
 
@@ -310,7 +314,9 @@ bool change_screen( geo_header_item& item, const int& width, const int& height )
 }
 
 
-
+/****************************************************************/
+/*                  Save GeoImage Details                       */
+/****************************************************************/
 int save_screen( const int& width, const int& height ){
 
     int input1;
@@ -375,5 +381,105 @@ int save_screen( const int& width, const int& height ){
     return false;
 }
 
+
+vector<fs::path>  get_directory_contents( const fs::path& pth ){
+
+    vector<fs::path> output;
+    fs::directory_iterator end_iter;
+
+    if( fs::exists( pth ) && fs::is_directory( pth ) ){
+
+        for( fs::directory_iterator dir_iter(pth) ; dir_iter != end_iter ; ++dir_iter)
+        {
+            output.push_back( *dir_iter );
+        }
+
+        sort( output.begin(), output.end() );
+    }
+    return output;
+}
+
+
+/***********************************************************/
+/*                    Load Image Screen                    */
+/***********************************************************/
+string load_screen(  ){
+
+    string output = "";
+    int con_size_x, con_size_y;
+    const int MAIN_MENU_TIMEOUT  = 100;
+    const int program_header_row = 0;
+    const int menu_header_row    = 2;
+    const int meta_header_row    = 3;
+    bool exitLoop = false;
+    int input;
+    int max_range, start_row;
+    string arrow = "->";
+    int idx = 0;
+
+    //extract the current directory
+    fs::path current_directory(".");
+    vector<fs::path> contents = get_directory_contents( current_directory );
+
+    //loop, printing screen
+    while( !exitLoop ){
+
+        //retrieve window size
+        get_console_size( con_size_x, con_size_y);
+
+        //clear the screen
+        clear();
+        attron(COLOR_PAIR(backg_window_pair));
+
+        //print header
+        print_header( "Geographic Meta Parser",  program_header_row, con_size_x, con_size_y); 
+
+        //print menu header
+        print_header( "Image Loading Screen", menu_header_row, con_size_x, con_size_y);
+        wnoutrefresh(stdscr);
+
+        //print file contents
+        attron(A_STANDOUT);
+        print_field( string("Current Directory: ") + fs::absolute(current_directory).string(), 2, con_size_x-4, 5 );
+        attroff(A_STANDOUT);
+
+        //compute max range
+        max_range = std::min( (int)contents.size(), con_size_y - 7);
+
+        /** List contents */
+        start_row = 7;
+        for( int a=0; a<max_range; a++ ){
+            
+            if( a == idx ){
+                print_field( arrow, 1, arrow.size(), start_row+a );
+            }
+
+            print_field( contents[a].filename().string(), 2+arrow.size()+1, con_size_x-4, start_row+a );
+        
+        }
+
+        //draw screen
+        wnoutrefresh(stdscr);
+        doupdate();
+
+        //wait on user input and take action
+        input  = getch();
+
+        switch( input ){
+
+
+            case 'q':
+            case 'Q':
+                exitLoop = true;
+                break;
+
+
+
+        }
+
+
+    }
+
+}
 
 
