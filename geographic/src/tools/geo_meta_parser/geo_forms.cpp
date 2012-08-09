@@ -492,8 +492,15 @@ string load_screen(  ){
                     contents = get_directory_contents( current_directory );
                     idx = 0;
                 }
-                else
+                else{
+
+                    //make sure we have a valid file here
+                    if( true )
+                        throw string("ERROR: Must ensure valid file exists");
+
+
                     return contents[idx].string();
+                }
                 break;
             
             case KEY_LEFT:
