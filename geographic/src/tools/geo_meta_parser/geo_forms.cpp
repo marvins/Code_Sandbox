@@ -495,11 +495,9 @@ string load_screen(  ){
                 else{
 
                     //make sure we have a valid file here
-                    if( true )
-                        throw string("ERROR: Must ensure valid file exists");
-
-
-                    return contents[idx].string();
+                    if( GEO::GeoImage(contents[idx].string(), true).gdal_load() )
+                        return contents[idx].string();
+                    
                 }
                 break;
             

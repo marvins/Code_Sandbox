@@ -23,6 +23,8 @@ GeoImage::GeoImage() : initialize(false), openCVCompatible(false) {
 
 }
 
+
+
 /** Parameterized Constructor
  *
  * @param[in] fname image filename
@@ -462,7 +464,7 @@ int GeoImage::getFileType( const string& fname ){
     if( ( ext == ".ntf" ) == true ) return NITF;
     if( ( ext == ".NTF" ) == true ) return NITF;
     
-    throw string("ERROR: Unknown type");
+    return UNKNOWN;
 }
 
 /** Modify the header of the image 
@@ -491,5 +493,14 @@ void GeoImage::get_corner_coordinates( Point2f& ul, Point2f& br )const{
     br.y=bry;
     br.x=brx;
 }
+
+void GeoImage::clean(){
+    if (header_data == NULL)
+        delete header_data;
+    header_data = new NITFHeader_Info();
+
+    gdal_data.clean();
+}
+
 
 }

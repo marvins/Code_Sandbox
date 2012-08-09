@@ -10,7 +10,8 @@ namespace GEO{
     enum GEO_IMAGE_TYPE{
         NITF  /*< NITF Imagery */,
         DTED  /*< DTED Elevation Imagery */,
-        SRTM  /*< SRTM Elevation Imagery */
+        SRTM  /*< SRTM Elevation Imagery */,
+        UNKNOWN
     };
 
 }

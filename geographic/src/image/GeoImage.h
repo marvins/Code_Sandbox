@@ -55,6 +55,9 @@ class GeoImage{
 
     /** Initialize and load image */
     void init();
+    
+    /** Clean out the geoimage and start from scratch */
+    void clean();
 
     std::string getImageTypeName()const;
 

@@ -42,6 +42,8 @@ class GDAL_Data{
 
         bool get_status()const;
 
+        void clean();
+
         GDALDriver  *driver;    /*<  Driver Object */
         GDALDataset *dataset;   /*<  Dataset Object */
         bool  gdalLoadFailed;   /*<  Whether or not the load operation failed */

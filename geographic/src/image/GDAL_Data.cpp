@@ -220,4 +220,16 @@ namespace GEO{
         return true;
     }
 
+    /** 
+     *
+     */
+    void GDAL_Data::clean(){
+
+        if( dataset != NULL )
+            GDALClose( dataset );
+        
+        dataset = NULL;
+        driver  = NULL;
+        gdalLoadFailed = false;
+    }
 } //end of GEO namespace 

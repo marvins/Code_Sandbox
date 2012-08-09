@@ -98,7 +98,8 @@ void main_menu( Options& configuration ){
     //initialize GeoImage object
     configuration.current_image.set_init( true );
     if( configuration.current_image.get_init() == false ){
-
+        
+        configuration.current_image.clean();
         //NOTE: Need to comment this out as we want blank images to load
         //throw string(string("Error: image ")+configuration.filename+string(" did not load properly"));
     }
