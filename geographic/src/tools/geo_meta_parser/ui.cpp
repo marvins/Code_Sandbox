@@ -291,14 +291,37 @@ void usage(){
 }
 
 
+/** 
+  Extract the metadata from the header and geoimage to enable us to present
+  it to the user.
+*/
 vector<geo_header_item>  pull_header_metadata( GEO::GeoImage const& img ){
 
     //create output data container
     vector<geo_header_item>  output;
     
+    //check to see if the image is even loaded
+    if( img.gdal_load() == false ){
+        output.clear();
+        
+        //load a blank header object    
+        output.push_back( geo_header_item(-1, "",""));
+        output.push_back( geo_header_item( 0, "Image Information", "Value" ));
+
+        //get image filename
+        output.push_back( geo_header_item( 4, "Image Filename", img.get_filename() )); 
+        output.push_back( geo_header_item( 3, "Image Type", img.getImageTypeName() ));
+
+        output.push_back( geo_header_item(-1, "",""));
+        output.push_back( geo_header_item( 0, "Header Information", "Value" ));
+
+
+        return output;
+    }
+
     //pull the GeoHeader
     vector<pair<string,string> >  hdr_dat = img.get_header()->get_header_data(); 
-    
+
     //create header value 
     output.push_back( geo_header_item(-1, "",""));
     output.push_back( geo_header_item( 0, "Image Information", "Value" ));
@@ -308,12 +331,12 @@ vector<geo_header_item>  pull_header_metadata( GEO::GeoImage const& img ){
 
     //get image type
     output.push_back( geo_header_item( 3, "Image Type", img.getImageTypeName() ));
-    
+
     //get corner information
     Point2f ul, br;
     img.get_corner_coordinates( ul, br );
     output.push_back( geo_header_item(-1, "",""));
-    
+
     output.push_back( geo_header_item( 2, "UPPER_LEFT_LAT", float2str(ul.y)));
     output.push_back( geo_header_item( 2, "UPPER_LEFT_LON", float2str(ul.x)));
     output.push_back( geo_header_item( 2, "LOWER_RIGHT_LAT", float2str(br.y)));
@@ -321,6 +344,7 @@ vector<geo_header_item>  pull_header_metadata( GEO::GeoImage const& img ){
 
     output.push_back( geo_header_item(-1, "",""));
     output.push_back( geo_header_item( 0, "Header Information", "Value" ));
+
     //get header metadata
     for( size_t i=0; i<hdr_dat.size(); i++ ){
         output.push_back( geo_header_item( 1, hdr_dat[i].first, hdr_dat[i].second));

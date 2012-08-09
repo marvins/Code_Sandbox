@@ -101,7 +101,7 @@ void print_metadata( vector<geo_header_item>const& header_metadata, const int& s
     int idx;
     int WINDOW_GAP = 4;
     int BORDER_WIDTH = 4;
-    int WINDOW_HEIGHT  = ( con_size_y - start_y );
+    int WINDOW_HEIGHT  = std::min( con_size_y - start_y, (int)header_metadata.size() );
     int WINDOW_Y_START = BORDER_WIDTH + start_y;
 
     //compute the max widths of both the tag/value pairs
@@ -117,7 +117,7 @@ void print_metadata( vector<geo_header_item>const& header_metadata, const int& s
 
     size_t TAG_WIDTH   = VAL_X_START - TAG_X_START - WINDOW_GAP;
     size_t VAL_WIDTH   = con_size_x - VAL_X_START - BORDER_WIDTH;
-
+    
     /*
        begin printing out rows
      */
@@ -143,7 +143,6 @@ void print_metadata( vector<geo_header_item>const& header_metadata, const int& s
             mvprintw( start_y + i, 1, "->");
             attron( A_STANDOUT );
         }
-
 
         //iterate over the var variable, printing the data
         print_tag  ( header_metadata[idx].header_tag, TAG_X_START, TAG_WIDTH, start_y + i );

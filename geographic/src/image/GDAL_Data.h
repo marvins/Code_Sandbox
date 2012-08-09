@@ -40,6 +40,8 @@ class GDAL_Data{
         
         void set_img_data( const cv::Mat& img );
 
+        bool get_status()const;
+
         GDALDriver  *driver;    /*<  Driver Object */
         GDALDataset *dataset;   /*<  Dataset Object */
         bool  gdalLoadFailed;   /*<  Whether or not the load operation failed */

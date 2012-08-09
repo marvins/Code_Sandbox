@@ -244,7 +244,7 @@ cv::Size GeoImage::getMatSize()const {
 
 /** Check if the status of the loading operation was valid */
 bool GeoImage::gdal_load()const {
-    return !gdal_data.gdalLoadFailed;
+    return gdal_data.get_status();
 }
 
 /**
