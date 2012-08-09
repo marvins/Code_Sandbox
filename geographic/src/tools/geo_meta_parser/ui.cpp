@@ -223,8 +223,18 @@ void main_menu( Options& configuration ){
             case 'l':
             case 'L':
                 
-               //extract new filename
-               new_val = load_screen( );
+                //extract new filename
+                new_val = load_screen( );
+                
+                //if the image is already loaded, we need to clean up the old data
+                if( configuration.current_image.gdal_load() == true ){
+                    throw string("ERROR: not implemented yet");
+                }
+                else{
+                    configuration.current_image.set_filename(new_val);
+                    configuration.current_image.set_init(true);
+                    header_metadata = pull_header_metadata( configuration.current_image );
+                }
 
                 
                 break;

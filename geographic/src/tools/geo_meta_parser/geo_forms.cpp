@@ -419,6 +419,8 @@ string load_screen(  ){
 
     //extract the current directory
     fs::path current_directory(".");
+
+    current_directory = fs::absolute( current_directory );
     vector<fs::path> contents = get_directory_contents( current_directory );
 
     //loop, printing screen
@@ -454,8 +456,13 @@ string load_screen(  ){
                 print_field( arrow, 1, arrow.size(), start_row+a );
             }
 
+            if( fs::is_directory( contents[a] ) == true )
+                attron( A_BOLD );
+
             print_field( contents[a].filename().string(), 2+arrow.size()+1, con_size_x-4, start_row+a );
         
+            if( fs::is_directory( contents[a] ) == true )
+                attroff( A_BOLD );
         }
 
         //draw screen
@@ -466,8 +473,36 @@ string load_screen(  ){
         input  = getch();
 
         switch( input ){
+            
+            /** Move cursor */
+            case KEY_DOWN:
+                idx++;
+                if( idx >= contents.size() ) idx = 0;
+                break;
 
+            case KEY_UP:
+                idx--;
+                if( idx < 0 ) idx = contents.size()-1;
+                break;
+            
+            /** If directory, then enter */
+            case KEY_RIGHT:
+                if( fs::is_directory( contents[idx] ) == true ){
+                    current_directory /= contents[idx].filename();
+                    contents = get_directory_contents( current_directory );
+                    idx = 0;
+                }
+                else
+                    return contents[idx].string();
+                break;
+            
+            case KEY_LEFT:
+                current_directory = current_directory.parent_path( );
+                contents = get_directory_contents( current_directory );
+                idx = 0;
+                break;
 
+            /** Exit Now */
             case 'q':
             case 'Q':
                 exitLoop = true;

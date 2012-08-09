@@ -214,6 +214,7 @@ namespace GEO{
     bool GDAL_Data::get_status()const{
         
         if( dataset == NULL ) return false;
+        if( driver  == NULL ) return false;
         if( gdalLoadFailed == true ) return false;
 
         return true;
