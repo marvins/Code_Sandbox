@@ -3,20 +3,24 @@
 
 #include <string>
 
-/**
- * @class CoordinateBase
-*/
-class CoordinateBase{
+namespace GEO{
 
-    public:
+    /**
+     * @class CoordinateBase
+    */
+    class CoordinateBase{
+
+        public:
         
-        /**
-         * To String Function
-         *
-         * @return String output
-        */
-        std::string toString()const = 0;
+            /**
+             * To String Function
+             *
+             * @return String output
+            */
+            virtual std::string toString()const = 0;
 
-};
+    };
+
+}
 
 #endif

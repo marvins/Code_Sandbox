@@ -8,7 +8,9 @@ NOTE: All C++ libraries assume OpenCV is the imaging library. If you need anothe
 Directory Structure
 -------------------
 src - all source code
-   core - enumerations and other core features
-
+   core  - enumerations and other core features
+   dem   - Digital Elevation Model information
+   image - GeoImage structures
+   tools - utilitity program information
 
 

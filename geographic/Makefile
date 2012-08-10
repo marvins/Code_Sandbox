@@ -76,10 +76,10 @@ TEST = $(TEST_INCLUDE) $(TEST_SOURCES)
 #
 HEADERS = src/core/*.h src/dem/*.h src/extensions/*.h src/image/*.h src/utilities/*.h
 
-OBJECTS       = build/TACID.o		build/DTEDUtils.o   	build/DEM.o 	   build/SRTMHeader.o       build/DTEDHeader.o	 	  build/NITFHeader.o       build/DEMHeader.o       build/ImageHeader.o	     build/GeoHeader.o 	     build/PixelType.o	      build/OpenCVUtils.o	    build/GDAL_Data.o	    build/GeoImage.o       build/GDAL2OpenCV.o	
-OBJECTS_DEBUG = build/TACID_DEBUG.o build/DTEDUtils_DEBUG.o build/DEM_DEBUG.o  build/SRTMHeader_DEBUG.o build/DTEDHeader_DEBUG.o build/NITFHeader_DEBUG.o build/DEMHeader_DEBUG.o build/ImageHeader_DEBUG.o build/GeoHeader_DEBUG.o build/PixelType_DEBUG.o  build/OpenCVUtils_DEBUG.o build/GDAL_Data_DEBUG.o build/GeoImage_DEBUG.o build/GDAL2OpenCV_DEBUG.o
+OBJECTS       = build/CoordinateLatLon.o        build/CoordinateBase.o        build/TACID.o		  build/DTEDUtils.o    	  build/DEM.o 	     build/SRTMHeader.o       build/DTEDHeader.o	 	  build/NITFHeader.o       build/DEMHeader.o       build/ImageHeader.o	     build/GeoHeader.o 	     build/PixelType.o	      build/OpenCVUtils.o	    build/GDAL_Data.o	    build/GeoImage.o       build/GDAL2OpenCV.o	
+OBJECTS_DEBUG = build/CoordinateLatLon_DEBUG.o  build/CoordinateBase_DEBUG.o  build/TACID_DEBUG.o build/DTEDUtils_DEBUG.o build/DEM_DEBUG.o  build/SRTMHeader_DEBUG.o build/DTEDHeader_DEBUG.o build/NITFHeader_DEBUG.o build/DEMHeader_DEBUG.o build/ImageHeader_DEBUG.o build/GeoHeader_DEBUG.o build/PixelType_DEBUG.o  build/OpenCVUtils_DEBUG.o build/GDAL_Data_DEBUG.o build/GeoImage_DEBUG.o build/GDAL2OpenCV_DEBUG.o
 
-GEO_INCLUDE = -Isrc/core -Isrc/dem -Isrc/image -Isrc/extensions -Isrc/utilities
+GEO_INCLUDE = -Isrc/coordinates -Isrc/core -Isrc/dem -Isrc/image -Isrc/extensions -Isrc/utilities
 
 UTEST_SOURCES = tests/unit_test.cpp \
 	        	tests/dem/TEST_dem.cpp \
@@ -106,6 +106,7 @@ all: $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE)
 	cp $(BUILD)/libgeoimage.$(LIB_TYPE) 		$(BUILD)/lib
 	cp $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE) $(BUILD)/lib
 	cp src/GeoImage.h	  	$(BUILD)/include/GeoImage.h
+	cp src/coordinates/*.h  $(BUILD)/include/geoimage
 	cp src/core/*.h		  	$(BUILD)/include/geoimage
 	cp src/dem/*.h		 	$(BUILD)/include/geoimage
 	cp src/extensions/*.h   $(BUILD)/include/geoimage
@@ -245,6 +246,19 @@ build/TACID.o:       src/extensions/TACID.cpp $(HEADERS)
 build/TACID_DEBUG.o: src/extensions/TACID.cpp $(HEADERS)
 	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(DFLAGS) $(GEO_INCLUDE)
 
+# Coordinate Base
+build/CoordinateBase.o:       src/coordinates/CoordinateBase.cpp $(HEADERS)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(OFLAGS)
+
+build/CoordinateBase_DEBUG.o: src/coordinates/CoordinateBase.cpp $(HEADERS)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(DFLAGS)
+
+# LatLon Coordinates
+build/CoordinateLatLon.o:       src/coordinates/CoordinateLatLon.cpp $(HEADERS)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(OFLAGS)
+
+build/CoordinateLatLon_DEBUG.o: src/coordinates/CoordinateLatLon.cpp $(HEADERS)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(DFLAGS) 
 
 ###################################################################
 #				   		      Geo Viewer						  #

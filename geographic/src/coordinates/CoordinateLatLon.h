@@ -5,6 +5,10 @@
 
 #include <string>
 
+#include "CoordinateBase.h"
+
+namespace GEO{
+
 class CoordinateLatLon : public CoordinateBase {
 
     public:
@@ -50,15 +54,22 @@ class CoordinateLatLon : public CoordinateBase {
          * @param[in] lonMin Longitude Minutes Component
          * @param[in] lonSec Longitude Seconds Component
         */
-        CoordinateLatLon( const int& latDeg, const int&    latMin, const double& latSec
-                          const int& lonDeg, const int&    lonMin, const double& lonSec );
+        CoordinateLatLon( const int& latDeg, const int&  latMin, const double& latSec,
+                          const int& lonDeg, const int&  lonMin, const double& lonSec );
 
         
-    private:
-    
-            double lat; /*< Latitude  */
-            double lon; /*< Longitude */
+        
+        /** 
+          * Convert the Coordinate into a readable string 
+        */
+        std::string toString()const;
+
+
+        double lat; /*< Latitude  */
+        double lon; /*< Longitude */
 
 };
+
+}// end of GEO namespace 
 
 #endif

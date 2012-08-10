@@ -1,7 +1,12 @@
 #include "CoordinateLatLon.h"
 
+#include <sstream>
+#include <string>
+
 using namespace cv;
 using namespace std;
+
+namespace GEO{
 
 /**
  * Default constructor for Lat Lon Coordinate
@@ -31,21 +36,29 @@ CoordinateLatLon::CoordinateLatLon( const int& latDeg, const double& latMin,
     throw string("ERROR: Not Implemented");
 }
 
-CoordinateLatLon::CoordinateLatLon( const int& latDeg, const int&    latMin, const double& latSec
+CoordinateLatLon::CoordinateLatLon( const int& latDeg, const int&    latMin, const double& latSec,
                                     const int& lonDeg, const int&    lonMin, const double& lonSec ){
 
     throw string("ERROR: Not Implemented");
 }
 
 
-private:
+std::string CoordinateLatLon::toString()const{
 
-double lat; /*< Latitude  */
-double lon; /*< Longitude */
+    std::string slat, slon;
+    std::stringstream sin;
+    
+    sin << lat;
+    sin >> slat;
+    sin.clear();
+    sin.str("");
+    
+    sin << lon;
+    sin >> slon;
+    
+    string output = string("LatLon<") + slat + string(", ") + slon + string(">");
+    return output;
 
-};
+}
 
-#endif
-
-
-#endif
+} //end of GEO namespace 

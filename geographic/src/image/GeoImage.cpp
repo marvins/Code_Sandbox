@@ -4,6 +4,8 @@
 #include "GeoImage.h"
 #include "../core/Enumerations.h"
 
+#include "CoordinateLatLon.h"
+
 #include <boost/filesystem.hpp>
 
 using namespace cv;
@@ -483,6 +485,13 @@ void GeoImage::modify_header_metadata( const string& tag, const string& val, con
     }
 
 }
+    
+void GeoImage::get_corner_coordinates( CoordinateLatLon& ul, CoordinateLatLon& br ){
+
+    gdal_data.get_corner_coordinates( ul.lon, ul.lat, br.lon, br.lat );
+
+}
+
 
 void GeoImage::get_corner_coordinates( Point2f& ul, Point2f& br )const{
     
