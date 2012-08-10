@@ -1,0 +1,99 @@
+<?xml version="1.0"?>
+
+<!-- Root node for configuration xml document -->
+<configuration>
+
+    <!-- 
+    
+    Here we specify the layout of the program.  The xml tags 
+    correspond to each directory inside.  If there are multiple
+    combinations, this will be annotated in each tag.
+    -->
+    <layout>
+        <folder name="dsu" multiple="false" >
+            
+            <folder name="slice#-collect#"  multiple="true" type="permutation" start1="1" start2="0" count1="8"  count2="4" zero_pad="0" >
+                
+                <folder name="camera" multiple="false" >
+                    
+                    <folder name="nitf" multiple="false" >
+                    
+                    </folder> <!-- end of nitf folder -->
+                    
+                    <folder name="raw" multiple="false" >
+                        
+                        <!-- 
+                             Notice that the camera directory requires a global count as each directory with this name
+                             is counted stared from the previous.
+                        -->
+                        <folder name="cam#" multiple="true" type="counter" start1="0" count_per_dir="12" zero_pad="3" >
+                        
+                            <!-- February 24, 2012  -->
+                            <folder name="date" multiple="true" type="date" day="24"  month="2"  year="2012" >
+                                
+                                <!-- Hour folder 8am -->
+                                <folder name="08" multiple="false" >
+                                    
+                                    <!-- Minute folder -->
+                                    <folder name="#" multiple="true" type="permutation" start1="0" count1="6" zero_pad="2" >
+                                        
+                                        <file name="tacid" type="tacid" />
+
+                                    </folder> <!-- end of minute folder -->
+                                    
+                                    <!-- Minute folder -->
+                                    <folder name="#" multiple="true" type="permutation" start1="51" count1="6" zero_pad="2" >
+                                        <file name="tacid" type="tacid" />
+
+
+                                    </folder> <!-- end of minute folder -->
+
+
+                                </folder> <!-- end of hour folder -->
+
+                            </folder> <!-- end of date folder -->
+                            
+                            <!-- March 26, 2013  -->
+                            <folder name="date" multiple="true" type="date" day="26"  month="3"  year="2013" >
+                                
+                                <!-- Hour folder 7pm -->
+                                <folder name="19" multiple="false" >
+                                    
+                                    <!-- Minute folder -->
+                                    <folder name="#" multiple="true" type="permutation" start1="56" count1="4" zero_pad="2" >
+                                    
+                                        <file name="tacid" type="tacid" />
+
+                                    </folder> <!-- end of minute folder -->
+
+                                </folder><!-- end of 7pm folder -->
+                                
+                                <!-- Hour folder 8pm -->
+                                <folder name="20" multiple="false" >
+
+                                    <!-- Minute folder -->
+                                    <folder name="#" multiple="true" type="permutation" start1="0" count1="4" zero_pad="2" >
+                                        
+                                        <!-- NITF GS2 Tacid image -->
+                                        <file name="tacid" type="tacid" />
+
+                                    
+                                    </folder> <!-- end of minute folder -->
+                                
+                                </folder><!-- end of 8pm folder -->
+                            
+                            </folder><!-- End of date folder -->
+
+                        </folder> <!-- end of cam folder -->
+                    </folder> <!-- end of raw folder -->
+                </folder> <!-- end of camera folder -->
+            </folder> <!-- end of slice-collect folder -->
+        </folder> <!-- end of dsu folder -->
+    
+    </layout>
+
+       <!-- 
+            start_min ="56"
+            stop_min  = "4"
+        -->
+</configuration>
