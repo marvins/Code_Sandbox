@@ -14,10 +14,9 @@ int main( int argc, char* argv[] ){
 
     cout << "TL: " << tl.toString() << endl;
     cout << "BR: " << br.toString() << endl;
-
-
+    
     //convert the corners to UTM
-
+    //GEO::CoordinateUTM   utmTL, utmBR;
 
     //create a few different standalone coordinates
 

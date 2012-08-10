@@ -4,6 +4,13 @@
 #include <string>
 
 namespace GEO{
+    
+    enum DATUM_TYPES{
+        NAD83 = 0,
+        WGS72 = 1,
+        WGS84 = 2
+    };
+
 
     /**
      * @class CoordinateBase
@@ -20,7 +27,9 @@ namespace GEO{
             virtual std::string toString()const = 0;
 
     };
+    
 
+    std::string datum2string( const int& datum );
 }
 
 #endif

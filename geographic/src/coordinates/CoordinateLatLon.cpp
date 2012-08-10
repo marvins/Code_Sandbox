@@ -14,31 +14,41 @@ namespace GEO{
 CoordinateLatLon::CoordinateLatLon(){
     lat = 0;
     lon = 0;
+    datum = WGS84;
 }
 
-CoordinateLatLon::CoordinateLatLon( const double& latDD, const double& lonDD ){
+CoordinateLatLon::CoordinateLatLon( const double& latDD, const double& lonDD, const int& dat ){
 
-    lat = latDD;
-    lon = lonDD;
+    lat   = latDD;
+    lon   = lonDD;
+    datum = dat;
 
 }
 
 
-CoordinateLatLon::CoordinateLatLon( const Point2f& coord ){
+CoordinateLatLon::CoordinateLatLon( const Point2f& coord, const int& dat ){
 
-    lat = coord.y;
-    lon = coord.x;
+    lat   = coord.y;
+    lon   = coord.x;
+    datum = dat;
+
 }
 
 CoordinateLatLon::CoordinateLatLon( const int& latDeg, const double& latMin, 
-                                    const int& lonDeg, const double& lonMin){
+                                    const int& lonDeg, const double& lonMin,
+                                    const int& dat ){
+
+    datum = dat;
         
     throw string("ERROR: Not Implemented");
 }
 
 CoordinateLatLon::CoordinateLatLon( const int& latDeg, const int&    latMin, const double& latSec,
-                                    const int& lonDeg, const int&    lonMin, const double& lonSec ){
+                                    const int& lonDeg, const int&    lonMin, const double& lonSec,
+                                    const int& dat ){
 
+    datum = dat;
+    
     throw string("ERROR: Not Implemented");
 }
 
@@ -56,7 +66,7 @@ std::string CoordinateLatLon::toString()const{
     sin << lon;
     sin >> slon;
     
-    string output = string("LatLon<") + slat + string(", ") + slon + string(">");
+    string output = string("LatLon<") + slat + string(", ") + slon + string(", datum: ") + datum2string(datum) + string(" >");
     return output;
 
 }

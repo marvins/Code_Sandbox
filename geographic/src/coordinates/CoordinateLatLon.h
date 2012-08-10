@@ -24,14 +24,14 @@ class CoordinateLatLon : public CoordinateBase {
          * @param[in] latDD Latitude  in Decimal Degree Format
          * @param[in] lonDD Longitude in Decimal Degree Format
         */
-        CoordinateLatLon( const double& latDD, const double& lonDD );
+        CoordinateLatLon( const double& latDD, const double& lonDD, int const& dat = WGS84 );
         
         /**
          * OpenCV Point Constructor 
          *
          * @param[in] coord OpenCV Coordinate
         */
-        CoordinateLatLon( const cv::Point2f& coord );
+        CoordinateLatLon( const cv::Point2f& coord, int const& dat = WGS84 );
         
         /**
          * Lat Lon Coordinate in Degree, Minutes Format
@@ -42,7 +42,8 @@ class CoordinateLatLon : public CoordinateBase {
          * @param[in] lonMin Longitude Minutes Component
         */
         CoordinateLatLon( const int& latDeg, const double& latMin, 
-                          const int& lonDeg, const double& lonMin);
+                          const int& lonDeg, const double& lonMin,
+                          int const& dat = WGS84 );
         
         /**
          * Lat Lon Coordinate in Degree, Minutes Format
@@ -55,7 +56,8 @@ class CoordinateLatLon : public CoordinateBase {
          * @param[in] lonSec Longitude Seconds Component
         */
         CoordinateLatLon( const int& latDeg, const int&  latMin, const double& latSec,
-                          const int& lonDeg, const int&  lonMin, const double& lonSec );
+                          const int& lonDeg, const int&  lonMin, const double& lonSec,
+                          int const& dat = WGS84 );
 
         
         
@@ -67,6 +69,7 @@ class CoordinateLatLon : public CoordinateBase {
 
         double lat; /*< Latitude  */
         double lon; /*< Longitude */
+        int  datum; /*< Datum     */
 
 };
 
