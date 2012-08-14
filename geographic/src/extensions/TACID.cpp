@@ -227,6 +227,10 @@ namespace GS2{
     }
 
 
+    void TACID::setBasepath( const std::string& path ){
+        dirname = path;
+    }
+
 }// end of GS2 Namespace
 }// end of GEO Namespace
 

@@ -46,13 +46,8 @@
 
 
                                     </folder> <!-- end of minute folder -->
-
-
                                 </folder> <!-- end of hour folder -->
-
                             </folder> <!-- end of date folder -->
-                            
-
                         </folder> <!-- end of cam folder -->
                     </folder> <!-- end of raw folder -->
                 </folder> <!-- end of camera folder -->
@@ -61,51 +56,30 @@
     
     </layout>
     <tacid>    
-        <program_code   value="9Z"  />
-        <sortie_number  value="00"  />
-        <producer_code  value="ZX"  />
-        <product_number value="GEO" />
-        <project_code   value="GS"  />
-        <replay         value="000" />
+        <program_code   value="9Z"    />
+        <sortie_number  value="00"    />
+        <producer_code  value="ZX"    />
+        <product_number value="GEO"   />
+        <project_code   value="GS"    />
+        <replay_code    value="000"   />
+        <extension      value='.nitf' />
         <start_scene    day="24" month="2"  year="2012"  hour="8" minute="0" />
     </tacid>
 
-    <options>
+    <camera_options>
         <frame_rate value="2" />
-    </options>
+    </camera_options>
 
-<!--
-    
-                            March 26, 2013  
-                            folder name="date" multiple="true" type="date" day="26"  month="3"  year="2013" >
-                                
-                                 Hour folder 7pm 
-                                folder name="19" multiple="false" >
-                                    
-                                     Minute folder 
-                                    <folder name="#" multiple="true" type="permutation" start1="56" count1="4" zero_pad="2" >
-                                    
-                                        <file name="tacid" type="tacid" />
-
-                                    </folder>  end of minute folder -
-
-                                </folder><- end of 7pm folder 
-                                
-                                - Hour folder 8pm -
-                                <folder name="20" multiple="false" >
-
-                                     Minute folder 
-                                    <folder name="#" multiple="true" type="permutation" start1="0" count1="4" zero_pad="2" >
-                                        
-                                         NITF GS2 Tacid image 
-                                        <file name="tacid" type="tacid" />
-
-                                    
-                                    </folder>  end of minute folder 
-                                
-                                </folder>< end of 8pm folder 
-                            
-                            /folder><- End of date folder 
--->
+    <run_options>
+        <!--
+            Supported Debugging Levels
+            0 - just run, no output
+            1 - show errors
+            2 - show info notes and warnings
+            3 - stop program operation to output data
+        -->
+        <debug_level  value="0" />
+        <log_file  state="True"  location="simulator.log" />
+    </run_options>
 
 </configuration>

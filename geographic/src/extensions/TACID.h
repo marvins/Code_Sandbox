@@ -88,6 +88,13 @@ namespace GS2{
             */
             void setMonth( const int& month );
 
+            /**
+             * Set the base path
+             *
+             * @param[in] basepath
+            */
+            void setBasepath( const std::string& path );
+
         private:
             std::string extension;          /*< Extension          */
             std::string dirname;            /*< Original Directory */

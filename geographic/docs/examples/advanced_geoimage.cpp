@@ -26,11 +26,14 @@ int main( int argc, char* argv[] ){
     
     //modify some tacid information
     //  - note: See GS2 ITT ICD for specification information
+    
+    // increment the day
     int day = tacid.getDay();
     if( day > 31 ) day = 0;
     else           day++;
     tacid.setDay(day);
     
+    // set the month
     tacid.setMonth(3);
     
     cout << "TACID After : " << tacid.toFilename() << endl;
@@ -50,8 +53,9 @@ int main( int argc, char* argv[] ){
 
 
 
-    //write the image
-
+    //write the image given the new TACID
+    tacid.setBasepath( "." );  //change the base path to the local directory
+    img.write_image( tacid.toFilename() ); 
 
 
     return 0;
