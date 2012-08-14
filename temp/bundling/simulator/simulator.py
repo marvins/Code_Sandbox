@@ -1,7 +1,20 @@
 #! /usr/bin/env python
 import sys, os, errno, xml.etree.ElementTree as xml
 
+
 global_counter = []
+
+global_hz = 1
+global_prog_code = 'AA'
+global_sortie_number = '00'
+
+global_start_day   = 0
+global_start_month = 0
+global_start_year  = 0
+global_start_hour  = 0
+global_start_min   = 0
+
+months  = ['', 'JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
 
 #####################################
 #             TACID Parser			#
@@ -180,7 +193,7 @@ def recurse_create_folders( dir_name, indeces, starts, counts, zpad,  current = 
 #----------------------------------------------#
 #                Build Layout				   #
 #----------------------------------------------#
-def build_layout( layout, current_dir, spaces ):
+def build_layout( layout, current_dir, spaces, node_stack ):
 	
 	# iterate through each child
 	for child in layout.getchildren():
@@ -227,7 +240,7 @@ def build_layout( layout, current_dir, spaces ):
 	
 						# call build_layout
 						print ' '*spaces + '-> ' + d
-						build_layout( child, dir_name, spaces + 3 )
+						build_layout( child, dir_name, spaces + 3, node_stack + [child] )
 				
 
 				# counter-style directories
@@ -285,7 +298,7 @@ def build_layout( layout, current_dir, spaces ):
 						dir_name = current_dir + '/' + filename
 						create_directory( dir_name )
 
-						build_layout( child, dir_name, spaces+3)
+						build_layout( child, dir_name, spaces+3, node_stack + [child] )
 				
 				# GS2 date-style directories
 				if child.attrib.get("type") == "date":
@@ -304,7 +317,7 @@ def build_layout( layout, current_dir, spaces ):
 					# create directory and pass on
 					create_directory( dir_name )
 
-					build_layout( child, dir_name, spaces+3)
+					build_layout( child, dir_name, spaces+3, node_stack + [child] )
 
 					
 			else:
@@ -316,7 +329,7 @@ def build_layout( layout, current_dir, spaces ):
 				create_directory(dir_name)
 				
 				# call function again on this folder
-				build_layout( child, current_dir + '/' + child.attrib.get('name'), spaces + 3)
+				build_layout( child, current_dir + '/' + child.attrib.get('name'), spaces + 3, node_stack + [child] )
 		
 		# end of if child.tag == 'folder'
 
@@ -324,11 +337,74 @@ def build_layout( layout, current_dir, spaces ):
 
 			# Check for gs2 tacid
 			if child.attrib.get('type') == 'tacid':
+				
+				# get the acquisition date
+				acq_date = ''
+				yearIMG  = 0
+				monthIMG = 0
+				dayIMG   = 0
+				hourIMG  = 0
+				minIMG   = 0
 
-				# since this is a tacid, we need to build that list of information
+				# first search through the node stack for the date node
+				if node_stack[-3].tag == 'folder' and node_stack[-3].attrib.get('name') == 'date':
+													
+					acq_date = node_stack[-3].attrib.get('day').zfill(2) + months[int(node_stack[-3].attrib.get('month'))] + node_stack[-3].attrib.get('year').zfill(4)
+					yearIMG  = int(node_stack[-3].attrib.get('year'))
+					monthIMG = int(node_stack[-3].attrib.get('month'))
+					dayIMG   = int(node_stack[-3].attrib.get('day'))
+				else:
+					raise Exception("ERROR: Invalid directory format")
 
+				# grab the minute and hour values
+				hourIMG = int(node_stack[-2].attrib.get('name'))
+				minIMG  = int(os.path.split(current_dir)[1])
 
-				pass
+				tacid_name = acq_date + global_prog_code + global_sortie_number
+				
+				
+				# now iterate through every possible frame in that minute, will be 60 seconds * global_hz
+				for sec in xrange(0, 60):
+					for tic in xrange( 0, global_hz):
+						
+						# Compute the time differences between the current image and the global image
+						magnifier = 1  					#No magnification
+						comp_global_tic  = 0*magnifier
+						comp_local_tic   = tic*magnifier
+
+						magnifier = global_hz			#2 ticks per second
+						comp_global_sec  = 0*magnifier
+						comp_local_sec   = sec*magnifier
+
+						magnifier *= 60					#60 seconds per minute
+						comp_global_min  = global_start_min * magnifier
+						comp_local_min   = minIMG * magnifier
+
+						magnifier *= 60					#60 minutes per hour
+						comp_global_hour = global_start_hour * magnifier
+						comp_local_min	 = hourIMG * magnifier
+
+						magnifier *= 24 				#24 hours per day
+						comp_global_day  = global_start_day  * magnifier
+						comp_local_day   = dayIMG * magnifier
+
+						# TODO: Compensate for which month it is
+						magnifier *= 30					# This many days per month
+						comp_global_month= global_start_month * magnifier
+						comp_local_month = monthIMG * magnifier
+
+						magnifier *= 12                 # 12 months per year
+						comp_global_year = global_start_year  * magnifier
+						comp_local_year  = yearIMG * magnifier
+
+						
+							
+						
+						
+		
+						print 'tacid: ' + tacid_name
+						raw_input("PAUSE")					
+	
 
 
 		# end of if child.tag == 'file':
@@ -340,6 +416,7 @@ def build_layout( layout, current_dir, spaces ):
 #----------------------------------------------#
 #                   Main Driver				   #
 #----------------------------------------------#
+
 # Parse Command-Line Arguments
 args = sys.argv[1:]
 config_filename = "simulator.xml"
@@ -355,10 +432,21 @@ for item in args:
 #Open Configuration File and Build XML Tree
 root = xml.parse(config_filename)
 
+# Grab the important configuration options
+global_hz            = int(root.find('options/frame_rate').attrib.get('value'))
+global_prog_code     =     root.find('tacid/program_code').attrib.get('value')
+global_sortie_number =     root.find('tacid/sortie_number').attrib.get('value')
+
+global_start_day     = int(root.find('tacid/start_scene').attrib.get('day'))
+global_start_month   = int(root.find('tacid/start_scene').attrib.get('month'))
+global_start_year    = int(root.find('tacid/start_scene').attrib.get('year'))
+global_start_hour    = int(root.find('tacid/start_scene').attrib.get('hour'))
+global_start_min     = int(root.find('tacid/start_scene').attrib.get('minute'))
+
 # recusively enter the nodes for layout and start building the tree
 layout = root.find('layout')
 
-build_layout( layout, '.', 0 )
+build_layout( layout, '.', 0, [] )
 
 
 
