@@ -1,0 +1,55 @@
+<configuration>
+    
+    <output_info>
+        <num_bundles  value="5"        />
+        <compression_type  value="zip" />
+        <camera_type  value="EO"       />
+        <increment    value="1"        />
+    </output_info>
+    
+
+    <!-- Debugging Level
+      0 - Will produce no output
+      1 - Will print some data but will not alter flow
+      2 - Major steps will stop to allow user to view data. 
+          (note that you will have to press enter to continue)
+    -->
+    <debug_level value="0" />
+    <log  state="1"  location="bundle_program.log" />
+    
+    <!-- SSH 
+        state - 1  means it will use it
+                0  means it will use the local filesystem
+    -->
+    <ssh state="1" >
+        <username value="root"          />
+        <hostname value="10.2.18.44"    />
+        <password value="G0rg0n$tare2!" />
+    </ssh>
+
+
+    <path_info>
+        <input_base   value="simulator" />
+        <input_path   value="dsu"       />
+        <output_base  value="."         />
+        <output_path  value="image_set" />
+    </path_info>
+
+
+    <gs1_specific>
+        <number_eo_directories   value="5" />
+        <number_ir_directories   value="4"  />
+    
+        <number_eo_images_per_camera  value="1" />
+        <number_ir_images_per_camera  value="8" />
+    </gs1_specific>
+    
+    <gs2_specific>
+        <number_slices  value="8" />
+        <number_collect value="4" />
+        
+        <eo_fism_count  value="368" />
+        <ir_fism_count  value="368" />
+    </gs2_specific>
+
+</configuration>

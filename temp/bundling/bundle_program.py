@@ -1,9 +1,106 @@
 #! /usr/bin/env python
 
-import sys, os, time, tarfile, zipfile, paramiko
+import sys, os, time, tarfile, zipfile, paramiko, xml.etree.ElementTree as xml
 
 months  = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
 cameras = ['cam1','cam2','cam3','cam4','cam5']
+
+NEWLINE = '\n'
+log = []
+
+
+#################################
+#         Program Logger 		#
+#################################
+class Logger:
+	"""
+	Class for managing the Logs for the program
+	"""
+
+
+	log_file = []
+
+	# LEVELS
+	MAJOR   = 0
+	MINOR   = 1
+	WARNING = 2
+	INFO    = 3
+	HEADING = 4
+
+	# Internal parameters
+	log_state     = False
+	log_location  = ".bundle_program.log"
+	debug_state   = 0
+	logfile = []
+
+
+	def __init__( self, debug_state, log_state, log_location ):
+		
+		self.debug_state  = debug_state
+		self.log_state    = log_state
+		self.log_location = log_location
+		
+		if  self.log_state == True:
+			self.open()
+
+	
+	def open(self):
+		self.logfile = open( self.log_location, 'w')
+	
+	def close(self):
+		self.logfile.close()
+
+	def write( self, level, message ):
+		
+		# create message
+		output = self.create_log_message( level, message)
+
+		# major events
+		if ( level == 0 and self.debug_state >= 1 ) or ( level > 0 and self.debug_state >= 2 ):
+            
+			# write to console
+			print( output[:-(len(NEWLINE))] )
+
+		# write error to log if debug level and log file are allowed
+		if self.log_state == True:
+			self.logfile.write( self.create_log_message(level, message))
+			
+
+
+	def create_log_message( self, level, message):
+		
+		if level == self.MAJOR:
+			return '[ MAJOR   ]: ' + message + NEWLINE
+		elif level == self.MINOR:
+			return '[ MINOR   ]: ' + message + NEWLINE
+		elif level == self.WARNING:
+			return '[ WARNING ]: ' + message + NEWLINE
+		elif level == self.HEADING:
+			return message + NEWLINE
+		else:
+			return '[ INFO    ]: ' + message + NEWLINE
+
+
+
+
+# Utility function for testing xml values
+def xmlValidateAndLoad( root, nodeName, valueName, valueType, datatype ):
+	
+	variable=[]
+	if root.find(nodeName) == None:
+		return [False,None] 
+
+	if valueType == 'ATTRIBUTE':
+		if root.find(nodeName).attrib.get(valueName) != None:
+			if datatype == 'STRING':
+				variable = root.find(nodeName).attrib.get(valueName)
+			elif datatype == 'BOOL':
+				variable = bool(int(root.find(nodeName).attrib.get(valueName)))
+			elif datatype == 'INT':
+				variable = int(root.find(nodeName).attrib.get(valueName))
+			return [True,variable]
+	
+	return [False,None]
 
 
 ###########################################
@@ -14,131 +111,152 @@ class ConfigOptions:
 	Configuration Options for the Calibration Collection Program
 	"""
 	
+	# default configuration information
+	config_filename = "bundle_program.xml"
+
+	# some useful stuff for output
+	debug_level = 0
 	output_code = 0
 
-	# List all of the command line options and assign initial values
-	camera_type      = '_NONE_'
-	camera_set       = False
+	# logging information
+	log_state    = False
+	log_location = "bundle_program.log"
 	
+	# SSH flags
+	ssh_state = False
+	ssh_hostname  = ''
+	ssh_username  = ''
+	ssh_password  = ''
+
+	# General required parameters
+	number_bundles   = 3
+	compression_type = "zip"
+	camera_type      = "EO"
+	gs_increment     = 1
+	
+	# Path Information
 	input_base 		 = '.'
 	input_path  	 = '_NONE_'
 	output_base 	 = '.'
 	output_path		 = 'bundle'
 	
-	num_bundles      = 2
-	debug_level      = 0
+	# GS1 Specific
 	num_eo_camera_directories = -1
 	num_ir_camera_directories = -1
 	num_eo_images_per_cam = 1
 	num_ir_images_per_cam = 1
-	compression_type = '_NONE_'
 	
-	ssh 			= False
-	ssh_user		= 'root'
-	ssh_password    = ''
-	ssh_host		= ''
+	# GS2 Specific
+	number_slices   = 1
+	number_collects = 1
+	
+	eo_fism_count   = 200
+	if_fism_count   = 200
+
+	
 
 	#-     Constructor    -#
-	def __init__( self ):
+	def __init__( self, args ):
 		"""
 		Default Constructor for the Configuration Options 
 		"""
+			
+		# Due to the nature of the process, we want to process the config file first, then overwrite them
+		# with any command-line options.  However we need to search for a config file override, so we will
+		# search for that first
+		for arg in args:
+			if '-file=' in arg[:6]:
+				self.config_filename = arg[6:]
 		
-		# Load the ini file
-		inifilename = os.path.split(sys.argv[0])[0] + '/bundle_program.cfg'
+		# Let's ensure the config file exists
+		if os.path.exists(self.config_filename) == False:
+			raise Exception('Config file: ' + self.config_filename + ' does not exist')
 
-		# make sure it exists
-		if os.path.exists( inifilename ) == False:
-			print 'Error: could not find config file'
-			sys.exit(-1)
 		
 		###############################
 		#      LOAD CONFIG FILE       #
 		###############################
-		inifile=open(inifilename, 'r')
-		inidata= inifile.readlines()
+		root = xml.parse(self.config_filename)
 		
-		for str in inidata:
-			
-			# Strip Whitespace from Line			
-			str = str.strip()
+		# debugging information
+		if xmlValidateAndLoad( root, 'debug_level', 'value', 'ATTRIBUTE', 'INT')[0] == True:
+			self.debug_level = xmlValidateAndLoad(root,'debug_level','value','ATTRIBUTE','INT')[1]
 
-			# Ignore Empty Lines
-			if   len(str) <= 0:
-				pass
 
-			# Ignore comments
-			elif str[0] == '#':
-				pass
+		# logging information
+		if xmlValidateAndLoad( root, 'log',    'state', 'ATTRIBUTE',   'BOOL')[0] == True:
+			self.log_state = xmlValidateAndLoad( root, 'log','state','ATTRIBUTE','BOOL')[1]
 
-			else:
+		if xmlValidateAndLoad( root, 'log', 'location', 'ATTRIBUTE', 'STRING')[0] == True:
+			self.log_location = xmlValidateAndLoad(root,'log','location','ATTRIBUTE','STRING')[1]
+		
+	 	# ssh information
+		if xmlValidateAndLoad( root, 'ssh', 'state', 'ATTRIBUTE', 'BOOL')[0] == True:
+			self.ssh_state = xmlValidateAndLoad(root,'ssh','state','ATTRIBUTE','BOOL')[1]
+		
+		if xmlValidateAndLoad( root, 'ssh/username', 'value', 'ATTRIBUTE', 'STRING')[0] == True:
+			self.ssh_username = xmlValidateAndLoad(root,'ssh/username','value','ATTRIBUTE','STRING')[1]
+
+		if xmlValidateAndLoad( root, 'ssh/hostname', 'value', 'ATTRIBUTE', 'STRING')[0] == True:
+			self.ssh_hostname = xmlValidateAndLoad(root,'ssh/hostname','value','ATTRIBUTE','STRING')[1]
+		
+		if xmlValidateAndLoad( root, 'ssh/password', 'value', 'ATTRIBUTE', 'STRING')[0] == True:
+			self.ssh_password = xmlValidateAndLoad(root,'ssh/password','value','ATTRIBUTE','STRING')[1]
+		
+		# General required parameters
+		if xmlValidateAndLoad( root, 'output_info/num_bundles', 'value', 'ATTRIBUTE', 'INT')[0] == True:
+			self.number_bundles = xmlValidateAndLoad(root,'output_info/num_bundles','value','ATTRIBUTE','INT')[1]
+		
+		if xmlValidateAndLoad( root, 'output_info/compression_type', 'value', 'ATTRIBUTE', 'STRING')[0] == True:
+			self.compression_type = xmlValidateAndLoad( root, 'output_info/compression_type', 'value', 'ATTRIBUTE', 'STRING')[1]
+		
+		if xmlValidateAndLoad( root, 'output_info/camera_type', 'value', 'ATTRIBUTE', 'STRING')[0] == True:
+			self.camera_type = xmlValidateAndLoad( root, 'output_info/camera_type', 'value', 'ATTRIBUTE', 'STRING')[1]
+		
+		if xmlValidateAndLoad( root, 'output_info/increment', 'value', 'ATTRIBUTE', 'INT')[0] == True:
+			self.gs_increment = xmlValidateAndLoad( root, 'output_info/increment', 'value', 'ATTRIBUTE', 'INT')[1]
+		
 				
-				# Split line into item & object
-				hdr, dta = str.split('=')
+		# Path Information
+		if xmlValidateAndLoad( root, 'path_info/input_base' , 'value', 'ATTRIBUTE', 'STRING')[0] == True:
+			self.input_base = xmlValidateAndLoad( root, 'path_info/input_base' , 'value', 'ATTRIBUTE', 'STRING')[1]
+		
+		if xmlValidateAndLoad( root, 'path_info/input_path' , 'value', 'ATTRIBUTE', 'STRING')[0] == True:
+			self.input_path = xmlValidateAndLoad( root, 'path_info/input_path' , 'value', 'ATTRIBUTE', 'STRING')[1]
+		
+		if xmlValidateAndLoad( root, 'path_info/output_base', 'value', 'ATTRIBUTE', 'STRING')[0] == True:
+			self.output_base = xmlValidateAndLoad( root, 'path_info/output_base', 'value', 'ATTRIBUTE', 'STRING')[1]
 
-				# Strip whitespace from item and object
-				hdr = hdr.strip()
-				dta = dta.strip()
-
-				# Parse the Prefix Directory
-				if   hdr == 'input_base':
-					self.input_base = dta
-				
-				if   hdr == 'input_path':
-					self.input_path = dta
-
-				elif hdr == 'output_base':
-					if dta[-1] == '/':
-						dta = dta[:-1]
-					self.output_base = dta
-
-				elif hdr == 'output_path':
-					self.output_path = dta
-				
-				elif hdr == 'debug_level':
-					self.debug_level = int(dta)
-				
-				elif hdr == 'num_eo_dir':
-					self.num_eo_camera_directories = int(dta)
-				
-				elif hdr == 'num_ir_dir':
-					self.num_ir_camera_directories = int(dta)
-				
-				elif hdr == 'eo_images_per_camera':
-					self.num_eo_images_per_cam = int(dta)
-				
-				elif hdr == 'ir_images_per_camera':
-					self.num_ir_images_per_cam = int(dta)
-				
-				elif hdr == 'compression_type':
-					if dta[0] != '.':
-						dta = '.' + dta
-					self.compression_type = dta
-				
-				elif hdr == 'ssh':
-					if dta == 'True':
-						self.ssh = True
-					else:
-						self.ssh = False
-
-				elif hdr == 'ssh_user':
-					self.ssh_user = dta
-
-				elif hdr == 'ssh_host':
-					self.ssh_host = dta
-
-				elif hdr == 'ssh_password':
-					self.ssh_password = dta
-
-				elif hdr == 'num_bundles':
-					self.num_bundles = int(dta)
-
-				elif hdr == 'camera_type':
-					if self.camera_set == True:
-						print 'Conflicting messages, camera_type already set, ignoring'
-					else:
-						self.camera_type = dta
-						self.camera_set = True
+		if xmlValidateAndLoad( root, 'path_info/output_path', 'value', 'ATTRIBUTE', 'STRING')[0] == True:
+			self.output_path = xmlValidateAndLoad( root, 'path_info/output_path', 'value', 'ATTRIBUTE', 'STRING')[1]
+		
+		# GS1 Specific
+		if xmlValidateAndLoad( root, 'gs1_specific/number_eo_directories', 'value', 'ATTRIBUTE', 'INT')[0] == True:
+			self.num_eo_camera_directories = xmlValidateAndLoad( root, 'gs1_specific/number_eo_directories', 'value', 'ATTRIBUTE', 'INT')[1]
+		
+		if xmlValidateAndLoad( root, 'gs1_specific/number_ir_directories', 'value', 'ATTRIBUTE', 'INT')[0] == True:
+			self.num_ir_camera_directories = xmlValidateAndLoad( root, 'gs1_specific/number_ir_directories', 'value', 'ATTRIBUTE', 'INT')[1]
+		
+		if xmlValidateAndLoad( root, 'gs1_specific/number_eo_images_per_camera', 'value', 'ATTRIBUTE', 'INT')[0] == True:
+			self.num_eo_images_per_cam = xmlValidateAndLoad( root, 'gs1_specific/number_eo_images_per_camera', 'value', 'ATTRIBUTE', 'INT')[1]
+		
+		if xmlValidateAndLoad( root, 'gs1_specific/number_ir_images_per_camera', 'value', 'ATTRIBUTE', 'INT')[0] == True:
+			self.num_ir_images_per_cam = xmlValidateAndLoad( root, 'gs1_specific/number_ir_images_per_camera', 'value', 'ATTRIBUTE', 'INT')[1]
+		
+		
+		# GS2 Specific
+		if xmlValidateAndLoad( root, 'gs2_specific/number_slices'  , 'value', 'ATTRIBUTE', 'INT')[0] == True:
+			self.number_slices = xmlValidateAndLoad( root, 'gs2_specific/number_slices'  , 'value', 'ATTRIBUTE', 'INT')[1]
+		
+		if xmlValidateAndLoad( root, 'gs2_specific/number_collects', 'value', 'ATTRIBUTE', 'INT')[0] == True:
+			self.number_collects = xmlValidateAndLoad( root, 'gs2_specific/number_collects', 'value', 'ATTRIBUTE', 'INT')[1]
+		
+		if xmlValidateAndLoad( root, 'gs2_specific/eo_fism_count'  , 'value', 'ATTRIBUTE', 'INT')[0] == True:
+			self.eo_fism_count = xmlValidateAndLoad( root, 'gs2_specific/eo_fism_count'  , 'value', 'ATTRIBUTE', 'INT')[1]
+		
+		if xmlValidateAndLoad( root, 'gs2_specific/ir_fism_count'  , 'value', 'ATTRIBUTE', 'INT')[0] == True:
+			self.ir_fism_count = xmlValidateAndLoad( root, 'gs2_specific/ir_fism_count'  , 'value', 'ATTRIBUTE', 'INT')[1]
+		
 
 		##########################################
 		#       PARSE COMMAND-LINE OPTIONS       #
@@ -147,129 +265,137 @@ class ConfigOptions:
 		command_args = sys.argv[1:]
 		while( len(command_args) > 0 ):
 			
-			# input camera directory
-			if command_args[0][:12] == '-input_path=':
-				self.input_path = command_args[0][12:]
-
-				if self.input_path[-1] == '/':
-					self.input_path = self.input_path[:-1]
-				
+			
+			# Number of Bundles
+			if command_args[0][:16] == '-number_bundles=':
+				self.number_bundles = int(command_args[0][16:])
 				command_args = command_args[1:]
 			
-			# prefix directory
-			elif command_args[0][:12] == '-input_base=':
-				self.input_base = command_args[12:]
+			# Compression Type
+			elif command_args[0][:18] == '-compression_type=':
+				self.compression_type = command_args[0][18:]
 				command_args = command_args[1:]
 			
-			# output camera directory
-			elif command_args[0][:13] == '-output_base=':
-				self.output_base = command_args[0][13:]
-				command_args = command_args[1:]
-			
-			# output camera bundle
-			elif command_args[0][:13] == '-output_path=':
-				self.output_path = command_args[0][13:]
+			# Camera Type
+			elif command_args[0][:13] == '-camera_type=':
+				self.camera_type = command_args[0][13:]
 				command_args = command_args[1:]
 
-			# debugging level
+			# Increment
+			elif command_args[0][:11] == '-increment=':
+				self.increment = int(command_args[0][11:])
+				command_args = command_args[1:]
+	
+			# Debug Level
 			elif command_args[0][:13] == '-debug_level=':
 				self.debug_level = int(command_args[0][13:])
 				command_args = command_args[1:]
-
-
-			# input number of camera bundles
-			elif command_args[0][:13] == '-num_bundles=':
-				self.num_bundles   = int(command_args[0][13:])
+			
+			# Log State
+			elif command_args[0][:11] == '-log_state=':
+				self.log_state = bool(int(command_args[0][11:]))
 				command_args = command_args[1:]
 			
-			# type of camera (EO or IR)
-			elif command_args[0][:10] == '-cam_type=':
-				
-				if command_args[0][10:] == 'EO':
-					self.camera_type = 'EO'
-					self.camera_set  = True
-
-				elif command_args[0][10:] == 'IR':
-					self.camera_type = 'IR'
-					self.camera_set  = True
-				
-				else:
-					raise Exception('ERROR: unknown camera type: ' + command_args[0][10:])
-
+			# Log Location
+			elif command_args[0][:14] == '-log_location=':
+				self.log_location = command_args[0][14:]
 				command_args = command_args[1:]
 			
-			# do ssh
-			elif command_args[0][:5]  == '-ssh=':
-				
-				if command_args[0][5:] == 'YES':
-					self.ssh = True
-				else:
-					self.ssh = False
+			# SSH State
+			elif command_args[0][:11] == '-ssh_state=':
+				self.ssh_state = int(command_args[0][11:])
 				command_args = command_args[1:]
 			
-			# ssh user
-			elif command_args[0][:10] == '-ssh_user=':
-				self.ssh_user = command_args[0][10:]
-				command_args = command_args[1:]
-			
-			# ssh host
-			elif command_args[0][:10] == '-ssh_host=':
-				self.ssh_host = command_args[0][10:]
+			# SSH Username
+			elif command_args[0][:14] == '-ssh_username=':
+				self.ssh_username = command_args[0][14:]
 				command_args = command_args[1:]
 
-			# ssh password
+			# SSH Hostname
+			elif command_args[0][:14] == '-ssh_hostname=':
+				self.ssh_hostname = command_args[0][14:]
+				command_args = command_args[1:]
+			
+			# SSH Password
 			elif command_args[0][:14] == '-ssh_password=':
 				self.ssh_password = command_args[0][14:]
 				command_args = command_args[1:]
 
-			# help
-			elif command_args[0][:6] == '--help' or command_args[0][:5] == '-help' or command_args[0][:4] == 'help':
-				self.usage()
-				sys.exit(-1)
+			# Input Base 
+			elif command_args[0][:12] == '-input_base=':
+				self.input_base = command_args[0][12:]
+				command_args = command_args[1:]
+			
+			# Input Path 
+			elif command_args[0][:12] == '-input_path=':
+				self.input_path = command_args[0][12:]
+				command_args = command_args[1:]
+			
+			# Output Base 
+			elif command_args[0][:13] == '-output_base=':
+				self.output_base = command_args[0][13:]
+				command_args = command_args[1:]
+			
+			# Output Path
+			elif command_args[0][:13] == '-output_path=':
+				self.output_path = command_args[0][13:]
+				command_args = command_args[1:]
+        
+			# Number of EO Directories
+			elif command_args[0][:23] == '-number_eo_directories=':
+				self.num_eo_camera_directories = int(command_args[0][23:])
+				command_args = command_args[1:]
+       	
+			# Number of IR Directories
+			elif command_args[0][:23] == '-number_ir_directories=':
+				self.num_ir_camera_directories = int(command_args[0][23:])
+				command_args = command_args[1:]
+        	
+			# Number EO Images Per Camera
+   			elif command_args[0][:29] == '-number_eo_images_per_camera=':
+				self.num_eo_images_per_cam = int(command_args[0][29:])
+				command_args = command_args[1:]
+        
+			# Number IR Images Per Camera
+   			elif command_args[0][:29] == '-number_ir_images_per_camera=':
+				self.num_ir_images_per_cam = int(command_args[0][29:])
+				command_args = command_args[1:]
+        
+			# Number Slices
+   			elif command_args[0][:15] == '-number_slices=':
+				self.number_slices = int(command_args[0][15:])
+				command_args = command_args[1:]
+        
+			# Number Collects
+   			elif command_args[0][:17] == '-number_collects=':
+				self.number_collects = int(command_args[0][17:])
+				command_args = command_args[1:]
+        	
+			# Number of EO FISM's Per Count
+			elif command_args[0][:15] == '-eo_fism_count=':
+				self.eo_fism_count = int(command_args[0][15:])
+				command_args = command_args[1:]
+			
+			# Number of IR FISM's Per Count
+			elif command_args[0][:15] == '-ir_fism_count=':
+				self.ir_fism_count = int(command_args[0][15:])
+				command_args = command_args[1:]
+			
+			# Help
+			elif 'help' in command_args[0]:
+				self.usage();
+				sys.exit(0)
 
 			# throw an exception if an option is not recognized
 			else:
-				print('ERROR: Unknown parameter: ' + command_args[0]);
 				self.usage()
-				sys.exit(-1)
-	
-		# do some management
-		if len(self.input_path) >= 1 and self.input_path[0] == '/':
-			self.input_base = '/'
-			self.input_path = self.input_path[1:]
-
-		if len(self.output_path) >= 1 and self.output_path[0] == '/':
-			self.output_base = '/'
-			self.output_path      = self.output_path[1:]
+				raise Exception('ERROR: Unknown parameter: ' + command_args[0])
 		
-		if len(self.input_base) >= 1 and self.input_base[-1] != '/':
-			self.input_base += '/'
-
-		if len(self.output_base) >= 1 and self.output_base[-1] != '/':
-			self.output_base += '/'
-
-		# make sure everything we need is present
-		if self.input_path == '_NONE_':
-			print('ERROR: input camera directory must be defined')
-			self.usage()
-			sys.exit(-1)
-
-		elif self.compression_type != '.zip':
-			self.error_kill( 'ERROR: Invalid compression format, must be .zip')
-
-		elif self.camera_set == False:
-			self.error_kill( 'ERROR: camera_type must be set in either .cfg config file or command-line options', -1)	
 		
-		if self.debug_level >= 1:
-			print('Printing Current Configuration Options')
-			print self
-			print('')
-			print('')
+		# Make sure that we validate our results
+		self.validate()
 			
-			if self.debug_level >= 2:
-				raw_input("HOLDING")
 
-	
 	################################################
 	#-      Print Instructions On How To Use 	  -#
 	################################################
@@ -280,59 +406,152 @@ class ConfigOptions:
 
 		print sys.argv[0] + ' [options]'
 		print ''
-		print '   options:'
-		print '       -input_base=<directory> 		- Prefix of where the directory will be'
-		print '       -input_path=<input file>			- Directory you want to bundle'
-		print '       -output_path=<output file>  			- (output will be tar.gz so don\'t add it to the string)'
-		print '       -num_bundles=< integer >              - number of desired image bundles'
-		print '       -cam_type=<EO or IR>'
-		print '       -debug_level=<0 default>  [0 - only fatal, 1 - everything]'
+		print '   General Options'
+		print '      -number_bundles=<value>    Number of image bundles [3+]'
+		print '      -compression_type=<value>  Type of compression     [zip]'
+		print '      -camera_type=<value>       Type of camera          [EO,IR]'
+		print '      -increment=<value>         GS Increment Value      [1,2]'
 		print ''
-		print '   .ini config options'
-		print '       input_base=<value>   -- Where you want to start with the input path'
-		print '       input_path=<value>    -- Name of input directory to bundle'
-		print '       output_base=<value>   -- Where to place the results with respect to the input'
-		print '     '
+		print '   Debugging Information'
+		print '      -debug_level=<value>       Debugging State  [0-None,1-Major,2-Minor]'
+		print '      -log_state=<value>         Do Logging       [0-Do Not Log, 1-Do Logging]'
+		print '      -log_location=<value>      Filename of log'
 		print ''
-		print '   Notes: '
-		print '      - Prefix Directory and Output Directory will default to .'
-		print '      - If you make the input directory absolute, the prefix will be ignored'
-		print '      - If you make the output file absolute, the output_base will be ignored'
+		print '   SSH Information'
+		print '      -ssh_state=<value>         To Do SSH         [0-send via ssh,1-don\'t send]'
+		print '      -ssh_username=<value>      SSH Username      [Account Username]'
+		print '      -ssh_hostname=<value>      SSH Host Account  [Host Account Name]'
+		print '      -ssh_password=<value>      SSH Acct Password [SSH Password]'
+		print ''
+		print '   Path Information'
+		print '      -input_base=<value>        Base Path of input directory'
+		print '      -input_path=<value>        Remaining Path of input directory'
+		print '      -output_base=<value>       Base Path of output directory'
+		print '      -output_path=<value>       Remaining Path of output directory'
+		print '   NOTE:  if SSH is enabled, the output will be used on the host machine.'
+		print ''
+		print '   GS1 Configuration Information'
+		print '      -number_eo_directories=<value> Number of eo directories [1+]'
+		print '      -number_ir_directories=<value> Number of ir directories [1+]'
+   		print '      -number_eo_images_per_camera=<value> Number of images per directory [1+]'
+   		print '      -number_ir_images_per_camera=<value> Number of images per directory [1+]'
+		print ''
+		print '   GS2 Configuration Information'
+   		print '      -number_slices=<value>     Number of GPU Slices [1+]'
+   		print '      -number_collects=<value>   Number of collects per slice [1+]'
+		print '      -eo_fism_count=<value>     Number of EO FISHs'
+		print '      -ir_fism_count=<value>     Number of IR FISMs'
+		
 
+	###############################################################
+	#        Print the Configuration and all Options to file      #
+	###############################################################
 	def __str__( self ):
 		"""
 		Print function for the Command Line option class
 		"""
 
-		strout  = 'Command-Line Options ' + '\n'
-		strout += '     Prefix Directory   : ' + self.input_base + '\n'
-		strout += '     Input Directory    : ' + self.input_path  + '\n'
-		strout += '     Output Directory   : ' + self.output_base + '\n'
-		strout += '     Output File        : ' + self.output_path      + '\n'
-		strout += '     Number Bundles     : ' + str(self.num_bundles) + '\n'
-		strout += '     Camera Type        : ' + self.camera_type      + '\n'
-		strout += '     Camera Set         : ' + str(self.camera_set)  + '\n'
-		strout += '     Debug Level        : ' + str(self.debug_level) + '\n'
-		strout += '     Num EO Directories : ' + str(self.num_eo_camera_directories) + '\n'
-		strout += '     Num EO Img Per Cam : ' + str(self.num_eo_images_per_cam) + '\n'
-		strout += '     Num IR Directories : ' + str(self.num_ir_camera_directories) + '\n'
-		strout += '     Num IR Img Per Cam : ' + str(self.num_ir_images_per_cam) + '\n'
-		strout += '     SSH				   : ' + str(self.ssh) + '\n'
-		strout += '     SSH_User		   : ' + self.ssh_user + '\n'
-		strout += '     SSH_Host		   : ' + self.ssh_host + '\n'
-		strout += '     SSH_Password       : ' + self.ssh_password + '\n'
+		strout  = 'Current Configuration Values ' + '\n'
 		strout += '\n'
-		strout += '     Input Dir Path     : ' + self.input_base + self.input_path + '\n'
-		strout += '     Output file will be: ' + self.output_base + self.output_path + self.compression_type + '\n'
+		strout += '   Collection Parameters \n'
+		strout += '   - Number of bundles     : ' + str(self.number_bundles) + '\n'
+		strout += '   - Compression Type      : ' + self.compression_type    + '\n'
+		strout += '   - Camera Type           : ' + self.camera_type         + '\n'
+		strout += '   - Increment             : ' + str(self.gs_increment)      + '\n'
+		strout += '\n'
+		strout += '   SSH Paramters \n'
+		strout += '   - SSH Status            : ' + str(self.ssh_state) + '\n'
+		strout += '   - SSH Username          : ' + self.ssh_username + '\n'
+		strout += '   - SSH Hostname          : ' + self.ssh_hostname + '\n'
+		strout += '   - SSH Password          : ' + self.ssh_password + '\n'
+		strout += '\n'
+		strout += '   Path Parameters \n'
+		strout += '   - Input Base            : ' + self.input_base   + '\n'
+		strout += '   - Input Path            : ' + self.input_path   + '\n'
+		strout += '   - Output Base           : ' + self.output_base  + '\n'
+		strout += '   - Output Path           : ' + self.output_path  + '\n'
+		strout += '\n'
+		strout += '   GS1 Parameters \n'
+		strout += '   - number_eo_directories : ' + str(self.num_eo_camera_directories) + '\n'
+		strout += '   - number_ir_directories : ' + str(self.num_ir_camera_directories) + '\n'
+		strout += '   - number_eo_images_per_camera : ' + str(self.num_eo_images_per_cam) + '\n'
+		strout += '   - number_ir_images_per_camera : ' + str(self.num_ir_images_per_cam) + '\n'
+		strout += '\n'
+		strout += '   GS2 Parameters \n'
+		strout += '   - number_slices         : ' + str(self.number_slices)   + '\n'
+		strout += '   - number_collects       : ' + str(self.number_collects) + '\n'
+		strout += '   - eo_fism_count         : ' + str(self.eo_fism_count) + '\n'
+		strout += '   - ir_fism_count         : ' + str(self.ir_fism_count) + '\n'
+		strout += '\n'
+		strout += '   Debugging Information \n' 
+		strout += '   - Debug Level           : ' + str(self.debug_level) + '\n'
+		strout += '   - Log State             : ' + str(self.log_state)   + '\n'
+		strout += '   - Log Location          : ' + self.log_location     + '\n'
 		return strout
 
-	###########################################
-	#        Default Error Function			  #
-	###########################################
-	def error_kill( self, msg, output_code ):
-		print(msg)
-		self.usage()
-		sys.exit(output_code)
+
+	###############################################################
+	#              Ensure the config parameters are okay          #
+	###############################################################
+	def validate( self ):
+		
+		if self.debug_level < 0 or self.debug_level > 4:
+			raise Exception('Debug Level has invalid setting')
+		
+		if self.number_bundles < 0:
+			raise Exception('Number Bundles has invalid setting')
+
+		if self.compression_type != 'zip':
+			raise Exception('Compression Type has invalid setting')
+
+		if self.camera_type != 'EO' and self.camera_type != 'IR':
+			raise Exception('Camera Type has invalid setting')
+		
+		if self.gs_increment != 1 and self.gs_increment != 2:
+			raise Exception('Increment has invalid setting')
+	
+		if self.num_eo_camera_directories < 1:
+			raise Exception('Number EO Cam Directories has invalid setting')
+		
+		if self.num_eo_camera_directories < 1:
+			raise Exception('Number IR Cam Directories has invalid setting')
+		
+		if self.num_eo_images_per_cam < 1:
+			raise Exception('Number EO Images Per Cam Directory has invalid setting')
+
+		if self.num_ir_images_per_cam < 1:
+			raise Exception('Number EO Images Per Cam Directory has invalid setting')
+		
+		if self.number_slices < 1:
+			raise Exception('Number of GPU Slices')
+			
+		if self.number_collects < 1:
+			raise Exception('Number of GPU Slice Collections')
+
+		if self.eo_fism_count < 1:
+			raise Exception('Number of EO FISMs is incorrect')
+
+		if self.ir_fism_count < 1:
+			raise Exception('Number of EO FISMs is incorrect')
+		
+		# Condition the paths
+		# if the path starts with a /, then cancel out the base
+		if self.input_path[0] == '/':
+			self.input_path = self.input_path[1:]
+			self.input_base = '/'
+		
+		if self.output_path[0] == '/':
+			self.output_path = self.output_path[1:]
+			self.output_base = '/'
+		
+		# remove all trailing / 
+		if self.input_base[-1] == '/':  self.input_base  = self.input_base[:-1]
+		if self.input_path[-1] == '/':  self.input_path  = self.input_path[:-1]
+		if self.output_base[-1] == '/': self.output_base = self.output_base[:-1]
+		if self.output_path[-1] == '/': self.output_path = self.output_path[:-1]
+
+
+
 
 
 #####################################
@@ -467,7 +686,7 @@ def isValidTACID( node ):
 #------------------------------------------------#
 #-    			Basic Error Checking  			-#
 #------------------------------------------------#
-def validityCheckPre( directory ):
+def validityCheckPreList( directory ):
 	"""
 	This function does a basic check to make sure that the directory we have passed into the program
 	actually exists and furthermore that the directory is actually a directory. 
@@ -475,8 +694,9 @@ def validityCheckPre( directory ):
 
 	# Make sure that the directory we are searching for exists
 	if os.path.exists( directory ) == False:
-		print 'Error: ' + directory + ' does not exist'
-		sys.exit(-1)
+		
+		log.write( log.MAJOR, directory + ' does not exist')
+		raise Exception(log.create_log_message( log.MAJOR, directory + ' does not exist'))
 
 	# make sure that it is a directory
 	if os.path.isdir(directory) == False:
@@ -544,16 +764,18 @@ def validityCheckPost( camera_roots, options ):
 #-												-#
 #-    Look for the baseline camera directory    -#
 #------------------------------------------------#
-def find_camera_directory( directory ):
+def find_camera_directory( directory, options ):
 	
-
 
 	# extract the contents of the directory
 	contents = os.listdir(directory);
 
 	# remove all non-directories
 	directories = [elem for elem in contents if os.path.isdir(directory+'/'+elem) == True]
-	
+		
+	print 'dirs: ' + str(directories)
+	sys.exit(0)
+
 	# search to see if cam directories are present
 	dir_stack = []
 	for d in directories:
@@ -832,13 +1054,32 @@ def prune_camera_list( cam_lists, options ):
 def main():
 
 	# Parse command-line options
-	options = ConfigOptions()
+	options = ConfigOptions( sys.argv[1:] )
 	
-	# make sure the data is in an intelligible format
-	validityCheckPre( options.input_base + options.input_path);
+	# Configure the Logger
+	global log
+	log = Logger( options.debug_level, options.log_state, options.log_location )
+	
+	try:
+		# Print the configuration options to file
+		log.write(log.INFO, str(options))
+		
+		# make sure the data is in an intelligible format
+		validityCheckPreList( options.input_base + '/' + options.input_path);
+		
+		# build a list of camera directories
+		camera_directories = find_camera_directory( options.input_base + '/' + options.input_path, options )
 
-	# do recursive traversal to find the camera directory location
-	camera_roots = find_camera_directory( options.input_base + options.input_path )
+	except Exception as EX:
+		pass
+
+	finally:
+		# Close the log file
+		log.close()
+
+	return
+
+
 	
 	# make sure that we have an expected number of camera directories
 	camera_roots = validityCheckPost( camera_roots, options );
