@@ -10,6 +10,24 @@ log = []
 
 
 #################################
+#         Color Console         #
+#################################
+class COLOR:
+	
+	GREEN  = '\033[92m'
+	RED    = '\033[91m'
+	YELLOW = '\033[93m'
+	BLUE   = '\033[94m'
+	ENDC   = '\033[0m'
+
+color = COLOR()
+
+def print_help_option( gap, tag, value, comment ):
+	
+	print gap + COLOR.GREEN + tag + COLOR.RED + value + COLOR.BLUE + comment + COLOR.ENDC
+
+
+#################################
 #         Program Logger 		#
 #################################
 class Logger:
@@ -420,44 +438,45 @@ class ConfigOptions:
 		"""
 		Usage function for the program
 		"""
-
+		
+		gap = '      '
 		print sys.argv[0] + ' [options]'
 		print ''
-		print '   General Options'
-		print '      -number_bundles=<value>    Number of image bundles [3+]'
-		print '      -compression_type=<value>  Type of compression     [zip]'
-		print '      -camera_type=<value>       Type of camera          [EO,IR]'
-		print '      -increment=<value>         GS Increment Value      [1,2]'
+		print '   '+ COLOR.BLUE + 'General Options' + COLOR.ENDC 
+		print_help_option( gap, '-number_bundles='  , '<integer>', '   Number of image bundles [3+]')
+		print_help_option( gap, '-compression_type=', '<string>' , '  Type of compression     [zip]')
+		print_help_option( gap, '-camera_type='     , '<string>' , '       Type of camera          [EO,IR]')
+		print_help_option( gap, '-increment='       , '<integer>', '        GS Increment Value      [1,2]')
 		print ''
-		print '   Debugging Information'
-		print '      -debug_level=<value>       Debugging State  [0-None,1-Major,2-Minor]'
-		print '      -log_state=<value>         Do Logging       [0-Do Not Log, 1-Do Logging]'
-		print '      -log_location=<value>      Filename of log'
+		print '   ' + COLOR.BLUE + 'Debugging Information' + COLOR.ENDC
+		print_help_option( gap, '-debug_level='     , '<integer>', '      Debugging State  [0-None,1-Major,2-Minor]')
+		print_help_option( gap, '-log_state='       , '<integer>', '        Do Logging       [0-Do Not Log, 1-Do Logging]')
+		print_help_option( gap, '-log_location='    , '<string>' , '      Filename of log')
 		print ''
-		print '   SSH Information'
-		print '      -ssh_state=<value>         To Do SSH         [0-send via ssh,1-don\'t send]'
-		print '      -ssh_username=<value>      SSH Username      [Account Username]'
-		print '      -ssh_hostname=<value>      SSH Host Account  [Host Account Name]'
-		print '      -ssh_password=<value>      SSH Acct Password [SSH Password]'
+		print '   ' + COLOR.BLUE + 'SSH Information' + COLOR.ENDC
+		print_help_option( gap, '-ssh_state='       ,'<integer>' , '        To Do SSH         [0-send via ssh,1-don\'t send]')
+		print_help_option( gap, '-ssh_username='    ,'<string>'  , '      SSH Username      [Account Username]')
+		print_help_option( gap, '-ssh_hostname='    ,'<string>'  , '      SSH Host Account  [Host Account Name]')
+		print_help_option( gap, '-ssh_password='    ,'<string>'  , '      SSH Acct Password [SSH Password]')
 		print ''
-		print '   Path Information'
-		print '      -input_base=<value>        Base Path of input directory'
-		print '      -input_path=<value>        Remaining Path of input directory'
-		print '      -output_base=<value>       Base Path of output directory'
-		print '      -output_path=<value>       Remaining Path of output directory'
-		print '   NOTE:  if SSH is enabled, the output will be used on the host machine.'
+		print '   ' + COLOR.BLUE + 'Path Information' + COLOR.ENDC
+		print_help_option( gap, '-input_base='      ,'<string>'  , '        Base Path of input directory')
+		print_help_option( gap, '-input_path='      ,'<string>'  , '        Remaining Path of input directory')
+		print_help_option( gap, '-output_base='     ,'<string>'  , '       Base Path of output directory')
+		print_help_option( gap, '-output_path='     ,'<string>'  , '       Remaining Path of output directory')
+		print COLOR.BLUE + '   NOTE:  if SSH is enabled, the output will be used on the host machine.' + COLOR.ENDC
 		print ''
-		print '   GS1 Configuration Information'
-		print '      -number_eo_directories=<value> Number of eo directories [1+]'
-		print '      -number_ir_directories=<value> Number of ir directories [1+]'
-   		print '      -number_eo_images_per_camera=<value> Number of images per directory [1+]'
-   		print '      -number_ir_images_per_camera=<value> Number of images per directory [1+]'
+		print COLOR.BLUE + '   GS1 Configuration Information' + COLOR.ENDC
+		print_help_option( gap, '-number_eo_directories=','<integer>', ' Number of eo directories [1+]')
+		print_help_option( gap, '-number_ir_directories=','<integer>', ' Number of ir directories [1+]')
+   		print_help_option( gap, '-number_eo_images_per_camera=','<integer>',' Number of images per directory [1+]')
+   		print_help_option( gap, '-number_ir_images_per_camera=','<integer>',' Number of images per directory [1+]')
 		print ''
-		print '   GS2 Configuration Information'
-   		print '      -number_slices=<value>     Number of GPU Slices [1+]'
-   		print '      -number_collects=<value>   Number of collects per slice [1+]'
-		print '      -eo_fism_count=<value>     Number of EO FISHs'
-		print '      -ir_fism_count=<value>     Number of IR FISMs'
+		print COLOR.BLUE + '   GS2 Configuration Information' + COLOR.ENDC
+   		print_help_option( gap, '-number_slices='  ,'<integer>','     Number of GPU Slices [1+]')
+   		print_help_option( gap, '-number_collects=','<integer>','   Number of collects per slice [1+]')
+		print_help_option( gap, '-eo_fism_count='  ,'<integer>','     Number of EO FISHs')
+		print_help_option( gap, '-ir_fism_count='  ,'<integer>','     Number of IR FISMs')
 		
 
 	###############################################################
