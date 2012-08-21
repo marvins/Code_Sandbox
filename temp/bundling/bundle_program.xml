@@ -4,7 +4,7 @@
         <num_bundles  value="5"        />
         <compression_type  value="zip" />
         <camera_type  value="EO"       />
-        <increment    value="2"        />
+        <increment    value="1"        />
     </output_info>
     
 
@@ -21,7 +21,7 @@
         state - 1  means it will use it
                 0  means it will use the local filesystem
     -->
-    <ssh state="1" >
+    <ssh state="0" >
         <username value="root"          />
         <hostname value="10.2.18.44"    />
         <password value="G0rg0n$tare2!" />
@@ -29,8 +29,8 @@
 
 
     <path_info>
-        <input_base   value="simulator" />
-        <input_path   value="dsu"       />
+        <input_base   value="/home/ms6401/Desktop/msmith_imagery/TwinOtter-20120222/sn4_denver_2012-02-22_dra_day1/images" />
+        <input_path   value="hangar_raw" />
         <output_base  value="."         />
         <output_path  value="image_set" />
     </path_info>

@@ -107,10 +107,17 @@ def xmlValidateAndLoad( root, nodeName, valueName, valueType, datatype ):
 #            Logging Exception            #
 ###########################################
 class LogException( Exception ):
+	level = 0
+	message = ''
+
 	def __init__(self, level, message):
+		
+		self.level   = level;
+		self.message = message
 		log.write(level, message)
+	
 	def __str__(self):
-		return log.create_log_message(level, message)
+		return log.create_log_message(self.level, self.message)
 
 
 ###########################################
@@ -724,7 +731,6 @@ def validityCheckPreList( directory ):
 	# Make sure that the directory we are searching for exists
 	if os.path.exists( directory ) == False:
 		
-		log.write( log.MAJOR, directory + ' does not exist')
 		raise LogException( log.MAJOR, directory + ' does not exist')
 	
 	else:
@@ -1099,9 +1105,13 @@ def prune_camera_list( cam_lists, options ):
 	return output
 
 
+##########################################################################
+#                      Zip Compression File Builder                      #
+##########################################################################
 def write_zipfile( output_filename, image_tuples, bundle_step, options ):
 
 	# open zipfile object
+	log.write( log.INFO, 'Opening zip file : ' + output_filename)
 	zf = zipfile.ZipFile( output_filename, 'w')
 	
 	# create current position pointer
@@ -1113,8 +1123,6 @@ def write_zipfile( output_filename, image_tuples, bundle_step, options ):
 		for y in range( 0, len(image_tuples[current_pos])):
 			
 			# add file to tarball
-			if options.debug_level >= 2:
-				print image_tuples[current_pos][y].raw_data
 			zf.write( image_tuples[current_pos][y].raw_data, 'bundles/bundle'+str(x)+'/'+image_tuples[current_pos][y].input_string)
 
 	# close the zip file
@@ -1132,7 +1140,7 @@ def main():
 	# Configure the Logger
 	global log
 	log = Logger( options.debug_level, options.log_state, options.log_location )
-	
+
 	try:
 		# Print the configuration options to file
 		log.write(log.INFO, str(options))
@@ -1192,7 +1200,7 @@ def main():
 		if options.ssh_state == True:
 			output_filename = './bundle.'+options.compression_type
 		else:
-			output_filename = options.output_base + options.output_path + '.' + options.compression_type
+			output_filename = options.output_base + '/' + options.output_path + '.' + options.compression_type
 	
 		
 		# build compressed file
@@ -1229,7 +1237,7 @@ def main():
 			os.remove('./bundle'+'.'+options.compression_type)
 
 
-
+	
 	except Exception as EX:
 		print EX
 		options.output_code = -1
