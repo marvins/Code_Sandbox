@@ -418,7 +418,7 @@ def build_layout( layout, current_dir, spaces, options, node_stack ):
 				# first search through the node stack for the date node
 				if node_stack[-3].tag == 'folder' and node_stack[-3].attrib.get('name') == 'date':
 													
-					acq_date = node_stack[-3].attrib.get('day').zfill(2) + options.months[int(node_stack[-3].attrib.get('month'))] + node_stack[-3].attrib.get('year').zfill(4)
+					acq_date = node_stack[-3].attrib.get('day').zfill(2) + options.months[int(node_stack[-3].attrib.get('month'))] + node_stack[-3].attrib.get('year').zfill(4)[2:]
 					yearIMG  = int(node_stack[-3].attrib.get('year'))
 					monthIMG = int(node_stack[-3].attrib.get('month'))
 					dayIMG   = int(node_stack[-3].attrib.get('day'))

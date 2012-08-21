@@ -78,7 +78,7 @@
             2 - show info notes and warnings
             3 - stop program operation to output data
         -->
-        <debug_level  value="0" />
+        <debug_level  value="2" />
         <log_file  state="True"  location="simulator.log" />
     </run_options>
 

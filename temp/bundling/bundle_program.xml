@@ -4,7 +4,7 @@
         <num_bundles  value="5"        />
         <compression_type  value="zip" />
         <camera_type  value="EO"       />
-        <increment    value="1"        />
+        <increment    value="2"        />
     </output_info>
     
 
@@ -49,7 +49,7 @@
         <number_collect value="4" />
         
         <eo_fism_count  value="368" />
-        <ir_fism_count  value="368" />
+        <ir_fism_count  value="68" />
     </gs2_specific>
 
 </configuration>

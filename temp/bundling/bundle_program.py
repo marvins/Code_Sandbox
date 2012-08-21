@@ -104,6 +104,16 @@ def xmlValidateAndLoad( root, nodeName, valueName, valueType, datatype ):
 
 
 ###########################################
+#            Logging Exception            #
+###########################################
+class LogException( Exception ):
+	def __init__(self, level, message):
+		log.write(level, message)
+	def __str__(self):
+		return log.create_log_message(level, message)
+
+
+###########################################
 #			Configuration Options		  #
 ###########################################
 class ConfigOptions:
@@ -559,7 +569,7 @@ class ConfigOptions:
 #####################################
 class TACID:
 	input_string     = []
-	raw_input        = []
+	raw_data         = []
 	acquisition_date = []
 	program_code     = []
 	sortie_number    = []
@@ -574,9 +584,9 @@ class TACID:
 
 	def __init__(self, imgname ):
 	
+		self.raw_data = imgname
 		instr = os.path.basename(imgname)
 		self.input_string = instr
-		self.raw_input = imgname
 
 		# set the date
 		day  = int(instr[:2])
@@ -660,9 +670,6 @@ class TACID:
 		ctype = self.product_number[:3]
 		ctype = ctype[1:]
 		
-		if ctype != 'EO' and ctype != 'IR':
-			raise Exception('ERROR: Product Number does not contain an adequate Camera Type')
-
 		return ctype
 
 
@@ -681,6 +688,27 @@ def isValidTACID( node ):
 	
 	return True
 
+def TACID_scene_compare( tacidA, tacidB ):
+	"""
+	Compares TACIDs by their scene values.
+	-1 - A < B
+	0  - A = B
+	1  - A > B
+	"""
+	
+	if   tacidA.producer_sn < tacidB.producer_sn: # the pn is smaller in A, don't worry about scene number
+		return -1
+	
+	elif tacidA.producer_sn == tacidB.producer_sn: # the pn is smaller in A, don't worry about scene number
+		if    tacidA.scene_number < tacidB.scene_number: # the sn is smaller in A
+			return -1
+		elif  tacidA.scene_number == tacidB.scene_number: # they are equal
+			return 0
+		else: 
+			return 1
+			
+	else:
+		return 1
 
 
 #------------------------------------------------#
@@ -691,19 +719,28 @@ def validityCheckPreList( directory ):
 	This function does a basic check to make sure that the directory we have passed into the program
 	actually exists and furthermore that the directory is actually a directory. 
 	"""
+	log.write(log.INFO, 'validityCheckPreList starting')
 
 	# Make sure that the directory we are searching for exists
 	if os.path.exists( directory ) == False:
 		
 		log.write( log.MAJOR, directory + ' does not exist')
-		raise Exception(log.create_log_message( log.MAJOR, directory + ' does not exist'))
+		raise LogException( log.MAJOR, directory + ' does not exist')
+	
+	else:
+		log.write( log.INFO, directory + ' exists')
 
 	# make sure that it is a directory
 	if os.path.isdir(directory) == False:
 		print 'Error: ' + directory + ' is not a directory '
 		sys.exit(-1)
+	else:
+		log.write( log.INFO, directory + ' is a directory')
 	
+	log.write(log.INFO, 'validityCheckPreList ended successfully')
 	return True
+
+
 
 
 def validityCheckPost( camera_roots, options ):
@@ -713,51 +750,28 @@ def validityCheckPost( camera_roots, options ):
 	here is that the camera type has been set.
 	"""
 	
-	# sort camera roots
-	camera_roots.sort()
+	# Print the log messages
+	log.write( log.INFO, 'Starting validityCheckPost')
+
 	
-	if options.debug_level >= 2:
-		print 'detected directories pre validation'
-		for img in camera_roots:
-			print img
-		raw_input('hold')
-		print ''
+	# ensure that we have the proper number of directories
+	if options.gs_increment == 1:
+		if options.camera_type == 'EO':
+			pass
+		if options.camera_type == 'IR':
+			pass
 
+	elif options.gs_increment == 2:
+		if options.camera_type == 'EO':
+			pass
+		if options.camera_type == 'IR':
+			pass
 
-	# Test IR Cameras
-	if 	options.camera_type == 'IR':
-		
-		if len(camera_roots) < options.num_ir_camera_directories:
-			print 'ERROR: directory does not have enough cam directories to satisfy expected requirement'
-			sys.exit(-1)
-		
-		elif len(camera_roots) > options.num_ir_camera_directories:
-			camera_roots = camera_roots[:options.num_ir_camera_directories]
+	else: 
+		raise LogException( log.MAJOR, 'Invalid GS Increment \'' + str(options.gs_increment) + '\' detected');
+
 	
-	# Test EO Cameras
-	elif options.camera_type == 'EO':
-		if len(camera_roots) < options.num_eo_camera_directories:
-			print 'ERROR: directory does not have enough cam directories to satisfy expected requirement'
-			sys.exit(-1)
-		elif len(camera_roots) > options.num_eo_camera_directories:
-			camera_roots = camera_roots[:options.num_eo_camera_directories]
-	else:
-		raise Exception('unexpected camera type: ' + options.camera_type)
-
-	# make sure we got something useful
-	if camera_roots == None or len(camera_roots) <= 0:
-		raise Exception('Error: directory contains no camera directories')
-
-	if options.debug_level >= 2:
-		print 'detected directories post validation'
-		for img in camera_roots:
-			print img
-		raw_input('hold')
-		print ''
-
-
-	return camera_roots
-
+	log.write( log.INFO, 'Exiting validityCheckPost successfully')
 
 #------------------------------------------------#
 #-    Find Camera Directory						-#
@@ -766,45 +780,61 @@ def validityCheckPost( camera_roots, options ):
 #------------------------------------------------#
 def find_camera_directory( directory, options ):
 	
-
 	# extract the contents of the directory
 	contents = os.listdir(directory);
-
+	
 	# remove all non-directories
 	directories = [elem for elem in contents if os.path.isdir(directory+'/'+elem) == True]
-		
-	print 'dirs: ' + str(directories)
-	sys.exit(0)
 
 	# search to see if cam directories are present
 	dir_stack = []
-	for d in directories:
-		try:
-			idx = cameras.index(d) 
-			dir_stack.append(directory+'/'+d)
-		except ValueError:
-			pass
-	
-	# if directory stack is empty or does not contain a sufficient number of cameras, then
-	# we need to step into any directories in the current location
-	if len(dir_stack) <= 0:
-	
-		# if there are no more directories, then we need to return a null list
-		if directories == []:
-			return []
-		# Test each remaining directory
-		else:
-			for d in directories:
-				dir_stack = find_camera_directory( directory + '/' + d )
-				
-				if dir_stack != []:
-					return dir_stack
-				else:
-					pass
 
-	# Recursive Exit Condition		
-	else:
-		return dir_stack
+	for d in directories:
+		
+		# reset the found flag
+		isCamDirectory = False
+		
+		if options.gs_increment == 1:
+			# Test for Inc 1 Imagery
+			# 
+			# a camera directory for inc 1 must be a camera directory with a single digit
+			try:
+				if len(d) == 4 and d[:3] == 'cam' and int(d[3]) > 0 and int(d[3]) < max(options.num_eo_camera_directories, options.num_ir_camera_directories):
+					dir_stack.append( directory + '/' + d)
+					isCamDirectory = True
+			except ValueError:
+				pass
+		
+		# do some checks for inc2
+		if options.gs_increment == 2:
+			# Test for Inc 2 Imagery
+			#
+			# a camera directory for Inc 2 must be a camera directory with 3 digits
+			try:
+				if options.camera_type == 'EO':
+					if len(d) == 6 and d[:3] == 'cam' and int(d[3:]) >= 0 and int(d[3:]) < options.eo_fism_count:
+						dir_stack.append(directory + '/' + d)
+						isCamDirectory = True
+				
+				elif options.camera_type == 'IR':
+					if len(d) == 6 and d[:3] == 'cam' and int(d[3:]) >= 0 and int(d[3:]) < options.ir_fism_count:
+						dir_stack.append(directory + '/' + d)
+						isCamDirectory = True
+				else:
+					raise LoggerException( log.MAJOR, 'Unknown camera type ' + options.camera_type + ' expected')
+
+			except ValueError:
+				pass
+
+		# if the camera directory is not a camera directory, then step into it
+		if isCamDirectory == False:
+			dir_stack += find_camera_directory( directory + '/' + d, options )
+	
+	# end of the directory iteration
+	dir_stack = sorted(dir_stack)
+
+	return dir_stack
+
 
 
 
@@ -813,63 +843,83 @@ def find_camera_directory( directory, options ):
 #-      Sort the image list by history		-#
 #--------------------------------------------#
 def sort_image_list( root_dir ):
-
+	
 	# set x to the starting point
-	x = 1
+	x = 0
 	
 	# iterate throught the entire list
-	while x < (len(root_dir)):
-		
-		# create the test point
-		item    = root_dir[x][0]
-		item_pn = item.producer_sn
-		item_sn = item.scene_number
+	while x < len(root_dir)-1:
 
-		# iterate through the items before the test point
-		y = 0
-		i = -1
-		FLG = False
-		
-		while y < x:
-	    	
-			# set anchor at where the test point become less than
-			if item_pn < root_dir[y][0].producer_sn:
-				i = y
-				break
-			elif item_pn == root_dir[y][0].producer_sn:
-				if item_sn < root_dir[y][0].scene_number:
-					i = y
-					break
-				if item_sn == root_dir[y][0].scene_number:
-					root_dir[y] = root_dir[y] + root_dir[x]
-					root_dir.pop(x)
-					FLG = True
-					break
-			
-			y += 1
-			
+		# compare the two adjacent TACIDs
+		state = TACID_scene_compare( root_dir[x][0], root_dir[x+1][0])
 
-		if FLG == True :
+		# if x is smaller, then continue
+		if state == -1: # x is smaller
+			x += 1
 			continue
 		
-		if y < x:
-			temp = root_dir[x]
+		# if they are equal, append the next item to the current and remove the next
+		if state == 0:  # they are equal, append x+1 to x
+			root_dir[x] = root_dir[x] + root_dir[x+1]
+			root_dir.pop(x+1)
+			continue
+		
+		# otherwise the next element is smaller than the current
+		# That means we need to insert the next element in the middle of the list
+		
+		# start at x and move towards 0
+		y = x
+		while y >= 0:
 
-			z = x
-			while z > i:
-				root_dir[z] = root_dir[z-1]
-				z = z - 1
-			root_dir[i] = temp
-		
-		x += 1
-		
+			# compare x+1 to y
+			ystate = TACID_scene_compare( root_dir[y][0], root_dir[x+1][0])
+				
+			# if y > x, continue as we need to stop when the order is returned
+			if ystate == 1:
+				
+				y -= 1
+				# if we reach -1 and the order is not preserved, then the item is the smallest
+				if y == -1:
+					new_item = root_dir[x+1]
+					root_dir.pop(x+1)
+					root_dir = [new_item] + root_dir
+					x += 1
+					break
+				else:
+					continue
+
+			# if they are equal, merge
+			if ystate == 0:
+				root_dir[y] = root_dir[y] + root_dir[x+1]
+				root_dir.pop(x+1)
+				break
+
+			# if x+1 is larger, then insert at y+1 and remove x+1
+			if ystate == -1:
+				# create the new item
+				new_item = root_dir[x+1]
+				root_dir.pop(x+1)
+				
+				# split the list
+				fst_prt  = root_dir[:y+1]
+				snd_prt  = root_dir[y+1:]
+
+				# re-append
+				root_dir = fst_prt + [new_item] + snd_prt
+				x += 1
+				break
+
+			else:
+				raise Exception("Unknown condition")
+
+	return root_dir
 
 
 
 #------------------------------------------------------------#
 #-   				Build Image List						-#
 #------------------------------------------------------------#
-def build_image_list( root_dir, options ):
+def build_image_list( root_dir, ext_list, options ):
 	"""
 	This function takes an image directory and searches for all images matching a required pattern. 
 	If they exist, it will parse the image name and add the image to the list for that image directory.
@@ -880,21 +930,22 @@ def build_image_list( root_dir, options ):
 
 	# find the contents of the directory
 	contents = os.listdir( root_dir )
+	contents.sort()
 
 	# iterate through each item to either add or enter
 	for item in contents:
-		
+	
 		# check if item is file or directory
 		if os.path.isdir( root_dir + '/' + item ) == True:
-
+			
 			# enter directory recursively
-			images = images + build_image_list( root_dir + '/' + item, options )
+			images = images + build_image_list( root_dir + '/' + item, ext_list, options )
 
 		# otherwise, check if file matches
 		elif os.path.isfile( root_dir + '/' + item ) == True:
 			
 			# check if the extension is a nitf
-			if os.path.splitext( item )[1] == ".ntf" or os.path.splitext( item )[1] == ".NTF":
+			if os.path.splitext( item )[1] in ext_list:
 				
 				IMG = TACID(root_dir + '/' + item)
 				
@@ -908,7 +959,7 @@ def build_image_list( root_dir, options ):
 					pass
 
 		else:
-			raise Exception("ERROR: must be file or directory")
+			raise LogException( log.MAJOR, 'ERROR: must be file or directory')
 
 		
 	return images
@@ -1048,6 +1099,28 @@ def prune_camera_list( cam_lists, options ):
 	return output
 
 
+def write_zipfile( output_filename, image_tuples, bundle_step, options ):
+
+	# open zipfile object
+	zf = zipfile.ZipFile( output_filename, 'w')
+	
+	# create current position pointer
+	current_pos = 0
+	for x in range(0, options.number_bundles):
+		
+		# increment position
+		current_pos = bundle_step * x
+		for y in range( 0, len(image_tuples[current_pos])):
+			
+			# add file to tarball
+			if options.debug_level >= 2:
+				print image_tuples[current_pos][y].raw_data
+			zf.write( image_tuples[current_pos][y].raw_data, 'bundles/bundle'+str(x)+'/'+image_tuples[current_pos][y].input_string)
+
+	# close the zip file
+	zf.close()
+
+
 ##################################################
 #-					Main Driver					-#
 ##################################################
@@ -1068,127 +1141,108 @@ def main():
 		validityCheckPreList( options.input_base + '/' + options.input_path);
 		
 		# build a list of camera directories
+		log.write( log.INFO, 'running find_camera_directory on directory: ' + options.input_base + '/' + options.input_path)
 		camera_directories = find_camera_directory( options.input_base + '/' + options.input_path, options )
+		log.write( log.INFO, 'find_camera_directory exited successfully')
+		
+		# check the structure before we do the image gathering.  This prevents some major computations
+		validityCheckPost( camera_directories, options );
+		
+		# Build the list of images
+		camera_contents = []
+		ext_list = ['.nitf', '.ntf', '.NITF', '.NTF']
+		
+		# iterate through each camera directory
+		for cidx in xrange(0, len(camera_directories)):
+			
+			# pull out every nitf image from the file
+			log.write( log.INFO, 'starting build_image_list on directory: ' + camera_directories[cidx])
+			camera_contents.append( build_image_list( camera_directories[cidx], ext_list, options ))
+			
+			# sort image filenames
+			log.write( log.INFO, 'starting sort operation')
+			camera_contents[cidx] = sort_image_list( camera_contents[cidx] )
+
+		# prune the camera list
+		log.write( log.INFO, 'starting pruning operation')
+		image_tuples = prune_camera_list( camera_contents, options )
+		log.write( log.INFO, 'pruning operation completed successfully')
+		
+		
+		# now that we have the image sets, lets create the image bundle
+		#    NOTE: A potential problem exists where we may not have enough image sets to satisfy the 
+		#          request given in number of bundles variable.  This means that we must bundle what we 
+		#          and send an error back notifying that we only sent 'N' values
+		if options.number_bundles > len(image_tuples):
+			
+			log.write( log.WARNING, 'The number of valid image sets is less than request value. Returning ' + str(len(image_tuples)) + ' bundles')
+			
+			# set a new bundle size 
+			options.number_bundles = len(image_tuples)
+
+			# set the output code to notify the user
+			options.output_code = len(image_tuples)
+		
+
+		# start dividing the image sets
+		bundle_step = len(image_tuples) / options.number_bundles
+
+		# consider if we are using ssh and create output file
+		output_filename = '.'
+		if options.ssh_state == True:
+			output_filename = './bundle.'+options.compression_type
+		else:
+			output_filename = options.output_base + options.output_path + '.' + options.compression_type
+	
+		
+		# build compressed file
+		if options.compression_type == 'zip':
+			
+			# creating zip object
+			log.write( log.INFO, 'opening zip compression object: ' + output_filename)
+			write_zipfile( output_filename, image_tuples, bundle_step, options )
+
+		elif options.compression_type == 'tar':
+			raise LogException(log.MAJOR, 'TAR compression currently not supported')
+		else:
+			raise LogException(log.MAJOR, 'Unknown compression type')
+
+		
+		# finally, lets push this file out through ssh if selected
+		if options.ssh_state == True:
+				
+			# create an ssh object
+			ssh = paramiko.SSHClient()
+			ssh.set_missing_host_key_policy( paramiko.AutoAddPolicy())
+			ssh.connect( options.ssh_hostname, username=options.ssh_username, password=options.ssh_password)
+
+			# create path for distination
+			ssh_path = options.output_base + options.output_path + '.' + options.compression_type
+			
+			# create sftp process
+			sftp = ssh.open_sftp()
+			sftp.put( './bundle'+'.'+options.compression_type, ssh_path)
+			sftp.close()
+			ssh.close()
+			
+			# clean up after ourselves
+			os.remove('./bundle'+'.'+options.compression_type)
+
+
 
 	except Exception as EX:
-		pass
+		print EX
+		options.output_code = -1
+		return options.output_code
 
 	finally:
 		# Close the log file
 		log.close()
 
-	return
+	# exit the program
+	return options.output_code
 
-
-	
-	# make sure that we have an expected number of camera directories
-	camera_roots = validityCheckPost( camera_roots, options );
-
-
-	# we need to build an array which contains the list of files for each camera folder
-	cam_lists = []
-	
-	if options.debug_level >= 1:
-		print 'building camera array'
-	
-	for x in range( 0, len(camera_roots)):
-		
-		# create image list
-		cam_lists.append( build_image_list( camera_roots[x], options ))
-		
-		sort_image_list( cam_lists[x] )
-		
-		if options.debug_level >= 2:
-			print 'images for list ' + str(x) + ' in directory ' + camera_roots[x]
-			for y in range( 0, len(cam_lists[x])):
-				print 'scene number: ' + str(cam_lists[x][y][0].scene_number) + '   with size: ' + str(len(cam_lists[x][y]))
-			raw_input('hold')
-			print ''
-
-	# next, we need to ensure that each camera folder contains only matching image pairs
-	if options.debug_level >= 1:
-		print 'pruning the list'
-	
-	image_tuples = prune_camera_list( cam_lists, options )
-	
-	
-	if options.debug_level >= 2:
-		print 'printing the pruned tree'
-		for x in range( 0, len(image_tuples)):
-			print '   bundle: ' + str(x) + '  --> len ' + str(len(image_tuples[x]))
-		raw_input('hold')
-		print ''
-
-	#  A potential problem exists where we may not have enough image sets to satisfy the 
-	# request given in number of bundles variable.  This means that we must bundle what we 
-	# and send an error back notifying that we only sent 'N' values
-	if options.num_bundles > len(image_tuples):
-		if options.debug_level >= 1:
-			print 'WARNING: image data has fewer image sets than requested.  Returning ' + str(len(image_tuples)) + ' of ' + str(options.num_bundles)
-			print ''
-
-		options.output_code = len(image_tuples)
-	
-	options.num_bundles = min( options.num_bundles, len(image_tuples))
-
-
-	# now that we have a list of images, we need to start dividing image sets
-	bundle_step = len(image_tuples) / options.num_bundles	
-
-	# Here we need to consider if we are going to transfer the file via scp or if we will
-	# write it to local disk
-	if options.ssh == True:
-		zip_filename = './bundle' + options.compression_type
-	else:
-		zip_filename = options.output_base + options.output_path + options.compression_type
-
-	# create output data
-	zf = zipfile.ZipFile( zip_filename , 'w')
-	
-	if options.debug_level >= 1:
-		print 'writing files to : ' + zip_filename
-
-	# create current position pointer
-	current_pos = 0
-	for x in range(0, options.num_bundles):
-		
-		# increment position
-		current_pos = bundle_step * x
-		for y in range( 0, len(image_tuples[current_pos])):
-			
-			# add file to tarball
-			if options.debug_level >= 2:
-				print image_tuples[current_pos][y].raw_input
-			zf.write( image_tuples[current_pos][y].raw_input, 'bundles/bundle'+str(x)+'/'+image_tuples[current_pos][y].input_string)
-
-	zf.close()
-
-	# If we need to send the file via scp, then we need to create the objects for passing it
-	if options.ssh == True:
-
-		# create the SSH object
-		ssh = paramiko.SSHClient()
-		ssh.set_missing_host_key_policy( paramiko.AutoAddPolicy() )
-		ssh.connect( options.ssh_host, username=options.ssh_user, password=options.ssh_password)
-		
-		# create path for destination
-		ssh_path = options.output_base + options.output_path + options.compression_type
-		
-		if options.debug_level >= 1:
-			print 'destination for sftp: ' + ssh_path
-
-		# create sftp process
-		sftp = ssh.open_sftp()
-		sftp.put( './bundle'+options.compression_type, ssh_path)
-		sftp.close()
-		ssh.close()
-
-		os.remove('./bundle'+options.compression_type)
-
-	else:
-		pass
-	
-	sys.exit(options.output_code)
 
 if __name__ == "__main__":
-	main()
+	exit_code = main()
+	sys.exit(exit_code)
