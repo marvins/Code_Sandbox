@@ -353,6 +353,7 @@ class ConfigOptions:
 			
 			# SSH Password
 			elif command_args[0][:14] == '-ssh_password=':
+				print 'PASSWORD: ' + command_args[0]
 				self.ssh_password = command_args[0][14:]
 				command_args = command_args[1:]
 
@@ -1244,9 +1245,10 @@ def main():
 			ssh.connect( options.ssh_hostname, username=options.ssh_username, password=options.ssh_password)
 
 			# create path for distination
-			ssh_path = options.output_base + options.output_path + '.' + options.compression_type
+			ssh_path = options.output_base + '/' + options.output_path + '.' + options.compression_type
 			
 			# create sftp process
+			log.write( log.INFO, 'sending imagery to ' + ssh_path)
 			sftp = ssh.open_sftp()
 			sftp.put( './bundle'+'.'+options.compression_type, ssh_path)
 			sftp.close()
