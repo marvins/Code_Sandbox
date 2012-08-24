@@ -34,19 +34,35 @@
                                 <folder name="08" multiple="false" >
                                     
                                     <!-- Minute folder -->
-                                    <folder name="#" multiple="true" type="permutation" start1="0" count1="6" zero_pad="2" >
+                                    <folder name="#" multiple="true" type="permutation" start1="0" count1="60" zero_pad="2" >
                                         
                                         <file name="tacid" type="tacid" />
 
                                     </folder> <!-- end of minute folder -->
                                     
-                                    <!-- Minute folder -->
-                                    <folder name="#" multiple="true" type="permutation" start1="51" count1="6" zero_pad="2" >
-                                        <file name="tacid" type="tacid" />
-
-
-                                    </folder> <!-- end of minute folder -->
                                 </folder> <!-- end of hour folder -->
+                                
+                                <!-- Hour folder 9am -->
+                                <folder name="09" multiple="false" >
+                                    <!-- Minute folder -->
+                                    <folder name="#" multiple="true" type="permutation" start1="0" count1="60" zero_pad="2" >
+                                        <file name="tacid" type="tacid" />
+                                    </folder> <!-- end of minute folder -->
+                                 </folder> <!-- end of hour folder -->
+                                <!-- Hour folder 10am -->
+                                <folder name="10" multiple="false" >
+                                    <!-- Minute folder -->
+                                    <folder name="#" multiple="true" type="permutation" start1="0" count1="60" zero_pad="2" >
+                                        <file name="tacid" type="tacid" />
+                                    </folder> <!-- end of minute folder -->
+                                 </folder> <!-- end of hour folder -->
+                                <!-- Hour folder 11am -->
+                                <folder name="11" multiple="false" >
+                                    <!-- Minute folder -->
+                                    <folder name="#" multiple="true" type="permutation" start1="0" count1="60" zero_pad="2" >
+                                        <file name="tacid" type="tacid" />
+                                    </folder> <!-- end of minute folder -->
+                                 </folder> <!-- end of hour folder -->
                             </folder> <!-- end of date folder -->
                         </folder> <!-- end of cam folder -->
                     </folder> <!-- end of raw folder -->

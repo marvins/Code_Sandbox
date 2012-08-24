@@ -190,11 +190,9 @@ def create_directory( directory ):
 
 def create_file( filename ):
 	
-	message = 'Creating file: ' + filename
 	_file = open( filename , 'w')
 	_file.write('')
 	_file.close()
-	log.write(log.INFO, message)
 	
 
 #----------------------------------------------#
