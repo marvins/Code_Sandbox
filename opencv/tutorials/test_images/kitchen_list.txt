@@ -1,0 +1,5 @@
+test_images/kitchen00.jpg
+test_images/kitchen01.jpg
+test_images/kitchen02.jpg
+test_images/kitchen03.jpg
+test_images/kitchen04.jpg
