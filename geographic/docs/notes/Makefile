@@ -7,7 +7,9 @@ VIEWER=evince
 BIBTEX_FILE=$(TITLE).bib
 GLOSSARY_FILE=glossary.tex
 
-INCLUDES=$(BIBTEX_FILE) $(GLOSSARY_FILE)
+NOTES= CommonProgramsAndUsage.tex
+
+INCLUDES=$(BIBTEX_FILE) $(GLOSSARY_FILE) $(NOTES)
 
 $(TITLE).pdf: $(TITLE).tex $(INCLUDES) Makefile
 	pdflatex  $<
