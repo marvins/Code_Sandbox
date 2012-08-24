@@ -4,7 +4,7 @@
         <num_bundles  value="5"        />
         <compression_type  value="zip" />
         <camera_type  value="EO"       />
-        <increment    value="1"        />
+        <increment    value="2"        />
     </output_info>
     
 
@@ -29,8 +29,8 @@
 
 
     <path_info>
-        <input_base   value="/home/ms6401/Desktop/msmith_imagery/TwinOtter-20120222/sn4_denver_2012-02-22_dra_day1/images" />
-        <input_path   value="hangar_raw" />
+        <input_base   value="simulator" />
+        <input_path   value="dsu" />
         <output_base  value="."         />
         <output_path  value="image_set" />
     </path_info>
