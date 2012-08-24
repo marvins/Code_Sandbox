@@ -1,9 +1,13 @@
-*.log
 *.aux
 *.bbl
 *.blg
+*.glg
+*.glo
+*.gls
 *.idx
 *.ilg
 *.ind
-*.out
+*.log
 *.toc
+*.out
+*.xdy

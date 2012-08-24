@@ -1,17 +1,32 @@
 TITLE=PhotogrammetryNotes
 
-$(TITLE).pdf: $(TITLE).tex
+BAD_EXT=*.xdy *.gls *.bbl *.out *.blg *.idx *.log *.aux *.toc *.ilg *.ind
+
+VIEWER=evince
+
+BIBTEX_FILE=$(TITLE).bib
+GLOSSARY_FILE=glossary.tex
+
+INCLUDES=$(BIBTEX_FILE) $(GLOSSARY_FILE)
+
+$(TITLE).pdf: $(TITLE).tex $(INCLUDES) Makefile
 	pdflatex  $<
 	pdflatex  $<
 	makeindex $(TITLE)
 	pdflatex  $<
+	pdflatex  $<
 	bibtex    $(TITLE)
 	pdflatex  $<
 	pdflatex  $<
+	makeglossaries $(TITLE)
+	pdflatex  $<
+	pdflatex  $<
 
+show: 
+	$(VIEWER) $(TITLE).pdf
 
 trim:
-	rm *.bbl *.out *.blg *.idx *.log *.aux *.toc *.ilg *.ind
+	rm $(BAD_EXT)
 
 clean:
-	rm *.bbl *.out *.blg *.idx *.log *.pdf *.aux *.toc *.ilg *.ind
+	rm $(BAD_EXT) $(TITLE).pdf

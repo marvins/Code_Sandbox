@@ -7,11 +7,12 @@
 
 % Relevant packages required
 \usepackage{fullpage}
+\usepackage{hyperref}
 \usepackage{cite}
 \usepackage{graphicx}
-\usepackage{makeidx}
-\usepackage{hyperref}
 \usepackage{xcolor}
+\usepackage[xindy,toc]{glossaries}
+\usepackage{makeidx}
 
 \definecolor{dark-red}{rgb}{0.4,0.15,0.15}
 \definecolor{dark-blue}{rgb}{0.15,0.15,0.4}
@@ -23,11 +24,14 @@
 
 
 \makeindex
+\makeglossaries
 
 % Title page information
 \title{Photogrammetry Notes and Observations}
 \author{Marvin Smith}
 \date{\today}
+
+\include{glossary}
 
 % Start processing document commands
 \begin{document}
@@ -39,44 +43,11 @@
 \tableofcontents
 \clearpage
 
-% This is a table with some relevant terminology
-\addcontentsline{toc}{section}{Common Terminology}
-\section*{Common Terminology}
-
-\begin{description}
-\item[Orthorectification] A method of correcting an image to align with real-world coordinates on a map. 
-                          This involves measuring the exact location of the image center as well as 
-                          the camera angle.  This is followed by the computation of the camera calibration 
-                          parameters to remove camera and lens distortions.  Finally, you may terrain
-                          induced distortions using DEM data. \index{Orthorectification}
-
-\item[Georectification]   A method of stretching and warping an image to align with another map projectin or spatial 
-                          data in GIS.  This is comparable to Google Earth and other systems which implement overlays. 
-                          If an image is rectified, Ground Control Points (GCP) can be used to create a transformation which 
-                          aligns one image to the GIS data.  This is different from orthorectification as well because
-                          it is assumed that the image is already orthorectified. Georectification just changes the 
-                          projection and/or coordinate system. \index{Georectification}
-
-\item[Georeference]       Same as Georectification \index{Georectification} \index{Georeference}.
-
-\item[Aerotriangulation]  The process of assigning ground control values to points on a block of photographs
-                          by determining the relationship between the photographs and known ground control 
-                          points.
-
-\item[Bundle Adjustment]  The process of simulaneously refining 3D coordinates derived from multiple viewpoints.  
-                          This requires that the user has multiple 3d coordinates measured from multiple image
-                          pairs. This is often solved with Levenberg-Marquardt. 
-
-\item[Boresight] Boresight is the physical mounting angles between an IMU and a digital camera. Basically, if the IMU
-                 defines a flight axis,  the Boresight defines the angles from the axis of which the camera is pointing. 
-
-
-\end{description}
 
 
 % These are some relevant variables and associated images
-\addcontentsline{toc}{section}{Common Variables}
-\section*{Common Variables}
+\addcontentsline{toc}{chapter}{Common Variables}
+\chapter*{Common Variables}
 
 \begin{itemize}
 \item $H$ - Height of the camera above ground, \emph{Flying Height}
@@ -84,22 +55,23 @@
 \end{itemize}
 
 
-\addcontentsline{toc}{section}{Orthorectification}
-\section*{Orthorectification}
+\addcontentsline{toc}{chapter}{Orthorectification}
+\chapter*{Orthorectification}
 
 
-
-
+% Glossary
+\glsaddall
+\printglossary
 
 
 % Bibliography
-\addcontentsline{toc}{section}{Bibliography and useful resources}
 \bibliography{PhotogrammetryNotes}
 \bibliographystyle{plain}
 \nocite{*}
+\addcontentsline{toc}{chapter}{Bibliography and useful resources}
 
-% Table of contents
-\addcontentsline{toc}{section}{Index}
+% Index
+\addcontentsline{toc}{chapter}{Index}
 \printindex
 
 
