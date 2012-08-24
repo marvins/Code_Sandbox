@@ -1,6 +1,6 @@
 TITLE=PhotogrammetryNotes
 
-BAD_EXT=*.xdy *.gls *.bbl *.out *.blg *.idx *.log *.aux *.toc *.ilg *.ind
+BAD_EXT=*.glg *.glo *.xdy *.gls *.bbl *.out *.blg *.idx *.log *.aux *.toc *.ilg *.ind
 
 VIEWER=evince
 
