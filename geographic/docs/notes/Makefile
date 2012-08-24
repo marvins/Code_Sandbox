@@ -10,5 +10,8 @@ $(TITLE).pdf: $(TITLE).tex
 	pdflatex  $<
 
 
+trim:
+	rm *.bbl *.out *.blg *.idx *.log *.aux *.toc *.ilg *.ind
+
 clean:
-	rm *.idx *.log *.pdf *.aux *.toc *.ilg *.ind
+	rm *.bbl *.out *.blg *.idx *.log *.pdf *.aux *.toc *.ilg *.ind
