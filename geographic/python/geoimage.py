@@ -46,9 +46,9 @@ class GeoImage:
 					for col in xrange(0, dataset.RasterXSize):
 						self.image[row][col][channel] = float_row[col]
 		
-		# Make sure that if image is 16 bit and ABPP is 12, then scale
-		if self.image.dtype == np.uint16 and int(dataset.GetMetadataItem('NITF_ABPP')) == 12:
-			self.image = np.dot( self.image, 2**4 )
+		# Make sure that if image is 16 bit and ABPP is not, then scale
+		if self.image.dtype == np.uint16 and not int(dataset.GetMetadataItem('NITF_ABPP')) >= 16:
+			self.image = np.dot( self.image, 2**(16-int(dataset.GetMetadataItem('NITF_ABPP'))))
 
 
 
