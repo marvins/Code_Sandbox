@@ -79,3 +79,32 @@ Band 1 Block=1x3601 Type=Int16, ColorInterp=Undefined
 
 \end{verbatim}
 
+\clearpage
+\addcontentsline{toc}{subsection}{gdaldem}
+\subsection*{gdaldem}
+
+\subsubsection*{Description}
+\emph{gdaldem} is an application bundled with GDAL which provides the user with the ability to 
+construct shaded relief and color maps for digital elevation models. \index{GDAL} \index{GDAL!gdaldem} 
+
+This application works on elevation information to include DTED and SRTM.
+
+\subsubsection*{Usage}
+\begin{verbatim}
+
+# For color relief maps
+gdaldem color-relief data/dted/w118/n36.dt2 color_model.txt output.tif
+
+# For shaded relief maps
+gdaldem hillshade  data/dted/w118/n36.dt2 output.tif -s 100000 -z 5
+
+\end{verbatim}
+For more information, see manual pages and \url{http://developmentseed.org/blog/2009/jul/30/using-open-source-tools-make-elevation-maps-afghanistan-and-pakistan/}
+
+\begin{figure}[!h]
+\subfloat[Color Relief Results]{\includegraphics[width=3.5in]{images/color_output.png}}
+\subfloat[Hillshade Relief Results]{\includegraphics[width=3.5in]{images/hillshade_output.png}}
+\caption{Results from typical \emph{gdaldem} usage.}
+\label{fig:gdaldem_usage}
+\end{figure}
+
