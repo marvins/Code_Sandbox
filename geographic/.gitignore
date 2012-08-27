@@ -1,7 +1,9 @@
 *.dSYM
+*.pyc
 bin
-data
-data\*
 build
 build\*
+data
+data\*
 unit_test
+
