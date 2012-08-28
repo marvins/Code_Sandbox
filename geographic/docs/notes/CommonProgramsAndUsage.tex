@@ -98,12 +98,15 @@ gdaldem color-relief data/dted/w118/n36.dt2 color_model.txt output.tif
 # For shaded relief maps
 gdaldem hillshade  data/dted/w118/n36.dt2 output.tif -s 100000 -z 5
 
+# You can merge the images together with a t=0.7 such that  Out(x,y) = t*Color(x,y) + (1-t)*Hill(x,y)
+# to get a great output image
 \end{verbatim}
 For more information, see manual pages and \url{http://developmentseed.org/blog/2009/jul/30/using-open-source-tools-make-elevation-maps-afghanistan-and-pakistan/}
 
 \begin{figure}[!h]
 \subfloat[Color Relief Results]{\includegraphics[width=3.5in]{images/color_output.png}}
-\subfloat[Hillshade Relief Results]{\includegraphics[width=3.5in]{images/hillshade_output.png}}
+\subfloat[Hillshade Relief Results]{\includegraphics[width=3.5in]{images/hillshade_output.png}}\\
+\subfloat[Merged Results]{\includegraphics[width=3.5in]{images/merged_output.png}}
 \caption{Results from typical \emph{gdaldem} usage.}
 \label{fig:gdaldem_usage}
 \end{figure}
