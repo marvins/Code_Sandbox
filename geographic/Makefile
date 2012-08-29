@@ -263,10 +263,10 @@ build/CoordinateLatLon_DEBUG.o: src/coordinates/CoordinateLatLon.cpp $(HEADERS)
 
 # GS2_Header
 build/GS2_Header.o:        src/extensions/GS2_Header.cpp $(HEADERS)
-	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE)  $(OFLAGS)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE)  $(OFLAGS) $(GEO_INCLUDE)
 
 build/GS2_Header_DEBUG.o:  src/extensions/GS2_Header.cpp $(HEADERS)
-	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE)  $(DFLAGS)
+	g++ -fPIC $< -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE)  $(DFLAGS) $(GEO_INCLUDE)
 
 # String Utilities
 build/string_utils.o:       src/utilities/string_utils.cpp $(HEADERS)
