@@ -15,6 +15,8 @@ std::string getAcftTailNumber( GEO::GeoImage img ){
 
     //look for ACFTB
     int pos = TRE.find("ACFTB");
+    
+    //in the icd, the index is 20 bytes from the start of the TRE
     int idx = 20;
 
     return GEO::STR::trim(TRE.substr( idx, 10));
@@ -28,6 +30,8 @@ double getFocalLength( GEO::GeoImage img ){
 
     //look for ACFTB
     int pos = TRE.find("ACFTB");
+
+    //this is the position from the start of the TRE.  The compiler will optimize this out
     int idx = 20+10+6+12+4+6+1+6+8+6+5+3+25+6+7+25+13+8+8;
 
     return GEO::STR::str2num<double>(GEO::STR::trim(TRE.substr(idx,6)))/100.0;
