@@ -18,6 +18,7 @@
 #include <geoimage/OpenCVUtils.h>
 #include <geoimage/GDAL2OpenCV.h>
 #include <geoimage/DTEDUtils.h>
+#include <geoimage/GS2_Header.hpp>
 
 #endif
 

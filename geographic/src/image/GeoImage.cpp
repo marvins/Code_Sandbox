@@ -511,5 +511,24 @@ void GeoImage::clean(){
     gdal_data.clean();
 }
 
+string GeoImage::get_tre()const{
+
+    char ** tre_info = NULL;
+    
+    string tre_output = "";
+    char ** results = gdal_data.dataset->GetMetadata("TRE");
+    
+    int idx = 0;
+    if( results != NULL ){
+        
+        while( results[idx] != NULL ){
+            tre_output += results[idx++];
+        }
+    }
+
+    return tre_output;
+
+}
+
 
 }

@@ -98,6 +98,8 @@ class GeoImage{
     
     void get_corner_coordinates( cv::Point2f& ul, cv::Point2f& br ) const;
     void get_corner_coordinates( CoordinateLatLon& ul, CoordinateLatLon& br );
+    
+    std::string get_tre()const;
 
     private:
 
