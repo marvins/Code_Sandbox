@@ -1,10 +1,10 @@
 <OrthoProjector>
     
-    <image name='img.jpg' />
+    <image name='img2.jpg' />
 
     <camera>
-        <position x='0' y='0' z='180' />
-        <rotation angle='0'  axis_x='1' axis_y='0' axis_z='0' />
+        <position x='0' y='0' z='580' />
+        <rotation angle='45'  axis_x='1' axis_y='0' axis_z='0' />
 
         <focal_length value='1' />
     </camera>

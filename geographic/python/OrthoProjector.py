@@ -206,46 +206,26 @@ def main():
 			# Compute the camera coordinate from that in the local camera space
 			localCoord = V_view * options.f + spacer
 
+
 			# Relate that to the original camera image plane
-			
-			# Normal Vector of the Image Plane
-			N = options.Vf_in
-
-			# Origin of the camera
-			P1 = spacer
-
-			# Point on the camera
-			P2 = localCoord
-
-			# Point on the plane
-			P3 = options.rotation * np.mat([[-0.5],[-0.5],[-options.f],[1]])
-
+			N = options.Vf_in		# Normal Vector of the Image Plane
+			P1 = spacer				# Origin of the camera
+			P2 = localCoord			# Point on the camera
+			P3 = options.rotation * np.mat([[-0.5],[-0.5],[-options.f],[1]]) # Point on the plane
 			u = (np.dot( N.T, P3-P1)[0,0])/((np.dot( N.T, P2-P1))[0,0])
-			
+
 			# We need to now find this point in the original image
 			imgPoint = ( P1 + u*(P2-P1))
 
 			# Compute the difference between the points
-			diff = imgPoint - N
-			img_point = options.world2img * diff
-
-			wCoord = np.mat([ [ int(img_point[0,0]) ], 
-			                  [ int(img_point[1,0]) ]])
-			
-			
-			if x == cols/2 and y == rows/2:
-				print 'Coordinate: ', wCoord.T
-				raw_input('pause')
-
+			diff = options.world2img * ( imgPoint - N )
 
 			# Make sure coordinate fits inside the image
-			if wCoord[0,0] >= 0 and wCoord[1,0] >= 0 and wCoord[0,0] < cols and wCoord[1,0] < rows:
-				corrected[y,x] = image[int(wCoord[1,0]),  int(wCoord[0,0])]
+			if int(diff[0,0])  >= 0   and int(diff[1,0]) >= 0 and int(diff[0,0]) < cols and int(diff[1,0]) < rows:
+				corrected[y,x] = image[int(diff[1,0]),  int(diff[0,0])]
 
-			#print x, y
-			#print 'WCoord: ', wCoord.T
-			#raw_input('pause')
 			
+			# A counter to keep my sanity
 			if cnt % 10000 == 0:
 				sys.stdout.write('x')
 				sys.stdout.flush()
