@@ -11,7 +11,7 @@ class Options:
 	
 	cam_alt        = 1800
 	
-	rotation_angle = 0
+	rotation_angle = 40
 	rotation_axis  = [1, 0, 0]
 	scale          = [1, 1, 1]
 	translation    = [0, 0, 0]
@@ -34,10 +34,10 @@ class Options:
 		FILE = open(image_filename + '_config.xml', 'w')
 	
 		# Write the First Tag
-		FILE.write('<PinholeBuilder>')
+		FILE.write('<OrthoProjector>')
 
 		# Close the document
-		FILE.write('</PinholeBuilder>')
+		FILE.write('</OrthoProjector>')
 		FILE.close()
 
 
@@ -91,10 +91,10 @@ class Quaternion:
 
 	def get_rotation_matrix(self):
 		
-		Matrix = np.mat([[ 1 - 2*self.y()*self.y() - 2*self.z()*self.z(), 2*self.x()*self.y() + self.r*self.z()         , 2*self.x()*self.z() - 2*self.r*self.y()                      , 0],
-		                 [ 2*self.x()*self.y() - 2*self.r*self.z()      , 1 - 2*self.x()*self.x() - 2*self.z()*self.z() , 2*self.y()*self.z() + 2*self.y()*self.z() + 2*self.r*self.x(), 0],
-						 [ 2*self.x()*self.z() - 2*self.r*self.y()      , 2*self.y()*self.z() - 2*self.r*self.x()       , 1 - 2*self.x()*self.x() - 2*self.y()*self.y()                , 0],
-						 [                                             0,                                              0,                                                             0, 1]])
+		Matrix = np.mat([[ 1 - 2*self.y()*self.y() - 2*self.z()*self.z(), 2*self.x()*self.y() + 2*self.r*self.z()       , 2*self.x()*self.z() - 2*self.r*self.y()       , 0],
+		                 [ 2*self.x()*self.y() - 2*self.r*self.z()      , 1 - 2*self.x()*self.x() - 2*self.z()*self.z() , 2*self.y()*self.z() + 2*self.r*self.x()       , 0],
+						 [ 2*self.x()*self.z() + 2*self.r*self.y()      , 2*self.y()*self.z() - 2*self.r*self.x()       , 1 - 2*self.x()*self.x() - 2*self.y()*self.y() , 0],
+						 [                                             0,                                              0,                                             0 , 1]])
 		return Matrix
 
 
