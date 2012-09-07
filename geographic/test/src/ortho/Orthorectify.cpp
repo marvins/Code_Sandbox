@@ -127,10 +127,6 @@ Mat orthorectify( Mat const& image, Options& options ){
 
         }//end of x,y for loop
     
-    namedWindow("OUT");
-    imshow("OUT", output);
-    waitKey(0);
-
     return output;
 
 }
