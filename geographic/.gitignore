@@ -3,7 +3,6 @@
 bin
 build
 build\*
-data
 data\*
 unit_test
 
