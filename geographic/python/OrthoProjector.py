@@ -139,6 +139,22 @@ class Options:
 		return strout
 
 
+########################################################################
+#     Compute the point of intersection between a line  and a plane    #
+########################################################################
+def computeLine2PlaneIntersection( planeN, planeP, lineP1, lineP2 ):
+
+	N  = planeN
+	P3 = planeP
+	P1 = lineP1
+	P2 = lineP2
+
+	u = (np.dot( N.T, P3-P1)[0,0])/((np.dot( N.T, P2-P1))[0,0])
+	point = ( P1 + u*(P2-P1))
+	
+	return point
+
+
 def main():
 	
 	# Open up the config file and read the image parameters
@@ -194,7 +210,11 @@ def main():
 			
 			# We need to now find this point in the original image
 			ground_point = P1 + u*(V_view)
-		
+			
+			if ( x == 0 and y == 0 ) or ( x == cols-1 and y == rows-1 ):
+				print 'x, y: ', x, y
+				print 'gnd : ', ground_point
+
 			########################################################################################
 			# STEP 2: Relate the physical coordinate with the pixel location in the original image #
 			########################################################################################
@@ -219,6 +239,10 @@ def main():
 
 			# Compute the difference between the points
 			diff = options.world2img * ( imgPoint - N )
+			
+			if ( x == 0 and y == 0 ) or ( x == cols-1 and y == rows-1 ):
+				print 'imgp: ', imgPoint
+				print 'diff: ', diff
 
 			# Make sure coordinate fits inside the image
 			if int(diff[0,0])  >= 0   and int(diff[1,0]) >= 0 and int(diff[0,0]) < cols and int(diff[1,0]) < rows:
