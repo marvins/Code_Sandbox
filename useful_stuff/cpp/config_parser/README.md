@@ -1,0 +1,1 @@
+This is a fairly helpful config file parser that I use in a crunch.  Feel free to update or modify.  All I ask is that if the change is really useful, let me add it to the main code. 
