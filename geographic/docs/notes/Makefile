@@ -7,7 +7,7 @@ VIEWER=evince
 BIBTEX_FILE=$(TITLE).bib
 GLOSSARY_FILE=glossary.tex
 
-NOTES= CommonProgramsAndUsage.tex CameraCalibration.tex
+NOTES= CommonProgramsAndUsage.tex CameraCalibration.tex Orthorectification.tex
 
 INCLUDES=$(BIBTEX_FILE) $(GLOSSARY_FILE) $(NOTES)
 
