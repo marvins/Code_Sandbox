@@ -236,7 +236,6 @@ vector<double> PSR::Parser::getItem_vec_double( const std::string& tag_name, boo
 
     if( found == true ){
         ba::split( substrs, pre_split, ba::is_any_of(", "));
-        cout << "substrings" << endl;
         for( int i=0; i<substrs.size(); i++){
             ba::trim(substrs[i]);
             if( substrs[i].size() > 0 ){
