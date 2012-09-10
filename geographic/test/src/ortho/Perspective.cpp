@@ -41,6 +41,10 @@ static Mat load_point( double const& x, double const& y, double const& z ){
     return out;
 }
 
+static double _round( double const& val ){
+    return std::floor( val + 0.5 );
+}
+
 Mat generate_perspective_test_image( Options& options ){
 
     //create an output image
@@ -189,8 +193,8 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
             Mat final_image_point = options.get_build_cam2img() * stare_point_world;
              
             // convert to cv point to allow passing to as an index
-            Point final_image_coord( final_image_point.at<double>(0,0),
-                                     final_image_point.at<double>(1,0));
+            Point final_image_coord( _round(final_image_point.at<double>(0,0)),
+                                     _round(final_image_point.at<double>(1,0)));
             
             if( final_image_coord.x >= 0 && final_image_coord.x < input_image.cols &&
                 final_image_coord.y >= 0 && final_image_coord.y < input_image.rows ){

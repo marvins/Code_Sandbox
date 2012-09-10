@@ -38,7 +38,10 @@ static Mat load_point( double const& x, double const& y, double const& z ){
 
     return out;
 }
-   
+
+static int _round( double const& val ){
+    return std::floor( val + 0.5 );
+}
 
 Mat compute_location( Mat const& corner, Mat const& center, Mat const& principle_point, Mat const& earth_normal, Size sz, Options const& options ){
 
@@ -189,7 +192,7 @@ Mat orthorectify( Mat const& image, Options& options ){
             Mat img_coord = options.get_output_cam2img(image.size()) * cam_coord;
             
             //convert to opencv point
-            Point pnt( img_coord.at<double>(0,0), img_coord.at<double>(1,0));
+            Point pnt( _round(img_coord.at<double>(0,0)), _round(img_coord.at<double>(1,0)));
 
             if( pnt.x >= 0 && pnt.x < image.cols && pnt.y >= 0 && pnt.y < image.rows ){
                 
