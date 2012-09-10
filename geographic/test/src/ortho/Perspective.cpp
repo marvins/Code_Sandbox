@@ -54,6 +54,7 @@ Mat generate_perspective_test_image( Options& options ){
     
     namedWindow("Flat Test Image");
     imshow("Flat Test Image", flat_img);
+    imshow("DEM", dem);
     waitKey(0);
     destroyWindow("Flat Test Image");
 

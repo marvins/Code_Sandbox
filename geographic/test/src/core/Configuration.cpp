@@ -30,7 +30,7 @@ Options::Options( string const& config_file ){
     load_configuration();
 }
 
-
+/** Open the configuration file and read values */
 void Options::load_configuration( ){
     
     //Parse the config file
