@@ -44,6 +44,7 @@ int main( int argc, char* argv[] ){
             imshow("Modified Image", options.image);
             waitKey(0);
             imwrite("data/modified_image.jpg", options.image);
+            destroyWindow("Modified Image");
 
         }
         //if we need to rectify an image, run here
@@ -57,6 +58,8 @@ int main( int argc, char* argv[] ){
             imshow("Fully Rectified Image", corrected_image);
             waitKey(0);
             imwrite("data/corrected_image.jpg", corrected_image);
+            destroyWindow("Fully Rectified Image");
+
         }
 
 

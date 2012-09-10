@@ -7,6 +7,9 @@
 
 #include "Quaternion.hpp"
 
+#include <iostream>
+using namespace std;
+
 Quaternion::Quaternion(){
     real() = 0;
     imag() = vec(0,0,0);
@@ -26,7 +29,7 @@ Quaternion::Quaternion( const double theta, const vec& axis ){
     
     //make sure the axis is normalized
     vec naxis = axis / axis.mag();
-
+    
     real() = cos(theta/2);
     imag() = sin(theta/2)*naxis;
 }

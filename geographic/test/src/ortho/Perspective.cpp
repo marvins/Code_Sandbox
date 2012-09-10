@@ -47,9 +47,15 @@ Mat generate_perspective_test_image( Options& options ){
     Mat output, dem, flat_img;
     create_flat_test_image( options, flat_img, dem );
     options.dem = dem;
+    
+    namedWindow("Flat Test Image");
+    imshow("Flat Test Image", flat_img);
+    waitKey(0);
+    destroyWindow("Flat Test Image");
 
     //rotate the scene of the image accordingly
     rotate_image_scene( flat_img, dem, output, options );
+    
 
     return output;
 }
@@ -170,7 +176,6 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
             
             // move the image point into the world space
             Mat cam_point = (options.RotationM*image_point) + final_position - load_point(0,0,0);
-
             
             // Find the position in the world space where the image pixel is pointing to
             Mat P1 = final_position.clone();
@@ -182,12 +187,11 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
             
             // relate the position to image coordinates in the original
             Mat final_image_point = options.get_build_cam2img() * stare_point_world;
-            
+             
             // convert to cv point to allow passing to as an index
             Point final_image_coord( final_image_point.at<double>(0,0),
                                      final_image_point.at<double>(1,0));
             
-             
             if( final_image_coord.x >= 0 && final_image_coord.x < input_image.cols &&
                 final_image_coord.y >= 0 && final_image_coord.y < input_image.rows ){
                 

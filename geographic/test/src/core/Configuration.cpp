@@ -85,7 +85,7 @@ void Options::load_configuration( ){
     RotationM = RotationQ.get_rotation_matrix();
 
     image = imread( image_filename.c_str(), 0);    
-
+    
 }
 
 
