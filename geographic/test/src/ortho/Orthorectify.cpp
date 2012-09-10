@@ -38,7 +38,10 @@ static Mat load_point( double const& x, double const& y, double const& z ){
 
     return out;
 }
-   
+
+static int _round( double const& val ){
+    return std::floor( val + 0.5 );
+}
 
 Mat compute_location( Mat const& corner, Mat const& center, Mat const& principle_point, Mat const& earth_normal, Size sz, Options const& options ){
 
@@ -182,11 +185,14 @@ Mat orthorectify( Mat const& image, Options& options ){
             //this is the location in world coordinates on where the starepoint intersects the input camera image plane
             Mat input_camera_plane_point = compute_plane_line_intersection( options.Position_i, stare_point, rotated_camera_normal, input_principle_point);
             
-            //convert to the image coordinate system
+            //convert the world coordinate into local camera coordinates
             Mat cam_coord = options.RotationM.inv()*(input_camera_plane_point - options.Position_i) + load_point(0,0,0);
+            
+            //convert to the image coordinate system
             Mat img_coord = options.get_output_cam2img(image.size()) * cam_coord;
-
-            Point pnt( img_coord.at<double>(0,0), img_coord.at<double>(1,0));
+            
+            //convert to opencv point
+            Point pnt( _round(img_coord.at<double>(0,0)), _round(img_coord.at<double>(1,0)));
 
             if( pnt.x >= 0 && pnt.x < image.cols && pnt.y >= 0 && pnt.y < image.rows ){
                 
