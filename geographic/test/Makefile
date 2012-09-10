@@ -22,6 +22,7 @@ INCL = $(OPENCV_INCLUDE) $(BOOST_INCLUDE)
 
 EXEC = $(BIN)/orthoproject
 
+FLAGS = -Wall -O3
 
 ###############################
 #    List of Object Files     #
@@ -47,43 +48,43 @@ HEADERS= $(CORE)/Configuration.hpp \
 #          Executable         #
 ###############################
 $(EXEC): $(OBJECTS) $(HEADERS)
-	g++ $(OBJECTS) -o $@ $(LIBS)
+	g++ $(OBJECTS) -o $@ $(LIBS) $(FLAGS)
 
 
 ###############################
 #          Main Driver        #
 ###############################
 $(BUILD)/orthoproject.o: orthoproject.cpp  $(HEADERS)
-	g++ $< -c -o $@ $(INCL)
+	g++ $< -c -o $@ $(INCL) $(FLAGS)
 
 
 # Configuration
 $(BUILD)/Configuration.o: $(CORE)/Configuration.cpp $(HEADERS)
-	g++ $< -c -o $@ $(INCL)
+	g++ $< -c -o $@ $(INCL) $(FLAGS)
 
 # Config Parser
 $(BUILD)/Parser.o: $(CORE)/Parser.cpp $(HEADERS)
-	g++ $< -c -o $@ $(INCL)
+	g++ $< -c -o $@ $(INCL) $(FLAGS)
 
 # Orthorectification
 $(BUILD)/Orthorectify.o: $(ORTHO)/Orthorectify.cpp $(HEADRES)
-	g++ $< -c -o $@ $(INCL)
+	g++ $< -c -o $@ $(INCL) $(FLAGS)
 
 # Perspective Code
 $(BUILD)/Perspective.o: $(ORTHO)/Perspective.cpp $(HEADERS)
-	g++ $< -c -o $@ $(INCL)
+	g++ $< -c -o $@ $(INCL) $(FLAGS)
 
 # Quaternion Code
 $(BUILD)/Quaternion.o: $(MATH)/Quaternion.cpp $(HEADERS)
-	g++ $< -c -o $@ $(INCL)
+	g++ $< -c -o $@ $(INCL) $(FLAGS)
 
 #Vector Code
 $(BUILD)/Vector.o: $(MATH)/Vector.cpp $(HEADERS)
-	g++ $< -c -o $@ $(INCL)
+	g++ $< -c -o $@ $(INCL) $(FLAGS)
 
 # Geometry code
 $(BUILD)/Geometry.o: $(MATH)/Geometry.cpp $(HEADERS)
-	g++ $< -c -o $@ $(INCL)
+	g++ $< -c -o $@ $(INCL) $(FLAGS)
 
 
 clean: 
