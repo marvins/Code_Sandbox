@@ -186,3 +186,34 @@ Mat Options::get_output_cam2img( Size const& sz )const{
     return matrix;
 }
 
+Mat Options::get_output_img2cam( cv::Size const& sz, double const& ref )const{
+    
+    Mat matrix(4,4,CV_64FC1);
+    matrix = Scalar(0);
+    
+    matrix.at<double>(0,0) = 1.0/ref;
+    matrix.at<double>(1,1) = 1.0/ref;
+    matrix.at<double>(2,2) = 1;
+    matrix.at<double>(3,3) = 1;
+    matrix.at<double>(0,3) = -((sz.width /ref)/2.0); 
+    matrix.at<double>(1,3) = -((sz.height/ref)/2.0);
+
+    return matrix;
+}
+
+Mat Options::get_output_cam2img( cv::Size const& sz, double const& ref )const{
+    
+    Mat matrix(4,4,CV_64FC1);
+    matrix = Scalar(0);
+    
+    matrix.at<double>(0,0) = sz.width;
+    matrix.at<double>(1,1) = sz.height;
+    matrix.at<double>(2,2) = 1;
+    matrix.at<double>(3,3) = 1;
+    matrix.at<double>(0,3) = sz.width/2.0;
+    matrix.at<double>(1,3) = sz.height/2.0;
+
+    
+    return matrix;
+}
+
