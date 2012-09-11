@@ -1,3 +1,4 @@
+.PHONY: docs
 
 BIN=bin
 BUILD=build
@@ -91,6 +92,9 @@ $(BUILD)/Geometry.o: $(MATH)/Geometry.cpp $(HEADERS)
 $(BUILD)/Utilities.o: $(CORE)/Utilities.cpp $(HEADERS)
 	g++ $< -c -o $@ $(INCL)
 
+
+docs:
+	doxygen Doxyfile
 
 clean: 
 	rm -r $(EXEC) $(BUILD)/*

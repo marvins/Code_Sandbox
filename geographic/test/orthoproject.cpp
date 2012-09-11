@@ -1,5 +1,8 @@
 /**
  * Orthoprojection Test Program
+ *
+ * @Author Marvin Smith, Sierra Nevada Corporation
+ * @Date  
 */
 
 //STL Libraries
