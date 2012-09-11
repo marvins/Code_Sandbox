@@ -22,6 +22,11 @@ class Parser{
         std::string getItem_string( const std::string& tag_name, bool& found )const;
         void   setItem_string( const std::string& tag_name, const std::string& value );
         void   setItem_string( const std::string& tag_name, const std::string& value, const bool& create );
+        
+        //boolean handling
+        bool  getItem_bool( const std::string& tag_name, bool& found )const;
+        void  setItem_bool( const std::string& tag_name, const bool& value );
+        void  setItem_bool( const std::string& tag_name, const bool& value, const bool& create );
 
         //int handling
         int   getItem_int( const std::string& tag_name, bool& found )const;

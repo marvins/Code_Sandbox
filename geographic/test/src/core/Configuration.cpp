@@ -86,6 +86,14 @@ void Options::load_configuration( ){
 
     image = imread( image_filename.c_str(), 0);    
     
+    zbufferEnabled = parser.getItem_bool("ZBUFFER_ENABLED", found);
+    if( found == false )
+        throw string("ERROR: ZBUFFER_ENABLED not found or enabled");
+
+}
+
+bool Options::doZBuffering()const{
+    return zbufferEnabled;
 }
 
 
@@ -103,6 +111,11 @@ void Options::print()const{
     cout << "Build Image Configuration" << endl;
     cout << " - Build Image Size: " << build_image_size.width << ", " << build_image_size.height << endl;
     cout << " - Build Image Type: " << build_image_type << endl;
+    cout << " - Z Buffering     : ";
+    if( zbufferEnabled == true )
+        cout << "True" << endl;
+    else
+        cout << "False" << endl;
     cout << endl;
 
 }

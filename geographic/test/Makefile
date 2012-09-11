@@ -33,7 +33,8 @@ OBJECTS= $(BUILD)/orthoproject.o \
 		 $(BUILD)/Perspective.o \
 		 $(BUILD)/Quaternion.o \
 		 $(BUILD)/Vector.o \
-		 $(BUILD)/Geometry.o
+		 $(BUILD)/Geometry.o \
+		 $(BUILD)/Utilities.o
 
 HEADERS= $(CORE)/Configuration.hpp \
 		 $(CORE)/Parser.hpp \
@@ -41,7 +42,8 @@ HEADERS= $(CORE)/Configuration.hpp \
 		 $(ORTHO)/Perspective.hpp \
 		 $(MATH)/Quaternion.hpp \
 		 $(MATH)/Vector.hpp \
-		 $(MATH)/Geometry.hpp
+		 $(MATH)/Geometry.hpp \
+		 $(CORE)/Utilities.hpp
 
 ###############################
 #          Executable         #
@@ -83,6 +85,10 @@ $(BUILD)/Vector.o: $(MATH)/Vector.cpp $(HEADERS)
 
 # Geometry code
 $(BUILD)/Geometry.o: $(MATH)/Geometry.cpp $(HEADERS)
+	g++ $< -c -o $@ $(INCL)
+
+# Utility Functions
+$(BUILD)/Utilities.o: $(CORE)/Utilities.cpp $(HEADERS)
 	g++ $< -c -o $@ $(INCL)
 
 

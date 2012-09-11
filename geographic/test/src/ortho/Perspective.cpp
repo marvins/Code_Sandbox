@@ -1,4 +1,6 @@
 #include "Perspective.hpp"
+
+#include "../core/Utilities.hpp"
 #include "../math/Geometry.hpp"
 
 #include <opencv2/highgui/highgui.hpp>
@@ -8,38 +10,8 @@
 using namespace cv;
 using namespace std;
 
-static void print_mat( const Mat& mat ){
 
-    for( int y=0; y<mat.rows; y++){
-        for( int x=0; x<mat.cols; x++){
-            if(mat.type() == CV_64FC1)
-                cout << mat.at<double>(y,x) << ", ";
-        }
-        cout << endl;
-    }
-}
 
-static Mat load_vector( double const& x, double const& y, double const& z ){
-    
-    Mat out(4, 1, CV_64FC1);
-    out.at<double>(0,0) = x;
-    out.at<double>(1,0) = y;
-    out.at<double>(2,0) = z;
-    out.at<double>(3,0) = 0;
-
-    return out;
-}
-
-static Mat load_point( double const& x, double const& y, double const& z ){
-
-    Mat out(4, 1, CV_64FC1);
-    out.at<double>(0,0) = x;
-    out.at<double>(1,0) = y;
-    out.at<double>(2,0) = z;
-    out.at<double>(3,0) = 1;
-
-    return out;
-}
 
 Mat generate_perspective_test_image( Options& options ){
 
@@ -165,6 +137,10 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
     // this is the center point of the final view image plane
     Mat plane_centerpoint = final_position + rotated_normalF;
     
+    //create the zbuffer
+    Point3f  maxZPos;
+    double   maxZDist;
+
     //this will rotate the image according to the required values
     int cnt = 0;
     for( int x=0; x<input_image.cols; x++ ){
@@ -182,26 +158,53 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
             Mat P2 = cam_point.clone();
             Mat N  = initial_normal;
             Mat P3 = initial_position;
-
+            
+            // This is the image starepoint or the point you are looking at
             Mat stare_point_world = compute_plane_line_intersection( P1, P2, N, P3);
             
-            // relate the position to image coordinates in the original
-            Mat final_image_point = options.get_build_cam2img() * stare_point_world;
+            if( options.doZBuffering() == true ){
+                /** DEPTH PROCESSING MODULE */
+                //now we need to compute the depth buffer for this image
+                /*  
+                   Algorithm
+                   1. Iterate over every pixel
+                */
+
+                for( int xx=0; xx<input_image.cols; xx++ ){
+                    for( int yy=0; yy<input_image.rows; yy++ ){
+
+                        //test the distance from the line Po -> Stare point to the elevation line
+                        Mat a1 = final_position;
+                        Mat a2 = stare_point_world;
+                        
+                        Mat b1 = compute_image2projected_coordinate( xx, yy ); 
+                    }
+                }
+
+
+
+
+            }
+            else{
+
+                // relate the position to image coordinates in the original
+                Mat final_image_point = options.get_build_cam2img() * stare_point_world;
              
-            // convert to cv point to allow passing to as an index
-            Point final_image_coord( final_image_point.at<double>(0,0),
+                // convert to cv point to allow passing to as an index
+                Point final_image_coord( final_image_point.at<double>(0,0),
                                      final_image_point.at<double>(1,0));
             
-            if( final_image_coord.x >= 0 && final_image_coord.x < input_image.cols &&
-                final_image_coord.y >= 0 && final_image_coord.y < input_image.rows ){
+                if( final_image_coord.x >= 0 && final_image_coord.x < input_image.cols &&
+                    final_image_coord.y >= 0 && final_image_coord.y < input_image.rows ){
                 
-                //pull the image
-                if( output_image.type() == CV_8UC1 )
-                    output_image.at<uchar>(y,x) = input_image.at<uchar>(final_image_coord);
-                else if( output_image.type() == CV_8UC3 )    
-                    output_image.at<Vec3b>(y,x) = input_image.at<Vec3b>(final_image_coord);
-                else
-                    throw string("Unsupported pixel type");
+                    //pull the image
+                    if( output_image.type() == CV_8UC1 )
+                        output_image.at<uchar>(y,x) = input_image.at<uchar>(final_image_coord);
+                    else if( output_image.type() == CV_8UC3 )    
+                        output_image.at<Vec3b>(y,x) = input_image.at<Vec3b>(final_image_coord);
+                    else
+                        throw string("Unsupported pixel type");
+                }
             }
 
             if( cnt++ % 10000 == 0 )

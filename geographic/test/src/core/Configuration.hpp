@@ -39,8 +39,12 @@ class Options{
         
         cv::Mat get_output_cam2img( cv::Size const& sz, double const& ref )const;
         cv::Mat get_output_img2cam( cv::Size const& sz, double const& ref )const;
-    
+        
+        bool doZBuffering()const;
+
     private:
+        
+        bool zbufferEnabled;
 
         void load_configuration( );
 

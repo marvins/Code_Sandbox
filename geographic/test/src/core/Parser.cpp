@@ -30,6 +30,25 @@ std::string num2str( TP const& value ){
     return sin.str();
 }
 
+std::string bool2str( bool const& value ){
+
+    if( value == false )
+        return "false";
+    else
+        return "true";
+}
+
+bool str2bool( const string& value ){
+
+    string temp;
+    std::transform( value.begin(), value.end(), temp.begin(), ::tolower);
+
+    if( value == "false")
+        return false;
+    else
+        return true;
+}
+
 
 PSR::Parser::Parser( ){
     valid = false;
@@ -278,3 +297,53 @@ void  PSR::Parser::setItem_vec_double( const std::string& tag_name, const vector
 }
 
 
+bool PSR::Parser::getItem_bool( const string& tag_name, bool& found )const{
+    
+    found = false;
+    string temp;
+
+    //first we need to search through the item list and look for the right tag
+    for( size_t i=0; i<items.size(); i++)
+        if( tag_name == items[i].first ){
+            found = true;
+            
+            temp = items[i].second;
+            std::transform( temp.begin(), temp.end(), temp.begin(), ::tolower);
+            
+            //check for true
+            if( temp == "true" || temp == "1" ){
+                return true;
+            }
+            else if( temp == "false" || temp == "0" ){
+                return false;
+            }
+            else{
+                throw string(string("ERROR: Unknown parameter: ") + items[i].second);
+            }
+
+        }
+
+    //if nothing is found, return nothing
+    return false;
+}
+
+void  PSR::Parser::setItem_bool( const string& tag_name, const bool& value ){
+    setItem_bool( tag_name, value, false );
+}
+
+
+void  PSR::Parser::setItem_bool( const string& tag_name, const bool& value, const bool& create ){
+
+    //iterate through the list looking for a matching tag
+    for( size_t i=0; i<items.size(); i++ )
+        if( tag_name == items[i].first ){
+            items[i].second = bool2str(value);
+            return;
+        }
+
+    
+    //if the create flag is set, then add the item
+    items.push_back( pair<string,string>( tag_name, bool2str(value)));
+
+
+}
