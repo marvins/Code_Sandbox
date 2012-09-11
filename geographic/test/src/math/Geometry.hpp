@@ -3,6 +3,8 @@
 
 #include <opencv2/core/core.hpp>
 
+#include <vector>
+
 /** 
   * Compute the intersection between a line and a plane using 2 point for the line and a point for the plane as well as its normal. 
   *
@@ -16,6 +18,34 @@
 */
 cv::Mat compute_plane_line_intersection( cv::Mat const& Line_P1, cv::Mat const& Line_P2, cv::Mat const& N, cv::Mat const& Plane_P1);
 
-cv::Mat compute_image2projected_coordinate( const int& xx, const int& yy );
+/**
+  * Convert the coordinate in the pixel space into the world coordinate system.
+  *
+  * @param[in] pnt Point in the image space.
+  * @param[in] RotationMatrix A rotation matrix to rotate the camera with
+  * @param[in] camera_origin The origin of the Camera in the world space
+  * @param[in] image2camera the transformation from image space to camera space
+  * @return the geographic location of the camera point in world coordinates
+*/
+cv::Mat pixel2world_coordinates( const cv::Point3f& pnt, const cv::Mat& RotationMatrix, const cv::Mat& camera_origin, const cv::Mat& image2camera );
+
+/**
+  * Add a translation to a 4x4 matrix
+  *
+  * @param[out] matrix Input matrix
+  * @param[in] translation Translation value
+*/
+void matrix_add_translation( cv::Mat& matrix, cv::Mat& translation );
+
+std::vector<std::vector<cv::Point3f> > build_ground_coordinate_list( cv::Mat const& dem, cv::Size img_size, const double& f, const cv::Mat& RotationM, const cv::Mat& camera_origin, const cv::Mat& img2cam );  
+
+void build_buffer_stacks( const cv::Mat& final_position, std::vector<std::vector<cv::Point3f> > const& coordList, 
+                                                         std::vector<std::vector<double> >& astack, 
+                                                         std::vector<std::vector<double> >& cstack, 
+                                                         std::vector<std::vector<double> >& estack, 
+                                                         std::vector<std::vector<cv::Mat> >& ustack,
+                                                         std::vector<std::vector<cv::Mat> >& wstack );
+
+double compute2d_line_point_distance( cv::Point3f const& l1, cv::Point3f const& l2, cv::Point3f const& pt );
 
 #endif

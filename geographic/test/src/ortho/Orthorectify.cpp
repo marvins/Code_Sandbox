@@ -7,10 +7,10 @@
 
 using namespace cv;
 
-   
 
 Mat compute_location( Mat const& corner, Mat const& center, Mat const& principle_point, Mat const& earth_normal, Size sz, Options const& options ){
 
+    
     /* Compute the camera coordinate of the point */ 
     Mat cam_point = options.get_output_img2cam( sz ) * corner + load_vector( 0, 0, -1);
     
@@ -25,18 +25,6 @@ Mat compute_location( Mat const& corner, Mat const& center, Mat const& principle
     /*  This is the ground point */
     Mat ground_point = compute_plane_line_intersection( P1, P2, N, P3);
     return ground_point;
-
-    /*  Start performing the transformation from ground to output image plane  */
-    P1 = ground_point.clone();
-    P2 = options.Position_f;
-    P3 = principle_point;
-    N  = load_vector(0, 0, -1);
-
-    //this is the location on the image plane
-    Mat output_camera_plane_point = compute_plane_line_intersection( P2, P1, N, P3);
-            
-    //compute the difference
-    return output_camera_plane_point.clone();
     
 }
 
@@ -64,8 +52,8 @@ double compute_gsd( Mat const& earth_normal, Size sz, Options const& options ){
     cam_pnt02 = compute_plane_line_intersection( options.Position_i, cam_pnt02, earth_normal, load_point(0,0,0));
     cam_pnt11 = compute_plane_line_intersection( options.Position_i, cam_pnt11, earth_normal, load_point(0,0,0));
     cam_pnt12 = compute_plane_line_intersection( options.Position_i, cam_pnt12, earth_normal, load_point(0,0,0));
+   
 
-    
     /* Choose the GSD with the smallest value */
     double gsdTL = sqrt( pow(cam_pnt01.at<double>(0,0) - cam_pnt02.at<double>(0,0), 2) 
                        + pow(cam_pnt01.at<double>(1,0) - cam_pnt02.at<double>(1,0), 2));
@@ -79,7 +67,6 @@ double compute_gsd( Mat const& earth_normal, Size sz, Options const& options ){
 
 Mat orthorectify( Mat const& image, Options& options ){
     
-
 
     // the focal vector is the focal length multiplied by the normal to the camera
     Mat focal_vector = options.get_focal_length() * load_vector(0, 0, -1);
@@ -131,7 +118,7 @@ Mat orthorectify( Mat const& image, Options& options ){
 
     //compute the gsd of the image as the smallest available gsd known
     double gsd = compute_gsd( earth_normal, image.size(), options );
-
+    
     //create a new image which spans this length
     Size osize( width/gsd, height/gsd);
 
@@ -147,15 +134,22 @@ Mat orthorectify( Mat const& image, Options& options ){
             Mat stare_point = load_point( ((double)x/output.cols)*(maxPnt.at<double>(0,0) - minPnt.at<double>(0,0)) + minPnt.at<double>(0,0), 
                                           ((double)y/output.rows)*(maxPnt.at<double>(1,0) - minPnt.at<double>(1,0)) + minPnt.at<double>(1,0), 
                                                                                 0                                                         );
-            
             //this is the location in world coordinates on where the starepoint intersects the input camera image plane
-            Mat input_camera_plane_point = compute_plane_line_intersection( options.Position_i, stare_point, rotated_camera_normal, input_principle_point);
+            Mat input_camera_plane_point = compute_plane_line_intersection( options.Position_i, 
+                                                                            stare_point, 
+                                                                            rotated_camera_normal, 
+                                                                            input_principle_point);
+            
+            
+
+            //convert the world coordinate into local camera coordinates
+            Mat cam_coord = options.RotationM.inv()*(input_camera_plane_point - options.Position_i) + load_point(0,0,0);
             
             //convert to the image coordinate system
-            Mat cam_coord = options.RotationM.inv()*(input_camera_plane_point - options.Position_i) + load_point(0,0,0);
             Mat img_coord = options.get_output_cam2img(image.size()) * cam_coord;
-
-            Point pnt( img_coord.at<double>(0,0), img_coord.at<double>(1,0));
+            
+            //convert to opencv point
+            Point pnt( _round(img_coord.at<double>(0,0)), _round(img_coord.at<double>(1,0)));
 
             if( pnt.x >= 0 && pnt.x < image.cols && pnt.y >= 0 && pnt.y < image.rows ){
                 

@@ -255,7 +255,7 @@ vector<double> PSR::Parser::getItem_vec_double( const std::string& tag_name, boo
 
     if( found == true ){
         ba::split( substrs, pre_split, ba::is_any_of(", "));
-        for( int i=0; i<substrs.size(); i++){
+        for( size_t i=0; i<substrs.size(); i++){
             ba::trim(substrs[i]);
             if( substrs[i].size() > 0 ){
                 output.push_back(str2num<double>(substrs[i]));
@@ -274,11 +274,11 @@ void  PSR::Parser::setItem_vec_double( const std::string& tag_name, const vector
 void  PSR::Parser::setItem_vec_double( const std::string& tag_name, const vector<double>& value, const bool& create ){
 
     //iterate through the list, looking for a match
-    for( int i=0; i<items.size(); i++)
+    for( size_t i=0; i<items.size(); i++)
         if( tag_name == items[i].first ){
             //clear the item
             string output = "";
-            for( int j=0; j<value.size()-1; j++)
+            for( size_t j=0; j<value.size()-1; j++)
                 output += num2str<double>(value[j]) + ",";
             output += num2str<double>(value.back());
             items[i].second = output;
@@ -288,7 +288,7 @@ void  PSR::Parser::setItem_vec_double( const std::string& tag_name, const vector
     if( create == true ){
 
         string output = "";
-        for( int i=0; i<value.size()-1; i++)
+        for( size_t i=0; i<value.size()-1; i++)
             output += num2str<double>(value[i]) + ",";
         output += num2str<double>(value.back());
         items.push_back( pair<string,string>( tag_name, output));

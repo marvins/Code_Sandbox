@@ -25,6 +25,7 @@ Quaternion::Quaternion( const vec& q){
     real() = 0;
 }
 
+/** Parameterized Constructor */
 Quaternion::Quaternion( const double theta, const vec& axis ){
     
     //make sure the axis is normalized

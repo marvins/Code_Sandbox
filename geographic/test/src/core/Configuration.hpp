@@ -25,11 +25,16 @@ class Options{
         
         double get_focal_length()const;
         void   set_focal_length( double const& fl );
-
+        
+        //position of the original camera
         cv::Mat Position_i;
+
+        //position of the rectified camera
         cv::Mat Position_f;
         
+        //rotation matrix for the quaternion
         cv::Mat RotationM;
+
         Quaternion RotationQ;
 
         cv::Mat get_build_img2cam()const;

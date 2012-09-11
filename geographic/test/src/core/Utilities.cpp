@@ -5,6 +5,19 @@
 using namespace cv;
 using namespace std;
 
+/** 
+  * Loads an OpenCV 3D point into a matrix
+*/
+Mat load_point( const Point3f& pnt ){
+    
+    Mat out(4, 1, CV_64FC1);
+    out.at<double>(0,0) = pnt.x;
+    out.at<double>(1,0) = pnt.y;
+    out.at<double>(2,0) = pnt.z;
+    out.at<double>(3,0) = 1;
+    return out;
+}
+
 /**
   * Loads a 3d point into a matrix
 */
@@ -45,5 +58,22 @@ void print_mat( const Mat& mat ){
         }
         cout << endl;
     }
+}
+
+/**
+ * Round a value
+*/
+int _round( double const& value ){
+    return std::floor( value + 0.5 );
+}
+
+
+cv::Point3f Mat2Point3f( Mat const& mat ){
+
+    return Point3f( 
+        mat.at<double>(0,0),
+        mat.at<double>(1,0),
+        mat.at<double>(2,0));
+
 }
 

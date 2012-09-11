@@ -51,4 +51,27 @@
                    calibration.}
 }
 
+\newglossaryentry{Camera Origin}{
+    name={Camera Origin},
+    description={  The center of the camera in world coordinates.  In reality, this should be
+                   the latitude, longitude, and elevation of the camera if described in geodetic coordinates. }
+    symbol={$P_O$}
+}
+
+\newglossaryentry{Principle Point}{
+     name={Principle Point},
+     description={ The intersection of the ray which defines the center of the camera view with the image plane. This is the
+                   physical location in world coordinates of the center of the image view.  This subtracted with the Camera Origin define
+                   the vector which points ``straight ahead". },
+     symbol={$P_P$}
+}
+
+\newglossaryentry{Principle Ground Point}{
+    name={Principle Ground Point},
+    description={Using the ray defined by the Camera Origin and the line $P_OP_P$, the intersection of this line with the
+                 surface of the Earth creates a coordinate on the surface which is located in the principle point of the image. 
+                 This is relevant because images can only give you 3D information up to scale and depth.  This will provide the depth 
+                 attribute.}
+    symbol={$P_G$}
+}
 
