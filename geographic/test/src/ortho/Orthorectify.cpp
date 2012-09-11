@@ -124,7 +124,8 @@ Mat orthorectify( Mat const& image, Options& options ){
 
     //create the output image
     Mat output( osize, image.type());
-    
+    output = Scalar(0);
+
     // Iterate through the image
     int cnt = 0;
     for( int x=0; x<output.cols; x++)

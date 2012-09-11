@@ -20,8 +20,6 @@ Mat generate_perspective_test_image( Options& options ){
     create_flat_test_image( options, flat_img, dem );
     options.dem = dem;
     
-    //rotate the scene of the image accordingly
-    rotate_image_scene( flat_img, dem, output, options );
     
     namedWindow("Flat Test Image");
     imshow("Flat Test Image", flat_img);
@@ -29,6 +27,10 @@ Mat generate_perspective_test_image( Options& options ){
     waitKey(0);
     destroyWindow("Flat Test Image");
     destroyWindow("DEM");
+    
+    //rotate the scene of the image accordingly
+    rotate_image_scene( flat_img, dem, output, options );
+    
 
     return output;
 }
@@ -82,8 +84,21 @@ void create_flat_test_image( Options const& options, Mat& image, Mat& dem ){
             }
 
             //draw an ocllusion
-			if ( (px > .86 && px < .96) && (py > .6 && py < .69)){
+            if (((px >= .858 && px <= .962) && (py >= .598 && py <= .600 ))||
+                ((px >= .858 && px <= .962) && (py >= .690 && py <= .692 ))||
+                ((px >= .858 && px <= .860) && (py >= .598 && py <= .692 ))||
+                ((px >= .960 && px <= .962) && (py >= .598 && py <= .692 ))){
+
+                if( image.type() == CV_8UC1 )
+                    image.at<uchar>(j,i) = 20;
+                if( image.type() == CV_8UC3 )
+                    image.at<Vec3b>(j,i) = Vec3b(20, 20, 20);
                 
+                //set the dem value
+                dem.at<uchar>(j,i) = 100;
+            }
+
+			if ( (px > .86  && px <  .96) && (py > .6   && py <  .69)){
 
                 if( image.type() == CV_8UC1 )
                     image.at<uchar>(j,i) = 250;
@@ -142,143 +157,136 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
     Mat plane_centerpoint = final_position + rotated_normalF;
     
     //create the zbuffer
-    Point3f  maxZPos;
+    Point3f  maxZPnt;
     double   maxZDist;
-    
+    int      maxType;
+
     //generate a ground coordinate list
     cout << "Start Ground Collection" << endl;
-    vector<vector<Point3f> > coordinateList = build_ground_coordinate_list( options.dem, 
+    vector<vector<Point3f> > outCoordinateList = build_ground_coordinate_list( options.dem, 
                                                                             output_image.size(), 
                                                                             options.get_focal_length(), 
                                                                             options.RotationM, 
                                                                             final_position, 
                                                                             options.get_output_img2cam(output_image.size()));   
     
+    vector<vector<Point3f> > inCoordinateList( input_image.cols);
+    for( int i=0; i<input_image.cols; i++){
+        inCoordinateList[i].resize(input_image.rows);
+        for( int j=0; j<input_image.rows; j++)
+            inCoordinateList[i][j] = Point3f( i - (input_image.cols/2), j - (input_image.rows/2), options.dem.at<uchar>(j,i));
+    }
+    
     vector<vector<double> > astack, cstack, estack;
     vector<vector<Mat> >    wstack, ustack;
     
-    cout << "Building Buffers" << endl;
-    build_buffer_stacks( final_position, coordinateList, astack, cstack, estack, ustack, wstack );
-
-
     Mat cam2img = options.get_build_cam2img();
     
-    double a, b, d, D;
-    Mat u, v;
-    
+    //we now have a region to search, we should next prune this region to only include 
+    //items actually in the image
+    Point2f imgMin( std::min( outCoordinateList[            0      ][            0      ].x, 
+                    std::min( outCoordinateList[            0      ][output_image.rows-1].x, 
+                    std::min( outCoordinateList[output_image.cols-1][            0      ].x, 
+                                                outCoordinateList[output_image.cols-1][output_image.rows-1].x))),
+                    std::min( outCoordinateList[            0      ][            0      ].y, 
+                    std::min( outCoordinateList[            0      ][output_image.rows-1].y, 
+                    std::min( outCoordinateList[output_image.cols-1][            0      ].y, 
+                              outCoordinateList[output_image.cols-1][output_image.rows-1].y))));
+
+    Point2f imgMax( std::max( outCoordinateList[            0      ][            0      ].x, 
+                    std::max( outCoordinateList[            0      ][output_image.rows-1].x, 
+                    std::max( outCoordinateList[output_image.cols-1][            0      ].x, 
+                              outCoordinateList[output_image.cols-1][output_image.rows-1].x))), 
+                    std::max( outCoordinateList[            0      ][            0      ].y, 
+                    std::max( outCoordinateList[            0      ][output_image.rows-1].y, 
+                    std::max( outCoordinateList[output_image.cols-1][            0      ].y, 
+                              outCoordinateList[output_image.cols-1][output_image.rows-1].y))));
+
+
+    Point2f demMin(-500,-500);
+    Point2f demMax( 500, 500);
+
     cout << "Iterating through image" << endl;
     //this will rotate the image according to the required values
     int cnt = 0;
     for( int x=0; x<output_image.cols; x++ ){
         for( int y=0; y<output_image.rows; y++ ){
-    
+           
+
+            cout << "------------------------------------------" << endl;
+            cout << x << ", " << y << endl;
+            cout << input_image.cols << ", " << input_image.rows << endl;
+            cout << output_image.cols << ", " << output_image.rows << endl;
+            
             /** Now we know what we are staring at.  Its time to now find what pixel will be shown here. */
             if( options.doZBuffering() == true ){
                 /** DEPTH PROCESSING MODULE */
-                //now we need to compute the depth buffer for this image
-                /*  
-                   Algorithm
-                   1. Iterate over every pixel, computing the actual 3D location
-                   NOTE: This should be done before this loop!!!!!!!!
-                */
                 
-                //define the line-to-line parameters
-                cout << x << ", " << y << endl;
-                for( int xx=450; xx<input_image.cols; xx++ ){
-                    for( int yy=350; yy<input_image.rows; yy++ ){
+                //compute the bounding box from the current point to the camera origin
+                Point2f minBound( std::min(final_position.at<double>(0,0), (double)outCoordinateList[x][y].x ),
+                                  std::min(final_position.at<double>(1,0), (double)outCoordinateList[x][y].y ));
 
-                        cout << "Pos: " << x << ", " << y << " -> " << coordinateList[x][y] << endl;
-                        cout << "Tst: " << xx<< ", " << yy<< " -> " << coordinateList[xx][yy] << endl;
-                        cout << compute2d_line_point_distance( Mat2Point3f(final_position), coordinateList[x][y], coordinateList[xx][yy]) << endl;
-                        cin.get();
+                Point2f maxBound( std::max(final_position.at<double>(0,0), (double)outCoordinateList[x][y].x ),
+                                  std::max(final_position.at<double>(1,0), (double)outCoordinateList[x][y].y ));
+                
+                //now that we know the geographic extent of this search, we need to relate this to 
+                //  pixels on the original image
+                Point imgPixMin( std::max(_round(minBound.x)+(input_image.cols/2),            0    ), std::max(_round(minBound.y)+(input_image.rows/2), 0));
+                Point imgPixMax( std::min(_round(maxBound.x)+(input_image.cols/2), input_image.cols-1), std::min(_round(maxBound.y)+(input_image.rows/2), input_image.rows-1));
+
+                //set the default positions
+                maxZDist = norm( Mat2Point3f(final_position)-outCoordinateList[x][y]);
+                maxZPnt  = outCoordinateList[x][y];
+                maxType  = 1;
+            
+                /** Start searching through the original image */
+                for( int xx=imgPixMin.x; xx<=imgPixMax.x; xx++ )
+                for( int yy=imgPixMin.y; yy<=imgPixMax.y; yy++ ){
                         
+                        //make sure that the test point has a higher elevation than the current point 
+                        if( ( outCoordinateList[x][y].z - inCoordinateList[xx][yy].z ) < -0.0001 ){
                         
                         //make sure point intersects line on 2D level
-                        if( compute2d_line_point_distance( Mat2Point3f(final_position), coordinateList[x][y], coordinateList[xx][yy]) < 1 ){
-
-
-
-                            //now we need to compute the distance between these two lines
-                            v = load_point( 0, 0, coordinateList[xx][yy].z);
-
-                            b = ustack[x][y].dot(v);
-                            d = ustack[x][y].dot(wstack[xx][yy]);
-                            D = astack[x][y] * cstack[xx][yy] - b*b;
-
-
-                            float    sc, sN, sD = D;      // sc = sN / sD, default sD = D >= 0
-                            float    tc, tN, tD = D;      // tc = tN / tD, default tD = D >= 0
-
-
-                            // compute the line parameters of the two closest points
-                            if (D < 0.000001) { // the lines are almost parallel
-                                sN = 0.0;        // force using point P0 on segment S1
-                                sD = 1.0;        // to prevent possible division by 0.0 later
-                                tN = estack[xx][yy];
-                                tD = cstack[xx][yy];
-                            }
-                            else {                // get the closest points on the infinite lines
-                                sN = (b*estack[xx][yy] - cstack[xx][yy]*d);
-                                tN = (a*estack[xx][yy] - b*d);
-                                if (sN < 0.0) {       // sc < 0 => the s=0 edge is visible
-                                    sN = 0.0;
-                                    tN = estack[xx][yy];
-                                    tD = cstack[xx][yy];
+                        if( compute2d_line_point_distance( Mat2Point3f(final_position), outCoordinateList[x][y], inCoordinateList[xx][yy]) < 2 ){
+                                
+                                //check if the lines intersect
+                                double dist;
+                                int result = compute3d_line_line_intersection( Mat2Point3f(final_position), outCoordinateList[x][y], 
+                                                                               inCoordinateList[xx][yy], Point3f( inCoordinateList[xx][yy].x, inCoordinateList[xx][yy].y, 0), 
+                                                                               dist, 1 );
+                                
+                                /** If there is an intersection, then update the buffer for that point */
+                                if( result > 0 && dist < maxZDist ){
+                                    maxZDist = dist;
+                                    maxZPnt  = inCoordinateList[xx][yy];
+                                    maxType = result;
                                 }
-                                else if (sN > sD) {  // sc > 1 => the s=1 edge is visible
-                                    sN = sD;
-                                    tN = estack[xx][yy] + b;
-                                    tD = cstack[xx][yy];
-                                }
-                            }
-
-                            if (tN < 0.0) {           // tc < 0 => the t=0 edge is visible
-                                tN = 0.0;
-                                // recompute sc for this edge
-                                if (-d < 0.0)
-                                    sN = 0.0;
-                                else if (-d > a)
-                                    sN = sD;
-                                else {
-                                    sN = -d;
-                                    sD = astack[x][y];
-                                }
-                            }
-                            else if (tN > tD) {      // tc > 1 => the t=1 edge is visible
-                                tN = tD;
-                                // recompute sc for this edge
-                                if ((-d + b) < 0.0)
-                                    sN = 0;
-                                else if ((-d + b) > a)
-                                    sN = sD;
-                                else {
-                                    sN = (-d + b);
-                                    sD = astack[x][y];
-                                }
-                            }
-                            // finally do the division to get sc and tc
-                            sc = (abs(sN) < SMALL_NUM ? 0.0 : sN / sD);
-                            tc = (abs(tN) < SMALL_NUM ? 0.0 : tN / tD);
-
-                            // get the difference of the two closest points
-                            Mat   dP = wstack[xx][yy] + (sc * ustack[x][y]) - (tc * v);  // = S1(sc) - S2(tc)
-
-                            double dist = norm(dP);   // return the closest distance
-
-                            if( dist < 10 ){
-                                cout << "A1: "; print_mat(load_point( coordinateList[x][y]).t());
-                                cout << "A2: "; print_mat(final_position.t());
-                                cout << "B : "; print_mat(load_point(coordinateList[xx][yy]));
-                                cin.get();
-                            }
                         }
-                    }
+                        }
+                } // end of xx and yy loops
+
+                //draw the point
+                
+                //first find the actual location of the pixel
+                Point pix( _round(maxZPnt.x) + (input_image.cols/2), _round(maxZPnt.y) + (input_image.rows/2) );
+
+                cout << pix << endl;
+                //pull the image
+                if( pix.x >= 0 && pix.y >= 0 && pix.x <= input_image.cols && pix.y <= input_image.rows ){
+
+                    if( output_image.type() == CV_8UC1 )
+                        output_image.at<uchar>(y,x) = input_image.at<uchar>(pix);
+                    else if( output_image.type() == CV_8UC3 )    
+                        output_image.at<Vec3b>(y,x) = input_image.at<Vec3b>(pix);
+                    else
+                        throw string("Unsupported pixel type");
+                
                 }
             }
             else{
 
                 // relate the position to image coordinates in the original
-                Mat final_image_point = cam2img * load_point( coordinateList[x][y]);
+                Mat final_image_point = cam2img * load_point( outCoordinateList[x][y]);
 
                 // convert to cv point to allow passing to as an index
                 Point final_image_coord( _round(final_image_point.at<double>(0,0)),
@@ -297,8 +305,9 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
                 }
             }
 
-            if( cnt++ % 10000 == 0 )
+            if( cnt++ % 10000 == 0 ){
                 cout << 'x' << flush;
+            }
         }
     }
 

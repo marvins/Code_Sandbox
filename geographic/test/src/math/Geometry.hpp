@@ -39,13 +39,15 @@ void matrix_add_translation( cv::Mat& matrix, cv::Mat& translation );
 
 std::vector<std::vector<cv::Point3f> > build_ground_coordinate_list( cv::Mat const& dem, cv::Size img_size, const double& f, const cv::Mat& RotationM, const cv::Mat& camera_origin, const cv::Mat& img2cam );  
 
-void build_buffer_stacks( const cv::Mat& final_position, std::vector<std::vector<cv::Point3f> > const& coordList, 
-                                                         std::vector<std::vector<double> >& astack, 
-                                                         std::vector<std::vector<double> >& cstack, 
-                                                         std::vector<std::vector<double> >& estack, 
-                                                         std::vector<std::vector<cv::Mat> >& ustack,
-                                                         std::vector<std::vector<cv::Mat> >& wstack );
 
 double compute2d_line_point_distance( cv::Point3f const& l1, cv::Point3f const& l2, cv::Point3f const& pt );
+double compute3d_line_point_distance( cv::Point3f const& l1, cv::Point3f const& l2, cv::Point3f const& pt );
+
+/**
+ * 0 - No intersection, return the distance between lines
+ * 1 - Intersection of Line A occured on an endpoint of line B
+ * 2 - Intersection of Line A occured on the interior of line B
+*/
+int compute3d_line_line_intersection( cv::Point3f const a1, cv::Point3f const a2, cv::Point3f const& b1, cv::Point3f const& b2, double& distance, double const& threshold );
 
 #endif

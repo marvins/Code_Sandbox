@@ -89,53 +89,118 @@ vector<vector<cv::Point3f> > build_ground_coordinate_list( cv::Mat const& dem, c
     return output_coordinate_list;
 }
 
-void build_buffer_stacks( Mat const& final_position, vector<vector<Point3f> > const& coordList, 
-                                                     vector<vector<double> >& astack, 
-                                                     vector<vector<double> >& cstack, 
-                                                     vector<vector<double> >& estack, 
-                                                     vector<vector<Mat> >& ustack,
-                                                     vector<vector<Mat> >& wstack ){
-
-    Mat u, v;
-    
-    //initialize the cstack
-    astack.resize(coordList.size());
-    cstack.resize(coordList.size());
-    estack.resize(coordList.size());
-    ustack.resize(coordList.size());
-    wstack.resize(coordList.size());
-
-    //iterate through every coordinate in the coordinate list
-    for( int x=0; x<coordList.size(); x++ ){
-        
-        astack[x].resize(coordList[x].size());
-        cstack[x].resize(coordList[x].size());
-        estack[x].resize(coordList[x].size());
-        ustack[x].resize(coordList[x].size());
-        wstack[x].resize(coordList[x].size());
-        for( int y=0; y<coordList[x].size(); y++ ){
-            
-            u = load_point( coordList[x][y] ) - final_position;
-            v = load_point( 0, 0, coordList[x][y].z);
-            
-
-            ustack[x][y] = u.clone();
-            wstack[x][y] = final_position - load_point( coordList[x][y].x, coordList[x][y].y, 0);
-            
-            astack[x][y] = u.dot(u);
-            cstack[x][y] = v.dot(v);
-            estack[x][y] = v.dot(wstack[x][y]);
-         }
-    }
-}
 
 double compute2d_line_point_distance( Point3f const& l1, Point3f const& l2, Point3f const& pt ){
     
-    double u = ((pt.x - l1.x)*(l2.x - l1.x) + (pt.y - l1.y)*(l2.y - l1.y))/(pow(norm(l2-l1),2));
-
-    Point3f res = l1 + u*(l2-l1);
+    return fabs( (l2.x - l1.x)*(l1.y - pt.y) - (l1.x - pt.x)*(l2.y - l1.y))/(sqrt( (l2.x-l1.x)*(l2.x-l1.x)+(l2.y-l1.y)*(l2.y-l1.y)));
     
-    cout << "Closest: " << res << endl;
-    return norm(res - pt);
+}
+
+double compute3d_line_point_distance( Point3f const& l1, Point3f const& l2, Point3f const& pt ){
+
+    Point3f v = l2 - l1;
+    Point3f w = pt - l1;
+
+    double c1 = w.dot(v);
+    if( c1 <= 0 )  return norm(pt - l1);
+
+    double c2 = v.dot(v);
+    if( c2 <= c1 ) return norm(pt - l2);
+
+    double b = c1/c2;
+    Point3f pb = l1 + b*v;
+    return norm(pt-pb);
 
 }
+
+#define SMALL_NUM 0.000001
+
+int compute3d_line_line_intersection( Point3f const a1, Point3f const a2, Point3f const& b1, Point3f const& b2, double& distance, double const& threshold ){
+
+
+    //compute some baseline variables
+    Point3f u = a2 - a1;
+    Point3f v = b2 - b1;
+    Point3f w = a1 - b1;
+
+    double a = u.dot(u);
+    double b = u.dot(v);
+    double c = v.dot(v);
+    double d = u.dot(w);
+    double e = v.dot(w);
+
+    double D = a*c - b*b;
+    double  sc, sN, sD = D;      // sc = sN / sD, default sD = D >= 0
+    double  tc, tN, tD = D;      // tc = tN / tD, default tD = D >= 0
+
+
+    // compute the line parameters of the two closest points
+    if (D < 0.000001) { // the lines are almost parallel
+        sN = 0.0;        // force using point P0 on segment S1
+        sD = 1.0;        // to prevent possible division by 0.0 later
+        tN = e;
+        tD = c;
+    }
+    else {                // get the closest points on the infinite lines
+        sN = (b*e - c*d);
+        tN = (a*e - b*d);
+        if (sN < 0.0) {       // sc < 0 => the s=0 edge is visible
+            sN = 0.0;
+            tN = e;
+            tD = c;
+        }
+        else if (sN > sD) {  // sc > 1 => the s=1 edge is visible
+            sN = sD;
+            tN = e + b;
+            tD = c;
+        }
+    }
+
+    if (tN < 0.0) {           // tc < 0 => the t=0 edge is visible
+        tN = 0.0;
+        // recompute sc for this edge
+        if (-d < 0.0)
+            sN = 0.0;
+        else if (-d > a)
+            sN = sD;
+        else {
+            sN = -d;
+            sD = a;
+        }
+    }
+    else if (tN > tD) {      // tc > 1 => the t=1 edge is visible
+        tN = tD;
+        // recompute sc for this edge
+        if ((-d + b) < 0.0)
+            sN = 0;
+        else if ((-d + b) > a)
+            sN = sD;
+        else {
+            sN = (-d + b);
+            sD = a;
+        }
+    }
+    // finally do the division to get sc and tc
+    sc = (abs(sN) < SMALL_NUM ? 0.0 : sN / sD);
+    tc = (abs(tN) < SMALL_NUM ? 0.0 : tN / tD);
+
+    // get the difference of the two closest points
+    Point3f  dP = w + (sc * u) - (tc * v);  // = S1(sc) - S2(tc)
+
+    distance = norm(dP);   // return the closest distance
+
+    //we have a match
+    if( distance < threshold ){
+        
+        //check if the intersection is near on of the points on line b
+        double ptD = compute3d_line_point_distance( a1, a2, b1 );
+        if( ptD < threshold )
+            return 1;
+        else
+            return 2;
+    }
+    else{
+        return 0;
+    }
+}
+
