@@ -86,9 +86,15 @@ void Options::load_configuration( ){
 
     image = imread( image_filename.c_str(), 0);    
     
+    //check for the zbuffer flag
     zbufferEnabled = parser.getItem_bool("ZBUFFER_ENABLED", found);
     if( found == false )
         throw string("ERROR: ZBUFFER_ENABLED not found or enabled");
+    
+    //check for the perspective 2 parallel item
+    perspective2parallel = parser.getItem_bool("RECTIFY_PERFORM_PERSPECTIVE_TO_PARALLEL", found);
+    if( found == false )
+        throw string("ERROR: Perspective 2 Parallel not found");
 
 }
 
@@ -113,6 +119,12 @@ void Options::print()const{
     cout << " - Build Image Type: " << build_image_type << endl;
     cout << " - Z Buffering     : ";
     if( zbufferEnabled == true )
+        cout << "True" << endl;
+    else
+        cout << "False" << endl;
+    cout << endl;
+    cout << " - Perspective2Parallel: ";
+    if( perspective2parallel == true )
         cout << "True" << endl;
     else
         cout << "False" << endl;
@@ -228,5 +240,9 @@ Mat Options::get_output_cam2img( cv::Size const& sz, double const& ref )const{
 
     
     return matrix;
+}
+
+bool Options::doPerspective2Parallel()const{
+    return perspective2parallel;
 }
 

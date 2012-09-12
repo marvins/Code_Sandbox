@@ -212,12 +212,6 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
     for( int x=0; x<output_image.cols; x++ ){
         for( int y=0; y<output_image.rows; y++ ){
            
-
-            cout << "------------------------------------------" << endl;
-            cout << x << ", " << y << endl;
-            cout << input_image.cols << ", " << input_image.rows << endl;
-            cout << output_image.cols << ", " << output_image.rows << endl;
-            
             /** Now we know what we are staring at.  Its time to now find what pixel will be shown here. */
             if( options.doZBuffering() == true ){
                 /** DEPTH PROCESSING MODULE */
@@ -270,7 +264,6 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
                 //first find the actual location of the pixel
                 Point pix( _round(maxZPnt.x) + (input_image.cols/2), _round(maxZPnt.y) + (input_image.rows/2) );
 
-                cout << pix << endl;
                 //pull the image
                 if( pix.x >= 0 && pix.y >= 0 && pix.x <= input_image.cols && pix.y <= input_image.rows ){
 

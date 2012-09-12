@@ -65,6 +65,7 @@ double compute_gsd( Mat const& earth_normal, Size sz, Options const& options ){
 }
 
 
+/** Primary orthorectification module */
 Mat orthorectify( Mat const& image, Options& options ){
     
 
@@ -82,11 +83,7 @@ Mat orthorectify( Mat const& image, Options& options ){
     Mat input_principle_point = options.Position_i + (options.get_focal_length() * rotated_camera_normal);
     
     //find the intersection between the earth plane and the view vector
-    Mat P1 = options.Position_i;
-    Mat P2 = input_principle_point;
-    Mat P3 = load_point(0, 0, 0);
-    Mat N  = earth_normal;
-    Mat ground_point = compute_plane_line_intersection( P1, P2, N, P3);
+    Mat ground_point = compute_plane_line_intersection( options.Position_i, input_principle_point, load_point(0,0,0), earth_normal);
     
     // this is the center of the camera on the non-rectified photo
     options.Position_f  = load_point( ground_point.at<double>(0,0), ground_point.at<double>(1,0), options.Position_i.at<double>(2,0));
@@ -126,7 +123,7 @@ Mat orthorectify( Mat const& image, Options& options ){
     Mat output( osize, image.type());
     output = Scalar(0);
 
-    // Iterate through the image
+    // Iterate through the output image
     int cnt = 0;
     for( int x=0; x<output.cols; x++)
         for( int y=0; y<output.rows; y++){
@@ -135,40 +132,49 @@ Mat orthorectify( Mat const& image, Options& options ){
             Mat stare_point = load_point( ((double)x/output.cols)*(maxPnt.at<double>(0,0) - minPnt.at<double>(0,0)) + minPnt.at<double>(0,0), 
                                           ((double)y/output.rows)*(maxPnt.at<double>(1,0) - minPnt.at<double>(1,0)) + minPnt.at<double>(1,0), 
                                                                                 0                                                         );
+
             //this is the location in world coordinates on where the starepoint intersects the input camera image plane
             Mat input_camera_plane_point = compute_plane_line_intersection( options.Position_i, 
                                                                             stare_point, 
                                                                             rotated_camera_normal, 
                                                                             input_principle_point);
-            
-            
 
-            //convert the world coordinate into local camera coordinates
-            Mat cam_coord = options.RotationM.inv()*(input_camera_plane_point - options.Position_i) + load_point(0,0,0);
-            
-            //convert to the image coordinate system
-            Mat img_coord = options.get_output_cam2img(image.size()) * cam_coord;
-            
-            //convert to opencv point
-            Point pnt( _round(img_coord.at<double>(0,0)), _round(img_coord.at<double>(1,0)));
+            if( options.doPerspective2Parallel() == true ){
 
-            if( pnt.x >= 0 && pnt.x < image.cols && pnt.y >= 0 && pnt.y < image.rows ){
-                
-                //pull the image
-                if( output.type() == CV_8UC1 )
-                    output.at<uchar>(y,x) = image.at<uchar>(pnt);
-                else if( output.type() == CV_8UC3 )    
-                    output.at<Vec3b>(y,x) = image.at<Vec3b>(pnt);
-                else
-                    throw string("Unsupported pixel type");
+
+
+            }
+            else{
+
+
+                //convert the world coordinate into local camera coordinates
+                Mat cam_coord = options.RotationM.inv()*(input_camera_plane_point - options.Position_i) + load_point(0,0,0);
+
+                //convert to the image coordinate system
+                Mat img_coord = options.get_output_cam2img(image.size()) * cam_coord;
+
+                //convert to opencv point
+                Point pnt( _round(img_coord.at<double>(0,0)), _round(img_coord.at<double>(1,0)));
+
+                if( pnt.x >= 0 && pnt.x < image.cols && pnt.y >= 0 && pnt.y < image.rows ){
+
+                    //pull the image
+                    if( output.type() == CV_8UC1 )
+                        output.at<uchar>(y,x) = image.at<uchar>(pnt);
+                    else if( output.type() == CV_8UC3 )    
+                        output.at<Vec3b>(y,x) = image.at<Vec3b>(pnt);
+                    else
+                        throw string("Unsupported pixel type");
+                }
             }
 
             if( cnt++ % 10000 == 0 )
                 cout << 'x' << flush;
-            
+
 
         }//end of x,y for loop
-    
+
     return output;
 
 }
+

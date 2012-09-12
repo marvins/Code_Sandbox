@@ -46,9 +46,11 @@ class Options{
         cv::Mat get_output_img2cam( cv::Size const& sz, double const& ref )const;
         
         bool doZBuffering()const;
+        bool doPerspective2Parallel()const;
 
     private:
         
+        bool perspective2parallel;
         bool zbufferEnabled;
 
         void load_configuration( );
