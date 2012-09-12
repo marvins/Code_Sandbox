@@ -24,6 +24,10 @@ Mat generate_perspective_test_image( Options& options ){
     namedWindow("Flat Test Image");
     imshow("Flat Test Image", flat_img);
     imshow("DEM", dem);
+    
+    imwrite("data/flat_image.jpg", flat_img);
+    imwrite("data/dem.jpg", dem);
+    
     waitKey(0);
     destroyWindow("Flat Test Image");
     destroyWindow("DEM");
@@ -116,6 +120,33 @@ void create_flat_test_image( Options const& options, Mat& image, Mat& dem ){
                 if( image.type() == CV_8UC3 )
                     image.at<Vec3b>(j,i) = Vec3b(0, 0, 0);
             }
+            
+            //draw an ocllusion
+            if (((px >= .099 && px <= .201) && (py >= .099 && py <= .100 ))||
+                ((px >= .099 && px <= .201) && (py >= .200 && py <= .201 ))||
+                ((px >= .099 && px <= .100) && (py >= .099 && py <= .201 ))||
+                ((px >= .200 && px <= .201) && (py >= .099 && py <= .201 ))){
+
+                if( image.type() == CV_8UC1 )
+                    image.at<uchar>(j,i) = 20;
+                if( image.type() == CV_8UC3 )
+                    image.at<Vec3b>(j,i) = Vec3b(20, 20, 20);
+                
+                //set the dem value
+                dem.at<uchar>(j,i) = 100;
+            }
+
+			if ( (px > .099  && px <  .2) && (py > .10  && py <  .2)){
+
+                if( image.type() == CV_8UC1 )
+                    image.at<uchar>(j,i) = 250;
+                if( image.type() == CV_8UC3 )
+                    image.at<Vec3b>(j,i) = Vec3b(250, 250, 250);
+                
+                //set the dem value
+                dem.at<uchar>(j,i) = 100;
+            }
+
 
         }// end of the x,y for loop
 }
@@ -160,6 +191,7 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
     Point3f  maxZPnt;
     double   maxZDist;
     int      maxType;
+    bool     intersection;
 
     //generate a ground coordinate list
     cout << "Start Ground Collection" << endl;
@@ -210,12 +242,14 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
     //this will rotate the image according to the required values
     int cnt = 0;
     for( int x=0; x<output_image.cols; x++ ){
+            cout << x << endl;
         for( int y=0; y<output_image.rows; y++ ){
-           
+            
             /** Now we know what we are staring at.  Its time to now find what pixel will be shown here. */
             if( options.doZBuffering() == true ){
                 /** DEPTH PROCESSING MODULE */
                 
+
                 //compute the bounding box from the current point to the camera origin
                 Point2f minBound( std::min(final_position.at<double>(0,0), (double)outCoordinateList[x][y].x ),
                                   std::min(final_position.at<double>(1,0), (double)outCoordinateList[x][y].y ));
@@ -232,48 +266,71 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
                 maxZDist = norm( Mat2Point3f(final_position)-outCoordinateList[x][y]);
                 maxZPnt  = outCoordinateList[x][y];
                 maxType  = 1;
-            
+                intersection = false;
+                
+                int testX = 100;
+                int testY = 100;
+                int stopX = 150;
+                int stopY = 150;
+
+
                 /** Start searching through the original image */
                 for( int xx=imgPixMin.x; xx<=imgPixMax.x; xx++ )
-                for( int yy=imgPixMin.y; yy<=imgPixMax.y; yy++ ){
-                        
-                        //make sure that the test point has a higher elevation than the current point 
-                        if( ( outCoordinateList[x][y].z - inCoordinateList[xx][yy].z ) < -0.0001 ){
-                        
-                        //make sure point intersects line on 2D level
-                        if( compute2d_line_point_distance( Mat2Point3f(final_position), outCoordinateList[x][y], inCoordinateList[xx][yy]) < 2 ){
+                    for( int yy=imgPixMin.y; yy<=imgPixMax.y; yy++ ){
+
+                        //make sure the physical locations are not the same
+                        if( norm( inCoordinateList[xx][yy]-outCoordinateList[x][y]) > 1 ){
+
+                            //make sure that the test point has a higher elevation than the current point 
+                            if( ( inCoordinateList[xx][yy].z ) > 0.0001 ){
                                 
-                                //check if the lines intersect
-                                double dist;
-                                int result = compute3d_line_line_intersection( Mat2Point3f(final_position), outCoordinateList[x][y], 
-                                                                               inCoordinateList[xx][yy], Point3f( inCoordinateList[xx][yy].x, inCoordinateList[xx][yy].y, 0), 
-                                                                               dist, 1 );
-                                
-                                /** If there is an intersection, then update the buffer for that point */
-                                if( result > 0 && dist < maxZDist ){
-                                    maxZDist = dist;
-                                    maxZPnt  = inCoordinateList[xx][yy];
-                                    maxType = result;
-                                }
-                        }
-                        }
-                } // end of xx and yy loops
+                                //make sure point intersects line on 2D level
+                                if( compute2d_line_point_distance( Mat2Point3f(final_position), outCoordinateList[x][y], inCoordinateList[xx][yy]) < 1.5 ){
+
+                                    //check if the lines intersect
+                                    double dist;
+                                    int result = compute3d_line_line_intersection( Mat2Point3f(final_position), Point3f(outCoordinateList[x][y].x, outCoordinateList[x][y].y, 0), 
+                                            inCoordinateList[xx][yy], Point3f( inCoordinateList[xx][yy].x, inCoordinateList[xx][yy].y, 0), 
+                                            dist, 1 );
+                                    
+                                    /** If there is an intersection, then update the buffer for that point */
+                                    if( result > 0 && dist < maxZDist ){
+                                        maxZDist = dist;
+                                        maxZPnt  = inCoordinateList[xx][yy];
+                                        maxType = result;
+                                        intersection = true;
+
+                                    }
+                                }}}
+                    } // end of xx and yy loops
 
                 //draw the point
-                
+
                 //first find the actual location of the pixel
                 Point pix( _round(maxZPnt.x) + (input_image.cols/2), _round(maxZPnt.y) + (input_image.rows/2) );
 
                 //pull the image
                 if( pix.x >= 0 && pix.y >= 0 && pix.x <= input_image.cols && pix.y <= input_image.rows ){
 
-                    if( output_image.type() == CV_8UC1 )
-                        output_image.at<uchar>(y,x) = input_image.at<uchar>(pix);
-                    else if( output_image.type() == CV_8UC3 )    
-                        output_image.at<Vec3b>(y,x) = input_image.at<Vec3b>(pix);
+                    if( output_image.type() == CV_8UC1 ){
+                        if( intersection == false )
+                            output_image.at<uchar>(y,x) = input_image.at<uchar>(pix);
+                        else if( maxType == 1 )
+                            output_image.at<uchar>(y,x) = input_image.at<uchar>(pix);
+                        else if( maxType == 2 )    
+                            output_image.at<uchar>(y,x) = 255;
+                    }
+                    else if( output_image.type() == CV_8UC3 ){   
+                        if( intersection == false )
+                            output_image.at<Vec3b>(y,x) = input_image.at<Vec3b>(pix);
+                        else if( maxType == 1 )
+                            output_image.at<Vec3b>(y,x) = input_image.at<Vec3b>(pix);
+                        else if( maxType == 2 )    
+                            output_image.at<Vec3b>(y,x) = Vec3b(255,255,255);
+                    }
                     else
                         throw string("Unsupported pixel type");
-                
+
                 }
             }
             else{

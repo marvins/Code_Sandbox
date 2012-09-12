@@ -183,18 +183,20 @@ int compute3d_line_line_intersection( Point3f const a1, Point3f const a2, Point3
     // finally do the division to get sc and tc
     sc = (abs(sN) < SMALL_NUM ? 0.0 : sN / sD);
     tc = (abs(tN) < SMALL_NUM ? 0.0 : tN / tD);
-
+    
     // get the difference of the two closest points
     Point3f  dP = w + (sc * u) - (tc * v);  // = S1(sc) - S2(tc)
+    Point3f  it = b1 + tc*v;
+    distance = norm(a1 - it);
 
-    distance = norm(dP);   // return the closest distance
-
+    double dd = norm(dP);   // return the closest distance
+    double tpd = norm(b1 - it);
+    
     //we have a match
-    if( distance < threshold ){
+    if( dd < threshold ){
         
         //check if the intersection is near on of the points on line b
-        double ptD = compute3d_line_point_distance( a1, a2, b1 );
-        if( ptD < threshold )
+        if( tpd < .5 )
             return 1;
         else
             return 2;

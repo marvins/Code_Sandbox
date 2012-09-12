@@ -38,7 +38,6 @@ double compute_gsd( Mat const& earth_normal, Size sz, Options const& options ){
 
     cam_pnt11 = options.get_output_img2cam( sz ) * load_point( sz.width-2, sz.height-2, 0) + load_vector( 0, 0, -1);
     cam_pnt12 = options.get_output_img2cam( sz ) * load_point( sz.width-1, sz.height-1, 0) + load_vector( 0, 0, -1);
-    print_mat( cam_pnt01.t());
 
     /* Convert the camera locations to world coordinates */
     cam_pnt01 = options.RotationM * cam_pnt01 + options.Position_i - load_point(0,0,0);
@@ -133,19 +132,30 @@ Mat orthorectify( Mat const& image, Options& options ){
                                           ((double)y/output.rows)*(maxPnt.at<double>(1,0) - minPnt.at<double>(1,0)) + minPnt.at<double>(1,0), 
                                                                                 0                                                         );
 
-            //this is the location in world coordinates on where the starepoint intersects the input camera image plane
-            Mat input_camera_plane_point = compute_plane_line_intersection( options.Position_i, 
-                                                                            stare_point, 
-                                                                            rotated_camera_normal, 
-                                                                            input_principle_point);
 
             if( options.doPerspective2Parallel() == true ){
-
-
+                
+                //we need to compute the bounding box from the stare point to the origin
+                Point2f pntMin( std::min( stare_point.at<double>(0,0), options.Position_i.at<double>(0,0)),
+                                std::min( stare_point.at<double>(1,0), options.Position_i.at<double>(1,0)));
+                
+                Point2f pntMax( std::max( stare_point.at<double>(0,0), options.Position_i.at<double>(0,0)),
+                                std::max( stare_point.at<double>(1,0), options.Position_i.at<double>(1,0)));
+                
+                cout << "StarePoint: "; print_mat( stare_point.t());
+                cout << "Origin    : "; print_mat( options.Position_i.t());
+                cout << "Point Min : " << pntMin << endl;
+                cout << "Point Max : " << pntMax << endl;
+                cin.get();
 
             }
             else{
-
+                
+                //this is the location in world coordinates on where the starepoint intersects the input camera image plane
+                Mat input_camera_plane_point = compute_plane_line_intersection( options.Position_i, 
+                                                                                stare_point, 
+                                                                                rotated_camera_normal, 
+                                                                                input_principle_point);
 
                 //convert the world coordinate into local camera coordinates
                 Mat cam_coord = options.RotationM.inv()*(input_camera_plane_point - options.Position_i) + load_point(0,0,0);
