@@ -52,14 +52,13 @@ double compute_gsd( Mat const& earth_normal, Size sz, Options const& options ){
     cam_pnt02 = compute_plane_line_intersection( options.Position_i, cam_pnt02, earth_normal, load_point(0,0,0));
     cam_pnt11 = compute_plane_line_intersection( options.Position_i, cam_pnt11, earth_normal, load_point(0,0,0));
     cam_pnt12 = compute_plane_line_intersection( options.Position_i, cam_pnt12, earth_normal, load_point(0,0,0));
-   
-
-    /* Choose the GSD with the smallest value */
-    double gsdTL = sqrt( pow(cam_pnt01.at<double>(0,0) - cam_pnt02.at<double>(0,0), 2) 
-                       + pow(cam_pnt01.at<double>(1,0) - cam_pnt02.at<double>(1,0), 2));
     
-    double gsdBR = sqrt( pow(cam_pnt11.at<double>(0,0) - cam_pnt12.at<double>(0,0), 2) 
-                       + pow(cam_pnt11.at<double>(1,0) - cam_pnt12.at<double>(1,0), 2));
+    /* Choose the GSD with the smallest value */
+    double gsdTL = std::min( fabs(cam_pnt01.at<double>(0,0) - cam_pnt02.at<double>(0,0)),
+                             fabs(cam_pnt01.at<double>(1,0) - cam_pnt02.at<double>(1,0)));
+    
+    double gsdBR = std::min( fabs(cam_pnt11.at<double>(0,0) - cam_pnt12.at<double>(0,0)),
+                             fabs(cam_pnt11.at<double>(1,0) - cam_pnt12.at<double>(1,0)));
     
     return std::min( gsdTL, gsdBR);
 }
@@ -118,9 +117,9 @@ Mat orthorectify( Mat const& image, Options& options ){
     
     //create a new image which spans this length
     Size osize( width/gsd, height/gsd);
-
+    
     //create the output image
-    Mat output( osize, image.type());
+    Mat output( osize, options.get_rectify_image_type());
     output = Scalar(0);
     
     //create some useful identities
@@ -128,16 +127,26 @@ Mat orthorectify( Mat const& image, Options& options ){
     matrix_add_translation( world2cam, (options.Position_i*-1) );
     
     Mat cam2img = options.get_output_cam2img(image.size())*options.RotationM.inv() * world2cam;
+    
+    Point testPoint(195,195);
+    bool testA = true;
+    Point startTest( 50, 50);
+    Point endTest(300,300);
+
+    bool foundIntersection = false;
+    Point inputPix;
 
     // Iterate through the output image
     int cnt = 0;
-    for( int x=0; x<output.cols; x++)
+    for( int x=0; x<output.cols; x++){
+        cout << x << endl;
         for( int y=0; y<output.rows; y++){
             
             //compute the expected location of the output pixel in geographic coordinates
             Mat stare_point = load_point( ((double)x/output.cols)*(maxPnt.at<double>(0,0) - minPnt.at<double>(0,0)) + minPnt.at<double>(0,0), 
                                           ((double)y/output.rows)*(maxPnt.at<double>(1,0) - minPnt.at<double>(1,0)) + minPnt.at<double>(1,0), 
                                                                                 0                                                         );
+            stare_point.at<double>(2,0) = query_dem( Mat2Point3f(stare_point), options);
 
 
             if( options.doPerspective2Parallel() == true ){
@@ -155,15 +164,17 @@ Mat orthorectify( Mat const& image, Options& options ){
 
                 double ranX = (pntMax.x - pntMin.x)*gsd;
                 double ranY = (pntMax.y - pntMin.y)*gsd;
+    
+                foundIntersection = false;
                 
                 //begin iterating over image
-                for( int xx=0; xx<ranX; xx++){
-                for( int yy=0; yy<ranY; yy++){
+                for( int xx=0; xx<ranX && !foundIntersection; xx++){
+                for( int yy=0; yy<ranY && !foundIntersection; yy++){
                     
                     /*
                         NOTES: 
-                         1. First mark all occluded points onto a map
-                         2. Then search the image for all real points
+                         1. First check if an output point is occluded
+                         2. If not occluded, then compute real location using elevation
                     */
                     //compute the actual geographical location
                     Point3f pos = pntMin + Point3f(xx*gsd, yy*gsd, 0);
@@ -171,37 +182,65 @@ Mat orthorectify( Mat const& image, Options& options ){
                     //query the dem data for the right elevation
                     pos.z = query_dem( pos, options);
                     
-                    //make sure the elevation is high enough
-                    if( pos.z > 0 ){
 
                     //make sure we are not evaluating the same point
-                    if( norm(pos - Mat2Point3f(stare_point)) > 2 ){
+                    if( norm(pos - Mat2Point3f(stare_point)) > 0.11 ){
+                    
+                    //make sure the elevation is higher than the test pixel
+                    if( pos.z > stare_point.at<double>(2,0) ){
 
-                     //make sure point intersects line on 2D level
-                     if( compute2d_line_point_distance( Mat2Point3f(options.Position_i), Mat2Point3f(stare_point), pos ) < 1.5 ){
+                        //make sure point intersects line on 2D level
+                        if( compute2d_line_point_distance( Mat2Point3f(options.Position_i), Mat2Point3f(stare_point), pos ) < 1.5 ){
 
 
-                        //check if the lines intersect
-                        double dist;
-                        int result = compute3d_line_line_intersection( Mat2Point3f(options.Position_i), Mat2Point3f(stare_point), 
-                                                                       pos, Point3f( pos.x, pos.y, 0), 
-                                                                       dist, 1 );
-                        
-                        if( result > 0 ){
-                        cout << "Result: " << result << endl;
-                        cout << "Distance: " << dist << endl;
-                        cout << "A1: "; print_mat(options.Position_i.t());
-                        cout << "A2: "; print_mat(stare_point.t());
-                        cout << "B1: " << pos << endl;
-                        cout << "B2: " << Point3f( pos.x, pos.y, 0) << endl;
-                        cin.get();
+                            //check if the lines intersect
+                            double dist;
+                            int result = compute3d_line_line_intersection( Mat2Point3f(options.Position_i), Mat2Point3f(stare_point), 
+                                    pos, Point3f( pos.x, pos.y, 0), 
+                                    dist, 1 );
+
+                            if( result != 0 ){//we have an intersection and cannot paint the point
+                                foundIntersection = true;
+                            }
+
                         }
-                     }
                     }
                     }
+                }} // end of xx, yy loop
 
-                }}
+                if( foundIntersection == true ){
+                    if( output.type() == CV_8UC1 )
+                        output.at<uchar>(y,x) = 0;
+                    else if( output.type() == CV_8UC3 )    
+                        output.at<Vec3b>(y,x) = Vec3b(0,255,0);
+                    else
+                        throw string("Unsupported pixel type");
+                }
+                else{ // we do not have an intersection
+
+                    //now compute the expected location
+                    
+                    //compute the location on the ground where this vector intersects with the earth plane
+                    Mat imgPosition = compute_plane_line_intersection( options.Position_i, stare_point, earth_normal, load_point(0,0,0));
+                    
+                    //compute where this point intersects the input camera plane
+                    Mat camPlanePos = compute_plane_line_intersection( options.Position_i, imgPosition, rotated_camera_normal, input_principle_point);
+                    
+                    //convert this to actual pixel coordinates
+                    Mat pixPos = cam2img * camPlanePos;
+                    
+                    Point pixLoc( _round(pixPos.at<double>(0,0)), _round(pixPos.at<double>(1,0)));
+                    if( output.type() == CV_8UC1 )
+                        output.at<uchar>(y,x) = image.at<uchar>(pixLoc);
+                    else if( output.type() == CV_8UC3 )    
+                        output.at<Vec3b>(y,x) = image.at<Vec3b>(pixLoc);
+                    else
+                        throw string("Unsupported pixel type");
+
+
+                }
             }
+
             else{
 
                 //this is the location in world coordinates on where the starepoint intersects the input camera image plane
@@ -233,11 +272,17 @@ Mat orthorectify( Mat const& image, Options& options ){
 
             if( cnt++ % 10000 == 0 )
                 cout << 'x' << flush;
-
-
+            
+        }
+         
+        if( x%100 == 0 ){
+            imshow("PROGRESS", output);
+            waitKey(0);
+        }
+        
         }//end of x,y for loop
 
-    return output;
+        return output;
 
-}
+    }
 

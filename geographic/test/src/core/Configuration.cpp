@@ -57,6 +57,20 @@ void Options::load_configuration( ){
     if( found == false )
         throw string("ERROR: RUN_TYPE tag not found in configuration");
     
+    rectify_image_type = parser.getItem_string("RECTIFY_OUTPUT_TYPE", found);
+    if( found == false )
+        throw string("ERROR: RECTIFY_OUTPUT_TYPE NOT FOUND");
+    
+    if( run_type == "RECTIFY" ){
+        if( rectify_image_type == "CV_8UC1" )
+            image = imread( image_filename.c_str(), 0);    
+        else if( rectify_image_type == "CV_8UC3" )
+            image = imread( image_filename.c_str());
+        else
+            throw string("UNKNOWN TYPE");
+    }
+    
+
     int c = parser.getItem_int("BUILD_IMG_COLS", found );
     if( found == false )
         throw string("ERROR: BUILD_IMG_COLS tag not found in configuration");
@@ -84,8 +98,6 @@ void Options::load_configuration( ){
     RotationQ = Quaternion( rot_ang*M_PI/180.0, vec( rot_axis[0], rot_axis[1], rot_axis[2]));
     RotationM = RotationQ.get_rotation_matrix();
 
-    image = imread( image_filename.c_str(), 0);    
-    
     //check for the zbuffer flag
     zbufferEnabled = parser.getItem_bool("ZBUFFER_ENABLED", found);
     if( found == false )
@@ -129,6 +141,8 @@ void Options::print()const{
     else
         cout << "False" << endl;
     cout << endl;
+    cout << "Rectify Image Configuration" << endl;
+    cout << " - Rectify Image Type: " << rectify_image_type << endl;
     cout << " - Perspective2Parallel: ";
     if( perspective2parallel == true )
         cout << "True" << endl;
@@ -143,6 +157,14 @@ Size Options::get_build_image_size()const{
     return build_image_size;
 }
 
+
+int Options::get_rectify_image_type()const{
+    
+    if( rectify_image_type == "CV_8UC1" ) return CV_8UC1;
+    else if( rectify_image_type == "CV_8UC3" ) return CV_8UC3;
+    else throw string("ERROR: unsupported type");
+
+}
 
 int Options::get_build_image_type()const{
     

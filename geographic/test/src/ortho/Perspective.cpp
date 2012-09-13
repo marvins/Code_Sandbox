@@ -279,7 +279,7 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
                     for( int yy=imgPixMin.y; yy<=imgPixMax.y; yy++ ){
 
                         //make sure the physical locations are not the same
-                        if( norm( inCoordinateList[xx][yy]-outCoordinateList[x][y]) > 1 ){
+                        if( norm( inCoordinateList[xx][yy]-outCoordinateList[x][y]) > 0.1 ){
 
                             //make sure that the test point has a higher elevation than the current point 
                             if( ( inCoordinateList[xx][yy].z ) > 0.0001 ){

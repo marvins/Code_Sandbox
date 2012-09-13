@@ -23,6 +23,8 @@ class Options{
         cv::Size get_build_image_size()const;
         int      get_build_image_type()const;
         
+        int      get_rectify_image_type()const;
+        
         double get_focal_length()const;
         void   set_focal_length( double const& fl );
         
@@ -62,7 +64,8 @@ class Options{
 
         cv::Size build_image_size;
         std::string build_image_type;
-
+        
+        std::string rectify_image_type;
 };
 
 
