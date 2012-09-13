@@ -38,7 +38,7 @@ Mat pixel2world_coordinates( const Point3f& pnt, const Mat& RotationMatrix, cons
     return camera_coord;
 }
 
-void matrix_add_translation( cv::Mat& matrix, cv::Mat& translation ){
+void matrix_add_translation( cv::Mat& matrix, cv::Mat const& translation ){
 
     matrix.at<double>(0,3) += translation.at<double>(0,0);
     matrix.at<double>(1,3) += translation.at<double>(1,0);
@@ -196,7 +196,7 @@ int compute3d_line_line_intersection( Point3f const a1, Point3f const a2, Point3
     if( dd < threshold ){
         
         //check if the intersection is near on of the points on line b
-        if( tpd < .5 )
+        if( tpd < .2 )
             return 1;
         else
             return 2;

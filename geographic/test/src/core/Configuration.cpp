@@ -95,7 +95,13 @@ void Options::load_configuration( ){
     perspective2parallel = parser.getItem_bool("RECTIFY_PERFORM_PERSPECTIVE_TO_PARALLEL", found);
     if( found == false )
         throw string("ERROR: Perspective 2 Parallel not found");
+    
+    //Check for dem image
+    string demname = parser.getItem_string("DEM_Name", found);
+    if( found == false )
+        throw string("DEM_Name not found");
 
+    dem = imread( demname.c_str(), 0);
 }
 
 bool Options::doZBuffering()const{

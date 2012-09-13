@@ -285,7 +285,7 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
                             if( ( inCoordinateList[xx][yy].z ) > 0.0001 ){
                                 
                                 //make sure point intersects line on 2D level
-                                if( compute2d_line_point_distance( Mat2Point3f(final_position), outCoordinateList[x][y], inCoordinateList[xx][yy]) < 1.5 ){
+                                if( compute2d_line_point_distance( Mat2Point3f(final_position), outCoordinateList[x][y], inCoordinateList[xx][yy]) < 1.42 ){
 
                                     //check if the lines intersect
                                     double dist;
@@ -313,12 +313,12 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
                 if( pix.x >= 0 && pix.y >= 0 && pix.x <= input_image.cols && pix.y <= input_image.rows ){
 
                     if( output_image.type() == CV_8UC1 ){
-                        if( intersection == false )
+                        //if( intersection == false )
+                        //    output_image.at<uchar>(y,x) = input_image.at<uchar>(pix);
+                        //else if( maxType == 1 )
                             output_image.at<uchar>(y,x) = input_image.at<uchar>(pix);
-                        else if( maxType == 1 )
-                            output_image.at<uchar>(y,x) = input_image.at<uchar>(pix);
-                        else if( maxType == 2 )    
-                            output_image.at<uchar>(y,x) = 255;
+                        //else if( maxType == 2 )    
+                        //    output_image.at<uchar>(y,x) = 255;
                     }
                     else if( output_image.type() == CV_8UC3 ){   
                         if( intersection == false )

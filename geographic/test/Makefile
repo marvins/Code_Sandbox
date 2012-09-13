@@ -36,7 +36,8 @@ OBJECTS= $(BUILD)/orthoproject.o \
 		 $(BUILD)/Quaternion.o \
 		 $(BUILD)/Vector.o \
 		 $(BUILD)/Geometry.o \
-		 $(BUILD)/Utilities.o
+		 $(BUILD)/Utilities.o \
+		 $(BUILD)/dem.o
 
 HEADERS= $(CORE)/Configuration.hpp \
 		 $(CORE)/Parser.hpp \
@@ -45,7 +46,8 @@ HEADERS= $(CORE)/Configuration.hpp \
 		 $(MATH)/Quaternion.hpp \
 		 $(MATH)/Vector.hpp \
 		 $(MATH)/Geometry.hpp \
-		 $(CORE)/Utilities.hpp
+		 $(CORE)/Utilities.hpp \
+		 $(CORE)/dem.hpp
 
 ###############################
 #          Executable         #
@@ -91,8 +93,11 @@ $(BUILD)/Geometry.o: $(MATH)/Geometry.cpp $(HEADERS)
 
 # Utility Functions
 $(BUILD)/Utilities.o: $(CORE)/Utilities.cpp $(HEADERS)
-	g++ $< -c -o $@ $(INCL)
+	g++ $< -c -o $@ $(INCL) $(FLAGS)
 
+# DEM Functions
+$(BUILD)/dem.o: $(CORE)/dem.cpp $(HEADERS)
+	g++ $< -c -o $@ $(INCL) $(FLAGS)
 
 docs:
 	doxygen Doxyfile

@@ -1,5 +1,6 @@
 #include "Orthorectify.hpp"
 
+#include "../core/dem.hpp"
 #include "../core/Utilities.hpp"
 #include "../math/Geometry.hpp"
 
@@ -121,6 +122,12 @@ Mat orthorectify( Mat const& image, Options& options ){
     //create the output image
     Mat output( osize, image.type());
     output = Scalar(0);
+    
+    //create some useful identities
+    Mat world2cam = Mat::eye(4,4,CV_64FC1);
+    matrix_add_translation( world2cam, (options.Position_i*-1) );
+    
+    Mat cam2img = options.get_output_cam2img(image.size())*options.RotationM.inv() * world2cam;
 
     // Iterate through the output image
     int cnt = 0;
@@ -136,26 +143,72 @@ Mat orthorectify( Mat const& image, Options& options ){
             if( options.doPerspective2Parallel() == true ){
                 
                 //we need to compute the bounding box from the stare point to the origin
-                Point2f pntMin( std::min( stare_point.at<double>(0,0), options.Position_i.at<double>(0,0)),
-                                std::min( stare_point.at<double>(1,0), options.Position_i.at<double>(1,0)));
+                Point3f pntMin( std::min( stare_point.at<double>(0,0), options.Position_i.at<double>(0,0)),
+                                std::min( stare_point.at<double>(1,0), options.Position_i.at<double>(1,0)),0);
                 
-                Point2f pntMax( std::max( stare_point.at<double>(0,0), options.Position_i.at<double>(0,0)),
-                                std::max( stare_point.at<double>(1,0), options.Position_i.at<double>(1,0)));
+                Point3f pntMax( std::max( stare_point.at<double>(0,0), options.Position_i.at<double>(0,0)),
+                                std::max( stare_point.at<double>(1,0), options.Position_i.at<double>(1,0)),0);
                 
-                cout << "StarePoint: "; print_mat( stare_point.t());
-                cout << "Origin    : "; print_mat( options.Position_i.t());
-                cout << "Point Min : " << pntMin << endl;
-                cout << "Point Max : " << pntMax << endl;
-                cin.get();
+                //now that we know the range, we need to search the elevation data
+                // this would be a good moment to compute the relative accuracy or granularity of the info
+                double gsd = 1; //one pixel per one unit of measure
 
+                double ranX = (pntMax.x - pntMin.x)*gsd;
+                double ranY = (pntMax.y - pntMin.y)*gsd;
+                
+                //begin iterating over image
+                for( int xx=0; xx<ranX; xx++){
+                for( int yy=0; yy<ranY; yy++){
+                    
+                    /*
+                        NOTES: 
+                         1. First mark all occluded points onto a map
+                         2. Then search the image for all real points
+                    */
+                    //compute the actual geographical location
+                    Point3f pos = pntMin + Point3f(xx*gsd, yy*gsd, 0);
+                    
+                    //query the dem data for the right elevation
+                    pos.z = query_dem( pos, options);
+                    
+                    //make sure the elevation is high enough
+                    if( pos.z > 0 ){
+
+                    //make sure we are not evaluating the same point
+                    if( norm(pos - Mat2Point3f(stare_point)) > 2 ){
+
+                     //make sure point intersects line on 2D level
+                     if( compute2d_line_point_distance( Mat2Point3f(options.Position_i), Mat2Point3f(stare_point), pos ) < 1.5 ){
+
+
+                        //check if the lines intersect
+                        double dist;
+                        int result = compute3d_line_line_intersection( Mat2Point3f(options.Position_i), Mat2Point3f(stare_point), 
+                                                                       pos, Point3f( pos.x, pos.y, 0), 
+                                                                       dist, 1 );
+                        
+                        if( result > 0 ){
+                        cout << "Result: " << result << endl;
+                        cout << "Distance: " << dist << endl;
+                        cout << "A1: "; print_mat(options.Position_i.t());
+                        cout << "A2: "; print_mat(stare_point.t());
+                        cout << "B1: " << pos << endl;
+                        cout << "B2: " << Point3f( pos.x, pos.y, 0) << endl;
+                        cin.get();
+                        }
+                     }
+                    }
+                    }
+
+                }}
             }
             else{
-                
+
                 //this is the location in world coordinates on where the starepoint intersects the input camera image plane
                 Mat input_camera_plane_point = compute_plane_line_intersection( options.Position_i, 
-                                                                                stare_point, 
-                                                                                rotated_camera_normal, 
-                                                                                input_principle_point);
+                        stare_point, 
+                        rotated_camera_normal, 
+                        input_principle_point);
 
                 //convert the world coordinate into local camera coordinates
                 Mat cam_coord = options.RotationM.inv()*(input_camera_plane_point - options.Position_i) + load_point(0,0,0);

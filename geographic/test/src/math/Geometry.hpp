@@ -35,7 +35,7 @@ cv::Mat pixel2world_coordinates( const cv::Point3f& pnt, const cv::Mat& Rotation
   * @param[out] matrix Input matrix
   * @param[in] translation Translation value
 */
-void matrix_add_translation( cv::Mat& matrix, cv::Mat& translation );
+void matrix_add_translation( cv::Mat& matrix, cv::Mat const& translation );
 
 std::vector<std::vector<cv::Point3f> > build_ground_coordinate_list( cv::Mat const& dem, cv::Size img_size, const double& f, const cv::Mat& RotationM, const cv::Mat& camera_origin, const cv::Mat& img2cam );  
 
