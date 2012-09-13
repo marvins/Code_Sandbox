@@ -275,11 +275,6 @@ Mat orthorectify( Mat const& image, Options& options ){
             
         }
          
-        if( x%100 == 0 ){
-            imshow("PROGRESS", output);
-            waitKey(0);
-        }
-        
         }//end of x,y for loop
 
         return output;
