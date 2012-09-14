@@ -66,7 +66,7 @@ double compute_gsd( Mat const& earth_normal, Size sz, Options const& options ){
 
 /** Primary orthorectification module */
 Mat orthorectify( Mat const& image, Options& options ){
-    
+   
 
     // the focal vector is the focal length multiplied by the normal to the camera
     Mat focal_vector = options.get_focal_length() * load_vector(0, 0, -1);
@@ -82,11 +82,11 @@ Mat orthorectify( Mat const& image, Options& options ){
     Mat input_principle_point = options.Position_i + (options.get_focal_length() * rotated_camera_normal);
     
     //find the intersection between the earth plane and the view vector
-    Mat ground_point = compute_plane_line_intersection( options.Position_i, input_principle_point, load_point(0,0,0), earth_normal);
+    Mat ground_point = compute_plane_line_intersection( options.Position_i, input_principle_point, earth_normal, load_point(0,0,0));
     
     // this is the center of the camera on the non-rectified photo
     options.Position_f  = load_point( ground_point.at<double>(0,0), ground_point.at<double>(1,0), options.Position_i.at<double>(2,0));
-
+    
     // this is the center of the image plane on the non-rectified photo
     Mat output_principle_point  = options.Position_f + focal_vector;
     
@@ -108,16 +108,26 @@ Mat orthorectify( Mat const& image, Options& options ){
     Mat minPnt = load_point(  std::min( tl_world.at<double>(0,0), std::min( tr_world.at<double>(0,0), std::min( bl_world.at<double>(0,0), br_world.at<double>(0,0)))),
                               std::min( tl_world.at<double>(1,0), std::min( tr_world.at<double>(1,0), std::min( bl_world.at<double>(1,0), br_world.at<double>(1,0)))),
                               std::min( tl_world.at<double>(2,0), std::min( tr_world.at<double>(2,0), std::min( bl_world.at<double>(2,0), br_world.at<double>(2,0)))));
-
+    
     double width  = maxPnt.at<double>(0,0) - minPnt.at<double>(0,0);
     double height = maxPnt.at<double>(1,0) - minPnt.at<double>(1,0);
 
     //compute the gsd of the image as the smallest available gsd known
-    double gsd = compute_gsd( earth_normal, image.size(), options );
+    double gsd = 1;//compute_gsd( earth_normal, image.size(), options );
     
     //create a new image which spans this length
     Size osize( width/gsd, height/gsd);
     
+    cout << "CAM N : "; print_mat( rotated_camera_normal.t());
+    cout << "GROUND: "; print_mat( ground_point.t());
+    cout << "TL: "; print_mat( tl_world.t());
+    cout << "TR: "; print_mat( tr_world.t());
+    cout << "BL: "; print_mat( bl_world.t());
+    cout << "BR: "; print_mat( br_world.t());
+    cout << "MAX: " << maxPnt << endl;
+    cout << "MIN: " << minPnt << endl;
+    cin.get();
+
     //create the output image
     Mat output( osize, options.get_rectify_image_type());
     output = Scalar(0);
@@ -128,16 +138,18 @@ Mat orthorectify( Mat const& image, Options& options ){
     
     Mat cam2img = options.get_output_cam2img(image.size())*options.RotationM.inv() * world2cam;
     
-    Point testPoint(195,195);
-    bool testA = true;
-    Point startTest( 50, 50);
-    Point endTest(300,300);
-
     bool foundIntersection = false;
     Point inputPix;
-
+    
+    double maxElevation = query_max_elevation( minPnt, maxPnt, ground_point, options );
+    double dist;
+    
     // Iterate through the output image
     int cnt = 0;
+    double distRadius;
+    
+    bool testONLY = true;
+
     for( int x=0; x<output.cols; x++){
         cout << x << endl;
         for( int y=0; y<output.rows; y++){
@@ -146,17 +158,29 @@ Mat orthorectify( Mat const& image, Options& options ){
             Mat stare_point = load_point( ((double)x/output.cols)*(maxPnt.at<double>(0,0) - minPnt.at<double>(0,0)) + minPnt.at<double>(0,0), 
                                           ((double)y/output.rows)*(maxPnt.at<double>(1,0) - minPnt.at<double>(1,0)) + minPnt.at<double>(1,0), 
                                                                                 0                                                         );
-            stare_point.at<double>(2,0) = query_dem( Mat2Point3f(stare_point), options);
+            
+            stare_point.at<double>(2,0) = query_dem( Mat2Point3f(stare_point), Mat2Point3f(ground_point), options);
+            Point2f starePoint( stare_point.at<double>(0,0), stare_point.at<double>(1,0));
+            
+            //if( testONLY == true && (starePoint.x < -600 || starePoint.x > 600 || starePoint.y < -1600 || starePoint.y > -400 ))
+            //    continue;
 
-
+            //Only run if doing Perspective 2 Parallel Transformation
             if( options.doPerspective2Parallel() == true ){
-                
+               
+                //one useful limit will be to compute the distance at which the max height is below
+                // the stare point vector
+                Mat maxDistance = compute_plane_line_intersection( options.Position_i, stare_point, earth_normal, load_point(0,0,maxElevation));
+                distRadius = norm( Point2f( maxDistance.at<double>(0,0), maxDistance.at<double>(1,0)) - starePoint);
+
                 //we need to compute the bounding box from the stare point to the origin
-                Point3f pntMin( std::min( stare_point.at<double>(0,0), options.Position_i.at<double>(0,0)),
-                                std::min( stare_point.at<double>(1,0), options.Position_i.at<double>(1,0)),0);
+                // compare this with the maximum possible distance
+                Point3f pntMin( std::min( stare_point.at<double>(0,0)-distRadius, std::min( stare_point.at<double>(0,0), options.Position_i.at<double>(0,0))),
+                                std::min( stare_point.at<double>(1,0)-distRadius, std::min( stare_point.at<double>(1,0), options.Position_i.at<double>(1,0))),0);
                 
-                Point3f pntMax( std::max( stare_point.at<double>(0,0), options.Position_i.at<double>(0,0)),
-                                std::max( stare_point.at<double>(1,0), options.Position_i.at<double>(1,0)),0);
+                Point3f pntMax( std::min( stare_point.at<double>(0,0)+distRadius, std::max( stare_point.at<double>(0,0), options.Position_i.at<double>(0,0))),
+                                std::min( stare_point.at<double>(1,0)+distRadius, std::max( stare_point.at<double>(1,0), options.Position_i.at<double>(1,0))),0);
+                
                 
                 //now that we know the range, we need to search the elevation data
                 // this would be a good moment to compute the relative accuracy or granularity of the info
@@ -164,9 +188,9 @@ Mat orthorectify( Mat const& image, Options& options ){
 
                 double ranX = (pntMax.x - pntMin.x)*gsd;
                 double ranY = (pntMax.y - pntMin.y)*gsd;
-    
-                foundIntersection = false;
                 
+                foundIntersection = false;
+            
                 //begin iterating over image
                 for( int xx=0; xx<ranX && !foundIntersection; xx++){
                 for( int yy=0; yy<ranY && !foundIntersection; yy++){
@@ -180,9 +204,8 @@ Mat orthorectify( Mat const& image, Options& options ){
                     Point3f pos = pntMin + Point3f(xx*gsd, yy*gsd, 0);
                     
                     //query the dem data for the right elevation
-                    pos.z = query_dem( pos, options);
+                    pos.z = query_dem( pos, Mat2Point3f(ground_point), options);
                     
-
                     //make sure we are not evaluating the same point
                     if( norm(pos - Mat2Point3f(stare_point)) > 0.11 ){
                     
@@ -192,12 +215,9 @@ Mat orthorectify( Mat const& image, Options& options ){
                         //make sure point intersects line on 2D level
                         if( compute2d_line_point_distance( Mat2Point3f(options.Position_i), Mat2Point3f(stare_point), pos ) < 1.5 ){
 
-
                             //check if the lines intersect
-                            double dist;
                             int result = compute3d_line_line_intersection( Mat2Point3f(options.Position_i), Mat2Point3f(stare_point), 
-                                    pos, Point3f( pos.x, pos.y, 0), 
-                                    dist, 1 );
+                                                                            pos, Point3f( pos.x, pos.y, 0), dist, 1 );
 
                             if( result != 0 ){//we have an intersection and cannot paint the point
                                 foundIntersection = true;
@@ -207,7 +227,7 @@ Mat orthorectify( Mat const& image, Options& options ){
                     }
                     }
                 }} // end of xx, yy loop
-
+                
                 if( foundIntersection == true ){
                     if( output.type() == CV_8UC1 )
                         output.at<uchar>(y,x) = 0;
@@ -219,24 +239,24 @@ Mat orthorectify( Mat const& image, Options& options ){
                 else{ // we do not have an intersection
 
                     //now compute the expected location
-                    
                     //compute the location on the ground where this vector intersects with the earth plane
                     Mat imgPosition = compute_plane_line_intersection( options.Position_i, stare_point, earth_normal, load_point(0,0,0));
                     
                     //compute where this point intersects the input camera plane
-                    Mat camPlanePos = compute_plane_line_intersection( options.Position_i, imgPosition, rotated_camera_normal, input_principle_point);
-                    
                     //convert this to actual pixel coordinates
-                    Mat pixPos = cam2img * camPlanePos;
-                    
+                    Mat pixPos = cam2img * compute_plane_line_intersection( options.Position_i, imgPosition, rotated_camera_normal, input_principle_point);
                     Point pixLoc( _round(pixPos.at<double>(0,0)), _round(pixPos.at<double>(1,0)));
-                    if( output.type() == CV_8UC1 )
-                        output.at<uchar>(y,x) = image.at<uchar>(pixLoc);
-                    else if( output.type() == CV_8UC3 )    
-                        output.at<Vec3b>(y,x) = image.at<Vec3b>(pixLoc);
-                    else
-                        throw string("Unsupported pixel type");
+                    
+                    //make sure the pixel is inside the image
+                    if( pixLoc.x >= 0 && pixLoc.y >= 0 && pixLoc.x < image.cols && pixLoc.y < image.rows ){
 
+                        if( output.type() == CV_8UC1 )
+                            output.at<uchar>(y,x) = image.at<uchar>(pixLoc);
+                        else if( output.type() == CV_8UC3 )    
+                            output.at<Vec3b>(y,x) = image.at<Vec3b>(pixLoc);
+                        else
+                            throw string("Unsupported pixel type");
+                    }
 
                 }
             }
@@ -250,12 +270,9 @@ Mat orthorectify( Mat const& image, Options& options ){
                         input_principle_point);
 
                 //convert the world coordinate into local camera coordinates
-                Mat cam_coord = options.RotationM.inv()*(input_camera_plane_point - options.Position_i) + load_point(0,0,0);
-
                 //convert to the image coordinate system
-                Mat img_coord = options.get_output_cam2img(image.size()) * cam_coord;
+                Mat img_coord = cam2img * (input_camera_plane_point - options.Position_i) + load_point(0,0,0);
 
-                //convert to opencv point
                 Point pnt( _round(img_coord.at<double>(0,0)), _round(img_coord.at<double>(1,0)));
 
                 if( pnt.x >= 0 && pnt.x < image.cols && pnt.y >= 0 && pnt.y < image.rows ){
@@ -272,12 +289,17 @@ Mat orthorectify( Mat const& image, Options& options ){
 
             if( cnt++ % 10000 == 0 )
                 cout << 'x' << flush;
-            
+
         }
-         
-        }//end of x,y for loop
 
-        return output;
+        if( x % 10 == 0 ){
+            imwrite("temp.jpg", output);
+        }
 
-    }
+    }//end of x,y for loop
+
+    imwrite("temp.jpg", output);
+    return output;
+
+}
 
