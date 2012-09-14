@@ -118,16 +118,6 @@ Mat orthorectify( Mat const& image, Options& options ){
     //create a new image which spans this length
     Size osize( width/gsd, height/gsd);
     
-    cout << "CAM N : "; print_mat( rotated_camera_normal.t());
-    cout << "GROUND: "; print_mat( ground_point.t());
-    cout << "TL: "; print_mat( tl_world.t());
-    cout << "TR: "; print_mat( tr_world.t());
-    cout << "BL: "; print_mat( bl_world.t());
-    cout << "BR: "; print_mat( br_world.t());
-    cout << "MAX: " << maxPnt << endl;
-    cout << "MIN: " << minPnt << endl;
-    cin.get();
-
     //create the output image
     Mat output( osize, options.get_rectify_image_type());
     output = Scalar(0);
@@ -158,15 +148,15 @@ Mat orthorectify( Mat const& image, Options& options ){
             Mat stare_point = load_point( ((double)x/output.cols)*(maxPnt.at<double>(0,0) - minPnt.at<double>(0,0)) + minPnt.at<double>(0,0), 
                                           ((double)y/output.rows)*(maxPnt.at<double>(1,0) - minPnt.at<double>(1,0)) + minPnt.at<double>(1,0), 
                                                                                 0                                                         );
-            
-            stare_point.at<double>(2,0) = query_dem( Mat2Point3f(stare_point), Mat2Point3f(ground_point), options);
-            Point2f starePoint( stare_point.at<double>(0,0), stare_point.at<double>(1,0));
-            
             //if( testONLY == true && (starePoint.x < -600 || starePoint.x > 600 || starePoint.y < -1600 || starePoint.y > -400 ))
             //    continue;
 
             //Only run if doing Perspective 2 Parallel Transformation
             if( options.doPerspective2Parallel() == true ){
+                
+                //only consider elevation here
+                stare_point.at<double>(2,0) = query_dem( Mat2Point3f(stare_point), Mat2Point3f(ground_point), options);
+                Point2f starePoint( stare_point.at<double>(0,0), stare_point.at<double>(1,0));
                
                 //one useful limit will be to compute the distance at which the max height is below
                 // the stare point vector
@@ -268,13 +258,12 @@ Mat orthorectify( Mat const& image, Options& options ){
                         stare_point, 
                         rotated_camera_normal, 
                         input_principle_point);
-
+                
                 //convert the world coordinate into local camera coordinates
                 //convert to the image coordinate system
-                Mat img_coord = cam2img * (input_camera_plane_point - options.Position_i) + load_point(0,0,0);
-
+                Mat img_coord = options.get_output_cam2img(image.size())*options.RotationM.inv() * ((input_camera_plane_point - options.Position_i) + load_point(0,0,0));
                 Point pnt( _round(img_coord.at<double>(0,0)), _round(img_coord.at<double>(1,0)));
-
+                
                 if( pnt.x >= 0 && pnt.x < image.cols && pnt.y >= 0 && pnt.y < image.rows ){
 
                     //pull the image
