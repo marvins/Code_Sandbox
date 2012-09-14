@@ -1,5 +1,6 @@
 #include "Perspective.hpp"
 
+#include "../core/dem.hpp"
 #include "../core/Utilities.hpp"
 #include "../math/Geometry.hpp"
 
@@ -26,7 +27,7 @@ Mat generate_perspective_test_image( Options& options ){
     imshow("DEM", dem);
     
     imwrite("data/flat_image.jpg", flat_img);
-    imwrite("data/dem.jpg", dem);
+    imwrite("data/dem.png", dem);
     
     waitKey(0);
     destroyWindow("Flat Test Image");
@@ -122,10 +123,10 @@ void create_flat_test_image( Options const& options, Mat& image, Mat& dem ){
             }
             
             //draw an ocllusion
-            if (((px >= .099 && px <= .201) && (py >= .099 && py <= .100 ))||
-                ((px >= .099 && px <= .201) && (py >= .200 && py <= .201 ))||
-                ((px >= .099 && px <= .100) && (py >= .099 && py <= .201 ))||
-                ((px >= .200 && px <= .201) && (py >= .099 && py <= .201 ))){
+            if (((px >= .097 && px <= .202) && (py >= .097 && py <  .100 ))||
+                ((px >= .097 && px <= .202) && (py >= .200 && py <= .202 ))||
+                ((px >= .097 && px <  .100) && (py >= .097 && py <= .202 ))||
+                ((px >= .200 && px <= .202) && (py >= .097 && py <= .202 ))){
 
                 if( image.type() == CV_8UC1 )
                     image.at<uchar>(j,i) = 20;
@@ -136,7 +137,7 @@ void create_flat_test_image( Options const& options, Mat& image, Mat& dem ){
                 dem.at<uchar>(j,i) = 100;
             }
 
-			if ( (px > .099  && px <  .2) && (py > .10  && py <  .2)){
+			if ( (px >= .1  && px <  .2) && (py >= .10  && py <  .2)){
 
                 if( image.type() == CV_8UC1 )
                     image.at<uchar>(j,i) = 250;
@@ -180,7 +181,9 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
     //    scale = elevation/rotated normal height
     double scale_factor = options.Position_i.at<double>(2,0)/rotated_normal.at<double>(2,0);
     Mat final_position = (scale_factor*rotated_normal) + image_earth_origin;
-   
+    
+    cout << "Final Position: "; print_mat( final_position.t());
+
     Mat PositionFinal = Mat::eye(4,4,CV_64FC1);
     matrix_add_translation( PositionFinal, final_position );
 
@@ -237,6 +240,7 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
 
     Point2f demMin(-500,-500);
     Point2f demMax( 500, 500);
+    double maxElevation = query_max_elevation( imgMin, imgMax, Point2f(0,0), options );
 
     cout << "Iterating through image" << endl;
     //this will rotate the image according to the required values
@@ -249,13 +253,20 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
             if( options.doZBuffering() == true ){
                 /** DEPTH PROCESSING MODULE */
                 
+                Mat stare_point = load_point( outCoordinateList[x][y].x, outCoordinateList[x][y].y, 0);
+                Point2f starePoint( outCoordinateList[x][y].x, outCoordinateList[x][y].y);
 
+                Mat maxDistance = compute_plane_line_intersection( final_position, stare_point, earth_normal, load_point(0,0,maxElevation));
+                double distRadius = norm( Point2f( maxDistance.at<double>(0,0), maxDistance.at<double>(1,0)) - starePoint);
+                
                 //compute the bounding box from the current point to the camera origin
-                Point2f minBound( std::min(final_position.at<double>(0,0), (double)outCoordinateList[x][y].x ),
-                                  std::min(final_position.at<double>(1,0), (double)outCoordinateList[x][y].y ));
+                Point2f minBound( std::min( starePoint.x-distRadius,  std::min(final_position.at<double>(0,0), (double)outCoordinateList[x][y].x )),
+                                  std::min( starePoint.y-distRadius,  std::min(final_position.at<double>(1,0), (double)outCoordinateList[x][y].y )));
 
-                Point2f maxBound( std::max(final_position.at<double>(0,0), (double)outCoordinateList[x][y].x ),
-                                  std::max(final_position.at<double>(1,0), (double)outCoordinateList[x][y].y ));
+                Point2f maxBound( std::min( starePoint.x+distRadius,  std::max(final_position.at<double>(0,0), (double)outCoordinateList[x][y].x )),
+                                  std::min( starePoint.y+distRadius,  std::max(final_position.at<double>(1,0), (double)outCoordinateList[x][y].y )));
+                
+                
                 
                 //now that we know the geographic extent of this search, we need to relate this to 
                 //  pixels on the original image
@@ -268,12 +279,6 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
                 maxType  = 1;
                 intersection = false;
                 
-                int testX = 100;
-                int testY = 100;
-                int stopX = 150;
-                int stopY = 150;
-
-
                 /** Start searching through the original image */
                 for( int xx=imgPixMin.x; xx<=imgPixMax.x; xx++ )
                     for( int yy=imgPixMin.y; yy<=imgPixMax.y; yy++ ){
@@ -358,6 +363,9 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
             if( cnt++ % 10000 == 0 ){
                 cout << 'x' << flush;
             }
+        }
+        if( x%10 == 0 ){
+            imwrite("PTEST.jpg", output_image);
         }
     }
 

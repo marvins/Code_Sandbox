@@ -114,6 +114,7 @@ void Options::load_configuration( ){
         throw string("DEM_Name not found");
 
     dem = imread( demname.c_str(), 0);
+
 }
 
 bool Options::doZBuffering()const{
