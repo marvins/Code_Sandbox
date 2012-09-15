@@ -1,0 +1,10 @@
+This is a collection of some really useful C++ 
+Libraries which I have created. They are designed 
+to be simple to use and be generic enough for 
+use in multiple situtations. 
+
+Config_Parser - A config file parser similar to boost program options, but much simpler to deploy. 
+
+Progress_Bar  - A simple command-line progress bar
+
+String Functions - Some really simple string utilities. 
