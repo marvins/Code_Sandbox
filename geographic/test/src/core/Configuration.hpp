@@ -120,21 +120,19 @@ class Options{
         */
         void load_configuration( const int& argc, char ** argv );
         
-        std::string run_type;
+        std::string run_type;          /*<  Run Type Variable */
         
-        bool perspective2parallel;
-        bool zbufferEnabled;
+        bool perspective2parallel;     /*< Perspective 2 Parallel Flag for RECTIFY Module */
+        bool zbufferEnabled;           /*< Z Buffer Flag for BUILD Module */
 
-
-        std::string image_filename;
-        std::string config_filename;
+        std::string image_filename;    /*< Name of Image */
+        std::string config_filename;   /*< Name of Configuration File */
         
-        double focal_length;
+        double focal_length;    /*< Camera Focal Length */
 
-        cv::Size build_image_size;
-        std::string build_image_type;
-        
-        std::string rectify_image_type;
+        cv::Size build_image_size;      /*< Size of test build image */
+        std::string build_image_type;   /*< Build Image Type */
+        std::string rectify_image_type; /*< Rectify Image Type */
 };
 
 
