@@ -31,13 +31,13 @@ int main( int argc, char* argv[] ){
     try{
 
         // Load and open the configuration file
-        Options options("data/options.cfg");
+        Options options(argc, argv);
         
         //print configuration to the screen
         options.print();
         
         //if we need to build an image, run here
-        if( options.run_type == "FULL" || options.run_type == "BUILD" ){
+        if( options.get_run_type() == "FULL" || options.get_run_type() == "BUILD" ){
             
             //generate our perspective image
             options.image = generate_perspective_test_image( options );
@@ -51,7 +51,7 @@ int main( int argc, char* argv[] ){
 
         }
         //if we need to rectify an image, run here
-        if( options.run_type == "FULL" || options.run_type == "RECTIFY" ){
+        if( options.get_run_type() == "FULL" || options.get_run_type() == "RECTIFY" ){
             
             //rectify the image
             Mat corrected_image = orthorectify( options.image, options );  

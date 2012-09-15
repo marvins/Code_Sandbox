@@ -21,14 +21,28 @@ Mat load_point( vector<double> const& array ){
     return output;
 }
 
-Options::Options( string const& config_file ){
+Options::Options( const int& argc, char ** argv ){
 
     //set the config file
-    config_filename = config_file;
+    config_filename = "data/options.cfg";
 
     //load the config options
     load_configuration();
 }
+
+/**
+ * Get the run type. 
+ * 
+ * Possible values
+ * - BUILD
+ * - RECTIFY
+ * - FULL
+*/
+string Options::get_run_type()const{
+    return run_type;
+}
+
+
 
 /** Open the configuration file and read values */
 void Options::load_configuration( ){

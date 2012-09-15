@@ -7,26 +7,84 @@
 
 #include "../math/Quaternion.hpp"
 
+/**
+ * @class Options
+ *
+ * Configuration option class. Contains all of the major configuration values. 
+*/
 class Options{
 
     public:
         
-        Options( const std::string& config_file );
+        /**
+         * Default Constructor 
+         * 
+         * @param[in] argc Number of arguments
+         * @param[in] argv Arguement list
+        */
+        Options( const int& argc, char ** argv );
         
+        /**
+         * Print all configuration options.
+        */
         void print()const;
         
-        cv::Mat image;
-        cv::Mat dem;
-    
-        std::string run_type;
+
+        /**
+         * Get run type
+         * 
+         * @return Run Type
+        */
+        std::string get_run_type()const;
+
+        
+        /**
+         * Get the focal length of the imager
+         *
+         * @return focal length
+        */
+        double get_focal_length()const;
+        
+        /** 
+         * Set the focal length
+         * 
+         * @param[in] fl focal length
+        */
+        void   set_focal_length( double const& fl );
+
+        /**
+         * Get the rectify image type
+         *
+         * @return OpenCV Image Type
+         *  
+         * Possible values
+         * - CV_8UC1
+         * - CV_8UC3
+        */
+        int      get_rectify_image_type()const;
+
+        
+        /**
+         * Do Z Buffering
+         * 
+         * @brief This relates to the Perspective image module.
+         *
+         * @return True if you want to z buffering
+        */
+        bool doZBuffering()const;
+        
+        /**
+         * Do Perspective to Parallel Projection Transformation. 
+         * 
+         * @return True if you want to do Perspective to Parallel Transformation
+        */
+        bool doPerspective2Parallel()const;
+
 
         cv::Size get_build_image_size()const;
         int      get_build_image_type()const;
         
-        int      get_rectify_image_type()const;
         
-        double get_focal_length()const;
-        void   set_focal_length( double const& fl );
         
         //position of the original camera
         cv::Mat Position_i;
@@ -47,10 +105,14 @@ class Options{
         cv::Mat get_output_cam2img( cv::Size const& sz, double const& ref )const;
         cv::Mat get_output_img2cam( cv::Size const& sz, double const& ref )const;
         
-        bool doZBuffering()const;
-        bool doPerspective2Parallel()const;
+        
+        cv::Mat image; /*< Image being used */
+        cv::Mat dem;   /*< DEM Image being used */
+    
 
     private:
+        
+        std::string run_type;
         
         bool perspective2parallel;
         bool zbufferEnabled;
