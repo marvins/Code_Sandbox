@@ -4,6 +4,8 @@
 MEDUSA_PATH=/home/ms6401/projects/Medusa
 
 GEOIMAGE_SRC=src
+GEOIMAGE_MAKEFILE=Makefile
+
 GEOIMAGE_DEST=GeoImage
 
 # Make sure destination directory exists
@@ -12,5 +14,6 @@ if [ ! -d "${MEDUSA_PATH}/${GEOIMAGE_DEST}" ]; then
 fi
 
 # Copy over geoimage code
-cp -r ${GEOIMAGE_SRC} ${MEDUSA_PATH}/${GEOIMAGE_DEST}/${GEOIMAGE_SRC}
+cp -r ${GEOIMAGE_SRC}      ${MEDUSA_PATH}/${GEOIMAGE_DEST}/${GEOIMAGE_SRC}
+cp    ${GEOIMAGE_MAKEFILE} ${MEDUSA_PATH}/${GEOIMAGE_DEST}/${GEOIMAGE_MAKEFILE}
 

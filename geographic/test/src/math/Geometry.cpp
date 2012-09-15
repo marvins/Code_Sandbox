@@ -206,3 +206,26 @@ int compute3d_line_line_intersection( Point3f const a1, Point3f const a2, Point3
     }
 }
 
+double Angle2D( Point2f const& c, Point2f const& p1, Point2f const& p2 ){
+    
+    Point2f ca = p1 - c;
+    Point2f ba = p2 - c;
+    
+    return acos(ca.dot(ba)/(norm(ca)*norm(ba)));
+}
+
+bool pointInConvexPolygon( std::vector<cv::Point2f>const& lst, cv::Point2f const& testPoint ){
+    
+    //make sure point is not one of the listed points
+    for( size_t i=0; i<lst.size(); i++)
+        if( norm(testPoint-lst[i]) < 0.1 )return true;
+
+    double angSum = 0;
+    for( size_t i=0; i<lst.size()-1; i++){
+        angSum += Angle2D( testPoint, lst[i], lst[i+1])*180.0/M_PI;
+    }
+    angSum += Angle2D( testPoint, lst.back(), lst[0])*180.0/M_PI;
+
+    if( fabs( angSum - 360 ) < 1 ) return true;
+    else                           return false;
+}

@@ -5,6 +5,8 @@
 
 #include <vector>
 
+bool pointInConvexPolygon( std::vector<cv::Point2f>const& lst, cv::Point2f const& testPoint );
+
 /** 
   * Compute the intersection between a line and a plane using 2 point for the line and a point for the plane as well as its normal. 
   *

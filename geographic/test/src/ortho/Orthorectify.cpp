@@ -101,6 +101,12 @@ Mat orthorectify( Mat const& image, Options& options ){
     Mat bl_world = compute_location( bl_image, ground_point, input_principle_point, earth_normal, image.size(), options );
     Mat br_world = compute_location( br_image, ground_point, input_principle_point, earth_normal, image.size(), options );
     
+    vector<Point2f> imgPolygon;
+    imgPolygon.push_back( Point2f(tl_world.at<double>(0,0), tl_world.at<double>(1,0)));
+    imgPolygon.push_back( Point2f(tr_world.at<double>(0,0), tr_world.at<double>(1,0)));
+    imgPolygon.push_back( Point2f(br_world.at<double>(0,0), br_world.at<double>(1,0)));
+    imgPolygon.push_back( Point2f(bl_world.at<double>(0,0), bl_world.at<double>(1,0)));
+
     Mat maxPnt = load_point(  std::max( tl_world.at<double>(0,0), std::max( tr_world.at<double>(0,0), std::max( bl_world.at<double>(0,0), br_world.at<double>(0,0)))),
                               std::max( tl_world.at<double>(1,0), std::max( tr_world.at<double>(1,0), std::max( bl_world.at<double>(1,0), br_world.at<double>(1,0)))),
                               std::max( tl_world.at<double>(2,0), std::max( tr_world.at<double>(2,0), std::max( bl_world.at<double>(2,0), br_world.at<double>(2,0)))));
@@ -148,6 +154,12 @@ Mat orthorectify( Mat const& image, Options& options ){
             Mat stare_point = load_point( ((double)x/output.cols)*(maxPnt.at<double>(0,0) - minPnt.at<double>(0,0)) + minPnt.at<double>(0,0), 
                                           ((double)y/output.rows)*(maxPnt.at<double>(1,0) - minPnt.at<double>(1,0)) + minPnt.at<double>(1,0), 
                                                                                 0                                                         );
+                
+            // make sure that the point in the output image is actually in the input image
+             Point2f starePoint( stare_point.at<double>(0,0), stare_point.at<double>(1,0));
+             if( pointInConvexPolygon( imgPolygon, starePoint ) == false )continue;
+            
+            
             //if( testONLY == true && (starePoint.x < -600 || starePoint.x > 600 || starePoint.y < -1600 || starePoint.y > -400 ))
             //    continue;
 
@@ -156,7 +168,6 @@ Mat orthorectify( Mat const& image, Options& options ){
                 
                 //only consider elevation here
                 stare_point.at<double>(2,0) = query_dem( Mat2Point3f(stare_point), Mat2Point3f(ground_point), options);
-                Point2f starePoint( stare_point.at<double>(0,0), stare_point.at<double>(1,0));
                
                 //one useful limit will be to compute the distance at which the max height is below
                 // the stare point vector
@@ -192,6 +203,9 @@ Mat orthorectify( Mat const& image, Options& options ){
                     */
                     //compute the actual geographical location
                     Point3f pos = pntMin + Point3f(xx*gsd, yy*gsd, 0);
+                    
+                    //don't process if it is beyond the radius
+                    if( norm(Point2f(pos.x, pos.y) - starePoint ) > distRadius )continue;
                     
                     //query the dem data for the right elevation
                     pos.z = query_dem( pos, Mat2Point3f(ground_point), options);
