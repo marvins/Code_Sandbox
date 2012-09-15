@@ -67,7 +67,7 @@ double compute_gsd( Mat const& earth_normal, Size sz, Options const& options ){
 /** Primary orthorectification module */
 Mat orthorectify( Mat const& image, Options& options ){
    
-
+    
     // the focal vector is the focal length multiplied by the normal to the camera
     Mat focal_vector = options.get_focal_length() * load_vector(0, 0, -1);
 

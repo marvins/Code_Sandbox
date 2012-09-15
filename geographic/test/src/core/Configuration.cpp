@@ -27,7 +27,7 @@ Options::Options( const int& argc, char ** argv ){
     config_filename = "data/options.cfg";
 
     //load the config options
-    load_configuration();
+    load_configuration( argc, argv);
 }
 
 /**
@@ -44,33 +44,67 @@ string Options::get_run_type()const{
 
 
 
-/** Open the configuration file and read values */
-void Options::load_configuration( ){
+
+/** 
+ * Open the configuration file and read values 
+*/
+void Options::load_configuration( const int& argc, char ** argv ){
     
     //Parse the config file
-    PSR::Parser parser( config_filename );
+    PSR::Parser parser( argc, argv, config_filename );
     bool found = false;
     
-    //pull the image filename
-    image_filename = parser.getItem_string("Image_Name", found);
-    if( found == false )
-        throw string("ERROR: Image_File tag not found in configuration");
     
+    /**************************************/
+    /*               RUN TYPE             */
+    /**************************************/
+    run_type = parser.getItem_string("RUN_TYPE", found);
+    if( found == false )
+        throw string("ERROR: RUN_TYPE tag not found in configuration");
+    
+    if( run_type != "FULL"    &&
+        run_type != "BUILD"   &&
+        run_type != "RECTIFY"   )
+        throw string(string("ERROR: Invalid RUN_TYPE tag ")+run_type+string(" found"));
+
+    /**************************************/
+    /*           Image Filename           */
+    /**************************************/
+    image_filename = parser.getItem_string("Image_Name", found);
+    if((run_type == "FULL" || run_type == "RECTIFY") && found == false )
+        throw string("ERROR: Image_File tag not found in configuration. Tag required by RUN_LEVELs FULL and RECTIFY");
+  
+    //make sure the file exists
+    if((run_type == "FULL" || run_type == "RECTIFY") && PSR::Parser::fileExists( image_filename ) == false )
+        throw string(string("ERROR: image file ")+image_filename+string(" does not exist"));
+
+    
+    /*****************************/
+    /*        Focal Length       */
+    /*****************************/
     //pull the focal length
     focal_length = parser.getItem_double("Focal_Length", found);
     if( found == false )
         throw string("ERROR: Focal_Length tag not found in configuration");
+   
     
-    //pull the run type
-    run_type = parser.getItem_string("RUN_TYPE", found);
-    if( found == false )
-        throw string("ERROR: RUN_TYPE tag not found in configuration");
-
-    
+    /***********************/
+    /*   BUILD_IMG_TYPE    */
+    /***********************/
     build_image_type = parser.getItem_string("BUILD_IMG_TYPE", found );
-    if( found == false )
-        throw string("ERROR: RUN_TYPE tag not found in configuration");
+    if((run_type == "FULL" || run_type == "BUILD") && found == false )
+        throw string("ERROR: RUN_TYPE tag not found in configuration. Required by FULL and BUILD run_level.");
     
+    if((run_type == "FULL" || run_type == "BUILD") && 
+       ( build_image_type != "CV_8UC1" && build_image_type != "CV_8UC3" ))
+        throw string(string("ERROR: BUILD_IMG_TYPE flag ")+build_image_type+string(" is invalid"));
+
+
+
+
+    /*************************/
+    /*   RECTIFY_IMG_TYPE    */
+    /*************************/
     rectify_image_type = parser.getItem_string("RECTIFY_OUTPUT_TYPE", found);
     if( found == false )
         throw string("ERROR: RECTIFY_OUTPUT_TYPE NOT FOUND");
@@ -128,7 +162,7 @@ void Options::load_configuration( ){
         throw string("DEM_Name not found");
 
     dem = imread( demname.c_str(), 0);
-
+    
 }
 
 bool Options::doZBuffering()const{

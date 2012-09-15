@@ -112,12 +112,19 @@ class Options{
 
     private:
         
+        /** 
+         * Load the contents of the configuration file. 
+         *
+         * argc Number of command-line arguments
+         * argv List of command-line arguments
+        */
+        void load_configuration( const int& argc, char ** argv );
+        
         std::string run_type;
         
         bool perspective2parallel;
         bool zbufferEnabled;
 
-        void load_configuration( );
 
         std::string image_filename;
         std::string config_filename;
