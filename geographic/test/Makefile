@@ -37,7 +37,8 @@ OBJECTS= $(BUILD)/orthoproject.o \
 		 $(BUILD)/Vector.o \
 		 $(BUILD)/Geometry.o \
 		 $(BUILD)/Utilities.o \
-		 $(BUILD)/dem.o
+		 $(BUILD)/dem.o \
+		 $(BUILD)/ProgressBar.o
 
 HEADERS= $(CORE)/Configuration.hpp \
 		 $(CORE)/Parser.hpp \
@@ -47,7 +48,8 @@ HEADERS= $(CORE)/Configuration.hpp \
 		 $(MATH)/Vector.hpp \
 		 $(MATH)/Geometry.hpp \
 		 $(CORE)/Utilities.hpp \
-		 $(CORE)/dem.hpp
+		 $(CORE)/dem.hpp \
+		 $(CORE)/ProgressBar.hpp
 
 ###############################
 #          Executable         #
@@ -97,6 +99,10 @@ $(BUILD)/Utilities.o: $(CORE)/Utilities.cpp $(HEADERS)
 
 # DEM Functions
 $(BUILD)/dem.o: $(CORE)/dem.cpp $(HEADERS)
+	g++ $< -c -o $@ $(INCL) $(FLAGS)
+
+# Progress Bar
+$(BUILD)/ProgressBar.o: $(CORE)/ProgressBar.cpp $(HEADERS)
 	g++ $< -c -o $@ $(INCL) $(FLAGS)
 
 

@@ -1,5 +1,6 @@
 #include "Perspective.hpp"
 
+#include "../core/ProgressBar.hpp"
 #include "../core/dem.hpp"
 #include "../core/Utilities.hpp"
 #include "../math/Geometry.hpp"
@@ -160,10 +161,12 @@ void create_flat_test_image( Options const& options, Mat& image, Mat& dem ){
 */
 void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& output_image, Options const& options ){
     
+    //create a progress bar object
+    ProgressBar progressBar(0, input_image.cols*input_image.rows, 50);
+
     //set some parameters
     output_image = Mat(input_image.size(), input_image.type());
     output_image = Scalar(0);
-
     Mat focal_vector = load_vector( 0, 0, options.get_focal_length());
 
     // Create a Normal Axis and rotate it by the inverse of the rotation quaternion
@@ -182,8 +185,6 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
     double scale_factor = options.Position_i.at<double>(2,0)/rotated_normal.at<double>(2,0);
     Mat final_position = (scale_factor*rotated_normal) + image_earth_origin;
     
-    cout << "Final Position: "; print_mat( final_position.t());
-
     Mat PositionFinal = Mat::eye(4,4,CV_64FC1);
     matrix_add_translation( PositionFinal, final_position );
 
@@ -246,7 +247,6 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
     //this will rotate the image according to the required values
     int cnt = 0;
     for( int x=0; x<output_image.cols; x++ ){
-            cout << x << endl;
         for( int y=0; y<output_image.rows; y++ ){
             
             /** Now we know what we are staring at.  Its time to now find what pixel will be shown here. */
@@ -359,14 +359,14 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
                         throw string("Unsupported pixel type");
                 }
             }
+            
+            //update the progress bar
+            progressBar.update( cnt );
+            cnt++;
+        }
+        //print the progress bar to console
+        cout << progressBar.toString() << '\r' << flush;
 
-            if( cnt++ % 10000 == 0 ){
-                cout << 'x' << flush;
-            }
-        }
-        if( x%10 == 0 ){
-            imwrite("PTEST.jpg", output_image);
-        }
     }
-
+    cout << endl;
 }
