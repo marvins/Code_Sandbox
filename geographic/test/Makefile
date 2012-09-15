@@ -59,7 +59,7 @@ $(EXEC): $(OBJECTS) $(HEADERS)
 ###############################
 #          Main Driver        #
 ###############################
-$(BUILD)/orthoproject.o: orthoproject.cpp  $(HEADERS)
+$(BUILD)/orthoproject.o: $(SRC)/orthoproject.cpp  $(HEADERS)
 	g++ $< -c -o $@ $(INCL) $(FLAGS)
 
 
@@ -99,8 +99,15 @@ $(BUILD)/Utilities.o: $(CORE)/Utilities.cpp $(HEADERS)
 $(BUILD)/dem.o: $(CORE)/dem.cpp $(HEADERS)
 	g++ $< -c -o $@ $(INCL) $(FLAGS)
 
+
+####################################
+#          DOCUMENTATION           #
+####################################
 docs:
 	doxygen Doxyfile
 
+####################################
+#              CLEANUP             #
+####################################
 clean: 
 	rm -r $(EXEC) $(BUILD)/*

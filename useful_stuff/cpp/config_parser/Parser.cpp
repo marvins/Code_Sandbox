@@ -1,8 +1,20 @@
+/**
+ * @file Parser.cpp
+ *
+ * @Author Marvin Smith
+ * @Date  09/15/2012
+ *
+ * Implementation of my basic parser.  Requires some boost. This is designed
+ * to be extremely simple to use and provide only the baseline requirements 
+ * such as command-line arguments and config file parsing. 
+*/
 #include "Parser.hpp"
 
+///Boost Libraries
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 
+///STL Requirements
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -30,6 +42,25 @@ std::string num2str( TP const& value ){
     return sin.str();
 }
 
+std::string bool2str( bool const& value ){
+
+    if( value == false )
+        return "false";
+    else
+        return "true";
+}
+
+bool str2bool( const string& value ){
+
+    string temp;
+    std::transform( value.begin(), value.end(), temp.begin(), ::tolower);
+
+    if( value == "false")
+        return false;
+    else
+        return true;
+}
+
 
 PSR::Parser::Parser( ){
     valid = false;
@@ -52,12 +83,85 @@ PSR::Parser::Parser( const string& filename ){
 
 }
 
+
+/** Read the configuration file and command-line options */
+PSR::Parser::Parser( const int argc, char ** argv, std::string const& filename ){
+    
+    vector<pair<string,string> > tlist;
+
+    //set to false just in case
+    valid = false;
+    
+    //set the program name
+    command_name = argv[0];
+
+    // set the config filename
+    config_filename = filename;
+
+    //read the command-line options
+    size_t idx;
+    string line, tag, val;
+    for( int i=1; i<argc; i++){
+
+        //load the string
+        line = string(argv[i]);
+        
+        //split the line by the = sign
+        idx = line.find_first_of("=");
+        
+        //if the index is past the length of the string, its a tag value not tag=value
+        if( idx == string::npos ){
+
+            //set the tag and val strings
+            tag = line;
+            
+            if( argc <= i+1 ){ throw string("ERROR: Invalid number of arguments"); }
+            val = argv[i+1];
+            i++;
+        }
+
+        else{
+            //set the tag and val strings
+            tag = line.substr(0,idx);
+            val = line.substr(idx+1);
+        }
+
+        // check all config options
+        if( tag == "-c" || tag == "--config_file" ){
+            config_filename = val;
+        }
+        
+        //get rid of the starting dashes
+        while( tag[0] == '-')
+            tag = tag.substr(1);
+
+        //add all remaining items to the temporary list
+        tlist.push_back( pair<string,string>(tag, val));
+    }
+    
+    //validate that the file we have is usable
+    validate_file();
+
+    //read all of the file contents
+    load_file();
+    
+    //add all remaining items in the list to the item list
+    for( size_t i=0; i<tlist.size(); i++)
+        setItem_string( tlist[i].first, tlist[i].second, true);
+
+
+}
+
+
+/** 
+ * Validate the given configuration file
+*/
 void PSR::Parser::validate_file( ){
     
     //make sure the file exists
     fs::path config_file( config_filename );
     if( fs::exists( config_file ) == false ){
-        throw string("Error: config file does not exist");
+        throw string(string("Error: config file ") + config_filename + string(" does not exist"));
     }
 
     //check the extension for config file type
@@ -236,8 +340,7 @@ vector<double> PSR::Parser::getItem_vec_double( const std::string& tag_name, boo
 
     if( found == true ){
         ba::split( substrs, pre_split, ba::is_any_of(", "));
-        cout << "substrings" << endl;
-        for( int i=0; i<substrs.size(); i++){
+        for( size_t i=0; i<substrs.size(); i++){
             ba::trim(substrs[i]);
             if( substrs[i].size() > 0 ){
                 output.push_back(str2num<double>(substrs[i]));
@@ -256,11 +359,11 @@ void  PSR::Parser::setItem_vec_double( const std::string& tag_name, const vector
 void  PSR::Parser::setItem_vec_double( const std::string& tag_name, const vector<double>& value, const bool& create ){
 
     //iterate through the list, looking for a match
-    for( int i=0; i<items.size(); i++)
+    for( size_t i=0; i<items.size(); i++)
         if( tag_name == items[i].first ){
             //clear the item
             string output = "";
-            for( int j=0; j<value.size()-1; j++)
+            for( size_t j=0; j<value.size()-1; j++)
                 output += num2str<double>(value[j]) + ",";
             output += num2str<double>(value.back());
             items[i].second = output;
@@ -270,7 +373,7 @@ void  PSR::Parser::setItem_vec_double( const std::string& tag_name, const vector
     if( create == true ){
 
         string output = "";
-        for( int i=0; i<value.size()-1; i++)
+        for( size_t i=0; i<value.size()-1; i++)
             output += num2str<double>(value[i]) + ",";
         output += num2str<double>(value.back());
         items.push_back( pair<string,string>( tag_name, output));
@@ -278,4 +381,63 @@ void  PSR::Parser::setItem_vec_double( const std::string& tag_name, const vector
 
 }
 
+
+bool PSR::Parser::getItem_bool( const string& tag_name, bool& found )const{
+    
+    found = false;
+    string temp;
+
+    //first we need to search through the item list and look for the right tag
+    for( size_t i=0; i<items.size(); i++)
+        if( tag_name == items[i].first ){
+            found = true;
+            
+            temp = items[i].second;
+            std::transform( temp.begin(), temp.end(), temp.begin(), ::tolower);
+            
+            //check for true
+            if( temp == "true" || temp == "1" ){
+                return true;
+            }
+            else if( temp == "false" || temp == "0" ){
+                return false;
+            }
+            else{
+                throw string(string("ERROR: Unknown parameter: ") + items[i].second);
+            }
+
+        }
+
+    //if nothing is found, return nothing
+    return false;
+}
+
+void  PSR::Parser::setItem_bool( const string& tag_name, const bool& value ){
+    setItem_bool( tag_name, value, false );
+}
+
+
+void  PSR::Parser::setItem_bool( const string& tag_name, const bool& value, const bool& create ){
+
+    //iterate through the list looking for a matching tag
+    for( size_t i=0; i<items.size(); i++ )
+        if( tag_name == items[i].first ){
+            items[i].second = bool2str(value);
+            return;
+        }
+
+    
+    //if the create flag is set, then add the item
+    items.push_back( pair<string,string>( tag_name, bool2str(value)));
+
+
+}
+
+
+/**
+ * Return true if the configuration file exists.
+*/
+bool PSR::Parser::fileExists( const string& filename ){
+    return fs::exists( fs::path( filename ));
+}
 

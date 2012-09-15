@@ -1,8 +1,20 @@
+/**
+ * @file Parser.cpp
+ *
+ * @Author Marvin Smith
+ * @Date  09/15/2012
+ *
+ * Implementation of my basic parser.  Requires some boost. This is designed
+ * to be extremely simple to use and provide only the baseline requirements 
+ * such as command-line arguments and config file parsing. 
+*/
 #include "Parser.hpp"
 
+///Boost Libraries
 #include <boost/filesystem.hpp>
 #include <boost/algorithm/string.hpp>
 
+///STL Requirements
 #include <fstream>
 #include <iostream>
 #include <sstream>
