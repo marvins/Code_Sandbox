@@ -1,8 +1,10 @@
 #include "Configuration.hpp"
+#include "Utilities.hpp"
 
 #include "Parser.hpp"
 
 #include <iostream>
+#include <sstream>
 #include <vector>
 
 #include <opencv2/highgui/highgui.hpp>
@@ -54,7 +56,50 @@ void Options::load_configuration( const int& argc, char ** argv ){
     PSR::Parser parser( argc, argv, config_filename );
     bool found = false;
     
+    /**************************************/
+    /*               LOGGING              */
+    /**************************************/
+    vector<string> log_flags;
     
+    // extract the log filename here
+    string logfilename = parser.getItem_string("LOG_LOGFILE_NAME", found);
+    if( found )
+        logger.set_logfile_name(logfilename);
+
+    // extract the logfile run states desired here
+    log_flags = parser.getItem_vec_string("LOG_LOGFILE_CONFIGURATION", found );
+    unsigned int state = 0;
+    for( size_t i=0; i<log_flags.size(); i++ ){
+        if( log_flags[i] == "MAJOR" )
+            state = state | LOG_MAJOR;
+        else if( log_flags[i] == "MINOR" )
+            state = state | LOG_MINOR;
+        else if( log_flags[i] == "WARNING" )
+            state = state | LOG_WARNING;
+        else if( log_flags[i] == "INFO" )
+            state = state | LOG_INFO;
+        else
+            throw string("ERROR: UNKNOWN LOG FLAG");
+    }
+    logger.set_logfile_run_state( state );
+
+    // extract the console run states desired here
+    log_flags = parser.getItem_vec_string("LOG_CONSOLE_CONFIGURATION", found );
+    state = 0;
+    for( size_t i=0; i<log_flags.size(); i++ ){
+        if( log_flags[i] == "MAJOR" )
+            state = state | LOG_MAJOR;
+        else if( log_flags[i] == "MINOR" )
+            state = state | LOG_MINOR;
+        else if( log_flags[i] == "WARNING" )
+            state = state | LOG_WARNING;
+        else if( log_flags[i] == "INFO" )
+            state = state | LOG_INFO;
+        else
+            throw string("ERROR: UNKNOWN LOG FLAG");
+    }
+    logger.set_console_run_state( state );
+
     /**************************************/
     /*               RUN TYPE             */
     /**************************************/
@@ -170,17 +215,26 @@ bool Options::doZBuffering()const{
 }
 
 
-void Options::print()const{
+void Options::print(){
+    
+    string ENDL("\n");
+    string output = ENDL;
 
-    cout << "Program Configuration" << endl;
-    cout << " - Run Type      : " << run_type << endl;
-    cout << " - Image Filename: " << image_filename << endl;
-    cout << endl;
-    cout << "Camera Configuration" << endl;
-    cout << " - Focal Length  : " << focal_length << endl;
-    cout << " - Rotation Angle: " << RotationQ.get_angle(false) << endl;
-    cout << " - Rotation Axis : " << RotationQ.get_axis() << endl;
-    cout << endl;
+    ostringstream sout;
+
+    output += string("Program Configuration\n");
+    output += string(" - Run Type      : ") +    run_type    + ENDL;
+    output += string(" - Image Filename: ") + image_filename + ENDL;
+    output += ENDL;
+    output += string("Camera Configuration") + ENDL;
+    output += string(" - Focal Length  : ") + num2str(focal_length) + ENDL;
+    
+    sout.clear(); sout.str(""); sout << RotationQ.get_angle(false);
+    output += string(" - Rotation Angle: ") + sout.str() + ENDL;
+    sout.clear(); sout.str(""); sout << RotationQ.get_axis();
+    output += string(" - Rotation Axis : ") + sout.str() + ENDL;
+    output += ENDL;
+    
     cout << "Build Image Configuration" << endl;
     cout << " - Build Image Size: " << build_image_size.width << ", " << build_image_size.height << endl;
     cout << " - Build Image Type: " << build_image_type << endl;
@@ -198,7 +252,9 @@ void Options::print()const{
     else
         cout << "False" << endl;
     cout << endl;
-
+    
+    //add message to logger
+    logger.add_message( LOG_INFO, output );
 }
 
 Size Options::get_build_image_size()const{

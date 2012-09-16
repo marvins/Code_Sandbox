@@ -5,7 +5,10 @@
  * Created on March 15, 2012, 9:24 AM
  */
 
-#include "Quaternion.h"
+#include "Quaternion.hpp"
+
+#include <iostream>
+using namespace std;
 
 Quaternion::Quaternion(){
     real() = 0;
@@ -22,9 +25,14 @@ Quaternion::Quaternion( const vec& q){
     real() = 0;
 }
 
+/** Parameterized Constructor */
 Quaternion::Quaternion( const double theta, const vec& axis ){
+    
+    //make sure the axis is normalized
+    vec naxis = axis / axis.mag();
+    
     real() = cos(theta/2);
-    imag() = sin(theta/2)*axis;
+    imag() = sin(theta/2)*naxis;
 }
 
 double& Quaternion::operator[](const int idx){
@@ -122,4 +130,62 @@ Quaternion operator* (double const& s, const Quaternion& qa ){
     out.real() = qa.real()*s;
     out.imag() = qa.imag()*s;
     return out;
+}
+
+cv::Mat Quaternion::get_rotation_matrix()const{
+
+    //create matrix
+    cv::Mat matrix( 4, 4, CV_64FC1);
+    
+    //load First row
+    matrix.at<double>(0,0) = 1 - 2*i[1]*i[1] - 2*i[2]*i[2];
+    matrix.at<double>(0,1) =     2*i[0]*i[1] + 2*  d*i[2];
+    matrix.at<double>(0,2) =     2*i[0]*i[2] - 2*  d*i[1];
+    matrix.at<double>(0,3) = 0;
+    
+    //load second row
+    matrix.at<double>(1,0) =     2*i[0]*i[1] - 2*  d *i[2];
+    matrix.at<double>(1,1) = 1 - 2*i[0]*i[0] - 2*i[2]*i[2];
+    matrix.at<double>(1,2) =     2*i[1]*i[2] + 2*  d *i[0]; 
+    matrix.at<double>(1,3) = 0;
+    
+    //load third row
+    matrix.at<double>(2,0) =     2*i[0]*i[2] + 2*  d *i[1];  
+    matrix.at<double>(2,1) =     2*i[1]*i[2] - 2*  d *i[0];  
+    matrix.at<double>(2,2) = 1 - 2*i[0]*i[0] - 2*i[1]*i[1];
+    matrix.at<double>(2,3) = 0;
+    
+    //load fourth row
+    matrix.at<double>(3,0) = 0;
+    matrix.at<double>(3,1) = 0;
+    matrix.at<double>(3,2) = 0;
+    matrix.at<double>(3,3) = 1;
+
+    return matrix.clone();
+
+}
+
+double Quaternion::get_angle( const bool& inRadians )const{
+    
+    if( inRadians == true )
+        return (2*acos(d));
+    else
+        return ((2*acos(d))*180.0/M_PI);
+}
+
+vec Quaternion::get_axis()const{
+    
+    //get the angle
+    double angle = get_angle();
+    
+    //throw out junk if the angle is 0, since it is actually undefined
+    if ( angle == 0 )
+        return vec(1,0,0);
+
+    vec output;
+    output[0] = i[0] / sqrt(1-(d*d));
+    output[1] = i[1] / sqrt(1-(d*d));
+    output[2] = i[2] / sqrt(1-(d*d));
+
+    return output;
 }

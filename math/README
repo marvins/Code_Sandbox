@@ -1,3 +1,14 @@
 General mathematical utilities
 
 Please send any recommendations to me so that I can fix them.
+
+
+CORE
+    - Vector: A generic vector library
+
+GEOMETRY
+    - Quaternion: A quaternion library for managing rotations
+
+CALCULUS
+
+

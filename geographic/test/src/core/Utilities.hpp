@@ -3,7 +3,37 @@
 
 #include <opencv2/core/core.hpp>
 
+
+/**
+ * A string to value conversion using stringstreams
+ * 
+ * @param[in] value String to convert
+ * @return Converted number
+*/
+template <typename TP>
+TP str2num( std::string const& value ){
+    
+    std::stringstream sin;
+    TP result;
+    sin << value;
+    sin >> result;
+    return result;
+}
+
+template <typename TP>
+std::string num2str( TP const& value ){
+
+    std::stringstream sin;
+    sin << value;
+    return sin.str();
+}
+
+
+/** 
+ * A function for converting a 4x1 or 3x1 Matrix into an OpenCV Point3f
+*/
 cv::Point3f Mat2Point3f( cv::Mat const& mat );
+
 /** 
   * A simple function for converting an OpenCV point into a 4x1 Homogenous coordinate in cv::Mat format
   *

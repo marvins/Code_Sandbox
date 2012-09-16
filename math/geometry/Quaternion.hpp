@@ -10,17 +10,45 @@
 
 #include <cmath>
 
-#include "Vector.h"
+#include "Vector.hpp"
 
 using namespace std;
 
+/**
+ * A generic Quaternion class for managing rotations of points and vectors.
+*/
 class Quaternion {
 public:
     
+    /**
+     * Default Constructor
+    */
     Quaternion();
-    Quaternion(const double& a, const double& b, const double& c, const double& d);
+    
+    /**
+     * Parameterized constructor 
+     * 
+     * @param[in] w Real Value
+     * @param[in] x X component of imaginary component
+     * @param[in] y Y component of imaginary component
+     * @param[in] z Z component of imaginary component
+    */
+    Quaternion(const double& w, const double& x, const double& y, const double& z);
+    
+    /** 
+     * Parameterized constructor.  Helps convert a vector to a quaternion 
+     * with a real value of 0.
+     * 
+     * @param[in] q Vector to convert.
+    */
     Quaternion( const vec& q);
     
+    /** 
+     * Quaternion constructor.  Axis-Angle to Quaternion.
+     *
+     * @param[in] theta Angle in radians.
+     * @param[in] axis  Axis of rotation.
+    */
     Quaternion( const double theta, const vec& axis );
     
     
@@ -38,6 +66,10 @@ public:
     double mag2()const;
     Quaternion conj()const;
     
+    cv::Mat get_rotation_matrix()const;
+    double get_angle( const bool& inRadians = true )const;
+    vec get_axis()const;
+
 private:
     double d;
     vec i;

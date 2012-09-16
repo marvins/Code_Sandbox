@@ -56,6 +56,11 @@ class Parser{
         void                setItem_vec_double( const std::string& tag_name, const std::vector<double>& value );
         void                setItem_vec_double( const std::string& tag_name, const std::vector<double>& value, const bool& create );
         
+        // list handling
+        std::vector<std::string> getItem_vec_string( const std::string& tag_name, bool& found )const;
+        void                     setItem_vec_string( const std::string& tag_name, const std::vector<std::string>& value );
+        void                     setItem_vec_string( const std::string& tag_name, const std::vector<std::string>& value, const bool& create );
+        
         /**
          * Check to see if a file exists
          * 

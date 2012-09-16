@@ -381,6 +381,63 @@ void  PSR::Parser::setItem_vec_double( const std::string& tag_name, const vector
 
 }
 
+std::vector<string> PSR::Parser::getItem_vec_string( const std::string& tag_name, bool& found )const{
+    
+    vector<string> output;
+    vector<string> substrs;
+    string pre_split;
+
+    //iterate through list looking for the matching tag
+    for( size_t i=0; i<items.size(); i++)
+        if( tag_name == items[i].first ){
+            pre_split = items[i].second;
+            found=true;
+            break;
+        }
+
+    if( found == true ){
+        ba::split( substrs, pre_split, ba::is_any_of(", "));
+        for( size_t i=0; i<substrs.size(); i++){
+            ba::trim(substrs[i]);
+            if( substrs[i].size() > 0 ){
+                output.push_back(substrs[i]);
+            }
+        }
+    }
+    
+    return output;
+
+}
+
+void  PSR::Parser::setItem_vec_string( const std::string& tag_name, const std::vector<string>& value ){
+    setItem_vec_string( tag_name, value, false );
+}
+
+void  PSR::Parser::setItem_vec_string( const std::string& tag_name, const std::vector<string>& value, const bool& create ){
+
+    //iterate through the list, looking for a match
+    for( size_t i=0; i<items.size(); i++)
+        if( tag_name == items[i].first ){
+            //clear the item
+            string output = "";
+            for( size_t j=0; j<value.size()-1; j++)
+                output += value[j] + ",";
+            output += value.back();
+            items[i].second = output;
+            return;
+        }
+    
+    if( create == true ){
+
+        string output = "";
+        for( size_t i=0; i<value.size()-1; i++)
+            output += value[i] + ",";
+        output += value.back();
+        items.push_back( pair<string,string>( tag_name, output));
+    }
+
+}
+
 
 bool PSR::Parser::getItem_bool( const string& tag_name, bool& found )const{
     

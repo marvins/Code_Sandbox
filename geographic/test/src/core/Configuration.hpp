@@ -5,6 +5,7 @@
 
 #include <opencv2/core/core.hpp>
 
+#include "Logger.hpp"
 #include "../math/Quaternion.hpp"
 
 /**
@@ -27,7 +28,7 @@ class Options{
         /**
          * Print all configuration options.
         */
-        void print()const;
+        void print();
         
 
         /**
@@ -80,11 +81,20 @@ class Options{
         */
         bool doPerspective2Parallel()const;
 
-
+        /** 
+         * If you are building the image, 
+         * this will return the desired image size
+         *
+         * @return image size
+        */
         cv::Size get_build_image_size()const;
+        
+        /** 
+         * If you are building the image, 
+         * this will return the desired image type
+         * @return Image Type
+        */
         int      get_build_image_type()const;
-        
-        
         
         //position of the original camera
         cv::Mat Position_i;
@@ -92,10 +102,16 @@ class Options{
         //position of the rectified camera
         cv::Mat Position_f;
         
-        //rotation matrix for the quaternion
+        ///rotation matrix for the quaternion
         cv::Mat RotationM;
-
+        
+        ///rotation quaternion
         Quaternion RotationQ;
+        
+        cv::Mat image; /*< Image being used */
+        cv::Mat dem;   /*< DEM Image being used */
+        
+        Logger logger; /*< Logger */
 
         cv::Mat get_build_img2cam()const;
         cv::Mat get_output_img2cam( cv::Size const& sz )const;
@@ -106,8 +122,7 @@ class Options{
         cv::Mat get_output_img2cam( cv::Size const& sz, double const& ref )const;
         
         
-        cv::Mat image; /*< Image being used */
-        cv::Mat dem;   /*< DEM Image being used */
+        
     
 
     private:
