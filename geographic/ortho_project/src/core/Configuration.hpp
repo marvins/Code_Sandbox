@@ -112,6 +112,8 @@ class Options{
         cv::Mat dem;   /*< DEM Image being used */
         
         Logger logger; /*< Logger */
+        
+        std::string rectify_output_filename;    /*< Name of Fully Rectified Image */
 
         cv::Mat get_build_img2cam()const;
         cv::Mat get_output_img2cam( cv::Size const& sz )const;

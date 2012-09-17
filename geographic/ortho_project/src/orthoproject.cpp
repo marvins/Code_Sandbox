@@ -47,11 +47,14 @@ int main( int argc, char* argv[] ){
                 options.image = generate_perspective_test_image( options );
                 
                 //write and display image
-                namedWindow("Modified Image");
-                imshow("Modified Image", options.image);
-                waitKey(0);
+                if( options.logger.get_console_run_state() != LOG_NONE ){
+                    namedWindow("Modified Image");
+                    imshow("Modified Image", options.image);
+                    waitKey(0);
+                    destroyWindow("Modified Image");
+                }
+
                 imwrite("data/modified_image.jpg", options.image);
-                destroyWindow("Modified Image");
 
             }
             //if we need to rectify an image, run here
@@ -61,11 +64,13 @@ int main( int argc, char* argv[] ){
                 Mat corrected_image = orthorectify( options.image, options );  
 
                 //write and display image
-                namedWindow("Fully Rectified Image");
-                imshow("Fully Rectified Image", corrected_image);
-                waitKey(0);
-                imwrite("data/corrected_image.jpg", corrected_image);
-                destroyWindow("Fully Rectified Image");
+                if( options.logger.get_console_run_state() != LOG_NONE ){
+                    namedWindow("Fully Rectified Image");
+                    imshow("Fully Rectified Image", corrected_image);
+                    waitKey(0);
+                    destroyWindow("Fully Rectified Image");
+                }
+                imwrite(options.rectify_output_filename.c_str(), corrected_image);
 
             }
 

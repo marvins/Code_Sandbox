@@ -121,8 +121,14 @@ void Options::load_configuration( const int& argc, char ** argv ){
     //make sure the file exists
     if((run_type == "FULL" || run_type == "RECTIFY") && PSR::Parser::fileExists( image_filename ) == false )
         throw string(string("ERROR: image file ")+image_filename+string(" does not exist"));
-
     
+    /*******************************************/
+    /*      RECTIFY IMAGE OUTPUT FILENAME      */
+    /*******************************************/
+    rectify_output_filename = parser.getItem_string("RECTIFY_OUTPUT_FILENAME", found);
+    if((run_type == "FULL" || run_type == "RECTIFY" ) && found == false )
+        throw string("ERROR: RECTIFY_OUTPUT_FILENAME tag does not exist");
+
     /*****************************/
     /*        Focal Length       */
     /*****************************/
@@ -162,23 +168,36 @@ void Options::load_configuration( const int& argc, char ** argv ){
             throw string("UNKNOWN TYPE");
     }
     
-
+    
+    /**************************/
+    /*    BUILD IMAGE SIZE    */
+    /**************************/
+    // we only care about the build image size if the build process is called on
     int c = parser.getItem_int("BUILD_IMG_COLS", found );
-    if( found == false )
+    if( found == false && ( run_type == "FULL" || run_type == "BUILD"))
         throw string("ERROR: BUILD_IMG_COLS tag not found in configuration");
     
     int r = parser.getItem_int("BUILD_IMG_ROWS", found );
-    if( found == false )
+    if( found == false && ( run_type == "FULL" || run_type == "BUILD"))
         throw string("ERROR: BUILD_IMG_ROWS tag not found in configuration");
-
-    build_image_size = Size(c, r);
     
-    //load the Position Point
+    if( run_type == "FULL" || run_type == "BUILD" )
+        build_image_size = Size(c, r);
+    
+    /****************************/
+    /*     Camera Position      */
+    /****************************/
     vector<double> position = parser.getItem_vec_double("Camera_Position", found);
     if( found == false )
         throw string("ERROR: Camera Position tag invalid or not found");
+    
+    //set the camera position
     Position_i = load_point( position );
 
+    
+    /******************************/
+    /*     Rotation Parameters    */
+    /******************************/
     //load the Rotation Quaternion Matrix
     vector<double> rot_axis = parser.getItem_vec_double("Camera_Rotation_Axis", found);
     if( found == false )
@@ -187,25 +206,38 @@ void Options::load_configuration( const int& argc, char ** argv ){
     double rot_ang = parser.getItem_double("Camera_Rotation_Angle", found);
     if( found == false )
         throw string("ERROR: Camera Rotation angle tag invalid or not found");
+    
+    //create the quaternion
     RotationQ = Quaternion( rot_ang*M_PI/180.0, vec( rot_axis[0], rot_axis[1], rot_axis[2]));
+    
+    //convert the quaternion into a rotation matrix
     RotationM = RotationQ.get_rotation_matrix();
 
+    
+    /******************************************/
+    /*       ZBuffer and 3D Usage Flags       */
+    /******************************************/
     //check for the zbuffer flag
     zbufferEnabled = parser.getItem_bool("ZBUFFER_ENABLED", found);
-    if( found == false )
+    if( found == false && ( run_type == "FULL" || run_type == "BUILD" ) )
         throw string("ERROR: ZBUFFER_ENABLED not found or enabled");
     
     //check for the perspective 2 parallel item
     perspective2parallel = parser.getItem_bool("RECTIFY_PERFORM_PERSPECTIVE_TO_PARALLEL", found);
-    if( found == false )
+    if( found == false && ( run_type == "FULL" || run_type == "RECTIFY" ) )
         throw string("ERROR: Perspective 2 Parallel not found");
     
+    
+    /**************************************************/
+    /*       Digital Elevation Model Parameters       */
+    /**************************************************/
     //Check for dem image
     string demname = parser.getItem_string("DEM_Name", found);
-    if( found == false )
+    if( found == false && ( run_type == "FULL" || run_type == "RECTIFY" ) )
         throw string("DEM_Name not found");
 
-    dem = imread( demname.c_str(), 0);
+    if( run_type == "FULL" || run_type == "RECTIFY" )
+        dem = imread( demname.c_str(), 0);
     
 }
 
