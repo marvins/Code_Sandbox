@@ -5,6 +5,10 @@ use in multiple situtations.
 
 Config_Parser - A config file parser similar to boost program options, but much simpler to deploy. 
 
+Logger - A logging utility which will help you control your output
+
 Progress_Bar  - A simple command-line progress bar
 
 String Functions - Some really simple string utilities. 
+
+Unit Test - A simple unit test framework
