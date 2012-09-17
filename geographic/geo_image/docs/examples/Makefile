@@ -1,4 +1,4 @@
-all: hello_geoworld dted_example simple_writer advanced_geoimage coordinate_conversion
+all: GS2_Header_Demo hello_geoworld dted_example simple_writer advanced_geoimage coordinate_conversion
 
 BOOST    = -lboost_system -lboost_filesystem
 GDAL = -I/usr/include/gdal -lgdal
@@ -19,6 +19,9 @@ advanced_geoimage: advanced_geoimage.cpp
 
 coordinate_conversion: coordinate_conversion.cpp
 	g++ coordinate_conversion.cpp -o coordinate_conversion $(GDAL) $(GEOIMAGE)
+
+GS2_Header_Demo: GS2_Header_Demo.cpp
+	g++ GS2_Header_Demo.cpp -o GS2_Header_Demo $(OPENCV) $(GDAL) $(GEOIMAGE)
 
 clean:
 	rm -rf hello_geoworld dted_example simple_writer advanced_geoimage coordinate_conversion *.dSYM

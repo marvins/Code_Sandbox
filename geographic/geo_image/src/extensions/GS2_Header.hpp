@@ -9,13 +9,16 @@
 #include <GeoImage.h>
 #endif 
 
+#include <opencv2/core/core.hpp>
+
 namespace GEO{
 namespace GS2{
 
-std::string getAcftTailNumber( GEO::GeoImage img );
+std::string getAcftTailNumber( GEO::GeoImage const& img );
 
-double getFocalLength( GEO::GeoImage img );
+double getFocalLength( GEO::GeoImage const& img );
 
+cv::Mat getSensorPosition( GEO::GeoImage const& img );
 
 } // end of GS2 Namespace 
 } // end of GEO Namespace

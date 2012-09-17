@@ -8,18 +8,38 @@ CORE=$(SRC)/core
 MATH=$(SRC)/math
 ORTHO=$(SRC)/ortho
 
-
+#####################
+#       OpenCV      #
+#####################
 OPENCV_LIBS    = `pkg-config opencv --libs`
 OPENCV_INCLUDE = `pkg-config opencv --cflags`
 OPENCV         =  $(OPENCV_INCLUDE)  $(OPENCV_LIBS)
 
+##################
+#      BOOST     #
+##################
 BOOST_LIBS    = -L/usr/lib -lboost_system -lboost_filesystem
 BOOST_INCLUDE = -I/usr/include 
 BOOST         = $(BOOST_INCLUDE) $(BOOST_LIBS)
 
+####################
+#       GDAL       #
+####################
+GDAL_LIBS       = -lgdal
+GDAL_INCLUDE    = -I/usr/include/gdal
+GDAL            = $(GDAL_INCLUDE) $(GDAL_LIBS)
 
-LIBS = $(OPENCV) $(BOOST)
-INCL = $(OPENCV_INCLUDE) $(BOOST_INCLUDE)
+#####################
+#      GEOIMAGE     #
+#####################
+GEOIMAGE_LIBS    = -L/opt/local/lib -lgeoimage
+GEOIMAGE_INCLUDE = -I/opt/local/include
+GEOIMAGE         = $(GEOIMAGE_LIBS) $(GEOIMAGE_INCLUDE)
+
+
+
+LIBS = $(OPENCV) $(BOOST) $(GEOIMAGE) $(GDAL)
+INCL = $(OPENCV_INCLUDE) $(BOOST_INCLUDE) $(GEOIMAGE_INCLUDE) $(GDAL_INCLUDE)
 
 EXEC = $(BIN)/orthoproject
 

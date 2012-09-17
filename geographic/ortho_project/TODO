@@ -1,5 +1,0 @@
-- Make DEM Model Loseless or read text file instead
-- Incorporate logger
-- Organize configuration
-- Add progress bar
-- Add command-line options

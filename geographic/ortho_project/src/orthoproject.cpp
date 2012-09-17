@@ -59,7 +59,7 @@ int main( int argc, char* argv[] ){
             }
             //if we need to rectify an image, run here
             if( options.get_run_type() == "FULL" || options.get_run_type() == "RECTIFY" ){
-
+                
                 //rectify the image
                 Mat corrected_image = orthorectify( options.image, options );  
 

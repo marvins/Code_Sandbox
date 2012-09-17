@@ -15,10 +15,10 @@ Mat compute_location( Mat const& corner, Mat const& center, Mat const& principle
     
     /* Compute the camera coordinate of the point */ 
     Mat cam_point = options.get_output_img2cam( sz ) * corner + load_vector( 0, 0, -1);
-    
+
     /* Compute the world coordinate of the point */
     Mat world_point = options.RotationM * cam_point + options.Position_i - load_point(0,0,0);
-    
+
     Mat P1 = options.Position_i;
     Mat P2 = world_point;
     Mat P3 = load_point(0, 0, 0);
@@ -73,7 +73,7 @@ Mat orthorectify( Mat const& image, Options& options ){
     
     // the focal vector is the focal length multiplied by the normal to the camera
     Mat focal_vector = options.get_focal_length() * load_vector(0, 0, -1);
-
+    
     //find the intersection between the center coordinate on the image plane and the surface of the earth
     Mat camera_normal         = load_vector( 0, 0, -1);
     Mat rotated_camera_normal = options.RotationM * camera_normal;
@@ -97,6 +97,7 @@ Mat orthorectify( Mat const& image, Options& options ){
     Mat tr_image = load_point( image.cols,      0    , 0);
     Mat bl_image = load_point(      0    , image.rows, 0);
     Mat br_image = load_point( image.cols, image.rows, 0);
+    
 
     // these are the geographic corners of the image
     Mat tl_world = compute_location( tl_image, ground_point, input_principle_point, earth_normal, image.size(), options );
@@ -143,6 +144,7 @@ Mat orthorectify( Mat const& image, Options& options ){
     double maxElevation = query_max_elevation( minPnt, maxPnt, ground_point, options );
     double dist;
     
+    cout << "Output Image Size: " << output.cols << ", " << output.rows << endl;
     /////////////////////////////////////////////////////////
     //        Create some random variables to test on      //
     /////////////////////////////////////////////////////////

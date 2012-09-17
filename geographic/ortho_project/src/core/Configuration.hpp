@@ -5,7 +5,10 @@
 
 #include <opencv2/core/core.hpp>
 
+#include <GeoImage.h>
+
 #include "Logger.hpp"
+#include "Parser.hpp"
 #include "../math/Quaternion.hpp"
 
 /**
@@ -14,6 +17,7 @@
  * Configuration option class. Contains all of the major configuration values. 
 */
 class Options{
+
 
     public:
         
@@ -124,8 +128,6 @@ class Options{
         cv::Mat get_output_img2cam( cv::Size const& sz, double const& ref )const;
         
         
-        
-    
 
     private:
         
@@ -136,6 +138,9 @@ class Options{
          * argv List of command-line arguments
         */
         void load_configuration( const int& argc, char ** argv );
+        
+        void load_camera_params_file();
+        void load_camera_params_geo();
         
         std::string run_type;          /*<  Run Type Variable */
         
@@ -150,6 +155,11 @@ class Options{
         cv::Size build_image_size;      /*< Size of test build image */
         std::string build_image_type;   /*< Build Image Type */
         std::string rectify_image_type; /*< Rectify Image Type */
+
+        bool   rectify_is_geo;   /*< Tells us if the input image is a geographic image */
+        string dem_mode;         /*< DEM Mode */
+
+        PSR::Parser parser;
 };
 
 
