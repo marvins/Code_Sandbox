@@ -1,0 +1,19 @@
+[0;37m[  INFO   ][0m :  
+Program Configuration
+ - Run Type      : BUILD
+ - Image Filename: data/modified_image.jpg
+
+Camera Configuration
+ - Focal Length  : 1
+ - Rotation Angle: 45
+ - Rotation Axis : vec( 0.57735, 0.57735, 0.57735 )
+
+Build Image Configuration
+ - Build Image Size: 1000, 1000
+ - Build Image Type: CV_8UC1
+ - Z Buffering     : True
+
+Rectify Image Configuration
+ - Rectify Image Type: CV_8UC3
+ - Perspective2Parallel: True
+

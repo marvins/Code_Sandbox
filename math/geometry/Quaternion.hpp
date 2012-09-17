@@ -12,6 +12,12 @@
 
 #include "Vector.hpp"
 
+#define QUATERNION_REQUIRES_OPENCV
+
+#ifdef QUATERNION_REQUIRES_OPENCV
+#include <opencv2/core/core.hpp>
+#endif 
+
 using namespace std;
 
 /**
@@ -66,7 +72,10 @@ public:
     double mag2()const;
     Quaternion conj()const;
     
+#ifdef QUATERNION_REQUIRES_OPENCV
     cv::Mat get_rotation_matrix()const;
+#endif
+
     double get_angle( const bool& inRadians = true )const;
     vec get_axis()const;
 

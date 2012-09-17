@@ -132,6 +132,7 @@ Quaternion operator* (double const& s, const Quaternion& qa ){
     return out;
 }
 
+#ifdef QUATERNION_REQUIRES_OPENCV
 cv::Mat Quaternion::get_rotation_matrix()const{
 
     //create matrix
@@ -164,6 +165,7 @@ cv::Mat Quaternion::get_rotation_matrix()const{
     return matrix.clone();
 
 }
+#endif
 
 double Quaternion::get_angle( const bool& inRadians )const{
     

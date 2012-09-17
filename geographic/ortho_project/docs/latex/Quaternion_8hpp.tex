@@ -1,0 +1,87 @@
+\hypertarget{Quaternion_8hpp}{\section{src/math/\-Quaternion.hpp \-File \-Reference}
+\label{Quaternion_8hpp}\index{src/math/\-Quaternion.\-hpp@{src/math/\-Quaternion.\-hpp}}
+}
+{\ttfamily \#include $<$opencv2/core/core.\-hpp$>$}\*
+{\ttfamily \#include $<$cmath$>$}\*
+{\ttfamily \#include \char`\"{}\-Vector.\-hpp\char`\"{}}\*
+\subsection*{\-Classes}
+\begin{DoxyCompactItemize}
+\item 
+class \hyperlink{classQuaternion}{\-Quaternion}
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classQuaternion}{\-Quaternion} \hyperlink{Quaternion_8hpp_a530115ff115a9db58948a67b7f4218a9}{operator$\ast$} (const \hyperlink{classQuaternion}{\-Quaternion} \&qa, const \hyperlink{classQuaternion}{\-Quaternion} \&qb)
+\item 
+\hyperlink{classQuaternion}{\-Quaternion} \hyperlink{Quaternion_8hpp_a267672e9957c02d6c14e945619fb1518}{operator$\ast$} (const \hyperlink{classQuaternion}{\-Quaternion} \&qa, \hyperlink{Vector_8hpp_a8c219a6a32f8455685bd1c3c8072e9f5}{vec} const \&qb)
+\item 
+\hyperlink{classQuaternion}{\-Quaternion} \hyperlink{Quaternion_8hpp_a4304d4850ac995478c30742f176a9b08}{operator$\ast$} (const \hyperlink{Vector_8hpp_a8c219a6a32f8455685bd1c3c8072e9f5}{vec} \&qa, \hyperlink{classQuaternion}{\-Quaternion} const \&qb)
+\item 
+\hyperlink{classQuaternion}{\-Quaternion} \hyperlink{Quaternion_8hpp_ab9d6617d78feb7f3f4d21253103ba8da}{operator$\ast$} (const \hyperlink{classQuaternion}{\-Quaternion} \&qa, double const \&s)
+\item 
+\hyperlink{classQuaternion}{\-Quaternion} \hyperlink{Quaternion_8hpp_a72855edf86a76393626599d7f16bb050}{operator$\ast$} (double const \&s, const \hyperlink{classQuaternion}{\-Quaternion} \&qa)
+\item 
+\hyperlink{classQuaternion}{\-Quaternion} \hyperlink{Quaternion_8hpp_a85ba197b818f3cd5efd312ffbee36645}{operator+} (const \hyperlink{classQuaternion}{\-Quaternion} \&qa, const \hyperlink{classQuaternion}{\-Quaternion} \&qb)
+\item 
+ostream \& \hyperlink{Quaternion_8hpp_a3059b34f27ea2356d2c17afb9d0d1cae}{operator$<$$<$} (ostream \&ostr, const \hyperlink{classQuaternion}{\-Quaternion} \&out)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{Quaternion_8hpp_a530115ff115a9db58948a67b7f4218a9}{\index{\-Quaternion.\-hpp@{\-Quaternion.\-hpp}!operator$\ast$@{operator$\ast$}}
+\index{operator$\ast$@{operator$\ast$}!Quaternion.hpp@{\-Quaternion.\-hpp}}
+\subsubsection[{operator$\ast$}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Quaternion} operator$\ast$ (
+\begin{DoxyParamCaption}
+\item[{const {\bf \-Quaternion} \&}]{qa, }
+\item[{const {\bf \-Quaternion} \&}]{qb}
+\end{DoxyParamCaption}
+)}}\label{Quaternion_8hpp_a530115ff115a9db58948a67b7f4218a9}
+\hypertarget{Quaternion_8hpp_a267672e9957c02d6c14e945619fb1518}{\index{\-Quaternion.\-hpp@{\-Quaternion.\-hpp}!operator$\ast$@{operator$\ast$}}
+\index{operator$\ast$@{operator$\ast$}!Quaternion.hpp@{\-Quaternion.\-hpp}}
+\subsubsection[{operator$\ast$}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Quaternion} operator$\ast$ (
+\begin{DoxyParamCaption}
+\item[{const {\bf \-Quaternion} \&}]{qa, }
+\item[{{\bf vec} const \&}]{qb}
+\end{DoxyParamCaption}
+)}}\label{Quaternion_8hpp_a267672e9957c02d6c14e945619fb1518}
+\hypertarget{Quaternion_8hpp_a4304d4850ac995478c30742f176a9b08}{\index{\-Quaternion.\-hpp@{\-Quaternion.\-hpp}!operator$\ast$@{operator$\ast$}}
+\index{operator$\ast$@{operator$\ast$}!Quaternion.hpp@{\-Quaternion.\-hpp}}
+\subsubsection[{operator$\ast$}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Quaternion} operator$\ast$ (
+\begin{DoxyParamCaption}
+\item[{const {\bf vec} \&}]{qa, }
+\item[{{\bf \-Quaternion} const \&}]{qb}
+\end{DoxyParamCaption}
+)}}\label{Quaternion_8hpp_a4304d4850ac995478c30742f176a9b08}
+\hypertarget{Quaternion_8hpp_ab9d6617d78feb7f3f4d21253103ba8da}{\index{\-Quaternion.\-hpp@{\-Quaternion.\-hpp}!operator$\ast$@{operator$\ast$}}
+\index{operator$\ast$@{operator$\ast$}!Quaternion.hpp@{\-Quaternion.\-hpp}}
+\subsubsection[{operator$\ast$}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Quaternion} operator$\ast$ (
+\begin{DoxyParamCaption}
+\item[{const {\bf \-Quaternion} \&}]{qa, }
+\item[{double const \&}]{s}
+\end{DoxyParamCaption}
+)}}\label{Quaternion_8hpp_ab9d6617d78feb7f3f4d21253103ba8da}
+\hypertarget{Quaternion_8hpp_a72855edf86a76393626599d7f16bb050}{\index{\-Quaternion.\-hpp@{\-Quaternion.\-hpp}!operator$\ast$@{operator$\ast$}}
+\index{operator$\ast$@{operator$\ast$}!Quaternion.hpp@{\-Quaternion.\-hpp}}
+\subsubsection[{operator$\ast$}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Quaternion} operator$\ast$ (
+\begin{DoxyParamCaption}
+\item[{double const \&}]{s, }
+\item[{const {\bf \-Quaternion} \&}]{qa}
+\end{DoxyParamCaption}
+)}}\label{Quaternion_8hpp_a72855edf86a76393626599d7f16bb050}
+\hypertarget{Quaternion_8hpp_a85ba197b818f3cd5efd312ffbee36645}{\index{\-Quaternion.\-hpp@{\-Quaternion.\-hpp}!operator+@{operator+}}
+\index{operator+@{operator+}!Quaternion.hpp@{\-Quaternion.\-hpp}}
+\subsubsection[{operator+}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-Quaternion} operator+ (
+\begin{DoxyParamCaption}
+\item[{const {\bf \-Quaternion} \&}]{qa, }
+\item[{const {\bf \-Quaternion} \&}]{qb}
+\end{DoxyParamCaption}
+)}}\label{Quaternion_8hpp_a85ba197b818f3cd5efd312ffbee36645}
+\hypertarget{Quaternion_8hpp_a3059b34f27ea2356d2c17afb9d0d1cae}{\index{\-Quaternion.\-hpp@{\-Quaternion.\-hpp}!operator$<$$<$@{operator$<$$<$}}
+\index{operator$<$$<$@{operator$<$$<$}!Quaternion.hpp@{\-Quaternion.\-hpp}}
+\subsubsection[{operator$<$$<$}]{\setlength{\rightskip}{0pt plus 5cm}ostream\& operator$<$$<$ (
+\begin{DoxyParamCaption}
+\item[{ostream \&}]{ostr, }
+\item[{const {\bf \-Quaternion} \&}]{out}
+\end{DoxyParamCaption}
+)}}\label{Quaternion_8hpp_a3059b34f27ea2356d2c17afb9d0d1cae}

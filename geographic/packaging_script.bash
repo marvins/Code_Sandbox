@@ -1,5 +1,8 @@
 #! /usr/bin/env bash
 
+#  This is a script which will transfer the code currently stored in this
+#  repository into the Medusa SNC Repo
+
 # This is the location of the Medusa repository
 MEDUSA_PATH=/home/ms6401/projects/Medusa
 

@@ -1,0 +1,67 @@
+\hypertarget{Perspective_8cpp}{\section{src/ortho/\-Perspective.cpp \-File \-Reference}
+\label{Perspective_8cpp}\index{src/ortho/\-Perspective.\-cpp@{src/ortho/\-Perspective.\-cpp}}
+}
+{\ttfamily \#include \char`\"{}\-Perspective.\-hpp\char`\"{}}\*
+{\ttfamily \#include \char`\"{}../core/dem.\-hpp\char`\"{}}\*
+{\ttfamily \#include \char`\"{}../core/\-Utilities.\-hpp\char`\"{}}\*
+{\ttfamily \#include \char`\"{}../math/\-Geometry.\-hpp\char`\"{}}\*
+{\ttfamily \#include $<$opencv2/highgui/highgui.\-hpp$>$}\*
+{\ttfamily \#include $<$iostream$>$}\*
+\subsection*{\-Defines}
+\begin{DoxyCompactItemize}
+\item 
+\#define \hyperlink{Perspective_8cpp_a63e45eaf93729d5707b89a5340d68334}{\-S\-M\-A\-L\-L\-\_\-\-N\-U\-M}~0.\-000001
+\end{DoxyCompactItemize}
+\subsection*{\-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\-Mat \hyperlink{Perspective_8cpp_a65a2e429c42f99735c864d883172b79b}{generate\-\_\-perspective\-\_\-test\-\_\-image} (\hyperlink{classOptions}{\-Options} \&options)
+\item 
+void \hyperlink{Perspective_8cpp_a28aec02d478aa60de717397a8938f7f1}{create\-\_\-flat\-\_\-test\-\_\-image} (\hyperlink{classOptions}{\-Options} const \&options, \-Mat \&image, \-Mat \&dem)
+\item 
+void \hyperlink{Perspective_8cpp_af67b47863b00e4d3e01d2dd95c1e30ba}{rotate\-\_\-image\-\_\-scene} (\-Mat const \&input\-\_\-image, \-Mat const \&dem\-\_\-image, \-Mat \&output\-\_\-image, \hyperlink{classOptions}{\-Options} const \&options)
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Define \-Documentation}
+\hypertarget{Perspective_8cpp_a63e45eaf93729d5707b89a5340d68334}{\index{\-Perspective.\-cpp@{\-Perspective.\-cpp}!\-S\-M\-A\-L\-L\-\_\-\-N\-U\-M@{\-S\-M\-A\-L\-L\-\_\-\-N\-U\-M}}
+\index{\-S\-M\-A\-L\-L\-\_\-\-N\-U\-M@{\-S\-M\-A\-L\-L\-\_\-\-N\-U\-M}!Perspective.cpp@{\-Perspective.\-cpp}}
+\subsubsection[{\-S\-M\-A\-L\-L\-\_\-\-N\-U\-M}]{\setlength{\rightskip}{0pt plus 5cm}\#define {\bf \-S\-M\-A\-L\-L\-\_\-\-N\-U\-M}~0.\-000001}}\label{Perspective_8cpp_a63e45eaf93729d5707b89a5340d68334}
+
+
+\subsection{\-Function \-Documentation}
+\hypertarget{Perspective_8cpp_a28aec02d478aa60de717397a8938f7f1}{\index{\-Perspective.\-cpp@{\-Perspective.\-cpp}!create\-\_\-flat\-\_\-test\-\_\-image@{create\-\_\-flat\-\_\-test\-\_\-image}}
+\index{create\-\_\-flat\-\_\-test\-\_\-image@{create\-\_\-flat\-\_\-test\-\_\-image}!Perspective.cpp@{\-Perspective.\-cpp}}
+\subsubsection[{create\-\_\-flat\-\_\-test\-\_\-image}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf create\-\_\-flat\-\_\-test\-\_\-image} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-Options} const \&}]{options, }
+\item[{\-Mat \&}]{image, }
+\item[{\-Mat \&}]{dem}
+\end{DoxyParamCaption}
+)}}\label{Perspective_8cpp_a28aec02d478aa60de717397a8938f7f1}
+\hypertarget{Perspective_8cpp_a65a2e429c42f99735c864d883172b79b}{\index{\-Perspective.\-cpp@{\-Perspective.\-cpp}!generate\-\_\-perspective\-\_\-test\-\_\-image@{generate\-\_\-perspective\-\_\-test\-\_\-image}}
+\index{generate\-\_\-perspective\-\_\-test\-\_\-image@{generate\-\_\-perspective\-\_\-test\-\_\-image}!Perspective.cpp@{\-Perspective.\-cpp}}
+\subsubsection[{generate\-\_\-perspective\-\_\-test\-\_\-image}]{\setlength{\rightskip}{0pt plus 5cm}\-Mat {\bf generate\-\_\-perspective\-\_\-test\-\_\-image} (
+\begin{DoxyParamCaption}
+\item[{{\bf \-Options} \&}]{options}
+\end{DoxyParamCaption}
+)}}\label{Perspective_8cpp_a65a2e429c42f99735c864d883172b79b}
+\hypertarget{Perspective_8cpp_af67b47863b00e4d3e01d2dd95c1e30ba}{\index{\-Perspective.\-cpp@{\-Perspective.\-cpp}!rotate\-\_\-image\-\_\-scene@{rotate\-\_\-image\-\_\-scene}}
+\index{rotate\-\_\-image\-\_\-scene@{rotate\-\_\-image\-\_\-scene}!Perspective.cpp@{\-Perspective.\-cpp}}
+\subsubsection[{rotate\-\_\-image\-\_\-scene}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf rotate\-\_\-image\-\_\-scene} (
+\begin{DoxyParamCaption}
+\item[{\-Mat const \&}]{input\-\_\-image, }
+\item[{\-Mat const \&}]{dem\-\_\-image, }
+\item[{\-Mat \&}]{output\-\_\-image, }
+\item[{{\bf \-Options} const \&}]{options}
+\end{DoxyParamCaption}
+)}}\label{Perspective_8cpp_af67b47863b00e4d3e01d2dd95c1e30ba}
+\-This function will rotate the image scene for the demo image
+
+\-A\-S\-S\-U\-M\-P\-T\-I\-O\-N\-S!!!!!!! 1. assume that the center of the image is 0, 0, 0 \-Now we know what we are staring at. \-Its time to now find what pixel will be shown here.
+
+\-D\-E\-P\-T\-H \-P\-R\-O\-C\-E\-S\-S\-I\-N\-G \-M\-O\-D\-U\-L\-E
+
+\-Start searching through the original image
+
+\-If there is an intersection, then update the buffer for that point 

@@ -1,0 +1,280 @@
+\hypertarget{classPSR_1_1Parser}{\section{\-P\-S\-R\-:\-:\-Parser \-Class \-Reference}
+\label{classPSR_1_1Parser}\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}}
+}
+
+
+{\ttfamily \#include $<$\-Parser.\-hpp$>$}
+
+\subsection*{\-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+\hyperlink{classPSR_1_1Parser_a34b990e35717ce451b1dd59a75653b6f}{\-Parser} ()
+\item 
+\hyperlink{classPSR_1_1Parser_ad288e0b3740193ac22145276dc0af2e3}{\-Parser} (std\-::string const \&filename)
+\item 
+\hyperlink{classPSR_1_1Parser_ac1dc5d7068237f6923a9221ba0e5e3a7}{\-Parser} (const int argc, char $\ast$$\ast$argv, std\-::string const \&filename)
+\item 
+std\-::string \hyperlink{classPSR_1_1Parser_ada8e6c2bd584f0e07334f3c934b15ce6}{get\-Item\-\_\-string} (const std\-::string \&tag\-\_\-name, bool \&found) const 
+\item 
+void \hyperlink{classPSR_1_1Parser_a3a40b9b3c9b939db80843db24189352e}{set\-Item\-\_\-string} (const std\-::string \&tag\-\_\-name, const std\-::string \&value)
+\item 
+void \hyperlink{classPSR_1_1Parser_a38e8aab89ed0e4a20550a39f0ec0a615}{set\-Item\-\_\-string} (const std\-::string \&tag\-\_\-name, const std\-::string \&value, const bool \&create)
+\item 
+bool \hyperlink{classPSR_1_1Parser_ab1114bd78f5978eadcdc17194478f1f5}{get\-Item\-\_\-bool} (const std\-::string \&tag\-\_\-name, bool \&found) const 
+\item 
+void \hyperlink{classPSR_1_1Parser_af9068c47ae599f134c704e1da98c1dd6}{set\-Item\-\_\-bool} (const std\-::string \&tag\-\_\-name, const bool \&value)
+\item 
+void \hyperlink{classPSR_1_1Parser_a5620970b7f074e07955f9d02795c57e2}{set\-Item\-\_\-bool} (const std\-::string \&tag\-\_\-name, const bool \&value, const bool \&create)
+\item 
+int \hyperlink{classPSR_1_1Parser_a489a6aa85d0cc63b6c3d53a200cdcf93}{get\-Item\-\_\-int} (const std\-::string \&tag\-\_\-name, bool \&found) const 
+\item 
+void \hyperlink{classPSR_1_1Parser_ac2e6ef468ab47fcf225459680e9082cc}{set\-Item\-\_\-int} (const std\-::string \&tag\-\_\-name, const int \&value)
+\item 
+void \hyperlink{classPSR_1_1Parser_a7f45ab32cc4887fab485305dbe069166}{set\-Item\-\_\-int} (const std\-::string \&tag\-\_\-name, const int \&value, const bool \&create)
+\item 
+double \hyperlink{classPSR_1_1Parser_ab615211c85d88d19244390b0f859bae2}{get\-Item\-\_\-double} (const std\-::string \&tag\-\_\-name, bool \&found) const 
+\item 
+void \hyperlink{classPSR_1_1Parser_a1b85a99bd028cab6531fa0d0f63ca1ca}{set\-Item\-\_\-double} (const std\-::string \&tag\-\_\-name, const double \&value)
+\item 
+void \hyperlink{classPSR_1_1Parser_a4fc2126972e0b862cd45e7d0a64a11fa}{set\-Item\-\_\-double} (const std\-::string \&tag\-\_\-name, const double \&value, const bool \&create)
+\item 
+std\-::vector$<$ double $>$ \hyperlink{classPSR_1_1Parser_a5cb6bf651766fab0f3bb0b71745ada07}{get\-Item\-\_\-vec\-\_\-double} (const std\-::string \&tag\-\_\-name, bool \&found) const 
+\item 
+void \hyperlink{classPSR_1_1Parser_a4fa575dfc62b83c2c0533015f8fc9399}{set\-Item\-\_\-vec\-\_\-double} (const std\-::string \&tag\-\_\-name, const std\-::vector$<$ double $>$ \&value)
+\item 
+void \hyperlink{classPSR_1_1Parser_a9aa3f8252d9e98211948bb35b48ddb82}{set\-Item\-\_\-vec\-\_\-double} (const std\-::string \&tag\-\_\-name, const std\-::vector$<$ double $>$ \&value, const bool \&create)
+\end{DoxyCompactItemize}
+\subsection*{\-Static \-Public \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+static bool \hyperlink{classPSR_1_1Parser_a255948f1944f4230fc8dc8a03d4df201}{file\-Exists} (const std\-::string \&filename)
+\end{DoxyCompactItemize}
+\subsection*{\-Private \-Member \-Functions}
+\begin{DoxyCompactItemize}
+\item 
+void \hyperlink{classPSR_1_1Parser_a80b11cebdd259fec7349b18d87148c2e}{validate\-\_\-file} ()
+\item 
+void \hyperlink{classPSR_1_1Parser_aaa0646a67fa37b78393f792995e4b214}{load\-\_\-file} ()
+\end{DoxyCompactItemize}
+\subsection*{\-Private \-Attributes}
+\begin{DoxyCompactItemize}
+\item 
+std\-::string \hyperlink{classPSR_1_1Parser_af6881b6cd3d70d39a3a751b5dcf794e1}{config\-\_\-filename}
+\item 
+std\-::vector$<$ std\-::pair\*
+$<$ std\-::string, std\-::string $>$ $>$ \hyperlink{classPSR_1_1Parser_aef76f91df7efa2b90449de2a2fe2bd14}{items}
+\item 
+bool \hyperlink{classPSR_1_1Parser_a2b9ecb5e358711e71000893a4246c9c3}{valid}
+\item 
+std\-::string \hyperlink{classPSR_1_1Parser_a1c3ab112c2c5c73d1df9f505b4bb4ecd}{command\-\_\-name}
+\end{DoxyCompactItemize}
+
+
+\subsection{\-Detailed \-Description}
+\-A generic file parsing and config file loading class 
+
+\subsection{\-Constructor \& \-Destructor \-Documentation}
+\hypertarget{classPSR_1_1Parser_a34b990e35717ce451b1dd59a75653b6f}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!\-Parser@{\-Parser}}
+\index{\-Parser@{\-Parser}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{\-Parser}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-P\-S\-R\-::\-Parser\-::\-Parser} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)}}\label{classPSR_1_1Parser_a34b990e35717ce451b1dd59a75653b6f}
+\-Default \-Constructor \hypertarget{classPSR_1_1Parser_ad288e0b3740193ac22145276dc0af2e3}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!\-Parser@{\-Parser}}
+\index{\-Parser@{\-Parser}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{\-Parser}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-P\-S\-R\-::\-Parser\-::\-Parser} (
+\begin{DoxyParamCaption}
+\item[{std\-::string const \&}]{filename}
+\end{DoxyParamCaption}
+)}}\label{classPSR_1_1Parser_ad288e0b3740193ac22145276dc0af2e3}
+\-Parameterized \-Constructor given a specific configuration filename. \hypertarget{classPSR_1_1Parser_ac1dc5d7068237f6923a9221ba0e5e3a7}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!\-Parser@{\-Parser}}
+\index{\-Parser@{\-Parser}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{\-Parser}]{\setlength{\rightskip}{0pt plus 5cm}{\bf \-P\-S\-R\-::\-Parser\-::\-Parser} (
+\begin{DoxyParamCaption}
+\item[{const int}]{argc, }
+\item[{char $\ast$$\ast$}]{argv, }
+\item[{std\-::string const \&}]{filename}
+\end{DoxyParamCaption}
+)}}\label{classPSR_1_1Parser_ac1dc5d7068237f6923a9221ba0e5e3a7}
+\-Parameterized \-Constructor given a list of command-\/line options and config filename.
+
+\-Read the configuration file and command-\/line options 
+
+\subsection{\-Member \-Function \-Documentation}
+\hypertarget{classPSR_1_1Parser_a255948f1944f4230fc8dc8a03d4df201}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!file\-Exists@{file\-Exists}}
+\index{file\-Exists@{file\-Exists}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{file\-Exists}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf \-P\-S\-R\-::\-Parser\-::file\-Exists} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{filename}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}static\mbox{]}}}}\label{classPSR_1_1Parser_a255948f1944f4230fc8dc8a03d4df201}
+\-Check to see if a file exists
+
+
+\begin{DoxyParams}[1]{\-Parameters}
+\mbox{\tt in}  & {\em filename} & \-Name of the file\\
+\hline
+\end{DoxyParams}
+\-Return true if the configuration file exists. \hypertarget{classPSR_1_1Parser_ab1114bd78f5978eadcdc17194478f1f5}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!get\-Item\-\_\-bool@{get\-Item\-\_\-bool}}
+\index{get\-Item\-\_\-bool@{get\-Item\-\_\-bool}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{get\-Item\-\_\-bool}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf \-P\-S\-R\-::\-Parser\-::get\-Item\-\_\-bool} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{tag\-\_\-name, }
+\item[{bool \&}]{found}
+\end{DoxyParamCaption}
+) const}}\label{classPSR_1_1Parser_ab1114bd78f5978eadcdc17194478f1f5}
+\hypertarget{classPSR_1_1Parser_ab615211c85d88d19244390b0f859bae2}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!get\-Item\-\_\-double@{get\-Item\-\_\-double}}
+\index{get\-Item\-\_\-double@{get\-Item\-\_\-double}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{get\-Item\-\_\-double}]{\setlength{\rightskip}{0pt plus 5cm}double {\bf \-P\-S\-R\-::\-Parser\-::get\-Item\-\_\-double} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{tag\-\_\-name, }
+\item[{bool \&}]{found}
+\end{DoxyParamCaption}
+) const}}\label{classPSR_1_1Parser_ab615211c85d88d19244390b0f859bae2}
+\hypertarget{classPSR_1_1Parser_a489a6aa85d0cc63b6c3d53a200cdcf93}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!get\-Item\-\_\-int@{get\-Item\-\_\-int}}
+\index{get\-Item\-\_\-int@{get\-Item\-\_\-int}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{get\-Item\-\_\-int}]{\setlength{\rightskip}{0pt plus 5cm}int {\bf \-P\-S\-R\-::\-Parser\-::get\-Item\-\_\-int} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{tag\-\_\-name, }
+\item[{bool \&}]{found}
+\end{DoxyParamCaption}
+) const}}\label{classPSR_1_1Parser_a489a6aa85d0cc63b6c3d53a200cdcf93}
+\hypertarget{classPSR_1_1Parser_ada8e6c2bd584f0e07334f3c934b15ce6}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!get\-Item\-\_\-string@{get\-Item\-\_\-string}}
+\index{get\-Item\-\_\-string@{get\-Item\-\_\-string}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{get\-Item\-\_\-string}]{\setlength{\rightskip}{0pt plus 5cm}string {\bf \-P\-S\-R\-::\-Parser\-::get\-Item\-\_\-string} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{tag\-\_\-name, }
+\item[{bool \&}]{found}
+\end{DoxyParamCaption}
+) const}}\label{classPSR_1_1Parser_ada8e6c2bd584f0e07334f3c934b15ce6}
+\hypertarget{classPSR_1_1Parser_a5cb6bf651766fab0f3bb0b71745ada07}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!get\-Item\-\_\-vec\-\_\-double@{get\-Item\-\_\-vec\-\_\-double}}
+\index{get\-Item\-\_\-vec\-\_\-double@{get\-Item\-\_\-vec\-\_\-double}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{get\-Item\-\_\-vec\-\_\-double}]{\setlength{\rightskip}{0pt plus 5cm}vector$<$ double $>$ {\bf \-P\-S\-R\-::\-Parser\-::get\-Item\-\_\-vec\-\_\-double} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{tag\-\_\-name, }
+\item[{bool \&}]{found}
+\end{DoxyParamCaption}
+) const}}\label{classPSR_1_1Parser_a5cb6bf651766fab0f3bb0b71745ada07}
+\hypertarget{classPSR_1_1Parser_aaa0646a67fa37b78393f792995e4b214}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!load\-\_\-file@{load\-\_\-file}}
+\index{load\-\_\-file@{load\-\_\-file}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{load\-\_\-file}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-P\-S\-R\-::\-Parser\-::load\-\_\-file} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classPSR_1_1Parser_aaa0646a67fa37b78393f792995e4b214}
+\-Load the configuration file and read all contents. \hypertarget{classPSR_1_1Parser_af9068c47ae599f134c704e1da98c1dd6}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!set\-Item\-\_\-bool@{set\-Item\-\_\-bool}}
+\index{set\-Item\-\_\-bool@{set\-Item\-\_\-bool}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{set\-Item\-\_\-bool}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-P\-S\-R\-::\-Parser\-::set\-Item\-\_\-bool} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{tag\-\_\-name, }
+\item[{const bool \&}]{value}
+\end{DoxyParamCaption}
+)}}\label{classPSR_1_1Parser_af9068c47ae599f134c704e1da98c1dd6}
+\hypertarget{classPSR_1_1Parser_a5620970b7f074e07955f9d02795c57e2}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!set\-Item\-\_\-bool@{set\-Item\-\_\-bool}}
+\index{set\-Item\-\_\-bool@{set\-Item\-\_\-bool}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{set\-Item\-\_\-bool}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-P\-S\-R\-::\-Parser\-::set\-Item\-\_\-bool} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{tag\-\_\-name, }
+\item[{const bool \&}]{value, }
+\item[{const bool \&}]{create}
+\end{DoxyParamCaption}
+)}}\label{classPSR_1_1Parser_a5620970b7f074e07955f9d02795c57e2}
+\hypertarget{classPSR_1_1Parser_a1b85a99bd028cab6531fa0d0f63ca1ca}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!set\-Item\-\_\-double@{set\-Item\-\_\-double}}
+\index{set\-Item\-\_\-double@{set\-Item\-\_\-double}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{set\-Item\-\_\-double}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-P\-S\-R\-::\-Parser\-::set\-Item\-\_\-double} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{tag\-\_\-name, }
+\item[{const double \&}]{value}
+\end{DoxyParamCaption}
+)}}\label{classPSR_1_1Parser_a1b85a99bd028cab6531fa0d0f63ca1ca}
+\hypertarget{classPSR_1_1Parser_a4fc2126972e0b862cd45e7d0a64a11fa}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!set\-Item\-\_\-double@{set\-Item\-\_\-double}}
+\index{set\-Item\-\_\-double@{set\-Item\-\_\-double}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{set\-Item\-\_\-double}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-P\-S\-R\-::\-Parser\-::set\-Item\-\_\-double} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{tag\-\_\-name, }
+\item[{const double \&}]{value, }
+\item[{const bool \&}]{create}
+\end{DoxyParamCaption}
+)}}\label{classPSR_1_1Parser_a4fc2126972e0b862cd45e7d0a64a11fa}
+\hypertarget{classPSR_1_1Parser_ac2e6ef468ab47fcf225459680e9082cc}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!set\-Item\-\_\-int@{set\-Item\-\_\-int}}
+\index{set\-Item\-\_\-int@{set\-Item\-\_\-int}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{set\-Item\-\_\-int}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-P\-S\-R\-::\-Parser\-::set\-Item\-\_\-int} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{tag\-\_\-name, }
+\item[{const int \&}]{value}
+\end{DoxyParamCaption}
+)}}\label{classPSR_1_1Parser_ac2e6ef468ab47fcf225459680e9082cc}
+\hypertarget{classPSR_1_1Parser_a7f45ab32cc4887fab485305dbe069166}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!set\-Item\-\_\-int@{set\-Item\-\_\-int}}
+\index{set\-Item\-\_\-int@{set\-Item\-\_\-int}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{set\-Item\-\_\-int}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-P\-S\-R\-::\-Parser\-::set\-Item\-\_\-int} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{tag\-\_\-name, }
+\item[{const int \&}]{value, }
+\item[{const bool \&}]{create}
+\end{DoxyParamCaption}
+)}}\label{classPSR_1_1Parser_a7f45ab32cc4887fab485305dbe069166}
+\hypertarget{classPSR_1_1Parser_a3a40b9b3c9b939db80843db24189352e}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!set\-Item\-\_\-string@{set\-Item\-\_\-string}}
+\index{set\-Item\-\_\-string@{set\-Item\-\_\-string}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{set\-Item\-\_\-string}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-P\-S\-R\-::\-Parser\-::set\-Item\-\_\-string} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{tag\-\_\-name, }
+\item[{const std\-::string \&}]{value}
+\end{DoxyParamCaption}
+)}}\label{classPSR_1_1Parser_a3a40b9b3c9b939db80843db24189352e}
+\hypertarget{classPSR_1_1Parser_a38e8aab89ed0e4a20550a39f0ec0a615}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!set\-Item\-\_\-string@{set\-Item\-\_\-string}}
+\index{set\-Item\-\_\-string@{set\-Item\-\_\-string}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{set\-Item\-\_\-string}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-P\-S\-R\-::\-Parser\-::set\-Item\-\_\-string} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{tag\-\_\-name, }
+\item[{const std\-::string \&}]{value, }
+\item[{const bool \&}]{create}
+\end{DoxyParamCaption}
+)}}\label{classPSR_1_1Parser_a38e8aab89ed0e4a20550a39f0ec0a615}
+\hypertarget{classPSR_1_1Parser_a4fa575dfc62b83c2c0533015f8fc9399}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!set\-Item\-\_\-vec\-\_\-double@{set\-Item\-\_\-vec\-\_\-double}}
+\index{set\-Item\-\_\-vec\-\_\-double@{set\-Item\-\_\-vec\-\_\-double}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{set\-Item\-\_\-vec\-\_\-double}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-P\-S\-R\-::\-Parser\-::set\-Item\-\_\-vec\-\_\-double} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{tag\-\_\-name, }
+\item[{const std\-::vector$<$ double $>$ \&}]{value}
+\end{DoxyParamCaption}
+)}}\label{classPSR_1_1Parser_a4fa575dfc62b83c2c0533015f8fc9399}
+\hypertarget{classPSR_1_1Parser_a9aa3f8252d9e98211948bb35b48ddb82}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!set\-Item\-\_\-vec\-\_\-double@{set\-Item\-\_\-vec\-\_\-double}}
+\index{set\-Item\-\_\-vec\-\_\-double@{set\-Item\-\_\-vec\-\_\-double}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{set\-Item\-\_\-vec\-\_\-double}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-P\-S\-R\-::\-Parser\-::set\-Item\-\_\-vec\-\_\-double} (
+\begin{DoxyParamCaption}
+\item[{const std\-::string \&}]{tag\-\_\-name, }
+\item[{const std\-::vector$<$ double $>$ \&}]{value, }
+\item[{const bool \&}]{create}
+\end{DoxyParamCaption}
+)}}\label{classPSR_1_1Parser_a9aa3f8252d9e98211948bb35b48ddb82}
+\hypertarget{classPSR_1_1Parser_a80b11cebdd259fec7349b18d87148c2e}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!validate\-\_\-file@{validate\-\_\-file}}
+\index{validate\-\_\-file@{validate\-\_\-file}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{validate\-\_\-file}]{\setlength{\rightskip}{0pt plus 5cm}void {\bf \-P\-S\-R\-::\-Parser\-::validate\-\_\-file} (
+\begin{DoxyParamCaption}
+{}
+\end{DoxyParamCaption}
+)\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classPSR_1_1Parser_a80b11cebdd259fec7349b18d87148c2e}
+\-Validate that the configuration file given works.
+
+\-Validate the given configuration file 
+
+\subsection{\-Member \-Data \-Documentation}
+\hypertarget{classPSR_1_1Parser_a1c3ab112c2c5c73d1df9f505b4bb4ecd}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!command\-\_\-name@{command\-\_\-name}}
+\index{command\-\_\-name@{command\-\_\-name}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{command\-\_\-name}]{\setlength{\rightskip}{0pt plus 5cm}std\-::string {\bf \-P\-S\-R\-::\-Parser\-::command\-\_\-name}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classPSR_1_1Parser_a1c3ab112c2c5c73d1df9f505b4bb4ecd}
+\hypertarget{classPSR_1_1Parser_af6881b6cd3d70d39a3a751b5dcf794e1}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!config\-\_\-filename@{config\-\_\-filename}}
+\index{config\-\_\-filename@{config\-\_\-filename}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{config\-\_\-filename}]{\setlength{\rightskip}{0pt plus 5cm}std\-::string {\bf \-P\-S\-R\-::\-Parser\-::config\-\_\-filename}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classPSR_1_1Parser_af6881b6cd3d70d39a3a751b5dcf794e1}
+\hypertarget{classPSR_1_1Parser_aef76f91df7efa2b90449de2a2fe2bd14}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!items@{items}}
+\index{items@{items}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{items}]{\setlength{\rightskip}{0pt plus 5cm}std\-::vector$<$std\-::pair$<$std\-::string,std\-::string$>$ $>$ {\bf \-P\-S\-R\-::\-Parser\-::items}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classPSR_1_1Parser_aef76f91df7efa2b90449de2a2fe2bd14}
+\hypertarget{classPSR_1_1Parser_a2b9ecb5e358711e71000893a4246c9c3}{\index{\-P\-S\-R\-::\-Parser@{\-P\-S\-R\-::\-Parser}!valid@{valid}}
+\index{valid@{valid}!PSR::Parser@{\-P\-S\-R\-::\-Parser}}
+\subsubsection[{valid}]{\setlength{\rightskip}{0pt plus 5cm}bool {\bf \-P\-S\-R\-::\-Parser\-::valid}\hspace{0.3cm}{\ttfamily  \mbox{[}private\mbox{]}}}}\label{classPSR_1_1Parser_a2b9ecb5e358711e71000893a4246c9c3}
+
+
+\-The documentation for this class was generated from the following files\-:\begin{DoxyCompactItemize}
+\item 
+src/core/\hyperlink{Parser_8hpp}{\-Parser.\-hpp}\item 
+src/core/\hyperlink{Parser_8cpp}{\-Parser.\-cpp}\end{DoxyCompactItemize}

@@ -1,0 +1,240 @@
+This is pdfTeX, Version 3.1415926-1.40.10 (TeX Live 2009/Debian) (format=pdflatex 2012.8.6)  14 SEP 2012 17:59
+entering extended mode
+ %&-line parsing enabled.
+**report.tex
+(./report.tex
+LaTeX2e <2009/09/24>
+Babel <v3.8l> and hyphenation patterns for english, usenglishmax, dumylang, noh
+yphenation, loaded.
+(/usr/share/texmf-texlive/tex/latex/base/report.cls
+Document Class: report 2007/10/19 v1.4h Standard LaTeX document class
+(/usr/share/texmf-texlive/tex/latex/base/size12.clo
+File: size12.clo 2007/10/19 v1.4h Standard LaTeX file (size option)
+)
+\c@part=\count79
+\c@chapter=\count80
+\c@section=\count81
+\c@subsection=\count82
+\c@subsubsection=\count83
+\c@paragraph=\count84
+\c@subparagraph=\count85
+\c@figure=\count86
+\c@table=\count87
+\abovecaptionskip=\skip41
+\belowcaptionskip=\skip42
+\bibindent=\dimen102
+)
+(/usr/share/texmf-texlive/tex/latex/graphics/graphicx.sty
+Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texmf-texlive/tex/latex/graphics/keyval.sty
+Package: keyval 1999/03/16 v1.13 key=value parser (DPC)
+\KV@toks@=\toks14
+)
+(/usr/share/texmf-texlive/tex/latex/graphics/graphics.sty
+Package: graphics 2009/02/05 v1.0o Standard LaTeX Graphics (DPC,SPQR)
+
+(/usr/share/texmf-texlive/tex/latex/graphics/trig.sty
+Package: trig 1999/03/16 v1.09 sin cos tan (DPC)
+)
+(/etc/texmf/tex/latex/config/graphics.cfg
+File: graphics.cfg 2009/08/28 v1.8 graphics configuration of TeX Live
+)
+Package graphics Info: Driver file: pdftex.def on input line 91.
+
+(/usr/share/texmf-texlive/tex/latex/pdftex-def/pdftex.def
+File: pdftex.def 2010/03/12 v0.04p Graphics/color for pdfTeX
+\Gread@gobject=\count88
+))
+\Gin@req@height=\dimen103
+\Gin@req@width=\dimen104
+)
+(/usr/share/texmf-texlive/tex/latex/subfig/subfig.sty
+Package: subfig 2005/06/28 ver: 1.3 subfig package
+
+(/usr/share/texmf-texlive/tex/latex/caption/caption.sty
+Package: caption 2009/10/09 v3.1k Customizing captions (AR)
+
+(/usr/share/texmf-texlive/tex/latex/caption/caption3.sty
+Package: caption3 2009/10/09 v3.1k caption3 kernel (AR)
+\captionmargin=\dimen105
+\captionmargin@=\dimen106
+\captionwidth=\dimen107
+\caption@indent=\dimen108
+\caption@parindent=\dimen109
+\caption@hangindent=\dimen110
+)
+\c@ContinuedFloat=\count89
+)
+\c@KVtest=\count90
+\sf@farskip=\skip43
+\sf@captopadj=\dimen111
+\sf@capskip=\skip44
+\sf@nearskip=\skip45
+\c@subfigure=\count91
+\c@subfigure@save=\count92
+\c@lofdepth=\count93
+\c@subtable=\count94
+\c@subtable@save=\count95
+\c@lotdepth=\count96
+\sf@top=\skip46
+\sf@bottom=\skip47
+)
+(/usr/share/texmf-texlive/tex/latex/preprint/fullpage.sty
+Package: fullpage 1999/02/23 1.1 (PWD)
+\FP@margin=\skip48
+) (./report.aux)
+\openout1 = `report.aux'.
+
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 12.
+LaTeX Font Info:    ... okay on input line 12.
+
+(/usr/share/texmf-texlive/tex/context/base/supp-pdf.mkii
+[Loading MPS to PDF converter (version 2006.09.02).]
+\scratchcounter=\count97
+\scratchdimen=\dimen112
+\scratchbox=\box26
+\nofMPsegments=\count98
+\nofMParguments=\count99
+\everyMPshowfont=\toks15
+\MPscratchCnt=\count100
+\MPscratchDim=\dimen113
+\MPnumerator=\count101
+\everyMPtoPDFconversion=\toks16
+)
+Package caption Info: Begin \AtBeginDocument code.
+Package caption3 Info: subfig package 1.2 or 1.3 is loaded.
+LaTeX Info: Redefining \subref on input line 12.
+Package caption Info: End \AtBeginDocument code.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <14.4> on input line 14.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <7> on input line 14.
+ [1
+
+{/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map}]
+<flat_image.jpg, id=7, 1003.75pt x 1003.75pt>
+File: flat_image.jpg Graphic file (type jpg)
+ <use flat_image.jpg>
+<dem.png, id=8, 1003.75pt x 1003.75pt>
+File: dem.png Graphic file (type png)
+ <use dem.png> [1 <./flat_image.jpg> <./dem.png (PNG copy)>]
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <12> on input line 34.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <8> on input line 34.
+LaTeX Font Info:    External font `cmex10' loaded for size
+(Font)              <6> on input line 34.
+ <test1_no_perspective.jpg, id=14, 1003.75pt x 1003.75pt>
+File: test1_no_perspective.jpg Graphic file (type jpg)
+
+<use test1_no_perspective.jpg>
+<test1_perspective.jpg, id=15, 1003.75pt x 1003.75pt>
+File: test1_perspective.jpg Graphic file (type jpg)
+
+<use test1_perspective.jpg>
+<test1_rectified_no_perspective.jpg, id=16, 1003.75pt x 1003.75pt>
+File: test1_rectified_no_perspective.jpg Graphic file (type jpg)
+
+<use test1_rectified_no_perspective.jpg>
+<test1_nodem_perspective.jpg, id=17, 1003.75pt x 1003.75pt>
+File: test1_nodem_perspective.jpg Graphic file (type jpg)
+
+<use test1_nodem_perspective.jpg>
+<test1_complete.jpg, id=18, 1003.75pt x 1003.75pt>
+File: test1_complete.jpg Graphic file (type jpg)
+ <use test1_complete.jpg>
+[2
+
+ <./test1_no_perspective.jpg> <./test1_perspective.jpg> <./test1_rectified_no_p
+erspective.jpg> <./test1_nodem_perspective.jpg> <./test1_complete.jpg>]
+<test2_no_perspective.jpg, id=23, 1003.75pt x 1003.75pt>
+File: test2_no_perspective.jpg Graphic file (type jpg)
+
+<use test2_no_perspective.jpg>
+<test2_rectified_no_perspective.jpg, id=24, 2838.605pt x 2675.9975pt>
+File: test2_rectified_no_perspective.jpg Graphic file (type jpg)
+
+<use test2_rectified_no_perspective.jpg>
+<test2_perspective.jpg, id=25, 1003.75pt x 1003.75pt>
+File: test2_perspective.jpg Graphic file (type jpg)
+
+<use test2_perspective.jpg>
+<test2_nodem_perspective.jpg, id=26, 2838.605pt x 2675.9975pt>
+File: test2_nodem_perspective.jpg Graphic file (type jpg)
+
+<use test2_nodem_perspective.jpg>
+<test2_complete.jpg, id=27, 2838.605pt x 2675.9975pt>
+File: test2_complete.jpg Graphic file (type jpg)
+ <use test2_complete.jpg>
+Overfull \hbox (5.48146pt too wide) in paragraph at lines 83--86
+ [][][] 
+ []
+
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[3
+
+ <./test2_no_perspective.jpg> <./test2_rectified_no_perspective.jpg>]
+[4 <./test2_perspective.jpg> <./test2_nodem_perspective.jpg> <./test2_complete.
+jpg>] <test3_no_perspective.jpg, id=34, 1003.75pt x 1003.75pt>
+File: test3_no_perspective.jpg Graphic file (type jpg)
+
+<use test3_no_perspective.jpg>
+<test3_rectified_no_perspective.jpg, id=35, 1754.555pt x 2735.21875pt>
+File: test3_rectified_no_perspective.jpg Graphic file (type jpg)
+
+<use test3_rectified_no_perspective.jpg>
+<test3_perspective.jpg, id=36, 1003.75pt x 1003.75pt>
+File: test3_perspective.jpg Graphic file (type jpg)
+
+<use test3_perspective.jpg>
+<test3_nodem_perspective.jpg, id=37, 1754.555pt x 2735.21875pt>
+File: test3_nodem_perspective.jpg Graphic file (type jpg)
+
+<use test3_nodem_perspective.jpg>
+
+LaTeX Warning: `!h' float specifier changed to `!ht'.
+
+[5
+
+ <./test3_no_perspective.jpg> <./test3_rectified_no_perspective.jpg>]
+
+LaTeX Warning: Text page 6 contains only floats.
+
+
+Overfull \vbox (2.68741pt too high) has occurred while \output is active []
+
+
+[6 <./test3_perspective.jpg> <./test3_nodem_perspective.jpg>] (./report.aux) ) 
+Here is how much of TeX's memory you used:
+ 2110 strings out of 495061
+ 33098 string characters out of 1182622
+ 93078 words of memory out of 3000000
+ 5306 multiletter control sequences out of 15000+50000
+ 8194 words of font info for 29 fonts, out of 3000000 for 9000
+ 28 hyphenation exceptions out of 8191
+ 44i,9n,45p,469b,346s stack positions out of 5000i,500n,10000p,200000b,50000s
+<
+/usr/share/texmf-texlive/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/
+texmf-texlive/fonts/type1/public/amsfonts/cm/cmmi12.pfb></usr/share/texmf-texli
+ve/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-texlive/fonts/typ
+e1/public/amsfonts/cm/cmr12.pfb></usr/share/texmf-texlive/fonts/type1/public/am
+sfonts/cm/cmr17.pfb>
+Output written on report.pdf (7 pages, 1813927 bytes).
+PDF statistics:
+ 62 PDF objects out of 1000 (max. 8388607)
+ 0 named destinations out of 1000 (max. 500000)
+ 81 words of extra memory for PDF output out of 10000 (max. 10000000)
+
