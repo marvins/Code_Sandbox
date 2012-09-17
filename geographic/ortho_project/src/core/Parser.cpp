@@ -223,9 +223,6 @@ void PSR::Parser::init( const int argc, char ** argv, std::string const& filenam
 }
 
 
-
-
-
 /** 
  * Validate the given configuration file
 */

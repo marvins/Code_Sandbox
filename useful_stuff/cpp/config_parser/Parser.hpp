@@ -31,6 +31,8 @@ class Parser{
         */
         Parser( const int argc, char ** argv, std::string const& filename );
 
+        void init( const int argc, char ** argv, std::string const& filename );
+
         //string handling
         std::string getItem_string( const std::string& tag_name, bool& found )const;
         void   setItem_string( const std::string& tag_name, const std::string& value );
