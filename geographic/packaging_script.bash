@@ -6,17 +6,56 @@
 # This is the location of the Medusa repository
 MEDUSA_PATH=/home/ms6401/projects/Medusa
 
-GEOIMAGE_SRC=src
-GEOIMAGE_MAKEFILE=Makefile
+# These are the locations of your desired directories
+GEOIMAGE_HOME=/home/ms6401/projects/Code_Sandbox/geographic/geo_image
+GEOIMAGE_DEST=${MEDUSA_PATH}/GeoImage
 
-GEOIMAGE_DEST=GeoImage
+ORTHO_HOME=/home/ms6401/projects/Code_Sandbox/geographic/ortho_project
+ORTHO_DEST=${MEDUSA_PATH}/OrthoProject
 
-# Make sure destination directory exists
-if [ ! -d "${MEDUSA_PATH}/${GEOIMAGE_DEST}" ]; then 
-    mkdir ${MEDUSA_PATH}/${GEOIMAGE_DEST}
+
+
+# Make sure source directories exists
+if [ ! -d "${GEOIMAGE_HOME}" ]; then
+    echo "${GEOIMAGE_HOME} does not exist, please fix error"
+    exit
+fi    
+if [ ! -d "${ORTHO_HOME}" ]; then
+    echo "${ORTHO_HOME} does not exist, please fix error"
+    exit
 fi
 
-# Copy over geoimage code
-cp -r ${GEOIMAGE_SRC}      ${MEDUSA_PATH}/${GEOIMAGE_DEST}/${GEOIMAGE_SRC}
-cp    ${GEOIMAGE_MAKEFILE} ${MEDUSA_PATH}/${GEOIMAGE_DEST}/${GEOIMAGE_MAKEFILE}
+# Make sure destination directories exists
+if [ ! -d "${GEOIMAGE_DEST}" ]; then 
+    mkdir ${GEOIMAGE_DEST}
+fi
+if [ ! -d "${ORTHO_DEST}" ]; then 
+    mkdir ${ORTHO_DEST}
+fi
+
+####################################################
+#                 Geo Image  
+####################################################
+# MAKEFILE
+cp ${GEOIMAGE_HOME}/Makefile ${GEOIMAGE_DEST}/
+
+# SOURCE DIRECTORY
+cp -r ${GEOIMAGE_HOME}/src  ${GEOIMAGE_DEST}/
+
+# DATA DIRECTORY
+cp -r ${GEOIMAGE_HOME}/data ${GEOIMAGE_DEST}/
+
+
+
+
+#####################################################
+#                     ORTHO   
+#####################################################
+# SOURCE DIRECTORY
+cp -r ${ORTHO_HOME}/src  ${ORTHO_DEST}/
+
+# DATA DIRECTORY
+cp -r ${GEOIMAGE_HOME}/data ${GEOIMAGE_DEST}/
+
+
 
