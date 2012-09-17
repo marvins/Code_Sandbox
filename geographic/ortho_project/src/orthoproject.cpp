@@ -47,7 +47,7 @@ int main( int argc, char* argv[] ){
                 options.image = generate_perspective_test_image( options );
                 
                 //write and display image
-                if( options.logger.get_console_run_state() != LOG_NONE ){
+                if(( options.logger.get_console_run_state() & LOG_INFO ) == LOG_INFO ){
                     namedWindow("Modified Image");
                     imshow("Modified Image", options.image);
                     waitKey(0);
@@ -64,7 +64,7 @@ int main( int argc, char* argv[] ){
                 Mat corrected_image = orthorectify( options.image, options );  
 
                 //write and display image
-                if( options.logger.get_console_run_state() != LOG_NONE ){
+                if(( options.logger.get_console_run_state() & LOG_INFO ) == LOG_INFO ){
                     namedWindow("Fully Rectified Image");
                     imshow("Fully Rectified Image", corrected_image);
                     waitKey(0);
