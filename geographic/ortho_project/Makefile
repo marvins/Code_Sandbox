@@ -74,6 +74,17 @@ HEADERS= $(CORE)/Configuration.hpp \
 		 $(CORE)/Logger.hpp
 
 
+# Create required directory structure
+orthoproject: build bin $(EXEC)
+
+build:
+	echo "Constructing build directory"
+	mkdir -p build
+
+bin: 
+	echo "Constructing bin directory"
+	mkdir -p bin
+
 ###############################
 #          Executable         #
 ###############################
