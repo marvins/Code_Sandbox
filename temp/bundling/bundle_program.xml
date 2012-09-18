@@ -1,9 +1,27 @@
 <configuration>
     
+    <!-- Output information for specific instances -->
     <output_info>
-        <num_bundles  value="5"        />
+        
+        <!-- This is the number of bundles which you want to do -->
+        <number_bundles  value="5"        />
+
+        <!-- This is the type of compression you want to apply 
+             - Note: The only support type currently is zip
+
+        -->
         <compression_type  value="zip" />
+        
+        <!-- This is the type of camera we are use collecting imagery from 
+             - EO - EO Sensor
+             - IR - IR Sensor
+        -->
         <camera_type  value="EO"       />
+
+        <!-- This is the Gorgon Stare Increment Number
+             - 1 : GS1
+             - 2 : GS2
+        -->
         <increment    value="2"        />
     </output_info>
     
@@ -17,25 +35,53 @@
     <debug_level value="0" />
     <log  state="1"  location="bundle_program.log" />
     
+
     <!-- SSH 
         state - 1  means it will use it
                 0  means it will use the local filesystem
     -->
     <ssh state="0" >
-        <username value="root"          />
-        <hostname value="10.2.18.44"    />
-        <password value="G0rg0n$tare2!" />
+        
+        <!-- SSH Username  -->
+        <username value=""          />
+        
+        <!-- SSH Hostname -->
+        <hostname value=""    />
+        
+        <!-- SSH Passsword -->
+        <password value="" />
     </ssh>
 
-
+    
+    <!-- Path Information for the file setup -->
     <path_info>
-        <input_base   value="simulator" />
-        <input_path   value="dsu" />
-        <output_base  value="."         />
-        <output_path  value="image_set" />
+
+        <!-- This is the base directory for the collection.
+             - If you have a baseline structure, then place the base directory here
+        -->
+        <input_base       value="simulator" />
+        
+        <!-- This is the directory after the base which you are searching. 
+             
+             For example, if you are collecting from /dsu/, then 
+
+             input_base = /
+             input_path = /dsu
+
+             as you don't really need the input_base.  
+        -->
+        <input_path       value="dsu" />
+
+        <!-- This is the path to the file -->
+        <output_base      value="."         />
+
+        <!-- This is the filename of the image set -->
+        <output_filename  value="image_set" />
+
     </path_info>
 
-
+    
+    <!--  GS1 specific configuration settings -->
     <gs1_specific>
         <number_eo_directories   value="5" />
         <number_ir_directories   value="4"  />
@@ -44,6 +90,7 @@
         <number_ir_images_per_camera  value="8" />
     </gs1_specific>
     
+    <!-- GS2 specific configuration settings  -->
     <gs2_specific>
         <number_slices  value="8" />
         <number_collect value="4" />
@@ -51,5 +98,26 @@
         <eo_fism_count  value="368" />
         <ir_fism_count  value="68" />
     </gs2_specific>
+    
+
+    <!-- This is the general structure for the GS1 imagery 
+         - DO NOT CHANGE EVER!
+    -->
+    <gs1_structure>
+        
+
+
+    </gs1_structure>
+
+    <!-- This is the general structure for the GS2 imagery
+         - DO NOT CHANGE EVER!
+    -->
+    <gs2_structure>
+        <directory  pattern="slice#-collect#" >
+            <directory
+        </directory>
+    </gs2_structure>
+
+
 
 </configuration>
