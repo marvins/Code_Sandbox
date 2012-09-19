@@ -188,6 +188,8 @@ class ConfigOptions:
 	eo_fism_count   = 200
 	if_fism_count   = 200
 
+	gs_directories = []
+
 	
 
 	#-     Constructor    -#
@@ -239,8 +241,8 @@ class ConfigOptions:
 			self.ssh_password = xmlValidateAndLoad(root,'ssh/password','value','ATTRIBUTE','STRING')[1]
 		
 		# General required parameters
-		if xmlValidateAndLoad( root, 'output_info/num_bundles', 'value', 'ATTRIBUTE', 'INT')[0] == True:
-			self.number_bundles = xmlValidateAndLoad(root,'output_info/num_bundles','value','ATTRIBUTE','INT')[1]
+		if xmlValidateAndLoad( root, 'output_info/number_bundles', 'value', 'ATTRIBUTE', 'INT')[0] == True:
+			self.number_bundles = xmlValidateAndLoad(root,'output_info/number_bundles','value','ATTRIBUTE','INT')[1]
 		
 		if xmlValidateAndLoad( root, 'output_info/compression_type', 'value', 'ATTRIBUTE', 'STRING')[0] == True:
 			self.compression_type = xmlValidateAndLoad( root, 'output_info/compression_type', 'value', 'ATTRIBUTE', 'STRING')[1]
@@ -262,8 +264,8 @@ class ConfigOptions:
 		if xmlValidateAndLoad( root, 'path_info/output_base', 'value', 'ATTRIBUTE', 'STRING')[0] == True:
 			self.output_base = xmlValidateAndLoad( root, 'path_info/output_base', 'value', 'ATTRIBUTE', 'STRING')[1]
 
-		if xmlValidateAndLoad( root, 'path_info/output_path', 'value', 'ATTRIBUTE', 'STRING')[0] == True:
-			self.output_path = xmlValidateAndLoad( root, 'path_info/output_path', 'value', 'ATTRIBUTE', 'STRING')[1]
+		if xmlValidateAndLoad( root, 'path_info/output_filename', 'value', 'ATTRIBUTE', 'STRING')[0] == True:
+			self.output_path = xmlValidateAndLoad( root, 'path_info/output_filename', 'value', 'ATTRIBUTE', 'STRING')[1]
 		
 		# GS1 Specific
 		if xmlValidateAndLoad( root, 'gs1_specific/number_eo_directories', 'value', 'ATTRIBUTE', 'INT')[0] == True:
@@ -292,7 +294,29 @@ class ConfigOptions:
 		if xmlValidateAndLoad( root, 'gs2_specific/ir_fism_count'  , 'value', 'ATTRIBUTE', 'INT')[0] == True:
 			self.ir_fism_count = xmlValidateAndLoad( root, 'gs2_specific/ir_fism_count'  , 'value', 'ATTRIBUTE', 'INT')[1]
 		
+		
+		# Pull Appropriate Directory Structure
+		structure = "gs" + str(self.gs_increment) + "_structure"
+		basenode = root.find(structure)
+		while basenode != None:
+			
+			# Query the children for directories
+			if basenode.find("directory") != None:
+				
+				# get the child
+				self.gs_directories.append( basenode.find("directory").attrib.get("pattern"))
+				basenode = basenode.find("directory")
 
+			elif basenode.find("camera_directory") != None:
+				
+				# get the child
+				self.gs_directories.append( basenode.find("camera_directory").attrib.get("pattern"))
+				break;
+
+			else:
+				raise Exception("Unknown parameter")
+		
+		
 		##########################################
 		#       PARSE COMMAND-LINE OPTIONS       #
 		##########################################
@@ -799,12 +823,33 @@ def validityCheckPost( camera_roots, options ):
 	
 	log.write( log.INFO, 'Exiting validityCheckPost successfully')
 
+
+def dirPatternMatch( d1, d2 ):
+	
+	if len(d1) != len(d2):
+		return False;
+	
+	for x in xrange(0, len(d1)):
+
+		if d1[x] == "#":
+			if int(d2[x]) >= 0 or int(d2[x]) < 10:
+				continue
+		elif d2[x] == "#":
+			if int(d1[x]) >= 0 or int(d1[x]) < 10:
+				continue
+		elif d1[x] != d2[x]:
+			return False
+
+
+	return True
+
+
 #------------------------------------------------#
 #-    Find Camera Directory						-#
 #-												-#
 #-    Look for the baseline camera directory    -#
 #------------------------------------------------#
-def find_camera_directory( directory, options ):
+def find_camera_directory( directory, options, camera_list ):
 	
 	# extract the contents of the directory
 	contents = os.listdir(directory);
@@ -854,10 +899,13 @@ def find_camera_directory( directory, options ):
 
 		# if the camera directory is not a camera directory, then step into it
 		if isCamDirectory == False:
-			dir_stack += find_camera_directory( directory + '/' + d, options )
+
+			if dirPatternMatch( d, camera_list[0] ) == True:
+				dir_stack += find_camera_directory( directory + '/' + d, options, camera_list[1:] )
 	
 	# end of the directory iteration
 	dir_stack = sorted(dir_stack)
+
 
 	return dir_stack
 
@@ -1156,7 +1204,8 @@ def main():
 
 	# Parse command-line options
 	options = ConfigOptions( sys.argv[1:] )
-	
+	camera_list = options.gs_directories
+
 	# Configure the Logger
 	global log
 	log = Logger( options.debug_level, options.log_state, options.log_location )
@@ -1170,7 +1219,7 @@ def main():
 		
 		# build a list of camera directories
 		log.write( log.INFO, 'running find_camera_directory on directory: ' + options.input_base + '/' + options.input_path)
-		camera_directories = find_camera_directory( options.input_base + '/' + options.input_path, options )
+		camera_directories = find_camera_directory( options.input_base + '/' + options.input_path, options, camera_list )
 		log.write( log.INFO, 'find_camera_directory exited successfully')
 		
 		# check the structure before we do the image gathering.  This prevents some major computations

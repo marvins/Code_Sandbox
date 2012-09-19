@@ -32,7 +32,7 @@
       2 - Major steps will stop to allow user to view data. 
           (note that you will have to press enter to continue)
     -->
-    <debug_level value="0" />
+    <debug_level value="2" />
     <log  state="1"  location="bundle_program.log" />
     
 
@@ -114,7 +114,13 @@
     -->
     <gs2_structure>
         <directory  pattern="slice#-collect#" >
-            <directory
+            <directory pattern="camera" >
+                <directory pattern="nitf" >
+                    <camera_directory pattern="cam###" >
+
+                    </camera_directory>
+                </directory>
+            </directory>
         </directory>
     </gs2_structure>
 
