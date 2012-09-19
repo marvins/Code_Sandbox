@@ -1,9 +1,9 @@
 <configuration>
     
-    <!-- Output information for specific instances -->
+    <!-- Output information relating to specific runs -->
     <output_info>
         
-        <!-- This is the number of bundles which you want to do -->
+        <!-- This is the number of bundles which you want to build -->
         <number_bundles  value="5"        />
 
         <!-- This is the type of compression you want to apply 
@@ -15,6 +15,8 @@
         <!-- This is the type of camera we are use collecting imagery from 
              - EO - EO Sensor
              - IR - IR Sensor
+
+             NOTE:  This will also determine the extension of the output file. 
         -->
         <camera_type  value="EO"       />
 
@@ -33,6 +35,12 @@
           (note that you will have to press enter to continue)
     -->
     <debug_level value="2" />
+
+    <!-- Log 
+        state
+            1 - Will build a log file
+            0 - Will not build a log file
+    -->
     <log  state="1"  location="bundle_program.log" />
     
 
@@ -75,7 +83,10 @@
         <!-- This is the path to the file -->
         <output_base      value="."         />
 
-        <!-- This is the filename of the image set -->
+        <!-- This is the filename of the image set 
+            
+             NOTE:  Do not give an extension as this is determined by the compression type. 
+        -->
         <output_filename  value="image_set" />
 
     </path_info>
