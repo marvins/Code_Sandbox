@@ -116,7 +116,9 @@
     -->
     <gs1_structure>
         
+        <directory pattern="cam#" >
 
+        </directory>
 
     </gs1_structure>
 
