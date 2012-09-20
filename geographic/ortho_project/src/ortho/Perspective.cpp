@@ -161,13 +161,13 @@ void create_flat_test_image( Options const& options, Mat& image, Mat& dem ){
 */
 void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& output_image, Options const& options ){
     
-
+    
     //create a progress bar object and make sure we have permission to show it
     ProgressBar progressBar(0, input_image.cols*input_image.rows, 50);
     bool show_progress_bar = false;
     if( ( options.logger.get_console_run_state() & LOG_INFO ) == LOG_INFO )
         show_progress_bar = true;
-
+    
     //set some parameters
     output_image = Mat(input_image.size(), input_image.type());
     output_image = Scalar(0);
@@ -191,7 +191,7 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
     
     Mat PositionFinal = Mat::eye(4,4,CV_64FC1);
     matrix_add_translation( PositionFinal, final_position );
-
+    
     // this is the center point of the final view image plane
     Mat plane_centerpoint = final_position + rotated_normalF;
     
@@ -257,7 +257,7 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
                 
                 Mat stare_point = load_point( outCoordinateList[x][y].x, outCoordinateList[x][y].y, 0);
                 Point2f starePoint( outCoordinateList[x][y].x, outCoordinateList[x][y].y);
-
+    
                 Mat maxDistance = compute_plane_line_intersection( final_position, stare_point, earth_normal, load_point(0,0,maxElevation));
                 double distRadius = norm( Point2f( maxDistance.at<double>(0,0), maxDistance.at<double>(1,0)) - starePoint);
                 

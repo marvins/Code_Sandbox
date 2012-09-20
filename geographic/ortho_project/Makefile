@@ -43,6 +43,7 @@ INCL = $(OPENCV_INCLUDE) $(BOOST_INCLUDE) $(GEOIMAGE_INCLUDE) $(GDAL_INCLUDE)
 
 EXEC = $(BIN)/orthoproject
 
+CPP=g++
 FLAGS = -Wall -O3
 
 ###############################
@@ -89,59 +90,59 @@ bin:
 #          Executable         #
 ###############################
 $(EXEC): $(OBJECTS) $(HEADERS)
-	g++ $(OBJECTS) -o $@ $(LIBS) $(FLAGS)
+	$(CPP) $(OBJECTS) -o $@ $(LIBS) $(FLAGS)
 
 
 ###############################
 #          Main Driver        #
 ###############################
 $(BUILD)/orthoproject.o: $(SRC)/orthoproject.cpp  $(HEADERS)
-	g++ $< -c -o $@ $(INCL) $(FLAGS)
+	$(CPP) $< -c -o $@ $(INCL) $(FLAGS)
 
 
 # Configuration
 $(BUILD)/Configuration.o: $(CORE)/Configuration.cpp $(HEADERS)
-	g++ $< -c -o $@ $(INCL) $(FLAGS)
+	$(CPP) $< -c -o $@ $(INCL) $(FLAGS)
 
 # Config Parser
 $(BUILD)/Parser.o: $(CORE)/Parser.cpp $(HEADERS)
-	g++ $< -c -o $@ $(INCL) $(FLAGS)
+	$(CPP) $< -c -o $@ $(INCL) $(FLAGS)
 
 # Orthorectification
 $(BUILD)/Orthorectify.o: $(ORTHO)/Orthorectify.cpp $(HEADRES)
-	g++ $< -c -o $@ $(INCL) $(FLAGS)
+	$(CPP) $< -c -o $@ $(INCL) $(FLAGS)
 
 # Perspective Code
 $(BUILD)/Perspective.o: $(ORTHO)/Perspective.cpp $(HEADERS)
-	g++ $< -c -o $@ $(INCL) $(FLAGS)
+	$(CPP) $< -c -o $@ $(INCL) $(FLAGS)
 
 # Quaternion Code
 $(BUILD)/Quaternion.o: $(MATH)/Quaternion.cpp $(HEADERS)
-	g++ $< -c -o $@ $(INCL) $(FLAGS)
+	$(CPP) $< -c -o $@ $(INCL) $(FLAGS)
 
 #Vector Code
 $(BUILD)/Vector.o: $(MATH)/Vector.cpp $(HEADERS)
-	g++ $< -c -o $@ $(INCL) $(FLAGS)
+	$(CPP) $< -c -o $@ $(INCL) $(FLAGS)
 
 # Geometry code
 $(BUILD)/Geometry.o: $(MATH)/Geometry.cpp $(HEADERS)
-	g++ $< -c -o $@ $(INCL) $(FLAGS)
+	$(CPP) $< -c -o $@ $(INCL) $(FLAGS)
 
 # Utility Functions
 $(BUILD)/Utilities.o: $(CORE)/Utilities.cpp $(HEADERS)
-	g++ $< -c -o $@ $(INCL) $(FLAGS)
+	$(CPP) $< -c -o $@ $(INCL) $(FLAGS)
 
 # DEM Functions
 $(BUILD)/dem.o: $(CORE)/dem.cpp $(HEADERS)
-	g++ $< -c -o $@ $(INCL) $(FLAGS)
+	$(CPP) $< -c -o $@ $(INCL) $(FLAGS)
 
 # Progress Bar
 $(BUILD)/ProgressBar.o: $(CORE)/ProgressBar.cpp $(HEADERS)
-	g++ $< -c -o $@ $(INCL) $(FLAGS)
+	$(CPP) $< -c -o $@ $(INCL) $(FLAGS)
 
 # Logger
 $(BUILD)/Logger.o: $(CORE)/Logger.cpp $(HEADERS)
-	g++ $< -c -o $@ $(INCL) $(FLAGS)
+	$(CPP) $< -c -o $@ $(INCL) $(FLAGS)
 
 
 ####################################

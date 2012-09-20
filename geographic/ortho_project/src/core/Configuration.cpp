@@ -50,7 +50,7 @@ string Options::get_run_type()const{
 void Options::load_camera_params_file( ){
     
     bool found = false;
-
+    
     /*****************************/
     /*        Focal Length       */
     /*****************************/
@@ -103,8 +103,9 @@ void Options::load_camera_params_file( ){
         else
             throw string("UNKNOWN TYPE");
 
-
 }
+
+
 
 /**
  * Use GeoImage camera parameters
@@ -163,7 +164,7 @@ void Options::load_camera_params_geo( ){
  * Open the configuration file and read values 
 */
 void Options::load_configuration( const int& argc, char ** argv ){
-    
+   
     //Parse the config file
     parser.init( argc, argv, config_filename );
     bool found = false;
@@ -245,12 +246,12 @@ void Options::load_configuration( const int& argc, char ** argv ){
         throw string(string("ERROR: image file ")+image_filename+string(" does not exist"));
 
 
-    if( run_type == "RECTIFY" && rectify_is_geo == false ){
+    if(  rectify_is_geo == false ){
         
         //load the camera parameters from file
         load_camera_params_file();
     } 
-    else{
+    else if( run_type == "RECTIFY" ){
         
         //load the camera parameters from the geo image
         load_camera_params_geo( );
@@ -293,7 +294,6 @@ void Options::load_configuration( const int& argc, char ** argv ){
 
     if( run_type == "FULL" || run_type == "BUILD" )
         build_image_size = Size(c, r);
-
     
     
     /******************************************/
@@ -334,6 +334,7 @@ void Options::load_configuration( const int& argc, char ** argv ){
     } else {
         throw string("ERROR: DEM Mode not recognized");
     }
+   
 
 }
 
