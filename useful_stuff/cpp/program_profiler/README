@@ -1,2 +1,4 @@
 This is a code chunk which will allow a programmer to track and analyze algorithm performance. 
 
+This library requires Boost Date-Time library. 
+

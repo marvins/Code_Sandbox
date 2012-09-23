@@ -17,19 +17,19 @@ void functionA( ){
 
 void functionB( ){
 
-    profiler.tick("functionA");
+    profiler.tick("functionA", 0);
     usleep(microsecondTimerLength);
     
-    profiler.tick("functionA");
+    profiler.tick("functionA", 1);
     usleep(microsecondTimerLength);
     
-    profiler.tick("functionA");
+    profiler.tick("functionA", 2);
     usleep(microsecondTimerLength);
     
-    profiler.tick("functionA");
+    profiler.tick("functionA", 3);
     usleep(microsecondTimerLength);
     
-    profiler.tick("functionA");
+    profiler.tick("functionA", 5);
 
 }
 
@@ -39,11 +39,6 @@ int main( int argc, char* argv[] ){
     profiler.add_interval("functionA");
     profiler.add_interval("functionB");
 
-    // show in single case
-    //profiler.start("functionA");
-    functionA( );
-    //profiler.stop("functionA");
-    
     // show in stepped case
     for( int i=0; i<10; i++){
         functionB( );
@@ -52,6 +47,8 @@ int main( int argc, char* argv[] ){
     //profiler.end_interval("functionA");
     
     profiler.print_all();
+    
+    profiler.build_chart( PROFILER_SCIPY, "output.py");
 
     return 0;
 }

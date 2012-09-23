@@ -8,25 +8,30 @@
 
 #include <boost/date_time/posix_time/posix_time.hpp>
 
-
+enum PROFILER_OUTPUT_FORMATS {
+    PROFILER_SCIPY,
+    PROFILER_MATLAB,
+};
 
 class Interval{
 
     public:
         
         /** 
-         * Parameterized constructor given the name of the time interval.
+         * Default constructor
         */
-        Interval( std::string const& _name );
+        Interval( );
     
         void tick();
+        void tick( const int& step );
         void reset_interval();
         void tick_and_reset_interval( );
         
         std::string toString()const;
+
+        std::vector<std::vector<double> > plot()const;
+
     private:
-        
-        std::string name;    /*< Name of the interval */
         
         int current_interval;
         std::vector< std::vector< boost::posix_time::ptime> > intervals;
@@ -39,14 +44,22 @@ typedef std::pair<std::string, Interval> IntervalPair;
 class Profiler{
 
     public:
-
+    
+        /** 
+         * Add an interval to the profiler
+        */
         void add_interval( std::string const& interval_name );
 
+        /** 
+         * Move the specified interval to the next time period
+        */
         void restart_interval( std::string const& interval_name ); 
 
-        void tick( std::string const& interval_name );
+        void tick( std::string const& interval_name);
+        void tick( std::string const& interval_name, const int& interval_step );
         
         void print_all();
+        void build_chart( const int& output_format, const std::string& output_name );
 
     private:
 
