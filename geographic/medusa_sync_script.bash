@@ -237,10 +237,10 @@ do
 
 
                 # process user input
-
+                
                 # Copy src to dest
                 if [ "${INPUT}" == 0 ]; then
-                    cp ${SOURCE[${idx}]}  ${DIR_DEST}
+                    cp ${SOURCE[${idx}]}  ${DIR_DST}
                 elif [ "${INPUT}" == 1 ]; then
                     cp ${DESTINATION[${idx}]}  ${DIR_SRC}  
                 elif [ "${INPUT}" == 2 ]; then
