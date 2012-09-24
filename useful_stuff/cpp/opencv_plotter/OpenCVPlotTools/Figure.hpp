@@ -36,10 +36,8 @@ class FigureParams{
 
         //background color
         Vec3b background_color;
+        Vec3b plot_background_color;
 
-        //foreground color
-        Vec3b foreground_color;
-        
         //plot window percentage
         double figure_use_percentage;
         
@@ -71,7 +69,7 @@ class Figure{
     private:
         
         //this is the list of shapes that we are saving to be printed
-        deque<PlotData> shape_data;
+        deque<PlotData> plot_data;
         
         //this is the figure parameters
         FigureParams params;

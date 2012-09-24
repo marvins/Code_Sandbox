@@ -16,8 +16,15 @@ namespace cvplt{
 class PlotParams{
 
     public:
-        Vec3b color;
+        
+        /**
+         * Default Constructor
+        */
+        PlotParams();
 
+        ///Plot Element Color
+        Vec3b color;
+        
 };
 
 /**
@@ -26,6 +33,9 @@ class PlotParams{
 class PlotData{
 
     public:
+        
+        void render( Mat& output_image, Rect const& rect_pos )const;
+        
         std::vector<std::vector<double> > data;
 
         PlotParams params;

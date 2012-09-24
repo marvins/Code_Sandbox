@@ -7,8 +7,10 @@ namespace cvplt{
 FigureParams::FigureParams( ){
     figure_size = Size(1000,1000);
     figure_cv_type = CV_8UC3;
+    
     background_color = Vec3b( 100, 100, 100);
-    foreground_color = Vec3b( 255, 255, 255);
+    plot_background_color = Vec3b(255,255,255);
+    
     figure_use_percentage = 0.8;
 
     figure_title           = "Figure 1";
@@ -54,11 +56,6 @@ Mat Figure::print()const{
                    (params.figure_size.height - plot_size.height)/2.0,
                    plot_size.width, plot_size.height);
 
-    //print the foreground
-    for( size_t c=rect_pos.x; c<rect_pos.x+rect_pos.width;  c++)
-    for( size_t r=rect_pos.y; r<rect_pos.y+rect_pos.height; r++)
-        output_image.at<Vec3b>(c,r) = params.foreground_color;
-    
     //print the title
     int baseline=0;
     Size textSize = getTextSize( params.figure_title,            params.figure_title_fontFace, 
@@ -66,8 +63,17 @@ Mat Figure::print()const{
                                  &baseline );
 
     Point title_center( (output_image.cols/2.0)-(textSize.width/2.0), (rect_pos.y/2) );
-    cout << title_center << endl;
     putText( output_image, "Figure 1", title_center, FONT_HERSHEY_SIMPLEX, 2, Scalar::all(50), 3, 8 );
+    
+    //print the figure background
+    for( int c=rect_pos.tl().x; c<rect_pos.br().x; c++ )
+    for( int r=rect_pos.tl().y; r<rect_pos.br().y; r++ )
+        output_image.at<Vec3b>(r,c) = params.plot_background_color;
+    
+    //for each plot in plot data, draw them onto the image
+    for( size_t plt=0; plt < plot_data.size(); plt++ )
+        plot_data[plt].render( output_image, rect_pos );
+
 
     return output_image;
 }
