@@ -22,6 +22,11 @@ FigureParams::FigureParams( ){
 }
 
 
+void Figure::plot( vector<double> const& x, vector<double> const& y, string const& plot_params ){
+
+    plot( x, y, PlotParams( plot_params ));
+}
+
 void Figure::plot( vector<double> const& x, vector<double> const& y, PlotParams const& plot_params ){
     
     //save data as a line item

@@ -27,7 +27,7 @@ class FigureParams{
     public:
         
         FigureParams();
-        
+
         //size of the output image
         cv::Size figure_size;
 
@@ -62,6 +62,7 @@ class Figure{
     
         //plot some data to the figure
         void plot( vector<double> const& x, vector<double> const& y, PlotParams const& params );
+        void plot( vector<double> const& x, vector<double> const& y, string const& params );
         
         //show the data
         cv::Mat print()const;

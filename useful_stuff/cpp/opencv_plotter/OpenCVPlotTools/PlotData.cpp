@@ -1,5 +1,6 @@
 #include "PlotData.hpp"
 #include "PlotMath.hpp"
+#include "PlotUtils.hpp"
 
 #include <iostream>
 
@@ -9,9 +10,35 @@ namespace cvplt{
  * PlotParams
 */
 PlotParams::PlotParams(){
+    load_defaults();
+}
 
+PlotParams::PlotParams( const string& plot_args ){
+    
+    load_defaults();
+
+    //break up plot arguments
+    vector<pair<string,string> > tokens = parse_plot_tokens( plot_args );
+
+    for( size_t i=0; i<tokens.size(); i++){
+        if( tokens[i].first == "LineWidth" )
+            line_width = str2num<double>(tokens[i].second);
+        else if( tokens[i].first == "LineStyle" ){
+            
+        }
+        else 
+            throw string(string("ERROR: ")+tokens[i].first+string(" is not a supported field"));
+    }
+
+}
+
+
+void PlotParams::load_defaults(){
     //create the color
     color = Vec3b(0,0,255);
+    
+    //line width 
+    line_width = 2;
     
     limit_set = false;
 }
@@ -72,13 +99,19 @@ PlotData::PlotData( vector<double>const& x, vector<double>const& y, PlotParams c
  * Render the plot data info on the output image
 */
 void PlotData::render( Mat& output_image, Rect const& rect_pos )const{
-
+    
     //for each point in the object, compute its image coordinate
     Point pos;
+    vector<Point> pointList;
     for( size_t i=0; i<data[0].size(); i++){
         
-        pos.x = ((data[0][0] - params.xlim().x)/(params.xlim().y-params.xlim().x)*(rect_pos.br().x-rect_pos.tl().x))+rect_pos.tl().x;
-        pos.y = ((data[1][0] - params.ylim().x)/(params.ylim().y-params.ylim().x)*(rect_pos.br().y-rect_pos.tl().y))+rect_pos.tl().y;
+        pos.x = ((data[0][i] - params.xlim().x)/(params.xlim().y-params.xlim().x)*(rect_pos.br().x-rect_pos.tl().x))+rect_pos.tl().x;
+        pos.y = output_image.rows - (((data[1][i] - params.ylim().x)/(params.ylim().y-params.ylim().x)*(rect_pos.br().y-rect_pos.tl().y))+rect_pos.tl().y);
+        pointList.push_back(pos);
+    }
+    
+    for( size_t i=0; i<pointList.size()-1; i++){
+        line( output_image, pointList[i], pointList[i+1], Scalar(0, 0,255), 1 );
     }
 
 }

@@ -21,11 +21,13 @@ class PlotParams{
          * Default Constructor
         */
         PlotParams();
+        PlotParams( string const& plot_args );
         
         bool is_limit_set()const;
 
         void set_limits( vector<Point2d>const& lims );
 
+        void load_defaults();
         
         Point2d  xlim()const;
         Point2d  ylim()const;
@@ -40,6 +42,9 @@ class PlotParams{
 
         ///make sure we know when we have modified the limits
         bool limit_set;
+
+        double line_width;
+        
 };
 
 /**

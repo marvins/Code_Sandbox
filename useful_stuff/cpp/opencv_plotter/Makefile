@@ -3,14 +3,15 @@ OPENCV_INCL=`pkg-config opencv --cflags`
 OPENCV_LIBS=`pkg-config opencv --libs`
 OPENCV=$(OPENCV_INCL) $(OPENCV_LIBS)
 
+BOOST_INCL=-I/opt/local/include
 
 
 SRC=OpenCVPlotTools
 BLD=build
 BIN=bin
 
-INCL=$(OPENCV_INCL) -I.
-LIBS=$(OPENCV_LIBS)
+INCL=$(OPENCV_INCL) $(BOOST_INCL) -I.
+LIBS=$(OPENCV_LIBS) $(BOOST_LIBS)
 
 CPP=g++
 
@@ -20,8 +21,8 @@ PLOTLIB=$(BLD)/OpenCVPlotTools.a
 
 DIRS=$(BIN) $(BLD)
 
-OBJECTS=$(BLD)/Figure.o    $(BLD)/PlotData.o    $(BLD)/PlotMath.o
-HEADERS=$(SRC)/Figure.hpp  $(SRC)/PlotData.hpp  $(SRC)/PlotMath.hpp
+OBJECTS=$(BLD)/Figure.o    $(BLD)/PlotData.o    $(BLD)/PlotMath.o    $(BLD)/PlotUtils.o
+HEADERS=$(SRC)/Figure.hpp  $(SRC)/PlotData.hpp  $(SRC)/PlotMath.hpp  $(SRC)/PlotUtils.hpp
 
 
 all: $(PLOTLIB)
@@ -40,7 +41,7 @@ $(BIN)/demo: $(DIRS) demo.cpp $(HEADERS)
 #           Static Library             #
 ########################################
 $(PLOTLIB): $(DIRS) $(HEADERS) $(OBJECTS)
-	ar -cvq $@ $(OBJECTS) $(LIBS)
+	ar -cvq $@ $(OBJECTS)
 
 # directories
 bin: 
@@ -61,6 +62,9 @@ $(BLD)/PlotData.o: $(SRC)/PlotData.cpp $(HEADERS)
 $(BLD)/PlotMath.o: $(SRC)/PlotMath.cpp $(HEADERS)
 	$(CPP) $< -c -o $@  $(FLAGS) $(INCL)
 
+#Plot utils
+$(BLD)/PlotUtils.o: $(SRC)/PlotUtils.cpp $(HEADERS)
+	$(CPP) $< -c -o $@  $(FLAGS) $(INCL)
 
 ########################################
 #                Clean                 #

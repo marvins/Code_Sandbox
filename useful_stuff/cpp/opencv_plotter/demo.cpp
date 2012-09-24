@@ -11,7 +11,7 @@ using namespace std;
 int main( int argc, char** argv ){
     
     double xval[] = {1,2,3,4,5};
-    double yval[] = {2,2,2,2,2};
+    double yval[] = {2,2,3,2,2};
 
     vector<double> x( xval, xval+sizeof(xval)/sizeof(double));
     vector<double> y( yval, yval+sizeof(yval)/sizeof(double));
@@ -21,7 +21,7 @@ int main( int argc, char** argv ){
     cvplt::PlotParams plotParams;
 
     //plot some data to the 
-    fig.plot( x, y, plotParams);
+    fig.plot( x, y, "LineStyle = r-; LineWidth = 2" );
 
 
     Mat result = fig.print();
@@ -29,6 +29,7 @@ int main( int argc, char** argv ){
     namedWindow("Result");
     imshow("Result", result);
     waitKey(0);
+    imwrite("output.jpg", result);
 
     return 0;
 }

@@ -12,6 +12,8 @@ Point2d compute_range( vector<double>const& data ){
         output.x = min( output.x, data[i] );
         output.y = max( output.y, data[i] );
     }
+    
+    return output;
 }
 
 
