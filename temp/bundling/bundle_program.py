@@ -859,7 +859,7 @@ def find_camera_directory( directory, options, camera_list ):
 
 	# search to see if cam directories are present
 	dir_stack = []
-
+	
 	for d in directories:
 		
 		# reset the found flag
@@ -877,7 +877,7 @@ def find_camera_directory( directory, options, camera_list ):
 				pass
 		
 		# do some checks for inc2
-		if options.gs_increment == 2:
+		elif options.gs_increment == 2:
 			# Test for Inc 2 Imagery
 			#
 			# a camera directory for Inc 2 must be a camera directory with 3 digits
@@ -898,7 +898,7 @@ def find_camera_directory( directory, options, camera_list ):
 				pass
 
 		# if the camera directory is not a camera directory, then step into it
-		if isCamDirectory == False:
+		if isCamDirectory == False and len(camera_list) > 0:
 
 			if dirPatternMatch( d, camera_list[0] ) == True:
 				dir_stack += find_camera_directory( directory + '/' + d, options, camera_list[1:] )
@@ -1001,43 +1001,60 @@ def build_image_list( root_dir, ext_list, options ):
 
 	# create an empty list
 	images = []
-
-	# find the contents of the directory
-	contents = os.listdir( root_dir )
-	contents.sort()
-
-	# iterate through each item to either add or enter
-	for item in contents:
 	
-		# check if item is file or directory
-		if os.path.isdir( root_dir + '/' + item ) == True:
-			
-			# enter directory recursively
-			images = images + build_image_list( root_dir + '/' + item, ext_list, options )
+	directory_stack = []
+	cdir = root_dir
+	valid = True
 
-		# otherwise, check if file matches
-		elif os.path.isfile( root_dir + '/' + item ) == True:
-			
-			# check if the extension is a nitf
-			if os.path.splitext( item )[1] in ext_list:
-				
-				IMG = TACID(root_dir + '/' + item)
-				
-				# ensure the image has the proper camera type
-				ctype = IMG.getCameraType()
-
-				if ctype == options.camera_type:
-					images = images +  [[IMG]]
-				
-				else:
-					pass
-
-		else:
-			raise LogException( log.MAJOR, 'ERROR: must be file or directory')
-
+	# Iterate until you run out of directories
+	while len(directory_stack) > 0 or valid == True:
 		
-	return images
+		# Turn off the initial flag
+		valid = False
 
+		# find the contents of the directory
+		contents = os.listdir( cdir )
+		
+		# Sort the contents
+		contents.sort()
+
+		# iterate through each item to either add or enter
+		for item in contents:
+	
+			# check if item is file or directory
+			if os.path.isdir( cdir + '/' + item ) == True:
+				
+				# If we have a directory, then add it to the stack and move on
+				directory_stack.append( cdir + '/' + item )
+				continue
+			
+			# otherwise, check if file matches
+			elif os.path.isfile( cdir + '/' + item ) == True:
+			
+				# check if the extension is a nitf
+				if os.path.splitext( item )[1] in ext_list:
+				
+					IMG = TACID(cdir + '/' + item)
+				
+					# ensure the image has the proper camera type
+					ctype = IMG.getCameraType()
+
+					if ctype == options.camera_type:
+						print 'adding'
+						raw_input('')
+						images.append([[IMG]])
+				
+					else:
+						pass
+			
+			else:
+				raise LogException( log.MAJOR, 'ERROR: must be file or directory')
+
+		# Get the next item
+		if len( directory_stack ) > 0:
+			cdir = directory_stack.pop()
+	
+	return images
 
 #------------------------------------------------------------#
 #-        			Image Tuple Match      					-#
@@ -1232,10 +1249,17 @@ def main():
 		# iterate through each camera directory
 		for cidx in xrange(0, len(camera_directories)):
 			
-			# pull out every nitf image from the file
+			# pull out every nitf image from the current camera directory and place into its own group
 			log.write( log.INFO, 'starting build_image_list on directory: ' + camera_directories[cidx])
-			camera_contents.append( build_image_list( camera_directories[cidx], ext_list, options ))
+			cimgout = build_image_list( camera_directories[cidx], ext_list, options )
+			log.write( log.INFO, 'appending')
+			camera_contents.append( cimgout )
 			
+			print 'items' 
+			for cc in cimgout:
+				print cc[0].input_string
+				raw_input('')
+
 			# sort image filenames
 			log.write( log.INFO, 'starting sort operation')
 			camera_contents[cidx] = sort_image_list( camera_contents[cidx] )

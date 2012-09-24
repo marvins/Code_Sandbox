@@ -44,7 +44,7 @@ INCL = $(OPENCV_INCLUDE) $(BOOST_INCLUDE) $(GEOIMAGE_INCLUDE) $(GDAL_INCLUDE)
 EXEC = $(BIN)/orthoproject
 
 CPP=g++
-FLAGS = -Wall -O3
+FLAGS = -Wall -g
 
 ###############################
 #    List of Object Files     #

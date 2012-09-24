@@ -50,10 +50,10 @@ void matrix_add_translation( cv::Mat& matrix, cv::Mat const& translation ){
 }
 
 vector<vector<cv::Point3f> > build_ground_coordinate_list( cv::Mat const& dem, cv::Size img_size, const double& f, const Mat& RotationM, const Mat& camera_origin, const Mat& img2cam ){ 
-   
+    
     //create translation matrix
     Mat CameraTranslation = Mat::eye(4, 4, CV_64FC1);
-
+    
     //add translation coefficients
     CameraTranslation.at<double>(0,3) = camera_origin.at<double>(0,0);
     CameraTranslation.at<double>(1,3) = camera_origin.at<double>(1,0);
@@ -70,6 +70,9 @@ vector<vector<cv::Point3f> > build_ground_coordinate_list( cv::Mat const& dem, c
     double top = earth_normal.dot(load_point(0,0,0)-camera_origin);
     int hx = img_size.width/2;
     int hy = img_size.height/2;
+    
+    cout << "SIZE: " << img_size.width << ", " << img_size.height << endl;
+    cout << "dSIZE: " << dem.cols << ", " << dem.rows << endl;
 
     //iterate throught the output image
     for( int i=0; i<img_size.width; i++){
@@ -79,16 +82,22 @@ vector<vector<cv::Point3f> > build_ground_coordinate_list( cv::Mat const& dem, c
     
         //iterate through rows
         for( int j=0; j<img_size.height; j++ ){
+            cout << "J: " << j << endl;
             Mat b0 = multiplier * load_point( Point3f( i, j, -f));
             Mat Line = b0 - camera_origin;
             Mat b1 = camera_origin + (top/earth_normal.dot(Line))*(Line);
-    
             
+            cout << "B: "; print_mat( b1.t());
+            cout << "X" << endl;
             output_coordinate_list[i][j].x = b1.at<double>(0,0);
             output_coordinate_list[i][j].y = b1.at<double>(1,0);
+            cout << "C" << endl;
             output_coordinate_list[i][j].z = dem.at<uchar>(_round(b1.at<double>(1,0)) + hx, _round(b1.at<double>(0,0)+hy));
+            cout << "y" << endl;
         }
     }
+
+    cout << "Z" << endl;
     return output_coordinate_list;
 }
 

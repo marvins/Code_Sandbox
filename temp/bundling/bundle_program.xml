@@ -103,6 +103,7 @@
     
     <!-- GS2 specific configuration settings  -->
     <gs2_specific>
+        
         <number_slices  value="8" />
         <number_collect value="4" />
         
@@ -110,7 +111,19 @@
         <ir_fism_count  value="68" />
     </gs2_specific>
     
+    
+    <!-- Layout structure! 
+         
+         - This defines the route that you will be taking to get 
+           to your imagery.  There are two types of items 
+           which are authorized in this structure. 
 
+           directory - a normal directory you want to search for
+           camera_directory - the end camera endpoint
+
+           A pound symbol "#" denotes a wildcard which is allowed to change.
+
+    -->
     <!-- This is the general structure for the GS1 imagery 
          - DO NOT CHANGE EVER!
     -->

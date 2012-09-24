@@ -1,8 +1,9 @@
 /**
  * Orthoprojection Test Program
  *
- * @Author Marvin Smith, Sierra Nevada Corporation
- * @Date  
+ * @File    src/orthoproject.cpp
+ * @Author  Marvin Smith, Sierra Nevada Corporation
+ * @Date    21 September 2012
 */
 
 //STL Libraries
@@ -25,6 +26,9 @@ using namespace std;
 
 /**
  * Main Driver
+ * 
+ * @argc Number of command-line arguments
+ * @argv List of commands
 */
 int main( int argc, char* argv[] ){
     

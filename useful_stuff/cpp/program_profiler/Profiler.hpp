@@ -30,11 +30,15 @@ class Interval{
         std::string toString()const;
 
         std::vector<std::vector<double> > plot()const;
+        
+        bool is_empty()const;
 
     private:
         
+        int max_interval_length;
         int current_interval;
         std::vector< std::vector< boost::posix_time::ptime> > intervals;
+        std::vector<int> interval_lengths;
 
 };
 

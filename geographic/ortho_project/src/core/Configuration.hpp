@@ -1,3 +1,11 @@
+/**
+ * 
+ * Primary Configuration class for the orthoprojection program.
+ * 
+ * @file Configuration.hpp
+ *
+ * @author Marvin Smith
+*/
 #ifndef __CONFIGURATION_HPP__
 #define __CONFIGURATION_HPP__
 
@@ -119,9 +127,7 @@ class Options{
         
         std::string rectify_output_filename;    /*< Name of Fully Rectified Image */
 
-        cv::Mat get_build_img2cam()const;
         cv::Mat get_output_img2cam( cv::Size const& sz )const;
-        cv::Mat get_build_cam2img()const;
         cv::Mat get_output_cam2img( cv::Size const& sz )const;
         
         cv::Mat get_output_cam2img( cv::Size const& sz, double const& ref )const;

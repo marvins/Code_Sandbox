@@ -219,7 +219,7 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
     vector<vector<double> > astack, cstack, estack;
     vector<vector<Mat> >    wstack, ustack;
     
-    Mat cam2img = options.get_build_cam2img();
+    Mat cam2img = options.get_output_cam2img( options.get_build_image_size());
     
     //we now have a region to search, we should next prune this region to only include 
     //items actually in the image

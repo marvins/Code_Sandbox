@@ -16,7 +16,7 @@
                 <folder name="camera" multiple="false" >
                     
                     <folder name="nitf" multiple="false" >
-                    
+
                     </folder> <!-- end of nitf folder -->
                     
                     <folder name="raw" multiple="false" >
