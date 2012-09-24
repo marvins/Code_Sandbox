@@ -20,8 +20,8 @@ PLOTLIB=$(BLD)/OpenCVPlotTools.a
 
 DIRS=$(BIN) $(BLD)
 
-OBJECTS=$(BLD)/Figure.o    $(BLD)/PlotData.o
-HEADERS=$(SRC)/Figure.hpp  $(SRC)/PlotData.hpp
+OBJECTS=$(BLD)/Figure.o    $(BLD)/PlotData.o    $(BLD)/PlotMath.o
+HEADERS=$(SRC)/Figure.hpp  $(SRC)/PlotData.hpp  $(SRC)/PlotMath.hpp
 
 
 all: $(PLOTLIB)
@@ -55,6 +55,10 @@ $(BLD)/Figure.o: $(SRC)/Figure.cpp $(HEADERS)
 
 # PlotData Class
 $(BLD)/PlotData.o: $(SRC)/PlotData.cpp $(HEADERS)
+	$(CPP) $< -c -o $@  $(FLAGS) $(INCL)
+
+#Plot_math
+$(BLD)/PlotMath.o: $(SRC)/PlotMath.cpp $(HEADERS)
 	$(CPP) $< -c -o $@  $(FLAGS) $(INCL)
 
 

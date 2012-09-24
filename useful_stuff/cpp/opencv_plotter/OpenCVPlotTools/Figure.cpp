@@ -25,17 +25,10 @@ FigureParams::FigureParams( ){
 void Figure::plot( vector<double> const& x, vector<double> const& y, PlotParams const& plot_params ){
     
     //save data as a line item
-    PlotData object;
+    PlotData object( x, y, plot_params );
     
-    //push on the x axis
-    object.data.push_back( x );
-
-    //push on the y axis
-    object.data.push_back( y );
-
-    //add any color info here
-    object.params = plot_params;
-
+    //add object to plot data list
+    plot_data.push_back( object );
     
 }
 
