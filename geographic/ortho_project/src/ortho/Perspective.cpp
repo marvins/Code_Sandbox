@@ -182,7 +182,7 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
     Mat rotated_normal  = options.RotationM * earth_normal;
     Mat rotated_normalF = options.RotationM * final_normal;
 
-
+    
     // We need to compute the final position of the camera
     // - This is done by adding a scaled and rotated normal vector to the ground center point
     //    scale = elevation/rotated normal height
@@ -200,7 +200,8 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
     double   maxZDist;
     int      maxType;
     bool     intersection;
-
+    
+    
     //generate a ground coordinate list
     vector<vector<Point3f> > outCoordinateList = build_ground_coordinate_list( options.dem, 
                                                                             output_image.size(), 
@@ -251,6 +252,7 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
     for( int x=0; x<output_image.cols; x++ ){
         for( int y=0; y<output_image.rows; y++ ){
             
+
             /** Now we know what we are staring at.  Its time to now find what pixel will be shown here. */
             if( options.doZBuffering() == true ){
                 /** DEPTH PROCESSING MODULE */
@@ -366,6 +368,7 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
             if( show_progress_bar )
                 progressBar.update( cnt );
             cnt++;
+
         }
         //print the progress bar to console
         if( show_progress_bar )

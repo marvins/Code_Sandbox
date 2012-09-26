@@ -12,20 +12,32 @@ using namespace cv;
 
 Mat compute_location( Mat const& corner, Mat const& center, Mat const& principle_point, Mat const& earth_normal, Size sz, Options const& options ){
 
+    //compute the camera 2 world transformation. 
+    //   This is the camera position - focal length
+    Mat cam2world = Mat::eye( 4, 4, CV_64FC1);
+    matrix_add_translation( cam2world, options.Position_i );
     
-    /* Compute the camera coordinate of the point */ 
-    Mat cam_point = options.get_output_img2cam( sz ) * corner + load_vector( 0, 0, -1);
+    Mat pixShift = Mat::eye( 4, 4, CV_64FC1);
+    pixShift.at<double>(0,0) = options.camera_plane_width;
+    pixShift.at<double>(1,1) = options.camera_plane_height;
+    pixShift.at<double>(0,3) = -options.camera_plane_width/2.0;
+    pixShift.at<double>(1,3) = -options.camera_plane_height/2.0;
 
-    /* Compute the world coordinate of the point */
-    Mat world_point = options.RotationM * cam_point + options.Position_i - load_point(0,0,0);
-
+    //compute the pixel 2 camera transformation
+    Mat pix2cam = options.get_output_img2cam( sz, options.camera_plane_width, options.camera_plane_height, -options.get_focal_length() );
+    
+    /* Compute the world coordinate of the point */ 
+    Mat camera_point =  cam2world * options.RotationM * pixShift * pix2cam * corner;
+    
+    /* Compute the intersection between the camera and the ground */
     Mat P1 = options.Position_i;
-    Mat P2 = world_point;
+    Mat P2 = camera_point;
     Mat P3 = load_point(0, 0, 0);
     Mat N  = earth_normal;
             
     /*  This is the ground point */
     Mat ground_point = compute_plane_line_intersection( P1, P2, N, P3);
+    
     return ground_point;
     
 }
@@ -97,8 +109,7 @@ Mat orthorectify( Mat const& image, Options& options ){
     Mat tr_image = load_point( image.cols,      0    , 0);
     Mat bl_image = load_point(      0    , image.rows, 0);
     Mat br_image = load_point( image.cols, image.rows, 0);
-    
-
+   
     // these are the geographic corners of the image
     Mat tl_world = compute_location( tl_image, ground_point, input_principle_point, earth_normal, image.size(), options );
     Mat tr_world = compute_location( tr_image, ground_point, input_principle_point, earth_normal, image.size(), options );
@@ -137,6 +148,21 @@ Mat orthorectify( Mat const& image, Options& options ){
     matrix_add_translation( world2cam, (options.Position_i*-1) );
     
     Mat cam2img = options.get_output_cam2img(image.size())*options.RotationM.inv() * world2cam;
+   
+
+    //matrix to convert a world coordinate to camera coordinate
+    Mat camShift = Mat::eye( 4, 4, CV_64FC1);
+    camShift.at<double>(0,3) = options.camera_plane_width /2.0;
+    camShift.at<double>(1,3) = options.camera_plane_height/2.0;
+    camShift.at<double>(2,3) = 0;
+
+    Mat camScale = Mat::eye( 4, 4, CV_64FC1);
+    camShift.at<double>(0,0) = osize.width  * 1.0/options.camera_plane_width;
+    camShift.at<double>(1,1) = osize.height * 1.0/options.camera_plane_height;
+    camShift.at<double>(0,3) = osize.width/2.0;
+    camShift.at<double>(1,3) = osize.height/2.0;
+
+    Mat cam2pix = camScale * camShift;
     
     bool foundIntersection = false;
     Point inputPix;
@@ -144,7 +170,6 @@ Mat orthorectify( Mat const& image, Options& options ){
     double maxElevation = query_max_elevation( minPnt, maxPnt, ground_point, options );
     double dist;
     
-    cout << "Output Image Size: " << output.cols << ", " << output.rows << endl;
     /////////////////////////////////////////////////////////
     //        Create some random variables to test on      //
     /////////////////////////////////////////////////////////
@@ -175,7 +200,6 @@ Mat orthorectify( Mat const& image, Options& options ){
             Mat stare_point = load_point( ((double)x/output.cols)*(maxPnt.at<double>(0,0) - minPnt.at<double>(0,0)) + minPnt.at<double>(0,0), 
                                           ((double)y/output.rows)*(maxPnt.at<double>(1,0) - minPnt.at<double>(1,0)) + minPnt.at<double>(1,0), 
                                                                                 0                                                         );
-                
             // make sure that the point in the output image is actually in the input image
             Point2f starePoint( stare_point.at<double>(0,0), stare_point.at<double>(1,0));
             if( pointInConvexPolygon( imgPolygon, starePoint ) == false )continue;
@@ -296,9 +320,10 @@ Mat orthorectify( Mat const& image, Options& options ){
                 
                 //convert the world coordinate into local camera coordinates
                 //convert to the image coordinate system
-                Mat img_coord = options.get_output_cam2img(image.size())*options.RotationM.inv() * world2cam * input_camera_plane_point;
-                Point pnt( _round(img_coord.at<double>(0,0)), _round(img_coord.at<double>(1,0)));
                 
+                Mat img_coord = cam2pix * options.RotationM.inv() * world2cam * input_camera_plane_point;
+                Point pnt( _round(img_coord.at<double>(0,0)), _round(img_coord.at<double>(1,0)));
+
                 if( pnt.x >= 0 && pnt.x < image.cols && pnt.y >= 0 && pnt.y < image.rows ){
 
                     //pull the image
@@ -322,8 +347,9 @@ Mat orthorectify( Mat const& image, Options& options ){
             imwrite("temp.jpg", output);
         }
         //print the progress bar to console
-        if( show_progress_bar )
+        if( show_progress_bar ){
             cout << progressBar.toString() << '\r' << flush;
+        }
 
     }//end of x,y for loop
     

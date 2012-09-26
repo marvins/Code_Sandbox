@@ -128,12 +128,14 @@ class Options{
         std::string rectify_output_filename;    /*< Name of Fully Rectified Image */
 
         cv::Mat get_output_img2cam( cv::Size const& sz )const;
+        cv::Mat get_output_img2cam( const cv::Size& imsize, double const& sx, double const& sy, double const& sz )const;
         cv::Mat get_output_cam2img( cv::Size const& sz )const;
         
         cv::Mat get_output_cam2img( cv::Size const& sz, double const& ref )const;
         cv::Mat get_output_img2cam( cv::Size const& sz, double const& ref )const;
         
-        
+        double camera_plane_width;
+        double camera_plane_height;
 
     private:
         

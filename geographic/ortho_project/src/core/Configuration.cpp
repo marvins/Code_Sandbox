@@ -58,7 +58,13 @@ void Options::load_camera_params_file( ){
     focal_length = parser.getItem_double("Focal_Length", found);
     if( found == false )
         throw string("ERROR: Focal_Length tag not found in configuration");
-
+    
+    /********************************/
+    /*    Camera Plane Dimensions   */
+    /********************************/
+    camera_plane_width  = parser.getItem_double("Camera_Plane_Width", found);
+    camera_plane_height = parser.getItem_double("Camera_Plane_Height", found);
+    
     /*************************/
     /*   RECTIFY_IMG_TYPE    */
     /*************************/
@@ -121,8 +127,16 @@ void Options::load_camera_params_geo( ){
     /*        Focal Length       */
     /*****************************/
     //pull the focal length
-    focal_length = GEO::GS2::getFocalLength( gimg );
+    focal_length = parser.getItem_double("Focal_Length", found);
+    if( found == false )
+        throw string("ERROR: Focal_Length tag not found in configuration");
 
+    /********************************/
+    /*    Camera Plane Dimensions   */
+    /********************************/
+    camera_plane_width  = parser.getItem_double("Camera_Plane_Width", found);
+    camera_plane_height = parser.getItem_double("Camera_Plane_Height", found);
+    
     /*************************/
     /*   RECTIFY_IMG_TYPE    */
     /*************************/
@@ -427,17 +441,38 @@ double Options::get_focal_length( )const{
     return focal_length;
 }
 
+Mat Options::get_output_img2cam( const Size& imsize, double const& sx, double const& sy, double const& sz )const{
+    
+    Mat matrix(4,4,CV_64FC1);
+    double ix = 1.0/imsize.width;
+    double iy = 1.0/imsize.height;
+    
+    matrix = Scalar(0);
+    matrix.at<double>(0,0) = ix;
+    matrix.at<double>(1,1) = iy;
+    matrix.at<double>(2,2) = 1;
+    matrix.at<double>(3,3) = 1;
+
+    matrix.at<double>(0,3) = 0;//-0.5;
+    matrix.at<double>(1,3) = 0;//-0.5;
+    matrix.at<double>(2,3) = sz;
+
+    return matrix.clone();
+}
+
+
 Mat Options::get_output_img2cam( Size const& sz )const{
 
     Mat matrix(4,4,CV_64FC1);
 
     matrix = Scalar(0);
     matrix.at<double>(0,0) = 1.0/sz.width;
-    matrix.at<double>(0,3) = -0.5;
     matrix.at<double>(1,1) = 1.0/sz.height;
-    matrix.at<double>(1,3) = -0.5;
     matrix.at<double>(2,2) = 1;
     matrix.at<double>(3,3) = 1;
+
+    matrix.at<double>(0,3) = -0.5;
+    matrix.at<double>(1,3) = -0.5;
 
     return matrix.clone();
 }
