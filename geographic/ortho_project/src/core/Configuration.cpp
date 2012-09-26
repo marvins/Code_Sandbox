@@ -289,9 +289,9 @@ void Options::load_build_configuration(){
     
 
     //time for some error checking
-    if( build_image_size.cols <= 0 )
+    if( build_image_size.width <= 0 )
         throw ParserInvalidTagValueException( "BUILD_IMAGE_COLS", num2str(build_image_size.width), run_type, __FILE__, __LINE__);
-    if( build_image_size.rows <= 0 )
+    if( build_image_size.height <= 0 )
         throw ParserInvalidTagValueException( "BUILD_IMAGE_ROWS", num2str(build_image_size.height), run_type, __FILE__, __LINE__);
     
     if( build_image_type != "CV_8UC1" || build_image_type != "CV_8UC3" )
@@ -505,9 +505,9 @@ void Options::load_full_configuration(){
     
 
     //time for some error checking
-    if( build_image_size.cols <= 0 )
+    if( build_image_size.width <= 0 )
         throw ParserInvalidTagValueException( "BUILD_IMAGE_COLS", num2str(build_image_size.width), run_type, __FILE__, __LINE__);
-    if( build_image_size.rows <= 0 )
+    if( build_image_size.height <= 0 )
         throw ParserInvalidTagValueException( "BUILD_IMAGE_ROWS", num2str(build_image_size.height), run_type, __FILE__, __LINE__);
     
     if( build_image_type != "CV_8UC1" || build_image_type != "CV_8UC3" )

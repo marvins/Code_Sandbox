@@ -162,8 +162,8 @@ class Options{
         */
         void load_full_configuration();
 
-        void load_camera_params_file();
-        void load_camera_params_geo();
+        void load_camera_parameters_file();
+        void load_camera_parameters_geo();
         
         
         
