@@ -97,7 +97,7 @@ else
 	LIB_TYPE=so
 endif
 
-all: $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE)
+all: $(BIN) $(BUILD) $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE)
 	mkdir -p $(BUILD)
 	mkdir -p $(BUILD)/bin
 	mkdir -p $(BUILD)/lib
@@ -113,6 +113,12 @@ all: $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE)
 	cp src/extensions/*.hpp $(BUILD)/include/geoimage
 	cp src/image/*.h 		$(BUILD)/include/geoimage
 	cp src/utilities/*.h  	$(BUILD)/include/geoimage
+
+$(BUILD):
+	mkdir -p $(BUILD)
+
+$(BIN): 
+	mkdir -p $(BIN)
 
 tools: $(BIN)/geo_viewer $(BIN)/geo_meta_parser
 	mkdir -p $(BIN)
