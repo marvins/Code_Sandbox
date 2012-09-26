@@ -81,14 +81,19 @@ void Options::load_camera_parameters_file( ){
     /******************************/
     /*     Rotation Parameters    */
     /******************************/
-    //load the Rotation Quaternion Matrix
-    vector<double> rot_axis = parser.getItem_vec_double("Camera_Rotation_Axis", found);
+    //load the Rotation Axis
+    vector<double> rot_axis = parser.getItem_vec_double("CAMERA_ROTATION_AXIS", found);
+    
+    // make sure the tag was found
     if( found == false )
-        throw string("ERROR: Camera Rotation axis tag invalid or not found");
+        throw ParserTagNotFoundException("CAMERA_ROTATION_AXIS", run_type, __FILE__, __LINE__);
 
-    double rot_ang = parser.getItem_double("Camera_Rotation_Angle", found);
+    //load the Rotation Angle
+    double rot_ang = parser.getItem_double("CAMERA_ROTATION_ANGLE", found);
+    
+    // make sure the tag was found
     if( found == false )
-        throw string("ERROR: Camera Rotation angle tag invalid or not found");
+        throw ParserTagNotFoundException("CAMERA_ROTATION_ANGLE", run_type, __FILE__, __LINE__);
 
     //create the quaternion
     RotationQ = Quaternion( rot_ang*M_PI/180.0, vec( rot_axis[0], rot_axis[1], rot_axis[2]));
@@ -99,21 +104,13 @@ void Options::load_camera_parameters_file( ){
     /****************************/
     /*     Camera Position      */
     /****************************/
-    vector<double> position = parser.getItem_vec_double("Camera_Position", found);
+    vector<double> position = parser.getItem_vec_double("CAMERA_WORLD_POSITION", found);
     if( found == false )
-        throw string("ERROR: Camera Position tag invalid or not found");
+        throw ParserTagNotFoundException("CAMERA_WORLD_POSITION", run_type, __FILE__, __LINE__ );
 
     //set the camera position
     Position_i = load_point( position );
 
-
-    //load the image if in RECTIFY run mode and the image is not a geo image
-        if( rectify_image_type == "CV_8UC1" )
-            image = imread( image_filename.c_str(), 0);    
-        else if( rectify_image_type == "CV_8UC3" )
-            image = imread( image_filename.c_str());
-        else
-            throw string("UNKNOWN TYPE");
 
 }
 
@@ -210,12 +207,6 @@ void Options::load_configuration( const int& argc, char ** argv ){
         throw string(string("ERROR: Invalid RUN_TYPE tag ")+run_type+string(" found"));
     
 
-    /**************************************/
-    /*     Validate the configuration     */
-    /**************************************/
-    if( validate_configuration() == false )
-        throw string("ERROR: validation failed");
-
 }
 
 
@@ -248,7 +239,7 @@ void Options::load_build_configuration(){
     
     // check to make sure the flag exists
     if( found == false )
-        throw ParserTagNotFoundException("DEM_NAME", "BUILD", __FILE__, __LINE__);
+        throw ParserTagNotFoundException("DEM_NAME", run_type, __FILE__, __LINE__);
 
     
     /***********************************************************/
@@ -258,6 +249,55 @@ void Options::load_build_configuration(){
     /*    config file for the BUILD run type.                  */
     /***********************************************************/
     load_camera_parameters_file();
+    
+
+    /**************************************************************/
+    /*  Output Data Configuration                                 */
+    /*                                                            */
+    /*  - This pertains to how we are going to output data. Since */
+    /*    we are creating an image, we must define its size and   */
+    /*    image pixel type.  In addition we need to define if we  */
+    /*    we will do 3D processing on the image.                  */
+    /**************************************************************/
+    //query the build image cols
+    build_image_size.width  = parser.getItem_double("BUILD_IMAGE_COLS", found);
+    
+    //make sure the variable existed
+    if( found == false )
+        throw ParserTagNotFoundException("BUILD_IMAGE_COLS", run_type, __FILE__, __LINE__);
+
+    //query the build image rows
+    build_image_size.height = parser.getItem_double("BUILD_IMAGE_ROWS", found);
+
+    //make sure the variable existed
+    if( found == false )
+        throw ParserTagNotFoundException("BUILD_IMAGE_ROWS", run_type, __FILE__, __LINE__);
+
+    //get the image type
+    build_image_type = parser.getItem_string("BUILD_IMAGE_TYPE", found);
+
+    //make sure the variable existed
+    if( found == false )
+        throw ParserTagNotFoundException("BUILD_IMAGE_TYPE", run_type, __FILE__, __LINE__);
+    
+    //get whether or not we are doing z buffering
+    zbufferEnabled = parser.getItem_bool("BUILD_WITH_3D", found );
+
+    //make sure the variable existed
+    if( found == false )
+        throw ParserTagNotFoundException("BUILD_WITH_3D", run_type, __FILE__, __LINE__);
+    
+
+    //time for some error checking
+    if( build_image_size.cols <= 0 )
+        throw ParserInvalidTagValueException( "BUILD_IMAGE_COLS", num2str(build_image_size.width), run_type, __FILE__, __LINE__);
+    if( build_image_size.rows <= 0 )
+        throw ParserInvalidTagValueException( "BUILD_IMAGE_ROWS", num2str(build_image_size.height), run_type, __FILE__, __LINE__);
+    
+    if( build_image_type != "CV_8UC1" || build_image_type != "CV_8UC3" )
+        throw ParserInvalidTagValueException( "BUILD_IMAGE_TYPE", build_image_type, run_type, __FILE__, __LINE__);
+
+
 
 
     throw string("ERROR: RUN_TYPE BUILD not configured yet");
@@ -310,7 +350,7 @@ void Options::load_rectify_configuration(){
     /*************************************************************/
     //query the dem filename
     dem_filename = parser.getItem_string("DEM_NAME", found);
-    
+     
     // check to make sure the flag exists
     if( found == false )
         throw ParserTagNotFoundException("DEM_NAME", run_type, __FILE__, __LINE__);  
@@ -350,6 +390,34 @@ void Options::load_rectify_configuration(){
     else
         load_camera_parameters_file();
 
+
+    /***********************************************************************/
+    /*  Output Data Configuration                                          */
+    /*                                                                     */
+    /*  - We will load an image, then optionally perform dem correction.   */
+    /*    Also, we need to specify what output types we want to configure  */
+    /*    our output image to.                                             */
+    /***********************************************************************/
+    //query perspective 2 parallel
+    perspective2parallel = parser.getItem_bool("RECTIFY_PERFORM_PERSPECTIVE_TO_PARALLEL", found );
+
+    //make sure the tag exists
+    if( found == false )
+        throw ParserTagNotFoundException("RECTIFY_PERFORM_PERSPECTIVE_TO_PARALLEL", run_type, __FILE__, __LINE__);
+    
+    //query the output image type
+    rectify_image_type = parser.getItem_string("RECTIFY_OUTPUT_IMAGE_TYPE", found);
+    
+    //make sure the tag exists
+    if( found == false )
+        throw ParserTagNotFoundException("RECTIFY_OUTPUT_IMAGE_TYPE", run_type, __FILE__, __LINE__);
+    
+    rectify_corrected_filename = parser.getItem_string("RECTIFY_OUTPUT_FILENAME", found );
+    
+    //make sure the tag exists
+    if( found == false )
+        throw ParserTagNotFoundException("RECTIFY_OUTPUT_FILENAME", run_type, __FILE__, __LINE__);
+    
 
      
      
@@ -398,7 +466,54 @@ void Options::load_full_configuration(){
     /***********************************************************/
     load_camera_parameters_file();
 
+ 
+    /**************************************************************/
+    /*  Output Data Configuration                                 */
+    /*                                                            */
+    /*  - This pertains to how we are going to output data. Since */
+    /*    we are creating an image, we must define its size and   */
+    /*    image pixel type.  In addition we need to define if we  */
+    /*    we will do 3D processing on the image.                  */
+    /**************************************************************/
+    //query the build image cols
+    build_image_size.width  = parser.getItem_double("BUILD_IMAGE_COLS", found);
+    
+    //make sure the variable existed
+    if( found == false )
+        throw ParserTagNotFoundException("BUILD_IMAGE_COLS", run_type, __FILE__, __LINE__);
 
+    //query the build image rows
+    build_image_size.height = parser.getItem_double("BUILD_IMAGE_ROWS", found);
+
+    //make sure the variable existed
+    if( found == false )
+        throw ParserTagNotFoundException("BUILD_IMAGE_ROWS", run_type, __FILE__, __LINE__);
+
+    //get the image type
+    build_image_type = parser.getItem_string("BUILD_IMAGE_TYPE", found);
+
+    //make sure the variable existed
+    if( found == false )
+        throw ParserTagNotFoundException("BUILD_IMAGE_TYPE", run_type, __FILE__, __LINE__);
+    
+    //get whether or not we are doing z buffering
+    zbufferEnabled = parser.getItem_bool("BUILD_WITH_3D", found );
+
+    //make sure the variable existed
+    if( found == false )
+        throw ParserTagNotFoundException("BUILD_WITH_3D", run_type, __FILE__, __LINE__);
+    
+
+    //time for some error checking
+    if( build_image_size.cols <= 0 )
+        throw ParserInvalidTagValueException( "BUILD_IMAGE_COLS", num2str(build_image_size.width), run_type, __FILE__, __LINE__);
+    if( build_image_size.rows <= 0 )
+        throw ParserInvalidTagValueException( "BUILD_IMAGE_ROWS", num2str(build_image_size.height), run_type, __FILE__, __LINE__);
+    
+    if( build_image_type != "CV_8UC1" || build_image_type != "CV_8UC3" )
+        throw ParserInvalidTagValueException( "BUILD_IMAGE_TYPE", build_image_type, run_type, __FILE__, __LINE__);
+
+   
 
 
 
@@ -406,92 +521,6 @@ void Options::load_full_configuration(){
 
     throw string("ERROR: RUN_TYPE FULL not configured yet");
 
-
-    /*******************************************/
-    /*      RECTIFY IMAGE OUTPUT FILENAME      */
-    /*******************************************/
-    rectify_output_filename = parser.getItem_string("RECTIFY_OUTPUT_FILENAME", found);
-    if((run_type == "FULL" || run_type == "RECTIFY" ) && found == false )
-        throw string("ERROR: RECTIFY_OUTPUT_FILENAME tag does not exist");
-
-
-
-    /***********************/
-    /*   BUILD_IMG_TYPE    */
-    /***********************/
-    build_image_type = parser.getItem_string("BUILD_IMG_TYPE", found );
-    if((run_type == "FULL" || run_type == "BUILD") && found == false )
-        throw string("ERROR: RUN_TYPE tag not found in configuration. Required by FULL and BUILD run_level.");
-
-    if((run_type == "FULL" || run_type == "BUILD") && 
-            ( build_image_type != "CV_8UC1" && build_image_type != "CV_8UC3" ))
-        throw string(string("ERROR: BUILD_IMG_TYPE flag ")+build_image_type+string(" is invalid"));
-
-
-    
-    /**************************/
-    /*    BUILD IMAGE SIZE    */
-    /**************************/
-    // we only care about the build image size if the build process is called on
-    int c = parser.getItem_int("BUILD_IMG_COLS", found );
-    if( found == false && ( run_type == "FULL" || run_type == "BUILD"))
-        throw string("ERROR: BUILD_IMG_COLS tag not found in configuration");
-
-    int r = parser.getItem_int("BUILD_IMG_ROWS", found );
-    if( found == false && ( run_type == "FULL" || run_type == "BUILD"))
-        throw string("ERROR: BUILD_IMG_ROWS tag not found in configuration");
-
-    if( run_type == "FULL" || run_type == "BUILD" )
-        build_image_size = Size(c, r);
-    
-    
-    /******************************************/
-    /*       ZBuffer and 3D Usage Flags       */
-    /******************************************/
-    //check for the zbuffer flag
-    zbufferEnabled = parser.getItem_bool("ZBUFFER_ENABLED", found);
-    if( found == false && ( run_type == "FULL" || run_type == "BUILD" ) )
-        throw string("ERROR: ZBUFFER_ENABLED not found or enabled");
-
-    //check for the perspective 2 parallel item
-    perspective2parallel = parser.getItem_bool("RECTIFY_PERFORM_PERSPECTIVE_TO_PARALLEL", found);
-    if( found == false && ( run_type == "FULL" || run_type == "RECTIFY" ) )
-        throw string("ERROR: Perspective 2 Parallel not found");
-
-
-    /**************************************************/
-    /*       Digital Elevation Model Parameters       */
-    /**************************************************/
-    //Query the DEM Mode
-    string dem_mode = parser.getItem_string("DEM_Mode", found);
-    if( found == false )
-        throw string("DEM_Mode must be in config file");
-
-    if( dem_mode == "FILE" ){
-
-        //Check for dem image
-        string demname = parser.getItem_string("DEM_Name", found);
-        if( found == false && ( run_type == "FULL" || run_type == "RECTIFY" ) )
-            throw string("DEM_Name not found");
-
-        if( run_type == "FULL" || run_type == "RECTIFY" )
-            dem = imread( demname.c_str(), 0);
-    } else if( dem_mode == "DTED" ){
-
-        //create a DTED Library lookup
-
-    } else {
-        throw string("ERROR: DEM Mode not recognized");
-    }
-   
-
-}
-
-bool Options::validate_configuration(){
-    
-    return false;
-
-    return true;
 }
 
 

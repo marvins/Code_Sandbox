@@ -162,17 +162,10 @@ class Options{
         */
         void load_full_configuration();
 
-        /** 
-         * Check to make sure we have a plausible layout configuration
-        */
-        bool validate_configuration();
-
         void load_camera_params_file();
         void load_camera_params_geo();
         
         
-        bool perspective2parallel;     /*< Perspective 2 Parallel Flag for RECTIFY Module */
-        bool zbufferEnabled;           /*< Z Buffer Flag for BUILD Module */
         
         /*************************************************/
         /*        Program Configuration Parameters       */
@@ -185,20 +178,26 @@ class Options{
         std::string image_filename;    /*< Name of Image */
         std::string config_filename;   /*< Name of Configuration File */
         std::string dem_filename;      /*< Name of dem file */
-
         
+        /****************************/
+        /*     BUILD Parameters     */
+        /****************************/
+        cv::Size build_image_size;      /*< Size of test build image */
+        std::string build_image_type;   /*< Build Image Type */
+        bool zbufferEnabled;           /*< Z Buffer Flag for BUILD Module */
+        
+
         /*****************************/
         /*    RECTIFY Parameters     */
         /*****************************/
         string dem_mode;         /*< DEM Mode */
-    
+        bool perspective2parallel;     /*< Perspective 2 Parallel Flag for RECTIFY Module */
+        std::string rectify_image_type; /*< Rectify Image Type */
+        std::string rectify_corrected_filename;  
 
 
         double focal_length;    /*< Camera Focal Length */
 
-        cv::Size build_image_size;      /*< Size of test build image */
-        std::string build_image_type;   /*< Build Image Type */
-        std::string rectify_image_type; /*< Rectify Image Type */
 
         bool   rectify_is_geo;   /*< Tells us if the input image is a geographic image */
 
