@@ -2,6 +2,10 @@
 
 #include <iostream>
 
+#include <boost/filesystem.hpp>
+
+namespace bf = boost::filesystem;
+
 using namespace cv;
 using namespace std;
 
@@ -77,3 +81,11 @@ cv::Point3f Mat2Point3f( Mat const& mat ){
 
 }
 
+
+/** 
+ * Check if a file exists in the filesystem
+*/
+bool file_exists( std::string const& filename ){
+
+    return bf::exists( bf::path( filename ) );
+}

@@ -60,7 +60,8 @@ OBJECTS= $(BUILD)/orthoproject.o \
 		 $(BUILD)/Utilities.o \
 		 $(BUILD)/dem.o \
 		 $(BUILD)/ProgressBar.o \
-		 $(BUILD)/Logger.o
+		 $(BUILD)/Logger.o \
+		 $(BUILD)/OrthoExceptions.o
 
 HEADERS= $(CORE)/Configuration.hpp \
 		 $(CORE)/Parser.hpp \
@@ -72,7 +73,8 @@ HEADERS= $(CORE)/Configuration.hpp \
 		 $(CORE)/Utilities.hpp \
 		 $(CORE)/dem.hpp \
 		 $(CORE)/ProgressBar.hpp \
-		 $(CORE)/Logger.hpp
+		 $(CORE)/Logger.hpp \
+		 $(CORE)/OrthoExceptions.hpp
 
 
 # Create required directory structure
@@ -142,6 +144,10 @@ $(BUILD)/ProgressBar.o: $(CORE)/ProgressBar.cpp $(HEADERS)
 
 # Logger
 $(BUILD)/Logger.o: $(CORE)/Logger.cpp $(HEADERS)
+	$(CPP) $< -c -o $@ $(INCL) $(FLAGS)
+
+# OrthoExceptions
+$(BUILD)/OrthoExceptions.o: $(CORE)/OrthoExceptions.cpp $(HEADERS)
 	$(CPP) $< -c -o $@ $(INCL) $(FLAGS)
 
 

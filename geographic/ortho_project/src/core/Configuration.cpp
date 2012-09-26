@@ -1,5 +1,6 @@
 #include "Configuration.hpp"
 #include "Utilities.hpp"
+#include "OrthoExceptions.hpp"
 
 #include <GeoImage.h>
 
@@ -47,7 +48,7 @@ string Options::get_run_type()const{
 /** 
   * Use camera parameters from config
 */
-void Options::load_camera_params_file( ){
+void Options::load_camera_parameters_file( ){
     
     bool found = false;
     
@@ -55,23 +56,28 @@ void Options::load_camera_params_file( ){
     /*        Focal Length       */
     /*****************************/
     //pull the focal length
-    focal_length = parser.getItem_double("Focal_Length", found);
+    focal_length = parser.getItem_double("CAMERA_FOCAL_LENGTH", found);
+    
+    // make sure the focal length exists
     if( found == false )
-        throw string("ERROR: Focal_Length tag not found in configuration");
+        throw ParserTagNotFoundException("CAMERA_FOCAL_LENGTH", run_type, __FILE__, __LINE__);
     
     /********************************/
     /*    Camera Plane Dimensions   */
     /********************************/
-    camera_plane_width  = parser.getItem_double("Camera_Plane_Width", found);
-    camera_plane_height = parser.getItem_double("Camera_Plane_Height", found);
+    camera_plane_width  = parser.getItem_double("CAMERA_PLANE_WIDTH", found);
     
-    /*************************/
-    /*   RECTIFY_IMG_TYPE    */
-    /*************************/
-    rectify_image_type = parser.getItem_string("RECTIFY_OUTPUT_TYPE", found);
+    // make sure the camera_plane_width exists
     if( found == false )
-        throw string("ERROR: RECTIFY_OUTPUT_TYPE NOT FOUND");
-
+        throw ParserTagNotFoundException("CAMERA_PLANE_WIDTH", run_type, __FILE__, __LINE__);
+    
+    camera_plane_height = parser.getItem_double("CAMERA_PLANE_HEIGHT", found);
+    
+    // make sure the camera_plane_height exists
+    if( found == false )
+        throw ParserTagNotFoundException("CAMERA_PLANE_HEIGHT", run_type, __FILE__, __LINE__);
+    
+    
     /******************************/
     /*     Rotation Parameters    */
     /******************************/
@@ -116,59 +122,11 @@ void Options::load_camera_params_file( ){
 /**
  * Use GeoImage camera parameters
 */
-void Options::load_camera_params_geo( ){
+void Options::load_camera_parameters_geo( ){
 
+    throw string("Function not implemented yet");
     bool found = false;
     GEO::GeoImage gimg(image_filename, true );
-    Mat timage = gimg.get_image();
-    timage.convertTo( image, CV_8UC1, 1/255.0);
-    
-    /*****************************/
-    /*        Focal Length       */
-    /*****************************/
-    //pull the focal length
-    focal_length = parser.getItem_double("Focal_Length", found);
-    if( found == false )
-        throw string("ERROR: Focal_Length tag not found in configuration");
-
-    /********************************/
-    /*    Camera Plane Dimensions   */
-    /********************************/
-    camera_plane_width  = parser.getItem_double("Camera_Plane_Width", found);
-    camera_plane_height = parser.getItem_double("Camera_Plane_Height", found);
-    
-    /*************************/
-    /*   RECTIFY_IMG_TYPE    */
-    /*************************/
-    rectify_image_type = "CV_8UC1";
-
-    /******************************/
-    /*     Rotation Parameters    */
-    /******************************/
-    //load the Rotation Quaternion Matrix
-    vector<double> rot_axis = parser.getItem_vec_double("Camera_Rotation_Axis", found);
-    if( found == false )
-        throw string("ERROR: Camera Rotation axis tag invalid or not found");
-
-    double rot_ang = parser.getItem_double("Camera_Rotation_Angle", found);
-    if( found == false )
-        throw string("ERROR: Camera Rotation angle tag invalid or not found");
-
-    //create the quaternion
-    RotationQ = Quaternion( rot_ang*M_PI/180.0, vec( rot_axis[0], rot_axis[1], rot_axis[2]));
-
-    //convert the quaternion into a rotation matrix
-    RotationM = RotationQ.get_rotation_matrix();
-
-    /****************************/
-    /*     Camera Position      */
-    /****************************/
-    vector<double> position = parser.getItem_vec_double("Camera_Position", found);
-    if( found == false )
-        throw string("ERROR: Camera Position tag invalid or not found");
-
-    //set the camera position
-    Position_i = load_point( position );
 
 
 }
@@ -238,38 +196,215 @@ void Options::load_configuration( const int& argc, char ** argv ){
         run_type != "BUILD"   &&
         run_type != "RECTIFY"   )
         throw string(string("ERROR: Invalid RUN_TYPE tag ")+run_type+string(" found"));
-
-    /***********************/
-    /*     IS GEOIMAGE     */
-    /***********************/
-    rectify_is_geo = false;
-    rectify_is_geo = parser.getItem_bool("RECTIFY_IS_GEOIMAGE", found);
-    if( run_type == "RECTIFY" && found == false )
-        throw string("ERROR: we must know RECTIFY_IS_GEOIMAGE");
+    
+    /************************************/
+    /*      Load the Configuration      */
+    /************************************/
+    if( run_type == "BUILD" )
+        load_build_configuration();
+    else if( run_type == "RECTIFY" )
+        load_rectify_configuration();
+    else if( run_type == "FULL" )
+        load_full_configuration();
+    else    
+        throw string(string("ERROR: Invalid RUN_TYPE tag ")+run_type+string(" found"));
+    
 
     /**************************************/
-    /*           Image Filename           */
+    /*     Validate the configuration     */
     /**************************************/
+    if( validate_configuration() == false )
+        throw string("ERROR: validation failed");
+
+}
+
+
+void Options::load_build_configuration(){
+    
+    bool found;
+
+    /*************************************************************/
+    /* Image Filename                                            */
+    /*                                                           */
+    /*  - The image filename must be in the configuration file,  */
+    /*    but does not need to exist in the filesystem.          */
+    /*************************************************************/
     //query the image filename
-    image_filename = parser.getItem_string("Image_Name", found);
-    if((run_type == "FULL" || run_type == "RECTIFY") && found == false )
-        throw string("ERROR: Image_File tag not found in configuration. Tag required by RUN_LEVELs FULL and RECTIFY");
-
-    //make sure the image file exists
-    if((run_type == "FULL" || run_type == "RECTIFY") && PSR::Parser::fileExists( image_filename ) == false )
-        throw string(string("ERROR: image file ")+image_filename+string(" does not exist"));
+    image_filename = parser.getItem_string("IMAGE_FILENAME", found);
+    
+    //check to make sure the flag exists
+    if( found == false )    
+        throw ParserTagNotFoundException("IMAGE_FILENAME", run_type, __FILE__, __LINE__);
 
 
-    if(  rectify_is_geo == false ){
-        
-        //load the camera parameters from file
-        load_camera_params_file();
-    } 
-    else if( run_type == "RECTIFY" ){
-        
-        //load the camera parameters from the geo image
-        load_camera_params_geo( );
-    }
+    /*************************************************************/
+    /* DEM_NAME                                                  */
+    /*                                                           */
+    /*   - The dem name must exist, however it does not need to  */
+    /*     exist in the filesystem as it will be overwritten.    */
+    /*************************************************************/
+    //query the dem filename
+    dem_filename = parser.getItem_string("DEM_NAME", found);
+    
+    // check to make sure the flag exists
+    if( found == false )
+        throw ParserTagNotFoundException("DEM_NAME", "BUILD", __FILE__, __LINE__);
+
+    
+    /***********************************************************/
+    /* Camera Parameters                                       */
+    /*                                                         */
+    /*  - We will always load the camera parameters using the  */
+    /*    config file for the BUILD run type.                  */
+    /***********************************************************/
+    load_camera_parameters_file();
+
+
+    throw string("ERROR: RUN_TYPE BUILD not configured yet");
+
+}
+
+void Options::load_rectify_configuration(){
+    
+    bool found;
+
+    /*************************************************************/
+    /* Image Filename                                            */
+    /*                                                           */
+    /*  - The image filename must be in the configuration file,  */
+    /*    and needs to exist in the filesystem.                  */
+    /*************************************************************/
+    //query the image filename
+    image_filename = parser.getItem_string("IMAGE_FILENAME", found);
+    
+    //check to make sure the flag exists
+    if( found == false )
+        throw ParserTagNotFoundException("IMAGE_FILENAME", run_type, __FILE__, __LINE__);  
+    
+    //ensure that the file actually exists
+    if( file_exists( image_filename ) == false )
+        throw FileNotFoundException( image_filename, run_type, __FILE__, __LINE__);
+
+    
+    /*************************************************************/
+    /* DEM_MODE                                                  */
+    /*                                                           */
+    /*   - The dem mode must exist and be a supported option, as */
+    /*     determines how we will load the dem model information.*/
+    /*************************************************************/
+    string dem_mode = parser.getItem_string("DEM_MODE", found);
+
+    //make sure flag exists
+    if( found == false )
+        throw ParserTagNotFoundException("DEM_MODE", run_type, __FILE__, __LINE__);
+
+    //make sure it matches the right list of options
+    if( dem_mode != "FILE" && dem_mode != "DTED" )
+        throw ParserInvalidTagValueException("DEM_MODE", dem_mode, run_type, __FILE__, __LINE__);
+    
+    /*************************************************************/
+    /* DEM_NAME                                                  */
+    /*                                                           */
+    /*   - The dem name must exist, however it does not need to  */
+    /*     exist in the filesystem as it will be overwritten.    */
+    /*************************************************************/
+    //query the dem filename
+    dem_filename = parser.getItem_string("DEM_NAME", found);
+    
+    // check to make sure the flag exists
+    if( found == false )
+        throw ParserTagNotFoundException("DEM_NAME", run_type, __FILE__, __LINE__);  
+     
+
+    //we need to make sure that the dem information is valid for our use
+    //
+    // - if dem_mode = file, then make sure the file exists
+    // - if dem_mode = dted, then make sure the directory structure is valid
+    if( dem_mode == "FILE" ){
+        if( file_exists( dem_filename ) == false )
+            throw FileNotFoundException( dem_filename, run_type, __FILE__, __LINE__ );
+     }
+     else if( dem_mode == "DTED" ){
+        if( file_exists( dem_filename ) == false )
+             throw FileNotFoundException( dem_filename, run_type, __FILE__, __LINE__ );
+     }
+
+    /***********************************************************/
+    /* Camera Parameters                                       */
+    /*                                                         */
+    /*  - We will load the camera parameters from either the   */
+    /*    geo image meta-data or from the configuration file.  */
+    /*    This depends on the geo tag.                         */
+    /***********************************************************/
+    rectify_is_geo = parser.getItem_bool("USE_GEOIMAGE_CAMERA_PARAMS", found );
+
+    //make sure the tag exists
+    if( found == false )
+        throw ParserTagNotFoundException("USE_GEOIMAGE_CAMERA_PARAMS", run_type, __FILE__, __LINE__);  
+    
+    // if the flag is true, then load using metadata
+    if( rectify_is_geo == true )
+        load_camera_parameters_geo();
+
+    // otherwise use the config file
+    else
+        load_camera_parameters_file();
+
+
+     
+     
+     
+     throw string("ERROR: RUN_TYPE RECTIFY not configured yet");
+
+
+}
+
+void Options::load_full_configuration(){
+    
+    bool found;
+
+    /*************************************************************/
+    /* Image Filename                                            */
+    /*                                                           */
+    /*  - The image filename must be in the configuration file,  */
+    /*    but does not need to exist in the filesystem.          */
+    /*************************************************************/
+    //query the image filename
+    image_filename = parser.getItem_string("IMAGE_FILENAME", found);
+    
+    //check to make sure the flag exists
+    if( found == false )    
+        throw ParserTagNotFoundException("IMAGE_FILENAME", run_type, __FILE__, __LINE__);   
+
+    
+    /*************************************************************/
+    /* DEM_NAME                                                  */
+    /*                                                           */
+    /*   - The dem name must exist, however it does not need to  */
+    /*     exist in the filesystem as it will be overwritten.    */
+    /*************************************************************/
+    //query the dem filename
+    dem_filename = parser.getItem_string("DEM_NAME", found);
+    
+    // check to make sure the flag exists
+    if( found == false )
+        throw ParserTagNotFoundException("DEM_NAME", run_type, __FILE__, __LINE__);   
+
+    /***********************************************************/
+    /* Camera Parameters                                       */
+    /*                                                         */
+    /*  - We will always load the camera parameters using the  */
+    /*    config file for the FULL run type.                   */
+    /***********************************************************/
+    load_camera_parameters_file();
+
+
+
+
+
+
+
+    throw string("ERROR: RUN_TYPE FULL not configured yet");
 
 
     /*******************************************/
@@ -351,6 +486,14 @@ void Options::load_configuration( const int& argc, char ** argv ){
    
 
 }
+
+bool Options::validate_configuration(){
+    
+    return false;
+
+    return true;
+}
+
 
 bool Options::doZBuffering()const{
     return zbufferEnabled;

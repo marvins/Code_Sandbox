@@ -77,5 +77,13 @@ void print_mat( const cv::Mat& mat );
 */
 int _round( const double& value );
 
+/**
+ * Check to see if a file exists
+ * 
+ * @param[in] filename
+ * @return True if file exists, False otherwise
+*/
+bool file_exists( std::string const& filename );
+
 #endif
 

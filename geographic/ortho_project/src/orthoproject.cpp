@@ -15,6 +15,7 @@
 
 //Personal Libraries
 #include "core/Configuration.hpp"
+#include "core/OrthoExceptions.hpp"
 #include "ortho/Orthorectify.hpp"
 #include "ortho/Perspective.hpp"
 
@@ -83,6 +84,8 @@ int main( int argc, char* argv[] ){
             options.logger.add_message( l );
         } catch ( string e ){
             options.logger.add_message( LOG_MAJOR, e );
+        } catch ( OrthoException& e ){
+            options.logger.add_message( LOG_MAJOR, e.getMessage() );
         } catch ( ... ){
             options.logger.add_message( LOG_MAJOR, "ERROR: Major issue escaped program control, exiting");
         }
@@ -91,6 +94,8 @@ int main( int argc, char* argv[] ){
     // catch any uncaught exceptions and exit the program
     } catch ( string e ){
         cout << e << endl;
+    } catch ( OrthoException& e ){
+        cout << e.getMessage() << endl;
     } catch (...){
         cout << "An unexpected error occurred, leaving now" << endl;
     }

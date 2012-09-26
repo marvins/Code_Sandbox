@@ -147,17 +147,53 @@ class Options{
         */
         void load_configuration( const int& argc, char ** argv );
         
+        /**
+         * Load the remaining items for a build run type specifically
+        */
+        void load_build_configuration();
+        
+        /**
+         * Load the remaining items for a rectify run type specifically
+        */
+        void load_rectify_configuration();
+
+        /**
+         * Load the remaining items for a full run type specifically
+        */
+        void load_full_configuration();
+
+        /** 
+         * Check to make sure we have a plausible layout configuration
+        */
+        bool validate_configuration();
+
         void load_camera_params_file();
         void load_camera_params_geo();
         
-        std::string run_type;          /*<  Run Type Variable */
         
         bool perspective2parallel;     /*< Perspective 2 Parallel Flag for RECTIFY Module */
         bool zbufferEnabled;           /*< Z Buffer Flag for BUILD Module */
-
+        
+        /*************************************************/
+        /*        Program Configuration Parameters       */
+        /*************************************************/
+        std::string run_type;          /*<  Run Type Variable */
+        
+        /************************************/
+        /*        Filename Parameters       */
+        /************************************/
         std::string image_filename;    /*< Name of Image */
         std::string config_filename;   /*< Name of Configuration File */
+        std::string dem_filename;      /*< Name of dem file */
+
         
+        /*****************************/
+        /*    RECTIFY Parameters     */
+        /*****************************/
+        string dem_mode;         /*< DEM Mode */
+    
+
+
         double focal_length;    /*< Camera Focal Length */
 
         cv::Size build_image_size;      /*< Size of test build image */
@@ -165,7 +201,6 @@ class Options{
         std::string rectify_image_type; /*< Rectify Image Type */
 
         bool   rectify_is_geo;   /*< Tells us if the input image is a geographic image */
-        string dem_mode;         /*< DEM Mode */
 
         PSR::Parser parser;
 };
