@@ -81,7 +81,7 @@
         <input_path       value="dsu" />
 
         <!-- This is the path to the file -->
-        <output_base      value="."         />
+        <output_base      value="/tmp"         />
 
         <!-- This is the filename of the image set 
             
@@ -142,7 +142,10 @@
         <directory  pattern="slice#-collect#" >
             <directory pattern="camera" >
                 <directory pattern="nitf" >
-                    <camera_directory pattern="cam###" >
+                    
+                    <!-- COLLECTION DATE STAMP GOES HERE -->
+                    
+                        <camera_directory pattern="cam###" >
 
                     </camera_directory>
                 </directory>

@@ -343,7 +343,7 @@ def build_layout( layout, current_dir, spaces, options, node_stack ):
 					
 					# now lets find the start positions for each
 					starts = []
-					count  = int(str(child.attrib.get("count_per_dir")))
+					count  = int(str(child.attrib.get('count_per_dir')))
 					zero_pad = int(str(child.attrib.get("zero_pad")))
 					
 					for idx in xrange(1, len(indeces)+1):
@@ -532,8 +532,6 @@ def main():
 		build_layout( options.layout, '.', 0, options, [] )
 
 		# close the log file
-	except:
-		log.write(log.MAJOR, sys.exec_info())
 
 	finally:
 		log.close()

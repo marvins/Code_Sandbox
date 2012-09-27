@@ -1,3 +1,3 @@
 #! /usr/bin/env bash
 
-rm -r dsu
+rm -r $1
