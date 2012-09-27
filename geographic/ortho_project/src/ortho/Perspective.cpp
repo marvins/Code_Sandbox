@@ -28,7 +28,7 @@ Mat generate_perspective_test_image( Options& options ){
     imshow("DEM", dem);
     
     imwrite("data/flat_image.jpg", flat_img);
-    imwrite("data/dem.png", dem);
+    imwrite(options.dem_filename.c_str(), dem);
     
     waitKey(0);
     destroyWindow("Flat Test Image");
@@ -171,17 +171,15 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
     //set some parameters
     output_image = Mat(input_image.size(), input_image.type());
     output_image = Scalar(0);
-    Mat focal_vector = load_vector( 0, 0, options.get_focal_length());
-
+    
     // Create a Normal Axis and rotate it by the inverse of the rotation quaternion
-    Mat earth_normal   = load_vector( 0, 0,  1);
-    Mat final_normal     = load_vector( 0, 0, -1);
+    Mat earth_normal   = load_vector( 0, 0,  options.get_focal_length());
+    Mat final_normal     = load_vector( 0, 0, -options.get_focal_length());
     Mat image_earth_origin = load_point(  0, 0,  0);
 
     // note that the axis must remain the same, but the angle must be reversed.
     Mat rotated_normal  = options.RotationM * earth_normal;
     Mat rotated_normalF = options.RotationM * final_normal;
-
     
     // We need to compute the final position of the camera
     // - This is done by adding a scaled and rotated normal vector to the ground center point
@@ -189,6 +187,9 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
     double scale_factor = options.Position_i.at<double>(2,0)/rotated_normal.at<double>(2,0);
     Mat final_position = (scale_factor*rotated_normal) + image_earth_origin;
     
+    // this is the principle point of the image
+    Mat principle_point = options.Position_i + rotated_normalF;
+
     Mat PositionFinal = Mat::eye(4,4,CV_64FC1);
     matrix_add_translation( PositionFinal, final_position );
     
@@ -242,7 +243,7 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
                     std::max( outCoordinateList[output_image.cols-1][            0      ].y, 
                               outCoordinateList[output_image.cols-1][output_image.rows-1].y))));
 
-
+    
     Point2f demMin(-500,-500);
     Point2f demMax( 500, 500);
     double maxElevation = query_max_elevation( imgMin, imgMax, Point2f(0,0), options );
@@ -255,11 +256,16 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
 
             /** Now we know what we are staring at.  Its time to now find what pixel will be shown here. */
             if( options.doZBuffering() == true ){
-                /** DEPTH PROCESSING MODULE */
                 
+                // relate the position to image coordinates in the original
+                // - compute the intersection between the ground point and origin
+                Mat imgCoord = compute_plane_line_intersection( options.Position_i,  load_point( outCoordinateList[x][y].x, outCoordinateList[x][y].y, 0), rotated_normalF, principle_point );  
+                Mat final_image_point = cam2img * imgCoord;
+                
+                /** DEPTH PROCESSING MODULE */
                 Mat stare_point = load_point( outCoordinateList[x][y].x, outCoordinateList[x][y].y, 0);
                 Point2f starePoint( outCoordinateList[x][y].x, outCoordinateList[x][y].y);
-    
+                
                 Mat maxDistance = compute_plane_line_intersection( final_position, stare_point, earth_normal, load_point(0,0,maxElevation));
                 double distRadius = norm( Point2f( maxDistance.at<double>(0,0), maxDistance.at<double>(1,0)) - starePoint);
                 
@@ -311,7 +317,7 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
 
                                     }
                                 }}}
-                    } // end of xx and yy loops
+                } // end of xx and yy loops
 
                 //draw the point
 
@@ -322,12 +328,12 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
                 if( pix.x >= 0 && pix.y >= 0 && pix.x <= input_image.cols && pix.y <= input_image.rows ){
 
                     if( output_image.type() == CV_8UC1 ){
-                        //if( intersection == false )
-                        //    output_image.at<uchar>(y,x) = input_image.at<uchar>(pix);
-                        //else if( maxType == 1 )
+                        if( intersection == false )
                             output_image.at<uchar>(y,x) = input_image.at<uchar>(pix);
-                        //else if( maxType == 2 )    
-                        //    output_image.at<uchar>(y,x) = 255;
+                        else if( maxType == 1 )
+                            output_image.at<uchar>(y,x) = input_image.at<uchar>(pix);
+                        else if( maxType == 2 )    
+                            output_image.at<uchar>(y,x) = 255;
                     }
                     else if( output_image.type() == CV_8UC3 ){   
                         if( intersection == false )
@@ -345,8 +351,10 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
             else{
 
                 // relate the position to image coordinates in the original
-                Mat final_image_point = cam2img * load_point( outCoordinateList[x][y]);
-
+                // - compute the intersection between the ground point and origin
+                Mat imgCoord = compute_plane_line_intersection( options.Position_i,  load_point( outCoordinateList[x][y].x, outCoordinateList[x][y].y, 0), rotated_normalF, principle_point );  
+                Mat final_image_point = cam2img * imgCoord;
+                
                 // convert to cv point to allow passing to as an index
                 Point final_image_coord( _round(final_image_point.at<double>(0,0)),
                         _round(final_image_point.at<double>(1,0)));
@@ -369,6 +377,7 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
                 progressBar.update( cnt );
             cnt++;
 
+            
         }
         //print the progress bar to console
         if( show_progress_bar )

@@ -294,13 +294,10 @@ void Options::load_build_configuration(){
     if( build_image_size.height <= 0 )
         throw ParserInvalidTagValueException( "BUILD_IMAGE_ROWS", num2str(build_image_size.height), run_type, __FILE__, __LINE__);
     
-    if( build_image_type != "CV_8UC1" || build_image_type != "CV_8UC3" )
+    if( build_image_type != "CV_8UC1" && build_image_type != "CV_8UC3" )
         throw ParserInvalidTagValueException( "BUILD_IMAGE_TYPE", build_image_type, run_type, __FILE__, __LINE__);
 
 
-
-
-    throw string("ERROR: RUN_TYPE BUILD not configured yet");
 
 }
 
@@ -420,11 +417,6 @@ void Options::load_rectify_configuration(){
     
 
      
-     
-     
-     throw string("ERROR: RUN_TYPE RECTIFY not configured yet");
-
-
 }
 
 void Options::load_full_configuration(){
@@ -510,16 +502,12 @@ void Options::load_full_configuration(){
     if( build_image_size.height <= 0 )
         throw ParserInvalidTagValueException( "BUILD_IMAGE_ROWS", num2str(build_image_size.height), run_type, __FILE__, __LINE__);
     
-    if( build_image_type != "CV_8UC1" || build_image_type != "CV_8UC3" )
+    if( build_image_type != "CV_8UC1" && build_image_type != "CV_8UC3" )
         throw ParserInvalidTagValueException( "BUILD_IMAGE_TYPE", build_image_type, run_type, __FILE__, __LINE__);
 
    
 
 
-
-
-
-    throw string("ERROR: RUN_TYPE FULL not configured yet");
 
 }
 

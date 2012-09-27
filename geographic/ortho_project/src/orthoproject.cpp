@@ -58,8 +58,9 @@ int main( int argc, char* argv[] ){
                     waitKey(0);
                     destroyWindow("Modified Image");
                 }
-
+                
                 imwrite("data/modified_image.jpg", options.image);
+                exit(0);
 
             }
             //if we need to rectify an image, run here

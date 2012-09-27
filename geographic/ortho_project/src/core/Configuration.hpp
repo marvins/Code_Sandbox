@@ -137,8 +137,6 @@ class Options{
         double camera_plane_width;
         double camera_plane_height;
 
-    private:
-        
         /** 
          * Load the contents of the configuration file. 
          *
