@@ -152,6 +152,12 @@ $(BUILD)/OrthoExceptions.o: $(CORE)/OrthoExceptions.cpp $(HEADERS)
 
 
 ####################################
+#       UNIT TEST FRAMEWORK        #
+####################################
+check:
+	make -f $(SRC)/Makefile_unit_test
+
+####################################
 #          DOCUMENTATION           #
 ####################################
 docs:
