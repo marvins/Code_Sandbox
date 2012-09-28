@@ -1,13 +1,17 @@
 #! /usr/bin/env python
 
 import sys, os, time, tarfile, zipfile, paramiko, xml.etree.ElementTree as xml
+from collections import deque
 
 months  = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
-cameras = ['cam1','cam2','cam3','cam4','cam5']
+_cameras = ['cam1','cam2','cam3','cam4','cam5']
 
 NEWLINE = '\n'
 log = []
 
+MAX_BUNDLES=100
+BUNDLE_OVERKILL=5#Number of times past to build for
+MAX_TIME=2 # HOURS
 
 #################################
 #         Color Console         #
@@ -463,7 +467,7 @@ class ConfigOptions:
 				command_args = command_args[1:]
 
 			# Gorgon Stare Collection Number
-			elif command_args[0][:14] = "-collect_name=":
+			elif command_args[0][:14] == "-collect_name=":
 				self.collection_name = command_args[0][14:]
 				command_args = command_args[1:]
 			
@@ -787,6 +791,65 @@ def TACID_scene_compare( tacidA, tacidB ):
 	else:
 		return 1
 
+###########################################################################################################
+#
+###########################################################################################################
+class Camera:
+	base = ''
+	dir_tree = deque()
+
+	def __init__(self, dir_name ):
+		""" 
+		Construct the directory tree for this object
+		"""
+
+		# Set the base directory name
+		self.base = dir_name
+
+		# Pull the contents of the directory
+		contents = os.listdir(dir_name)
+		contents.sort()
+		contents.reverse()
+
+		self.dir_tree = deque()
+		for c in contents:
+			self.dir_tree.append(dir_name + '/' + c)
+
+
+	def step(self):
+		"""
+		The camera will enter the directory
+		"""
+		
+		# Pop off the current directory item
+		cdir = self.dir_tree.popleft()
+
+		# check if current position is a file or directory
+		isDir = os.path.isdir(cdir)
+		
+		# if its a directory, lets step into it
+		if isDir == True:
+
+			# Grab the contents of the directory and sort
+			items = os.listdir(cdir)
+			contents = [elem for elem in items if os.path.isdir(cdir+'/'+elem) == True]
+			contents.sort()
+			contents.reverse()
+
+			# Insert onto stack
+			for c in contents:
+				self.dir_tree.appendleft(cdir + '/' + c)
+			
+			
+
+	def __str__(self):
+		out = ''
+		out += "Camera Base: " + self.base + '\n'
+
+		return out
+
+class Bundle:
+	images = []
 
 #------------------------------------------------#
 #-    			Basic Error Checking  			-#
@@ -860,7 +923,7 @@ def dirPatternMatch( d1, match_directory, collect_name ):
 	d2 = match_directory[1]
 
 	# Check the lengths
-	if len(d1) != len(d2[1]):
+	if len(d1) != len(d2):
 		return False;
 	
 	# if we have a static directory, then just compare the names
@@ -875,16 +938,29 @@ def dirPatternMatch( d1, match_directory, collect_name ):
 					continue
 			elif d1[x] != d2[x]:
 				return False
+	
 	elif match_directory[0] == 'VARIABLE':
+		# Make sure that the pattern in d2 matches the length of d1
 		# Since we have a variable directory, we need to make sure the 
 		# input directory (d1) matches the collect_name
-		if d1 == collect_name:
-			return true
-		else
-			return false
+		for x in xrange( 0, len(d1)):
 
-	else
-		raise Exception('UNKNOWN OPTION')
+			if d1[x] == '#':
+				if int(collect_name[x]) >= 0 or int(collect_name[x]) < 10:
+					continue
+			elif collect_name[x] == '#':
+				if int(d1[x]) >= 0 or int(d1[x]) < 10:
+					continue
+			elif d1[x] != collect_name[x]:
+				return False
+		
+	elif match_directory[0] == 'CAMERA':
+		# if we are here, we have obvious overflow.  This means we should stop
+		# this path immediately
+		return False
+
+	else:
+		raise Exception('Line 900, UNKNOWN OPTION')
 
 	return True
 
@@ -906,13 +982,11 @@ def find_camera_directory( directory, options, camera_list ):
 	
 	# remove all non-directories
 	directories = [elem for elem in contents if os.path.isdir(directory+'/'+elem) == True]
-	
+	directories.sort()
+
 	# Iterate through every directory we queried
 	for d in directories:
 		
-		print 'testing directory: ', d
-		raw_input('pause')
-
 		# reset the found flag
 		isCamDirectory = False
 		
@@ -922,7 +996,8 @@ def find_camera_directory( directory, options, camera_list ):
 			# a camera directory for inc 1 must be a camera directory with a single digit
 			try:
 				if len(d) == 4 and d[:3] == 'cam' and int(d[3]) > 0 and int(d[3]) < max(options.num_eo_camera_directories, options.num_ir_camera_directories):
-					dir_stack.append( directory + '/' + d)
+					
+					dir_stack.append( Camera(directory + '/' + d))
 					isCamDirectory = True
 			except ValueError:
 				pass
@@ -935,12 +1010,14 @@ def find_camera_directory( directory, options, camera_list ):
 			try:
 				if options.camera_type == 'EO':
 					if len(d) == 6 and d[:3] == 'cam' and int(d[3:]) >= 0 and int(d[3:]) < options.eo_fism_count:
-						dir_stack.append(directory + '/' + d)
+						
+						dir_stack.append( Camera(directory + '/' + d))
 						isCamDirectory = True
 				
 				elif options.camera_type == 'IR':
 					if len(d) == 6 and d[:3] == 'cam' and int(d[3:]) >= 0 and int(d[3:]) < options.ir_fism_count:
-						dir_stack.append(directory + '/' + d)
+						
+						dir_stack.append( Camera(directory + '/' + d))
 						isCamDirectory = True
 				else:
 					raise LoggerException( log.MAJOR, 'Unknown camera type ' + options.camera_type + ' expected')
@@ -951,167 +1028,17 @@ def find_camera_directory( directory, options, camera_list ):
 		# if the camera directory is not a camera directory, then step into it
 		if isCamDirectory == False and len(camera_list) > 0:
 			
-			print 'not a camera directory'
-			print ''
-			print 'testing ', d, ' versus ', camera_list[0][1], ' which is ', camera_list[0][0], '. Collect_Name=', options.collect_name
-			raw_input('pause')
-
 			# Make sure the pattern matches the directory structure we defined in the xml file
 			if dirPatternMatch( d, camera_list[0], options.collect_name ) == True:
-				dir_stack += find_camera_directory( directory + '/' + d, options, camera_list[1:] )
-	
+				dir_stack.extend(find_camera_directory( directory + '/' + d, options, camera_list[1:] ))
+			
 	# end of the directory iteration
-	dir_stack = sorted(dir_stack)
-
 
 	return dir_stack
 
 
 
 
-
-#--------------------------------------------#
-#-      Sort the image list by history		-#
-#--------------------------------------------#
-def sort_image_list( root_dir ):
-	
-	# set x to the starting point
-	x = 0
-	
-	# iterate throught the entire list
-	while x < len(root_dir)-1:
-
-		# compare the two adjacent TACIDs
-		state = TACID_scene_compare( root_dir[x][0], root_dir[x+1][0])
-
-		# if x is smaller, then continue
-		if state == -1: # x is smaller
-			x += 1
-			continue
-		
-		# if they are equal, append the next item to the current and remove the next
-		if state == 0:  # they are equal, append x+1 to x
-			root_dir[x] = root_dir[x] + root_dir[x+1]
-			root_dir.pop(x+1)
-			continue
-		
-		# otherwise the next element is smaller than the current
-		# That means we need to insert the next element in the middle of the list
-		
-		# start at x and move towards 0
-		y = x
-		while y >= 0:
-
-			# compare x+1 to y
-			ystate = TACID_scene_compare( root_dir[y][0], root_dir[x+1][0])
-				
-			# if y > x, continue as we need to stop when the order is returned
-			if ystate == 1:
-				
-				y -= 1
-				# if we reach -1 and the order is not preserved, then the item is the smallest
-				if y == -1:
-					new_item = root_dir[x+1]
-					root_dir.pop(x+1)
-					root_dir = [new_item] + root_dir
-					x += 1
-					break
-				else:
-					continue
-
-			# if they are equal, merge
-			if ystate == 0:
-				root_dir[y] = root_dir[y] + root_dir[x+1]
-				root_dir.pop(x+1)
-				break
-
-			# if x+1 is larger, then insert at y+1 and remove x+1
-			if ystate == -1:
-				# create the new item
-				new_item = root_dir[x+1]
-				root_dir.pop(x+1)
-				
-				# split the list
-				fst_prt  = root_dir[:y+1]
-				snd_prt  = root_dir[y+1:]
-
-				# re-append
-				root_dir = fst_prt + [new_item] + snd_prt
-				x += 1
-				break
-
-			else:
-				raise Exception("Unknown condition")
-
-	return root_dir
-
-
-
-#------------------------------------------------------------#
-#-   				Build Image List						-#
-#------------------------------------------------------------#
-def build_image_list( root_dir, ext_list, options ):
-	"""
-	This function takes an image directory and searches for all images matching a required pattern. 
-	If they exist, it will parse the image name and add the image to the list for that image directory.
-	"""
-
-	# create an empty list
-	images = []
-	
-	directory_stack = []
-	cdir = root_dir
-	valid = True
-
-	# Iterate until you run out of directories
-	while len(directory_stack) > 0 or valid == True:
-		
-		# Turn off the initial flag
-		valid = False
-
-		# find the contents of the directory
-		contents = os.listdir( cdir )
-		
-		# Sort the contents
-		contents.sort()
-
-		# iterate through each item to either add or enter
-		for item in contents:
-	
-			# check if item is file or directory
-			if os.path.isdir( cdir + '/' + item ) == True:
-				
-				# If we have a directory, then add it to the stack and move on
-				directory_stack.append( cdir + '/' + item )
-				continue
-			
-			# otherwise, check if file matches
-			elif os.path.isfile( cdir + '/' + item ) == True:
-			
-				# check if the extension is a nitf
-				if os.path.splitext( item )[1] in ext_list:
-				
-					IMG = TACID(cdir + '/' + item)
-				
-					# ensure the image has the proper camera type
-					ctype = IMG.getCameraType()
-
-					if ctype == options.camera_type:
-						print 'adding'
-						raw_input('')
-						images.append([[IMG]])
-				
-					else:
-						pass
-			
-			else:
-				raise LogException( log.MAJOR, 'ERROR: must be file or directory')
-
-		# Get the next item
-		if len( directory_stack ) > 0:
-			cdir = directory_stack.pop()
-	
-	return images
 
 #------------------------------------------------------------#
 #-        			Image Tuple Match      					-#
@@ -1201,50 +1128,48 @@ def pop_earliest_image( cam_lists ):
 ######################################
 #-      Prune The Camera List       -#
 ######################################
-def prune_camera_list( cam_lists, options ):
+def prune_camera_list( cameras, options ):
 	""" 
-	Prune that camera list to remove all images which don't match
-	between each required camera directory of don't have enough images
-	per camera step.
+	compare the contents of each camera
 	"""
-
-	# find the length of the shortest camera directory
-	min_len = len( cam_lists[0] )
-	for x in range( 1, len( cam_lists )):
-		if min_len > len( cam_lists[x] ):
-			min_len = len( cam_lists[x] )
 	
-	# iterate through each list, looking for matching images
+	# iterate the list, looking for matching images
 	breakNow = False
-
 	output = []
 	
+
 	while True:
 		
-		# break the loop if a camera list is empty. That means the rest of the lists are junk
-		for x in range( 0, len( cam_lists )):
-			if len( cam_lists[x] ) <= 0:
-				breakNow = True
-				break
-
-		# If a list is empty or another mode request a break, then exit the while loop
-		if breakNow == True:
-			break
-
-		# if all cam top images don't match, then pop the youngest until they do
-		if  image_tuple_match( cam_lists, options ) == False:
-			pop_earliest_image( cam_lists )
+		# start with the smallest value
+		minCamVal = os.path.split(cameras[0].dir_tree[0])[1]
+		minCamIdx = 0
 		
-		# If they do match, then add it to the output list
-		else:
-			st = []
-			for x in range( 0, len(cam_lists)):
-				st = st + cam_lists[x][0]
-				cam_lists[x] = cam_lists[x][1:]
-			
-			output.append(st)
+		bad_value_found = False
 
-	return output
+		for x in xrange( 0, len(cameras)):
+
+			# Continue if the values are equal
+			if os.path.split(cameras[x].dir_tree[0])[1] == minCamVal[1]:
+				continue
+			
+			# Make sure the depths match
+			raise Exception("Need to add depths to path")
+
+			# Make sure there are no directories
+			if os.path.isDir(cameras[x].dir_tree[0]) == False:
+				raise Exception("ERROR: A directory survived")
+			
+			# if we make it here, we have a problem
+			bad_value_found = True
+
+			# Pick the smaller directory 
+			if os.path.split(cameras[x].dir_tree[0])[1] < minCamVal:
+				minCamVal = os.path.split(cameras[x].dir_tree[0])[1]
+				minCamIdx = x
+			
+		# if a bad value was found, prune it
+
+
 
 
 ##########################################################################
@@ -1293,38 +1218,21 @@ def main():
 		
 		# build a list of camera directories
 		log.write( log.INFO, 'running find_camera_directory on directory: ' + options.input_base + '/' + options.input_path)
-		camera_directories = find_camera_directory( options.input_base + '/' + options.input_path, options, camera_list )
+		cameras = find_camera_directory( options.input_base + '/' + options.input_path, options, camera_list )
 		log.write( log.INFO, 'find_camera_directory exited successfully')
 		
-		# check the structure before we do the image gathering.  This prevents some major computations
-		validityCheckPost( camera_directories, options );
-		
-		# Build the list of images
-		camera_contents = []
-		ext_list = ['.nitf', '.ntf', '.NITF', '.NTF']
-		
-		# iterate through each camera directory
-		for cidx in xrange(0, len(camera_directories)):
+		# iterate each camera directory concurrently to find matching image bundles
+		while True:
 			
-			# pull out every nitf image from the current camera directory and place into its own group
-			log.write( log.INFO, 'starting build_image_list on directory: ' + camera_directories[cidx])
-			cimgout = build_image_list( camera_directories[cidx], ext_list, options )
-			log.write( log.INFO, 'appending')
-			camera_contents.append( cimgout )
-			
-			print 'items' 
-			for cc in cimgout:
-				print cc[0].input_string
-				raw_input('')
+			# have each cam object step through the next item
+			for x in xrange(0, len(cameras)):
+				cameras[x].step()
 
-			# sort image filenames
-			log.write( log.INFO, 'starting sort operation')
-			camera_contents[cidx] = sort_image_list( camera_contents[cidx] )
+			# Compare every camera and remove 
+			prune_camera_list( cameras, options )
 
-		# prune the camera list
-		log.write( log.INFO, 'starting pruning operation')
-		image_tuples = prune_camera_list( camera_contents, options )
-		log.write( log.INFO, 'pruning operation completed successfully')
+
+
 		
 		
 		# now that we have the image sets, lets create the image bundle

@@ -45,7 +45,9 @@ int main( int argc, char* argv[] ){
             //print configuration to the screen
             options.print();
             
-            //if we need to build an image, run here
+            /**************************/
+            /*     BUILD run_type     */
+            /**************************/
             if( options.get_run_type() == "FULL" || options.get_run_type() == "BUILD" ){
 
                 //generate our perspective image
@@ -63,7 +65,27 @@ int main( int argc, char* argv[] ){
                 exit(0);
 
             }
-            //if we need to rectify an image, run here
+            
+            /******************************************************/
+            /*   If we have a FULL run type, convert the image    */
+            /******************************************************/
+            if( options.get_run_type() == "FULL" ){
+                
+                //set the dem parameters here
+                cout << "HERE" << endl;
+            }
+            /*********************************************/
+            /*     Otherwise, load the proper image      */
+            /*********************************************/
+            else{
+
+                throw string("Not implemented yet");
+
+            }
+
+            /*****************************/
+            /*      RECTIFY run_type     */
+            /*****************************/
             if( options.get_run_type() == "FULL" || options.get_run_type() == "RECTIFY" ){
                 
                 //rectify the image

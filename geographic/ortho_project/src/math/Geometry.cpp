@@ -66,11 +66,12 @@ vector<vector<cv::Point3f> > build_ground_coordinate_list( cv::Mat const& dem, c
     vector<vector<Point3f> > output_coordinate_list( img_size.width);
 
     Mat earth_normal = load_vector( 0, 0, 1);
-
+    
     double top = earth_normal.dot(load_point(0,0,0)-camera_origin);
     int hx = img_size.width/2;
     int hy = img_size.height/2;
-    
+    int xx, yy;
+
     //iterate throught the output image
     for( int i=0; i<img_size.width; i++){
         
@@ -87,7 +88,15 @@ vector<vector<cv::Point3f> > build_ground_coordinate_list( cv::Mat const& dem, c
             
             output_coordinate_list[i][j].x = b1.at<double>(0,0);
             output_coordinate_list[i][j].y = b1.at<double>(1,0);
-            output_coordinate_list[i][j].z = dem.at<uchar>(_round(b1.at<double>(1,0)) + hx, _round(b1.at<double>(0,0))+hy);
+            
+            xx = _round(b1.at<double>(1,0)) + hx;
+            yy = _round(b1.at<double>(0,0)) + hy;
+
+            if( xx >= 0 && xx < dem.cols && yy >= 0 && yy < dem.rows )
+                output_coordinate_list[i][j].z = dem.at<uchar>(_round(b1.at<double>(1,0)) + hx, _round(b1.at<double>(0,0))+hy);
+            else        
+                output_coordinate_list[i][j].z = 0;
+
         }
     }
     

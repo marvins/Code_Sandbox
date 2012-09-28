@@ -161,7 +161,6 @@ void create_flat_test_image( Options const& options, Mat& image, Mat& dem ){
 */
 void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& output_image, Options const& options ){
     
-    
     //create a progress bar object and make sure we have permission to show it
     ProgressBar progressBar(0, input_image.cols*input_image.rows, 50);
     bool show_progress_bar = false;
@@ -201,7 +200,6 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
     double   maxZDist;
     int      maxType;
     bool     intersection;
-    
     
     //generate a ground coordinate list
     vector<vector<Point3f> > outCoordinateList = build_ground_coordinate_list( options.dem, 
@@ -376,8 +374,8 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
             if( show_progress_bar )
                 progressBar.update( cnt );
             cnt++;
-
             
+
         }
         //print the progress bar to console
         if( show_progress_bar )
