@@ -21,6 +21,9 @@
                     
                     <folder name="raw" multiple="false" >
                         
+                        <!-- This is the per-basis collection folder -->
+                        <folder name="20120808080808" multiple="false">
+
                         <!-- 
                              Notice that the camera directory requires a global count as each directory with this name
                              is counted stared from the previous.
@@ -65,6 +68,7 @@
                                  </folder> <!-- end of hour folder -->
                             </folder> <!-- end of date folder -->
                         </folder> <!-- end of cam folder -->
+                        </folder> <!-- end of COLLECT DATE FOLDER folder -->
                     </folder> <!-- end of raw folder -->
                 </folder> <!-- end of camera folder -->
             </folder> <!-- end of slice-collect folder -->

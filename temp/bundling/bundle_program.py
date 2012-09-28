@@ -187,7 +187,8 @@ class ConfigOptions:
 	
 	eo_fism_count   = 200
 	if_fism_count   = 200
-
+	
+	collection_name = ''
 	gs_directories = []
 
 	
@@ -267,6 +268,9 @@ class ConfigOptions:
 		if xmlValidateAndLoad( root, 'path_info/output_filename', 'value', 'ATTRIBUTE', 'STRING')[0] == True:
 			self.output_path = xmlValidateAndLoad( root, 'path_info/output_filename', 'value', 'ATTRIBUTE', 'STRING')[1]
 		
+		if xmlValidateAndLoad( root, 'path_info/collect_name', 'value', 'ATTRIBUTE', 'STRING')[0] == True:
+			self.collect_name = xmlValidateAndLoad( root, 'path_info/collect_name', 'value', 'ATTRIBUTE', 'STRING')[1]
+		
 		# GS1 Specific
 		if xmlValidateAndLoad( root, 'gs1_specific/number_eo_directories', 'value', 'ATTRIBUTE', 'INT')[0] == True:
 			self.num_eo_camera_directories = xmlValidateAndLoad( root, 'gs1_specific/number_eo_directories', 'value', 'ATTRIBUTE', 'INT')[1]
@@ -297,26 +301,43 @@ class ConfigOptions:
 		
 		# Pull Appropriate Directory Structure
 		structure = "gs" + str(self.gs_increment) + "_structure"
-		basenode = root.find(structure)
+		basenode = root.find(structure + '/directory')
+		
+		# Here we iterate until we grab a camera directory pattern
 		while basenode != None:
 			
-			# Query the children for directories
-			if basenode.find("directory") != None:
-				
-				# get the child
-				self.gs_directories.append( basenode.find("directory").attrib.get("pattern"))
-				basenode = basenode.find("directory")
+			# Grab the type of directory
+			dtype = basenode.attrib.get('type')
+			print dtype
 
-			elif basenode.find("camera_directory") != None:
-				
-				# get the child
-				self.gs_directories.append( basenode.find("camera_directory").attrib.get("pattern"))
+			# raise an exception if the type is none
+			if dtype == None:
+				raise Exception('Camera Directory was not found. Invalid file structure')
+
+			# Check if the item is a static directory
+			elif dtype == 'static':
+				#if so, then append it to the directory list 
+				self.gs_directories.append( ('STATIC', basenode.attrib.get('pattern')))
+
+			# Check if the item is a variable directory
+			elif dtype == 'variable':
+				#if so, then append it to the directory list
+				self.gs_directories.append( ('VARIABLE', basenode.attrib.get('pattern')))
+
+			elif dtype == 'camera':
+				#if so, then append it to the directory list
+				self.gs_directories.append( ('CAMERA', basenode.attrib.get('pattern')))
+				# end the search 
 				break;
 
 			else:
 				raise Exception("Unknown parameter")
-		
-		
+			
+			# Grab the child
+			basenode = basenode.find('directory')
+
+	
+
 		##########################################
 		#       PARSE COMMAND-LINE OPTIONS       #
 		##########################################
@@ -439,6 +460,11 @@ class ConfigOptions:
 			# Number of IR FISM's Per Count
 			elif command_args[0][:15] == '-ir_fism_count=':
 				self.ir_fism_count = int(command_args[0][15:])
+				command_args = command_args[1:]
+
+			# Gorgon Stare Collection Number
+			elif command_args[0][:14] = "-collect_name=":
+				self.collection_name = command_args[0][14:]
 				command_args = command_args[1:]
 			
 			# Help
@@ -824,44 +850,69 @@ def validityCheckPost( camera_roots, options ):
 	log.write( log.INFO, 'Exiting validityCheckPost successfully')
 
 
-def dirPatternMatch( d1, d2 ):
+
+#--------------------------------------------------------#
+#-   Check Directory Pattern Match                      -#
+#--------------------------------------------------------#
+def dirPatternMatch( d1, match_directory, collect_name ):
 	
-	if len(d1) != len(d2):
+	# extract the match directory name
+	d2 = match_directory[1]
+
+	# Check the lengths
+	if len(d1) != len(d2[1]):
 		return False;
 	
-	for x in xrange(0, len(d1)):
+	# if we have a static directory, then just compare the names
+	if match_directory[0] == 'STATIC':
+		for x in xrange(0, len(d1)):
 
-		if d1[x] == "#":
-			if int(d2[x]) >= 0 or int(d2[x]) < 10:
-				continue
-		elif d2[x] == "#":
-			if int(d1[x]) >= 0 or int(d1[x]) < 10:
-				continue
-		elif d1[x] != d2[x]:
-			return False
+			if d1[x] == "#":
+				if int(d2[x]) >= 0 or int(d2[x]) < 10:
+					continue
+			elif d2[x] == "#":
+				if int(d1[x]) >= 0 or int(d1[x]) < 10:
+					continue
+			elif d1[x] != d2[x]:
+				return False
+	elif match_directory[0] == 'VARIABLE':
+		# Since we have a variable directory, we need to make sure the 
+		# input directory (d1) matches the collect_name
+		if d1 == collect_name:
+			return true
+		else
+			return false
 
+	else
+		raise Exception('UNKNOWN OPTION')
 
 	return True
 
 
-#------------------------------------------------#
-#-    Find Camera Directory						-#
-#-												-#
-#-    Look for the baseline camera directory    -#
-#------------------------------------------------#
+#------------------------------------------------------#
+#-    Find Camera Directory		     				  -#
+#-									     		  	  -#
+#-    Look for the baseline camera directory          -#
+#-    - This is achieved by looking at the structure  -#
+#       as defined in the xml file and comparing it.  -#
+#------------------------------------------------------#
 def find_camera_directory( directory, options, camera_list ):
 	
 	# extract the contents of the directory
 	contents = os.listdir(directory);
 	
-	# remove all non-directories
-	directories = [elem for elem in contents if os.path.isdir(directory+'/'+elem) == True]
-
-	# search to see if cam directories are present
+	# Build an empty directory tree object
 	dir_stack = []
 	
+	# remove all non-directories
+	directories = [elem for elem in contents if os.path.isdir(directory+'/'+elem) == True]
+	
+	# Iterate through every directory we queried
 	for d in directories:
 		
+		print 'testing directory: ', d
+		raw_input('pause')
+
 		# reset the found flag
 		isCamDirectory = False
 		
@@ -876,7 +927,7 @@ def find_camera_directory( directory, options, camera_list ):
 			except ValueError:
 				pass
 		
-		# do some checks for inc2
+		
 		elif options.gs_increment == 2:
 			# Test for Inc 2 Imagery
 			#
@@ -899,8 +950,14 @@ def find_camera_directory( directory, options, camera_list ):
 
 		# if the camera directory is not a camera directory, then step into it
 		if isCamDirectory == False and len(camera_list) > 0:
+			
+			print 'not a camera directory'
+			print ''
+			print 'testing ', d, ' versus ', camera_list[0][1], ' which is ', camera_list[0][0], '. Collect_Name=', options.collect_name
+			raw_input('pause')
 
-			if dirPatternMatch( d, camera_list[0] ) == True:
+			# Make sure the pattern matches the directory structure we defined in the xml file
+			if dirPatternMatch( d, camera_list[0], options.collect_name ) == True:
 				dir_stack += find_camera_directory( directory + '/' + d, options, camera_list[1:] )
 	
 	# end of the directory iteration

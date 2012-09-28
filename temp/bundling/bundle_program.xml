@@ -88,7 +88,8 @@
              NOTE:  Do not give an extension as this is determined by the compression type. 
         -->
         <output_filename  value="image_set" />
-
+        
+        <collect_name value="20120818080808" />
     </path_info>
 
     
@@ -139,20 +140,20 @@
          - DO NOT CHANGE EVER!
     -->
     <gs2_structure>
-        <directory  pattern="slice#-collect#" >
-            <directory pattern="camera" >
-                <directory pattern="nitf" >
+        <directory type="static"  pattern="slice#-collect#" >
+            <directory type="static"  pattern="camera" >
+                <directory type="static" pattern="nitf" >
                     
-                    <!-- COLLECTION DATE STAMP GOES HERE -->
-                    
-                        <camera_directory pattern="cam###" >
+                    <directory type="variable" pattern="##############" id="0">
 
-                    </camera_directory>
+                        <directory type="camera"  pattern="cam###" >
+                        </directory>
+                    
+                    </directory>
                 </directory>
             </directory>
         </directory>
     </gs2_structure>
-
 
 
 </configuration>
