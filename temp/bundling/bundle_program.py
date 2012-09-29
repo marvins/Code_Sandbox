@@ -813,7 +813,7 @@ class Camera:
 
 		self.dir_tree = deque()
 		for c in contents:
-			self.dir_tree.append(dir_name + '/' + c)
+			self.dir_tree.append((dir_name + '/' + c, 0))
 
 
 	def step(self):
@@ -822,7 +822,9 @@ class Camera:
 		"""
 		
 		# Pop off the current directory item
-		cdir = self.dir_tree.popleft()
+		data = self.dir_tree.popleft()
+		cdir = data[0]
+		depth= data[1]
 
 		# check if current position is a file or directory
 		isDir = os.path.isdir(cdir)
@@ -838,7 +840,7 @@ class Camera:
 
 			# Insert onto stack
 			for c in contents:
-				self.dir_tree.appendleft(cdir + '/' + c)
+				self.dir_tree.appendleft((cdir + '/' + c, depth+1))
 			
 			
 
@@ -1141,15 +1143,16 @@ def prune_camera_list( cameras, options ):
 	while True:
 		
 		# start with the smallest value
-		minCamVal = os.path.split(cameras[0].dir_tree[0])[1]
+		minCamVal = os.path.split(cameras[0].dir_tree[0][0])[1]
+		minCamDep = cameras[0].dir_tree[0][1]
 		minCamIdx = 0
-		
+
 		bad_value_found = False
 
 		for x in xrange( 0, len(cameras)):
 
 			# Continue if the values are equal
-			if os.path.split(cameras[x].dir_tree[0])[1] == minCamVal[1]:
+			if os.path.split(cameras[x].dir_tree[0][0])[1] == minCamVal:
 				continue
 			
 			# Make sure the depths match
@@ -1227,7 +1230,7 @@ def main():
 			# have each cam object step through the next item
 			for x in xrange(0, len(cameras)):
 				cameras[x].step()
-
+			
 			# Compare every camera and remove 
 			prune_camera_list( cameras, options )
 
