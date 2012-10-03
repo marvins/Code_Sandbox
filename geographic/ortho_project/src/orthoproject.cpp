@@ -72,14 +72,27 @@ int main( int argc, char* argv[] ){
             if( options.get_run_type() == "FULL" ){
                 
                 //set the dem parameters here
-                cout << "HERE" << endl;
+                throw string("Not implemented yet");
+            
             }
             /*********************************************/
             /*     Otherwise, load the proper image      */
             /*********************************************/
             else{
-
-                throw string("Not implemented yet");
+                
+                /*  Since we are starting from scratch, we need to */
+                /*  load the appropriate information.              */
+                
+                //load image
+                // TODO Check if image is a nitf, if so, load with GeoImage
+                //      Otherwise, load with opencv
+                // TODO Check the color type and bit depth
+                options.image = imread( options.image_filename );
+                
+                //load dem
+                // TODO Check if dem is for a geo image or from a file
+                // TODO Load from Geo Image DEM Module or from opencv
+                options.dem   = imread( options.dem_filename, 0 );
 
             }
 
