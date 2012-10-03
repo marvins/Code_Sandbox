@@ -2,6 +2,7 @@
 
 import sys, os, time, tarfile, zipfile, paramiko, xml.etree.ElementTree as xml
 from collections import deque
+import glob
 
 months  = ['JAN','FEB','MAR','APR','MAY','JUN','JUL','AUG','SEP','OCT','NOV','DEC']
 _cameras = ['cam1','cam2','cam3','cam4','cam5']
@@ -12,6 +13,11 @@ log = []
 MAX_BUNDLES=100
 BUNDLE_OVERKILL=5#Number of times past to build for
 MAX_TIME=2 # HOURS
+
+
+cameras = None
+
+holdForPrint = False
 
 #################################
 #         Color Console         #
@@ -669,7 +675,7 @@ class TACID:
 		instr = os.path.basename(imgname)
 		self.input_string = instr
 
-		# set the date
+		# set the date DDMMMYY [0-6]
 		day  = int(instr[:2])
 		mon  = instr[2:5]
 		year = int(instr[5:7]) + 2000
@@ -681,27 +687,27 @@ class TACID:
 		self.acquisition_date = time.gmtime(t)
 		instr = instr[7:]
 
-		# get program_code
+		# get program_code [7-8]
 		self.program_code = instr[0:2]
 		instr = instr[2:]
 
-		# get sortie_number
+		# get sortie_number [9-10]
 		self.sortie_number = instr[0:2]
 		instr = instr[2:]
 
-		# get scene number
+		# get scene number [11-16]
 		self.scene_number = int(instr[:5])
 		instr = instr[5:]
 
-		# get DoD producer code
+		# get DoD producer code [16-17]
 		self.producer_code = instr[:2]
 		instr = instr[2:]
 
-		# get product number
+		# get product number [15-21]
 		self.product_number = instr[:6]
 		instr = instr[6:]
 		
-		# get the NGA Project Code
+		# get the NGA Project Code 
 		self.project_code = instr[:2]
 		instr = instr[2:]
 
@@ -769,7 +775,7 @@ def isValidTACID( node ):
 	
 	return True
 
-def TACID_scene_compare( tacidA, tacidB ):
+def compareTACID( tacidA, tacidB ):
 	"""
 	Compares TACIDs by their scene values.
 	-1 - A < B
@@ -791,6 +797,12 @@ def TACID_scene_compare( tacidA, tacidB ):
 	else:
 		return 1
 
+
+def _listdir(cdir):
+	
+	return os.listdir(cdir)
+	return [ os.path.split(output)[1] for output in glob.glob(cdir + '/*') ]
+
 ###########################################################################################################
 #
 ###########################################################################################################
@@ -807,13 +819,27 @@ class Camera:
 		self.base = dir_name
 
 		# Pull the contents of the directory
-		contents = os.listdir(dir_name)
+		contents = _listdir(dir_name)
 		contents.sort()
 		contents.reverse()
 
 		self.dir_tree = deque()
 		for c in contents:
 			self.dir_tree.append((dir_name + '/' + c, 0))
+	
+	def pop_item(self):
+		img = self.dir_tree.popleft()
+		return img
+	
+	def peek_item(self):
+		return self.dir_tree[0][0]
+
+
+	def dump(self):
+		"""
+		This function will delete everything in the dir_tree
+		"""
+		dir_tree.clear()
 
 
 	def step(self):
@@ -825,7 +851,7 @@ class Camera:
 		data = self.dir_tree.popleft()
 		cdir = data[0]
 		depth= data[1]
-
+		
 		# check if current position is a file or directory
 		isDir = os.path.isdir(cdir)
 		
@@ -833,15 +859,14 @@ class Camera:
 		if isDir == True:
 
 			# Grab the contents of the directory and sort
-			items = os.listdir(cdir)
-			contents = [elem for elem in items if os.path.isdir(cdir+'/'+elem) == True]
+			contents = _listdir(cdir)  #[elem for elem in items if os.path.isdir(cdir+'/'+elem) == True]
 			contents.sort()
 			contents.reverse()
 
 			# Insert onto stack
 			for c in contents:
 				self.dir_tree.appendleft((cdir + '/' + c, depth+1))
-			
+
 			
 
 	def __str__(self):
@@ -1081,52 +1106,6 @@ def image_tuple_match( cam_lists, options ):
 	return True
 
 
-#--------------------------------------------------------#
-#-					Pop Earliest Image					-#
-#--------------------------------------------------------#
-def pop_earliest_image( cam_lists ):
-	"""
-	Remove the earliest image from the list of image lists.  This 
-	is basically just popping the top item from a list of stacks.
-	"""
-
-	top_item = cam_lists[0][0][0]
-	top_sn   = cam_lists[0][0][0].scene_number
-	top_pn   = cam_lists[0][0][0].producer_sn
-	top_idx  = 0
-
-	for idx in range( 1, len(cam_lists)):
-
-		# compare the top item with the current list head item
-		if top_pn == cam_lists[idx][0][0].producer_sn:
-			
-			if top_sn <= cam_lists[idx][0][0].scene_number:
-				continue
-			elif top_sn > cam_lists[idx][0][0].scene_number:
-				top_item = cam_lists[idx][0][0]
-				top_sn   = cam_lists[idx][0][0].scene_number
-				top_pn   = cam_lists[idx][0][0].producer_sn
-				top_idx  = idx
-			else:
-				raise Exception("ERROR")
-		
-		elif top_pn < cam_lists[idx][0][0].producer_sn:
-			continue
-		
-		elif top_pn > cam_lists[idx][0][0].producer_sn:
-			top_item = cam_lists[idx][0][0]
-			top_sn   = cam_lists[idx][0][0].scene_number
-			top_pn   = cam_lists[idx][0][0].producer_sn
-			top_idx  = idx
-			continue
-
-		else:
-			raise Exception("ERROR")
-
-	# remove oldest image
-	cam_lists[top_idx].pop(0)
-
-
 ######################################
 #-      Prune The Camera List       -#
 ######################################
@@ -1134,44 +1113,207 @@ def prune_camera_list( cameras, options ):
 	""" 
 	compare the contents of each camera
 	"""
-	
+
 	# iterate the list, looking for matching images
 	breakNow = False
 	output = []
 	
-
 	while True:
 		
 		# start with the smallest value
 		minCamVal = os.path.split(cameras[0].dir_tree[0][0])[1]
 		minCamDep = cameras[0].dir_tree[0][1]
 		minCamIdx = 0
+		minType   = os.path.isdir(cameras[0].dir_tree[0][0])
+		minID = None
 
+		# if the minType is a file, then we need to compute the scene number and product number
+		if minType == False: 
+			minID = TACID(cameras[0].dir_tree[0][0])
+		
+
+		# This flag will tell us if the current directories are valid, if 
+		# any directory is different, the flag will be set
 		bad_value_found = False
-
+		
 		for x in xrange( 0, len(cameras)):
-
-			# Continue if the values are equal
-			if os.path.split(cameras[x].dir_tree[0][0])[1] == minCamVal:
-				continue
 			
-			# Make sure the depths match
-			raise Exception("Need to add depths to path")
-
-			# Make sure there are no directories
-			if os.path.isDir(cameras[x].dir_tree[0]) == False:
-				raise Exception("ERROR: A directory survived")
+			#----------------------------------------------------------------------#
+			#-  Note: If the camera has no more items in its tree, then it means  -#
+			#-  that we can dump the remaining camera directory contents for the  -#
+			#-  other items.                                                      -#
+			#----------------------------------------------------------------------#
+			if len(cameras[x].dir_tree) <= 0:
+				
+				#----------------------------------------------------------#
+				#-   Since we have no images, we need to dump everything  -#
+				#----------------------------------------------------------#
+				for y in xrange( 0, len(cameras)):
+					cameras[x].dump()
+				return True
+	
+			# gather some test information
+			testDep    = cameras[x].dir_tree[0][1]
+			testCamVal = os.path.split(cameras[x].dir_tree[0][0])[1]
+			testCamDep = cameras[0].dir_tree[0][1]
+			testCamIdx = x
+			testType   = os.path.isdir( cameras[x].dir_tree[0][0])
+			testID = None
 			
-			# if we make it here, we have a problem
-			bad_value_found = True
+			global holdForPrint
+			holdForPrint = False
+			#if minCamVal == '00' and x < 10:
+			#	holdForPrint = True
+		
+			if holdForPrint == True:
+				print 'comparing ', minCamVal, '  with  ', testCamVal
+				print cameras[x].dir_tree[0]
+				print 'current step: ', x
+				print 'testCamVal  : ', testCamVal
+				print 'minCamVal   : ', minCamVal
+				print 'bad value   : ', bad_value_found
+				raw_input('hold')
 
-			# Pick the smaller directory 
-			if os.path.split(cameras[x].dir_tree[0])[1] < minCamVal:
-				minCamVal = os.path.split(cameras[x].dir_tree[0])[1]
-				minCamIdx = x
 			
-		# if a bad value was found, prune it
+			# if we are comparing against a file, we need to have its TACID
+			if testType == False:
+				testID = TACID(cameras[x].dir_tree[0][0])
+	
+			
+			#-------------------------------------------------------#
+			#-           Here I outline the decision tree          -#
+			#-------------------------------------------------------#
+			
 
+			#--------------------------------------------------------------------#
+			#-   Do both the test item and minimum item have the same depth?    -#
+			#--------------------------------------------------------------------#
+			if   minCamDep == testCamDep:
+					
+				if holdForPrint == True:
+					print 'equal depth'
+
+				#---------------------------------------------------------------------#
+				#-   Assuming they have the same depth, are they both directories?   -#
+				#---------------------------------------------------------------------#
+				if testType == True and minType == True:
+					
+					if holdForPrint == True:
+						print 'both directories'
+
+				    #-----------------------------------------------------------------#
+					#-  Since they are both directories with the same depth, do      -#
+					#-  they have the same name?                                     -#
+					#-----------------------------------------------------------------#
+					if minCamVal == testCamVal:
+						
+						if holdForPrint == True:
+							print 'both same dir name'
+
+						# both are equal, continue
+						continue
+
+
+					elif minCamVal < testCamVal:
+						
+						if holdForPrint == True:
+							print 'min cam is less'
+
+						# minCam is still the min cam, but the test value means there is an error
+						# We will need to delete the minCamVal later
+						bad_value_found = True
+						continue
+					
+					else:
+						
+						if holdForPrint == True:
+							print 'testCamVal is less'
+
+						# the test camera is now the min camera, lets replace them
+						minCamVal = testCamVal
+						minCamDep = testCamDep
+						minCamIdx = testCamIdx
+						minType   = testType
+						minID     = testID
+						bad_value_found = True
+						continue
+
+				#-------------------------------------------------------------#
+				#-  if they are not both directories, are they both files?   -#
+				#-------------------------------------------------------------#
+				elif testType == False and minType == False:
+					
+					#-----------------------------------------------------------------------------#
+					#- Since they are both files, do they share the same scene and producer_sn?  -#
+					#-----------------------------------------------------------------------------#
+					compResult = compareTACID( testID, minID );
+					
+					if compResult == 0:
+						
+						# both are equal, continue
+						continue
+					
+					elif compResult < 0:
+						
+						# The testID is smaller than the minimum. We need to make the testID the new minimum camera
+						minCamVal = testCamVal
+						minCamDep = testCamDep
+						minCamIdx = testCamIdx
+						minType   = testType
+						minID     = testID
+						bad_value_found = True
+						continue
+					
+					else:
+						
+						# The minimum camera is still the minimum camera.  Lets ensure we set the bad val flag
+						# and move on.  We can leave the min camera in place
+						bad_value_found = True
+						continue
+
+				
+				#-------------------------------------------------------------------------------------------#
+				#-   If they are different types, we need to automatically prune the directory, as we are  -#
+				#-   assuming that directories will always be sorted before files.                         -#
+				#-------------------------------------------------------------------------------------------#
+				elif testType == True:  # assuming the minType is a file
+					
+					# The testID is smaller than the minimum. We need to make the testID the new minimum camera
+					minCamVal = testCamVal
+					minCamDep = testCamDep
+					minCamIdx = testCamIdx
+					minType   = testType
+					minID     = testID
+					bad_value_found = True
+					continue
+
+				
+				else:  # Assuming the minType is a directory and minType is a file
+					bad_value_found = True
+					continue
+
+		# end of for x in xrange( 0, len(cameras))
+
+		
+		#-------------------------------------------------------------------------------#
+		#-   If the bad_value_found flag is still false, then we are safe to continue  -#
+		#-------------------------------------------------------------------------------#
+		if bad_value_found == False:
+			return False
+
+		#-----------------------------------------------------------------------------------#
+		#-   If the bad_value_found_flag was found, then we need to delete the minCamIdx   -#
+		#-   camera's top item.                                                            -#
+		#-----------------------------------------------------------------------------------#
+		cameras[minCamIdx].pop_item()
+		
+
+
+		#   end of while loop
+
+	raw_input('end of prune loop')
+
+	return False
 
 
 
@@ -1211,8 +1353,11 @@ def main():
 	# Configure the Logger
 	global log
 	log = Logger( options.debug_level, options.log_state, options.log_location )
+	
+	image_bundles = deque()
 
-	try:
+	for x in xrange(0,1):
+	#try:
 		# Print the configuration options to file
 		log.write(log.INFO, str(options))
 		
@@ -1221,6 +1366,7 @@ def main():
 		
 		# build a list of camera directories
 		log.write( log.INFO, 'running find_camera_directory on directory: ' + options.input_base + '/' + options.input_path)
+		global cameras
 		cameras = find_camera_directory( options.input_base + '/' + options.input_path, options, camera_list )
 		log.write( log.INFO, 'find_camera_directory exited successfully')
 		
@@ -1231,10 +1377,39 @@ def main():
 			for x in xrange(0, len(cameras)):
 				cameras[x].step()
 			
-			# Compare every camera and remove 
-			prune_camera_list( cameras, options )
+			print 'top of list'
+			print cameras[0].dir_tree
+			print cameras[0].dir_tree[0]
 
+			# Compare every camera and remove until we have a valid triple
+			camerasEmpty = prune_camera_list( cameras, options )
+		
+			# if the cameras are empty, then we are done looping
+			if camerasEmpty == True:
+				break
 
+			# if the top most item is not an image, then skip
+			if os.path.isfile(cameras[0].peek_item()) == False:
+				continue
+			
+			print 'adding'
+			print len(cameras[x].dir_tree)
+			print cameras[x].dir_tree[0][0]
+
+			# if the cameras still have images, it means the top of the stack is a bundle
+			# pop off the bundles
+			img_bundle = deque()
+			for x in xrange(0, len(cameras)):
+				img_bundle.append(cameras[x].peek_item())
+
+			# add the image bundle to the image bundle list
+			image_bundles.append(img_bundle)
+			
+			print 'total: ', len(image_bundles)
+			print ''
+			#raw_input('pause')
+
+		raw_input('end of bundle searching')
 
 		
 		
@@ -1300,14 +1475,14 @@ def main():
 
 
 	
-	except Exception as EX:
-		print EX
-		options.output_code = -1
-		return options.output_code
+	#except Exception as EX:
+	#	print EX
+	#	options.output_code = -1
+	#	return options.output_code
 
-	finally:
+	#finally:
 		# Close the log file
-		log.close()
+	#	log.close()
 
 	# exit the program
 	return options.output_code
