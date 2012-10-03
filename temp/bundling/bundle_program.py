@@ -10,9 +10,7 @@ _cameras = ['cam1','cam2','cam3','cam4','cam5']
 NEWLINE = '\n'
 log = []
 
-MAX_BUNDLES=100
-BUNDLE_OVERKILL=5#Number of times past to build for
-MAX_TIME=2 # HOURS
+MAX_BUNDLES=100000
 
 
 cameras = None
@@ -1113,6 +1111,10 @@ def prune_camera_list( cameras, options ):
 	""" 
 	compare the contents of each camera
 	"""
+	
+	# if the first camera list is empty, then return
+	if len(cameras[0].dir_tree) <= 0:
+		return True
 
 	# iterate the list, looking for matching images
 	breakNow = False
@@ -1155,7 +1157,7 @@ def prune_camera_list( cameras, options ):
 			# gather some test information
 			testDep    = cameras[x].dir_tree[0][1]
 			testCamVal = os.path.split(cameras[x].dir_tree[0][0])[1]
-			testCamDep = cameras[0].dir_tree[0][1]
+			testCamDep = cameras[x].dir_tree[0][1]
 			testCamIdx = x
 			testType   = os.path.isdir( cameras[x].dir_tree[0][0])
 			testID = None
@@ -1165,15 +1167,6 @@ def prune_camera_list( cameras, options ):
 			#if minCamVal == '00' and x < 10:
 			#	holdForPrint = True
 		
-			if holdForPrint == True:
-				print 'comparing ', minCamVal, '  with  ', testCamVal
-				print cameras[x].dir_tree[0]
-				print 'current step: ', x
-				print 'testCamVal  : ', testCamVal
-				print 'minCamVal   : ', minCamVal
-				print 'bad value   : ', bad_value_found
-				raw_input('hold')
-
 			
 			# if we are comparing against a file, we need to have its TACID
 			if testType == False:
@@ -1190,35 +1183,23 @@ def prune_camera_list( cameras, options ):
 			#--------------------------------------------------------------------#
 			if   minCamDep == testCamDep:
 					
-				if holdForPrint == True:
-					print 'equal depth'
-
 				#---------------------------------------------------------------------#
 				#-   Assuming they have the same depth, are they both directories?   -#
 				#---------------------------------------------------------------------#
 				if testType == True and minType == True:
 					
-					if holdForPrint == True:
-						print 'both directories'
-
 				    #-----------------------------------------------------------------#
 					#-  Since they are both directories with the same depth, do      -#
 					#-  they have the same name?                                     -#
 					#-----------------------------------------------------------------#
 					if minCamVal == testCamVal:
 						
-						if holdForPrint == True:
-							print 'both same dir name'
-
 						# both are equal, continue
 						continue
 
 
 					elif minCamVal < testCamVal:
 						
-						if holdForPrint == True:
-							print 'min cam is less'
-
 						# minCam is still the min cam, but the test value means there is an error
 						# We will need to delete the minCamVal later
 						bad_value_found = True
@@ -1226,9 +1207,6 @@ def prune_camera_list( cameras, options ):
 					
 					else:
 						
-						if holdForPrint == True:
-							print 'testCamVal is less'
-
 						# the test camera is now the min camera, lets replace them
 						minCamVal = testCamVal
 						minCamDep = testCamDep
@@ -1306,12 +1284,9 @@ def prune_camera_list( cameras, options ):
 		#-   camera's top item.                                                            -#
 		#-----------------------------------------------------------------------------------#
 		cameras[minCamIdx].pop_item()
-		
 
 
 		#   end of while loop
-
-	raw_input('end of prune loop')
 
 	return False
 
@@ -1355,6 +1330,7 @@ def main():
 	log = Logger( options.debug_level, options.log_state, options.log_location )
 	
 	image_bundles = deque()
+	img_bundle = []
 
 	for x in xrange(0,1):
 	#try:
@@ -1370,56 +1346,47 @@ def main():
 		cameras = find_camera_directory( options.input_base + '/' + options.input_path, options, camera_list )
 		log.write( log.INFO, 'find_camera_directory exited successfully')
 		
+
 		# iterate each camera directory concurrently to find matching image bundles
 		while True:
-			
-			# have each cam object step through the next item
-			for x in xrange(0, len(cameras)):
-				cameras[x].step()
-			
-			print 'top of list'
-			print cameras[0].dir_tree
-			print cameras[0].dir_tree[0]
-
+		
 			# Compare every camera and remove until we have a valid triple
 			camerasEmpty = prune_camera_list( cameras, options )
-		
+			
 			# if the cameras are empty, then we are done looping
 			if camerasEmpty == True:
 				break
 
 			# if the top most item is not an image, then skip
-			if os.path.isfile(cameras[0].peek_item()) == False:
-				continue
+			if os.path.isfile(cameras[0].peek_item()) == True:
 			
-			print 'adding'
-			print len(cameras[x].dir_tree)
-			print cameras[x].dir_tree[0][0]
+				# if the cameras still have images, it means the top of the stack is a bundle
+				# pop off the bundles
+				img_bundle = []
+				for x in xrange(0, len(cameras)):
+					img_bundle.append(cameras[x].peek_item())
 
-			# if the cameras still have images, it means the top of the stack is a bundle
-			# pop off the bundles
-			img_bundle = deque()
+				# add the image bundle to the image bundle list
+				image_bundles.append(img_bundle)
+				
+				# If we exceed the max bundle count, then quit searching
+				if len(image_bundles) >= MAX_BUNDLES:
+					break
+
+			# have each cam object step through the next item
 			for x in xrange(0, len(cameras)):
-				img_bundle.append(cameras[x].peek_item())
-
-			# add the image bundle to the image bundle list
-			image_bundles.append(img_bundle)
-			
-			print 'total: ', len(image_bundles)
-			print ''
-			#raw_input('pause')
-
-		raw_input('end of bundle searching')
-
+				cameras[x].step()
 		
-		
+		print len(image_bundles)
+		exit(0)
+
 		# now that we have the image sets, lets create the image bundle
 		#    NOTE: A potential problem exists where we may not have enough image sets to satisfy the 
 		#          request given in number of bundles variable.  This means that we must bundle what we 
 		#          and send an error back notifying that we only sent 'N' values
-		if options.number_bundles > len(image_tuples):
+		if options.number_bundles > len(image_bundles):
 			
-			log.write( log.WARNING, 'The number of valid image sets is less than request value. Returning ' + str(len(image_tuples)) + ' bundles')
+			log.write( log.WARNING, 'The number of valid image sets is less than request value. Returning ' + str(len(image_bundles)) + ' bundles')
 			
 			# set a new bundle size 
 			options.number_bundles = len(image_tuples)
