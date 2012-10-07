@@ -1,0 +1,16 @@
+<configuration>
+
+    <!-- Debugging Level
+
+      0 - Will produce no output
+      1 - Will print some data but will not alter flow
+      2 - Major steps will stop to allow user to view data. 
+          (note that you will have to press enter to continue)
+    -->
+    <debug_level  value="0" />
+    <logging      state="True"  location=".mosaic_analyzer.log" />
+    
+    <input_directory  value="/media/6AA8-201A/img" />
+    <output_file      value="output_part3_mosaic_24FEB.csv" />
+
+</configuration>

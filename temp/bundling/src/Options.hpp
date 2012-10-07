@@ -3,6 +3,10 @@
 
 ///STL Libraries
 #include <iostream>
+#include <string>
+
+///Personal Libraries
+#include "Parser.hpp"
 
 ///useful includes
 using namespace std;
@@ -23,18 +27,40 @@ const int CAMERA_IR = 1;
 class Options{
 
     public:
-
-        Options( const int argc, char** argv ){
-
-            cout << "Hello World" << endl;
-
-        }
+        
+        /**
+         * Parameterized Constructor
+        */
+        Options( const int argc, char** argv );
         
 
-        void print()const{
+        /** 
+         * Print the current configuration
+         * NOTE: For debugging only
+        */
+        void print()const;
+        
+        /**
+         * Print the help menu
+        */
+        void usage();
+        
 
-            cout << "print" << endl;
-        }
+    
+        string status_filename; /*< Name of the file which manages the program state */
+        string config_filename; /*< Name of the configuration file */
+            
+        string camera_type;     /*< Type of camera we are using */
+            
+        PSR::Parser parser;          /*<  Configuration file parser  */
+
+
+        string input_base;      /*< Base directory to search for cameras */
+        string collect_name;    /*< Name of the collect */
+
+        int number_eo_frames;   /*< Number of eo frames per step  */
+        int number_ir_frames;   /*< Number of ir frames per step  */
+
 
 };
 

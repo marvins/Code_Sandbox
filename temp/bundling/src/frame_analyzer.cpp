@@ -1,10 +1,14 @@
 
 ///STL Libraries
+#include <deque>
 #include <iostream>
 #include <string>
+#include <vector>
 
 ///Personal Libraries
+#include "Camera.hpp"
 #include "Options.hpp"
+
 
 ///useful namespaces
 using namespace std;
@@ -16,13 +20,22 @@ using namespace std;
  * Implements the primary status interface
 */
 int main( int argc, char * argv[] ){
-
-
-    ///load the configuration here
-    Options options( argc, argv );
     
-    ///print the configuration
-    options.print();
+    try{
+
+        ///load the configuration here
+        Options options( argc, argv );
+    
+        ///print the configuration
+        options.print();
+        
+        ///find the camera directories
+        deque<Camera> cameras = find_camera_directories( options );
+
+
+    } catch (string e){
+        cout << e << endl;
+    }
 
     return 0;
 }

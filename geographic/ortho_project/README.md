@@ -9,4 +9,9 @@ make
 ./bin/orthoproject
 
 
-To change the parameters, change the rotation angle of the camera and the axis.  Also, feel free to change the camera position, but that won't have any effect until I start modifying geographic imagery. 
+To change the parameters, change the rotation angle of the camera and the axis.  Also, feel free to change the camera position, but that won't have any effect until I start modifying geographic imagery.
+
+OBJECTIVES:
+ - Need to validate the detection of image corners
+    * Change the image view given test image. 
+    * Change the image view given geo image. 

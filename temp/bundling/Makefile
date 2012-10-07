@@ -15,8 +15,8 @@ EXEC=$(BIN)/frame_analyzer
 #-               Main Requirements             -#
 #-----------------------------------------------#
 # List of objects to build
-OBJECTS=$(BLD)/frame_analyzer.o $(BLD)/Parser.o
-HEADERS=$(SRC)/TACID.hpp $(SRC)/Camera.hpp $(SRC)/Options.hpp $(SRC)/Parser.hpp
+OBJECTS=$(BLD)/frame_analyzer.o $(BLD)/Parser.o $(BLD)/Options.o $(BLD)/Camera.o $(BLD)/IO.o
+HEADERS=$(SRC)/TACID.hpp $(SRC)/Camera.hpp $(SRC)/Options.hpp $(SRC)/Parser.hpp  $(SRC)/IO.hpp
 
 # Desired C++ Compiler
 CPP=g++
@@ -53,6 +53,17 @@ $(BLD)/frame_analyzer.o: $(SRC)/frame_analyzer.cpp $(HEADERS)
 $(BLD)/Parser.o: $(SRC)/Parser.cpp $(HEADERS)
 	$(CPP) $< -c -o $@  $(INCL)  $(FLAGS)
 
+# Options
+$(BLD)/Options.o: $(SRC)/Options.cpp $(HEADERS)
+	$(CPP) $< -c -o $@  $(INCL)  $(FLAGS)
+
+# Camera
+$(BLD)/Camera.o: $(SRC)/Camera.cpp $(HEADERS)
+	$(CPP) $< -c -o $@  $(INCL)  $(FLAGS)
+
+# IO
+$(BLD)/IO.o: $(SRC)/IO.cpp $(HEADERS)
+	$(CPP) $< -c -o $@  $(INCL)  $(FLAGS)
 
 #-----------------------------------------#
 #-          Required Directories         -#
