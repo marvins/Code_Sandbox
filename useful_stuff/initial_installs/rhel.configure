@@ -1,0 +1,6 @@
+#! /bin/bash
+#
+# This is a script to configure and install a RHEL/Scientific Linux/Centos
+# machine with the required development software. 
+
+sudo yum install gcc-c++
