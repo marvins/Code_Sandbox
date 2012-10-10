@@ -4,6 +4,7 @@
 ///STL Libraries
 #include <deque>
 #include <map>
+#include <set>
 #include <string>
 #include <vector>
 
@@ -13,6 +14,46 @@
 
 using namespace std;
 
+
+class TimeID{
+
+    public:
+        TimeID();
+        
+        TimeID( const string& dirname, const string& camname );
+
+        bool operator < (  TimeID const& rh )const;
+        bool operator > (  TimeID const& rh )const;
+        bool operator == ( TimeID const& rh )const;
+        bool operator != ( TimeID const& rh )const;
+        
+        deque<string> dirs;
+        deque<string> pathnames;
+};
+
+ostream& operator << ( ostream& ostr, const TimeID& id );
+
+
+/** 
+ * @class SceneID
+ *
+ * A basic structure for managing scene numbers
+*/
+class SceneID{
+    
+    public:
+        SceneID();        
+        SceneID( const string& name );
+
+        bool operator < ( SceneID const& rh )const;
+        bool operator > ( SceneID const& rh )const;
+        bool operator == ( SceneID const& rh )const;
+        bool operator != ( SceneID const& rh )const;
+
+        string m_major;
+        int    m_minor;
+};
+
 class Camera{
 
     public:
@@ -20,8 +61,15 @@ class Camera{
         static bool isValid( string const& name );
         
         void add_directory( string const& dir_name );
-        vector<string> root_directories;  /*< Name of the base camera directory */
+        
+        void build_scene_space();
+        
+        deque<string> root_directories;  /*< Name of the base camera directory */
+        
+        string camera_name;
 
+        set<TimeID> time_space;
+        map<SceneID,string> scene_space;
 };
 
 /** 

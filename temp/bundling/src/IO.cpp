@@ -7,9 +7,9 @@ using namespace std;
 
 namespace fs = boost::filesystem;
 
-const int  FILES = 0;
-const int  DIRECTORIES = 1;
-
+const int  FILES = 1;
+const int  DIRECTORIES = 2;
+const int  ALL = 3;
 
 void directory_append_internal( const string& filename, deque<string>& container, const int& flag ){
 
@@ -45,4 +45,34 @@ string file_basename( const string& pathname ){
 
     return fs::path(pathname).filename();
 }
+
+std::string file_extension( const std::string& pathname ){
+    return fs::extension( fs::path( pathname ));
+}
+    
+deque<string> file_decompose_path( string const& pathname ){
+
+    //create path
+    fs::path item( pathname );
+    
+    //create output
+    deque<string> output;
+
+    //iterate over item
+    for (fs::path::iterator it(item.begin()), it_end(item.end()); it != it_end; ++it){
+        output.push_back(*it);    
+    }
+
+    return output;
+}
+
+
+bool is_dir( const string& name ){
+    return fs::is_directory( fs::path( name ) );
+}
+
+bool is_file( const string& name ){
+    return fs::is_regular_file( fs::path( name ));
+}
+
 

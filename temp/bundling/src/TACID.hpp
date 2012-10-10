@@ -16,6 +16,9 @@ class TACID{
 
 
         }
+        
+
+        static int scene_number( string const& filename, bool& isValid );
 
     private:
 
