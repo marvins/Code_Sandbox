@@ -5,7 +5,8 @@
 
 packages="gcc-c++
           vim-enhanced
-	  cmake-gui"
+          thunderbird
+          cmake-gui"
 
 
 for package in ${packages}
@@ -13,8 +14,9 @@ for package in ${packages}
         sudo yum install ${package}
     done
 
-
-# Git configuration
+######################################
+#         Git configuration          #
+######################################
 git config --global user.name "Marvin Smith"
 git config --global user.email marvin.smith@sncorp.com
 
