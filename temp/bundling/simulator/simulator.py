@@ -13,6 +13,8 @@ CAMERA_TYPE='EO'
 
 NUM_CAM_DIRS=368
 
+START_SLICE=1
+
 # CAL COP NUC
 COLLECT_PATH=CAMERA_TYPE + '_CAL_20120818080808'
 
@@ -218,7 +220,7 @@ def build_layout_03( BASE_PATH, _slice, collect ):
 def build_layout_02( BASE_PATH ):
 	
 	# Build the slice directories
-	for x in xrange(1,9):
+	for x in xrange(START_SLICE,9):
 		for y in xrange(0,4):
 			cdir = BASE_PATH + '/slice'+str(x)+'-collect'+str(y)
 			create_directory( cdir )
