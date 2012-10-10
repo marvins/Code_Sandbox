@@ -28,7 +28,7 @@ FLAGS= -Wall -O3
 #-              Dependencies             -#
 #-----------------------------------------#
 BOOST_INCL=-I/usr/include
-BOOST_LIBS=-L/usr/lib -lboost_system -lboost_filesystem
+BOOST_LIBS=/usr/lib64/libboost_system.a /usr/lib64/libboost_filesystem.a
 
 
 INCL= $(BOOST_INCL)

@@ -1,5 +1,6 @@
 #include "IO.hpp"
 
+#include <algorithm>
 #include <boost/filesystem.hpp>
 
 using namespace std;
@@ -27,6 +28,7 @@ void directory_append_internal( const string& filename, deque<string>& container
     for( ; iter != end_iter; iter++){
         
         string entry = (*iter).path().string();
+        
         //get the file type
         if( (flag & DIRECTORIES) == DIRECTORIES && fs::is_directory( *iter ) == true ){
             container.push_front( entry );    
@@ -35,10 +37,12 @@ void directory_append_internal( const string& filename, deque<string>& container
             container.push_front( entry );    
         }
     }
+
+    sort( container.begin(), container.end());
 }
 
 string file_basename( const string& pathname ){
 
-    return fs::path(pathname).filename().string();
+    return fs::path(pathname).filename();
 }
 

@@ -20,11 +20,10 @@ ostream& operator << ( ostream& ostr, Camera const& camera ){
     ostr << "Camera: " << endl;
     
     ///print root directories
-    ostr << "   root directories: ";
+    ostr << "   root directories: " << endl;
     if( camera.root_directories.size() > 0 ){ 
-        cout << camera.root_directories[0];
         for( size_t i=0; i<camera.root_directories.size(); i++)
-            ostr << ", " << camera.root_directories[i];
+            ostr << "   " << camera.root_directories[i] << endl;
     }
     ostr << endl;
     
@@ -93,7 +92,7 @@ deque<Camera> find_camera_directories( Options const& options ){
     deque<string> dir_tree(0);
 
     string cdir;
-
+    
     /**
       start at the base directory and begin building a list of camera directories.  When 
       we discover one, add it to the respective camera.
@@ -104,7 +103,6 @@ deque<Camera> find_camera_directories( Options const& options ){
         //pop the first item off of the stack
         cdir = dir_tree.front();
         dir_tree.pop_front();
-
         
         //check to see if it is a valid camera directory
         if( Camera::isValid(cdir)){
@@ -114,7 +112,7 @@ deque<Camera> find_camera_directories( Options const& options ){
 
             //add camera to the camera list
             output[camNum].root_directories.push_back(cdir);
-
+            
         }
         else{
 
@@ -129,5 +127,15 @@ deque<Camera> find_camera_directories( Options const& options ){
 
     return output;
 
+}
+
+map<int,ImageBundle> compute_image_bundles( deque<Camera>& cameras, Options const& options ){
+    
+    map<int,ImageBundle> bundles;
+    
+    // For each camera, initialize the search space
+
+
+    return bundles;
 }
 

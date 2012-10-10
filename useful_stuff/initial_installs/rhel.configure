@@ -4,6 +4,10 @@
 # machine with the required development software. 
 
 packages="gcc-c++
+          boost-devel
+          boost-static
+          qt-devel
+          ant
           vim-enhanced
           epel-release
           yum-conf-epel

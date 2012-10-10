@@ -2,8 +2,9 @@
 #define __SRC_CAMERA_HPP__
 
 ///STL Libraries
-#include <string>
 #include <deque>
+#include <map>
+#include <string>
 #include <vector>
 
 ///Personal Libraries
@@ -29,6 +30,14 @@ class Camera{
 ostream& operator << ( ostream& ostr, Camera const& camera );
 
 
+class ImageBundle{
+
+    public:
+
+        deque<string> data;
+
+};
+
 /**  
  * Convert the camera directory name into an index for the 
  * hash key. 
@@ -42,6 +51,11 @@ int camera2int( const string& dirname );
  * Searches and loads all camera directories found in system
 */
 deque<Camera> find_camera_directories( Options const& options );
+
+/**
+ * Compute the image bundles
+*/
+map<int,ImageBundle> compute_image_bundles( deque<Camera>& cameras, Options const& options );
 
 #endif
 
