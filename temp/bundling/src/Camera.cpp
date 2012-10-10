@@ -233,15 +233,7 @@ void Camera::build_scene_space(){
         }
 
     }
-    cout << "Camera Time Space: " << time_space.size() << " elements" << endl;
 
-/*
-    set<TimeID>::iterator it = time_space.begin();
-    for( size_t i=0; i<10; i++){
-        cout << (*it) << endl;
-        it++;
-    }
-*/
 
 }
 
@@ -365,16 +357,48 @@ deque<Camera> find_camera_directories( Options const& options ){
 }
 
 map<int,ImageBundle> compute_image_bundles( deque<Camera>& cameras, Options const& options ){
-
+    
     map<int,ImageBundle> bundles;
 
-    // For each camera, initialize the search space
+    // For each camera, initialize the time space
     for( size_t i=0; i<cameras.size(); i++ ){
         cout << i << " : ";
         cameras[i].build_scene_space();
     }
 
-    // 
+    cout << "starting sync" << endl;
+     bool inSync;
+
+    /** Begin comparing directories */
+    while( true ){
+        
+        //first check to make sure all cameras have the same top element
+        while( true ){
+            
+            inSync = true;
+            for( size_t i=1; i<cameras.size(); i++){
+                
+                //keep moving if the elements are equal
+                if( cameras[0].time_space.begin() == cameras[i].time_space.begin() )
+                    continue;
+
+                //otherwise, we are out of sync and must correct
+                inSync = false;
+
+                //find the smaller element and remove it.
+                if(  (*cameras[0].time_space.begin()) < (*cameras[i].time_space.begin()) )
+                    cameras[0].time_space.erase(cameras[0].time_space.begin());
+                else
+                    cameras[i].time_space.erase(cameras[i].time_space.begin());
+
+                break;
+            }
+
+            if( inSync == true )
+                break;
+
+        }
+    }
 
     return bundles;
 }
