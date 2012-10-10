@@ -23,7 +23,7 @@ MO='AUG'
 DY=18
 
 START_TIME=[8,0]
-END_TIME=[11,59]
+END_TIME=[9,59]
 
 N_TOGGLE=False
 R_TOGGLE=False
@@ -201,7 +201,7 @@ def build_layout_04( BASE_PATH, _slice, collect ):
 	create_directory( rdir )
 
 	build_layout_05( ndir, _slice, collect )
-	build_layout_05( rdir, _slice, collect )
+	#build_layout_05( rdir, _slice, collect )
 
 #-----------------------------------------#
 #-     BUILD THE CAMERA DIRECTORIES      -#

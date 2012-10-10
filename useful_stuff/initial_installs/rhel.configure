@@ -5,6 +5,9 @@
 
 packages="gcc-c++
           vim-enhanced
+          epel-release
+          yum-conf-epel
+          zlib-devel
           thunderbird
           cmake-gui"
 
