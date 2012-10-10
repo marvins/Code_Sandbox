@@ -4,11 +4,17 @@
 # machine with the required development software. 
 
 packages="gcc-c++
-          cmake-gui"
+          vim-enhanced
+	  cmake-gui"
 
 
 for package in ${packages}
     do
         sudo yum install ${package}
     done
+
+
+# Git configuration
+git config --global user.name "Marvin Smith"
+git config --global user.email marvin.smith@sncorp.com
 
