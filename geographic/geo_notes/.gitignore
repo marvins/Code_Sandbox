@@ -2,3 +2,13 @@
 *.aux
 *.bbl
 
+*.blg
+*.glg
+*.gls
+*.idx
+*.ind
+*.ilg
+*.log
+*.out
+*.toc
+*.xdy
