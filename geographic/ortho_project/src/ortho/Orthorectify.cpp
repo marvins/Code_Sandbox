@@ -17,6 +17,9 @@ Mat compute_location( Mat const& corner, Mat const& center, Mat const& principle
     Mat cam2world = Mat::eye( 4, 4, CV_64FC1);
     matrix_add_translation( cam2world, options.Position_i );
     
+    //compute the aspect ratio
+    double aspect_ratio = (double) options.image.cols/ (double) options.image.rows;
+
     Mat pixShift = Mat::eye( 4, 4, CV_64FC1);
     pixShift.at<double>(0,0) = options.camera_plane_width;
     pixShift.at<double>(1,1) = options.camera_plane_height;
