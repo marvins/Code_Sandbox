@@ -460,7 +460,7 @@ GeoHeader_Info*& GeoImage::get_header()const {
 int GeoImage::getFileType( const string& fname ){
 
     //extract the extension
-    std::string ext = bf::path(fname).extension();
+    std::string ext = bf::path(fname).extension().string();
 
     if( ( ext == ".dt2" ) == true ) return DTED;
     if( ( ext == ".ntf" ) == true ) return NITF;
