@@ -1,11 +1,53 @@
 #! /bin/bash
 
 packages="vim
-          subversion"
+          ant
+          python-sphinx
+          python-numpy
+          python3-numpy
+          python-scipy
+          python3-scipy
+          python-matplotlib
+          texlive-latex-extra
+          g++
+          xindy
+          xfig
+          xclip
+          doxygen
+          mesa-utils
+          libqt4-designer
+          swig
+          swig2.0
+          libbz2-dev
+          libqt4-dev
+          qt4-qmake
+          cmake-qt-gui
+          subversion
+          libv4l-dev
+          openjdk-7-jdk
+          python-gdal
+          libgdal-doc
+          libgdal1-dev
+          libgdal1-1.7.0
+          libgdal1-1.7.0-grass
+          libopencore-amrnb-dev
+          libgstreamer0.10-0 
+          libgstreamer0.10-dev
+          gstreamer0.10-tools
+          libgstreamer-plugins-base0.10-dev 
+          gimp
+          gstreamer0.10-plugins-good 
+          gstreamer0.10-plugins-ugly 
+          gstreamer0.10-plugins-bad 
+          gstreamer0.10-ffmpeg
+          "
 
 for package in ${packages}
     do
+        clear
+        echo "Installing: ${package}"
         sudo apt-get install ${package}
+        read -p "Press [Enter] key to continue..." 
     done
 
 
