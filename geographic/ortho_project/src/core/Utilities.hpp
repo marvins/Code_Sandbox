@@ -85,5 +85,12 @@ int _round( const double& value );
 */
 bool file_exists( std::string const& filename );
 
+/**
+ *
+ *
+ *
+*/
+bool isValidGeoImage( std::string const& filename );
+
 #endif
 

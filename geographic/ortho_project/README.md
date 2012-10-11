@@ -14,4 +14,7 @@ To change the parameters, change the rotation angle of the camera and the axis. 
 OBJECTIVES:
  - Need to validate the detection of image corners
     * Change the image view given test image. 
-    * Change the image view given geo image. 
+    * Change the image view given geo image.
+
+
+

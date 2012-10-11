@@ -57,4 +57,9 @@ int compute3d_line_line_intersection( cv::Point3f const& a1, cv::Point3f const& 
                                       cv::Point3f const& b1, cv::Point3f const& b2, 
                                       const double& a, double& distance, double const& threshold );
 
+
+double compute3d_point_point_distance( cv::Mat const& pointA, cv::Mat const& pointB );
+
+cv::Mat compute_vector_norm( cv::Mat const& mat );
+
 #endif

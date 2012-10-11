@@ -125,8 +125,6 @@ class Options{
         
         Logger logger; /*< Logger */
         
-        std::string rectify_output_filename;    /*< Name of Fully Rectified Image */
-
         cv::Mat get_output_img2cam( cv::Size const& sz )const;
         cv::Mat get_output_img2cam( const cv::Size& imsize, double const& sx, double const& sy, double const& sz )const;
         cv::Mat get_output_cam2img( cv::Size const& sz )const;

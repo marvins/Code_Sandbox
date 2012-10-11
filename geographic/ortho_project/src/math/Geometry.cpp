@@ -334,3 +334,39 @@ bool pointInConvexPolygon( std::vector<cv::Point2f>const& lst, cv::Point2f const
     if( fabs( angSum - 360 ) < 1 ) return true;
     else                           return false;
 }
+
+double compute3d_point_point_distance( Mat const& pointA, Mat const& pointB ){
+
+    //make sure the dimensions are the same
+    if( pointA.cols != pointB.cols || pointA.rows != pointA.cols )
+        return -1;
+    
+    double dist = 0;
+
+    //search over the matricies
+    for( int y=0; y<3; y++ )
+        dist += (pointA.at<double>(y,0) - pointB.at<double>(y,0)) * (pointA.at<double>(y,0) - pointB.at<double>(y,0));
+
+    return sqrt(dist);
+}
+
+Mat compute_vector_norm( Mat const& mat ){
+
+    Mat output( mat.rows, mat.cols, CV_64FC1);
+
+    //get the vector magnitude
+    double mag = 0;
+    for( int x=0; x<mat.cols; x++ )
+    for( int y=0; y<mat.rows; y++ )
+        mag += pow( mat.at<double>(y,x), 2);
+    mag = sqrt(mag);
+    
+    //normalize
+    for( int x=0; x<mat.cols; x++ )
+    for( int y=0; y<mat.rows; y++ )
+        output.at<double>(y,x) = mat.at<double>(y,x) / mag;
+
+    return output;
+
+}
+

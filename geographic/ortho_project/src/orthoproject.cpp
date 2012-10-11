@@ -16,6 +16,7 @@
 //Personal Libraries
 #include "core/Configuration.hpp"
 #include "core/OrthoExceptions.hpp"
+#include "core/Utilities.hpp"
 #include "ortho/Orthorectify.hpp"
 #include "ortho/Perspective.hpp"
 
@@ -87,20 +88,25 @@ int main( int argc, char* argv[] ){
                 // TODO Check if image is a nitf, if so, load with GeoImage
                 //      Otherwise, load with opencv
                 // TODO Check the color type and bit depth
-                options.image = imread( options.image_filename );
+                if( isValidGeoImage( options.image_filename ) == true ){
+                    options.image = GEO::GeoImage( options.image_filename, true).get_image(CV_8UC3);
+                }
+                else{
+                    options.image = imread( options.image_filename );
+                }
                 
                 //load dem
                 // TODO Check if dem is for a geo image or from a file
                 // TODO Load from Geo Image DEM Module or from opencv
                 options.dem   = imread( options.dem_filename, 0 );
-
+                
             }
 
             /*****************************/
             /*      RECTIFY run_type     */
             /*****************************/
             if( options.get_run_type() == "FULL" || options.get_run_type() == "RECTIFY" ){
-                
+                    
                 //rectify the image
                 Mat corrected_image = orthorectify( options.image, options );  
 
@@ -111,7 +117,10 @@ int main( int argc, char* argv[] ){
                     waitKey(0);
                     destroyWindow("Fully Rectified Image");
                 }
-                imwrite(options.rectify_output_filename.c_str(), corrected_image);
+                cout << "writing to " << options.rectify_corrected_filename << endl;
+                
+                imwrite("data/loaded_image.jpg", options.image);
+                imwrite(options.rectify_corrected_filename.c_str(), corrected_image);
 
             }
 

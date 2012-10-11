@@ -346,6 +346,33 @@ Mat GeoImage::get_image() {
     return img;
 }
 
+
+cv::Mat GeoImage::get_image( const int& imtype ){
+
+    Mat img = get_image();
+    Mat output( img.rows, img.cols, imtype );
+    double val;
+
+    if( imtype == CV_8UC3 ){
+        if( img.type() == CV_16UC1 ){
+    
+            for( int x=0; x<img.cols; x++ )
+            for( int y=0; y<img.rows; y++ ){
+                val = ((img.at<short>(y,x)+1)/(pow(2,8))) - 1;
+                output.at<Vec3b>(y,x) = Vec3b( val, val, val );
+            }
+        
+        }
+        else
+            throw string("ERROR: Unsupported option");
+    }
+    else
+        throw string("ERROR: Unsupported option");
+    
+    return output;
+}
+
+
 void GeoImage::set_image( const Mat& img ){
     gdal_data.set_img_data( img ); 
 }

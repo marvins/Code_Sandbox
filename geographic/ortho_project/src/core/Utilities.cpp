@@ -89,3 +89,17 @@ bool file_exists( std::string const& filename ){
 
     return bf::exists( bf::path( filename ) );
 }
+
+bool isValidGeoImage( std::string const& filename ){
+    
+
+    string ext = bf::extension( filename );
+    if( ext == ".nitf" ||
+        ext == ".ntf"  ||
+        ext == ".NITF" ||
+        ext == ".NTF"    )
+        return true;
+
+    return false;
+}
+

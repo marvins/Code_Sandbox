@@ -63,6 +63,7 @@ class GeoImage{
     std::string getImageTypeName()const;
 
     cv::Mat  get_image();
+    cv::Mat  get_image( const int& imtype );
     void     set_image( const cv::Mat& img );
 
     /** Get the size of the opencv image */
