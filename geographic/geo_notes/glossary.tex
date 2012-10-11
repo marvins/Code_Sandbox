@@ -1,0 +1,77 @@
+
+\newglossaryentry{Orthorectification}{
+    name=Orthorectification,
+    description={ A method of correcting an image to align with real-world coordinates on a map. 
+                  This involves measuring the exact location of the image center as well as 
+                  the camera angle.  This is followed by the computation of the camera calibration 
+                  parameters to remove camera and lens distortions.  Finally, you may terrain
+                  induced distortions using DEM data.\index{Orthorectification}}
+}
+
+\newglossaryentry{Georectification}{
+    name={Georectification},
+    description={ A method of stretching and warping an image to align with another map projectin or spatial 
+                  data in GIS.  This is comparable to Google Earth and other systems which implement overlays. 
+                  If an image is rectified, Ground Control Points (GCP) can be used to create a transformation which 
+                  aligns one image to the GIS data.  This is different from orthorectification as well because
+                  it is assumed that the image is already orthorectified. Georectification just changes the 
+                  projection and/or coordinate system.\index{Georectification}}
+}
+
+\newglossaryentry{Georeference}{
+    name=Georeference,
+    description={Same as Georectification \index{Georeference}}
+}
+
+\newglossaryentry{Aerotriangulation}{
+    name=Aerotriangulation,
+    description={  The process of assigning ground control values to points on a block of photographs
+                   by determining the relationship between the photographs and known ground control 
+                   points.\index{Aerotriangulation}}
+}
+
+\newglossaryentry{Bundle Adjustment}{
+    name={Bundle Adjustment},
+    description={ The process of simulaneously refining 3D coordinates derived from multiple viewpoints.  
+                  This requires that the user has multiple 3d coordinates measured from multiple image
+                  pairs. This is often solved with Levenberg-Marquardt.}
+}
+
+\newglossaryentry{Boresight}{
+    name={Boresight},
+    description={ Boresight is the physical mounting angles between an IMU and a digital camera. Basically, if the IMU
+                  defines a flight axis,  the Boresight defines the angles from the axis of which the camera is pointing.}
+}
+
+
+\newglossaryentry{Focal Length}{
+    name={Focal Length},
+    description={  The distance between the focal point and the image plane. This is relevant as the focal length determines
+                   attributes such as the clarity of the image and the depth of field.  It is an essential part of camera 
+                   calibration.}
+}
+
+\newglossaryentry{Camera Origin}{
+    name={Camera Origin},
+    description={  The center of the camera in world coordinates.  In reality, this should be
+                   the latitude, longitude, and elevation of the camera if described in geodetic coordinates. }
+    symbol={$P_O$}
+}
+
+\newglossaryentry{Principle Point}{
+     name={Principle Point},
+     description={ The intersection of the ray which defines the center of the camera view with the image plane. This is the
+                   physical location in world coordinates of the center of the image view.  This subtracted with the Camera Origin define
+                   the vector which points ``straight ahead". },
+     symbol={$P_P$}
+}
+
+\newglossaryentry{Principle Ground Point}{
+    name={Principle Ground Point},
+    description={Using the ray defined by the Camera Origin and the line $P_OP_P$, the intersection of this line with the
+                 surface of the Earth creates a coordinate on the surface which is located in the principle point of the image. 
+                 This is relevant because images can only give you 3D information up to scale and depth.  This will provide the depth 
+                 attribute.}
+    symbol={$P_G$}
+}
+

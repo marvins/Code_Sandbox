@@ -1,0 +1,85 @@
+%  File:   PhotogrammetryNotes.tex
+%  Author: Marvin Smith
+%
+%
+% Start of Photogrammetry Notes
+\documentclass[10pt]{report}
+
+% Relevant packages required
+\usepackage{fullpage}
+\usepackage{hyperref}
+\usepackage{cite}
+\usepackage{graphicx}
+\usepackage{xcolor}
+\usepackage[xindy,toc]{glossaries}
+\usepackage{makeidx}
+\usepackage{subfig}
+
+\definecolor{dark-red}{rgb}{0.4,0.15,0.15}
+\definecolor{dark-blue}{rgb}{0.15,0.15,0.4}
+\definecolor{medium-blue}{rgb}{0,0,0.5}
+\hypersetup{
+    colorlinks, linkcolor={dark-red},
+    citecolor={dark-blue}, urlcolor={medium-blue}
+}
+
+
+\makeindex
+\makeglossaries
+
+% Title page information
+\title{Photogrammetry Notes and Observations}
+\author{Marvin Smith}
+\date{\today}
+
+\include{glossary}
+
+% Start processing document commands
+\begin{document}
+
+% Create the title page
+\maketitle
+
+% Create the table of contents
+\tableofcontents
+\clearpage
+
+
+
+% These are some relevant variables and associated images
+\addcontentsline{toc}{chapter}{Common Variables}
+\chapter*{Common Variables}
+
+\begin{itemize}
+\item $H$ - Height of the camera above ground, \emph{Flying Height}
+\item $B$ - Distance between two image, \emph{Air Base}
+\end{itemize}
+
+
+% Common Programs and Usage
+\include{CommonProgramsAndUsage}
+
+% Camera Calibration Notes
+\include{CameraCalibration}
+
+% Orthorectification Notes
+\include{Orthorectification}
+
+% Glossary
+\glsaddall
+\printglossary
+
+
+% Bibliography
+\bibliography{PhotogrammetryNotes}
+\bibliographystyle{plain}
+\nocite{*}
+\addcontentsline{toc}{chapter}{Bibliography and useful resources}
+
+% Index
+\addcontentsline{toc}{chapter}{Index}
+\printindex
+
+
+\end{document}
+
