@@ -1,5 +1,8 @@
 #! /bin/bash
 
+GIT_USER_NAME="Marvin Smith"
+GIT_USER_EMAIL="marvin.smith@sncorp.com"
+
 packages="vim
           ant
           python-sphinx
@@ -53,6 +56,6 @@ for package in ${packages}
 
 # Git configuration settings
 
-git config --global user.name "Marvin Smith"
-git config --global user.email marvin.smith@sncorp.com
+git config --global user.name "${GIT_USER_NAME}"
+git config --global user.email "${GIT_USER_EMAIL}"
 
