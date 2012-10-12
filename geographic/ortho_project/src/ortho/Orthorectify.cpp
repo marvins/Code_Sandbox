@@ -249,6 +249,18 @@ Mat orthorectify( Mat const& image, Options& options ){
     */
     Rect_<double> ground_bbox = compute_ground_bbox( corner00_world, corner01_world, corner10_world, corner11_world ); 
     
+    
+    /** 
+     * Create a simple polygon which we can use to test if points in the output image exist 
+     * in the input image.  For images with extreme rotations, this will save significant 
+     * processing power. 
+    */
+    vector<Point2f> imgPolygon;
+    imgPolygon.push_back( Point2f(corner00_world.at<double>(0,0), corner00_world.at<double>(1,0)));
+    imgPolygon.push_back( Point2f(corner10_world.at<double>(0,0), corner10_world.at<double>(1,0)));
+    imgPolygon.push_back( Point2f(corner11_world.at<double>(0,0), corner11_world.at<double>(1,0)));
+    imgPolygon.push_back( Point2f(corner01_world.at<double>(0,0), corner01_world.at<double>(1,0)));
+
 
     /**
      * Now that we have the region outlined, we need to compute the proper image size. 
@@ -260,31 +272,14 @@ Mat orthorectify( Mat const& image, Options& options ){
                                             options.image.size(), rotation_axis );
     
     
-    
-    // 
-    cout << "Image Corner World Coordinate Projections" << endl;
-    cout << "tl: "; print_mat( corner00_world.t() );
-    cout << "tr: "; print_mat( corner10_world.t() );
-    cout << "bl: "; print_mat( corner01_world.t() );
-    cout << "br: "; print_mat( corner11_world.t() );
-    cout << endl;
-
-    // 
-    cout << "Image Ground Sampling Distance" << endl;
-    cout << "x : " << gsd.first  << " meters/pixel" << endl;
-    cout << "y : " << gsd.second << " meters/pixel" << endl;
-    cout << endl;
-
     /** 
      * The image size is the gsd multiplied with the image dimensions
     */
     Size osize( ground_bbox.width  * gsd.first  + 1,
-                ground_bbox.height * gsd.second + 1);
+                ground_bbox.height * gsd.first + 1);
     
     double viewScale = (double) osize.width / osize.height;
     
-    cout << "input size: " << options.image.cols << ", " << options.image.rows << endl;
-    cout << "output sz : " << osize.width << ", " << osize.height << endl;
 
     // initialize the output image
     // TODO use the option from the config file
@@ -309,6 +304,12 @@ Mat orthorectify( Mat const& image, Options& options ){
             */
             Mat world_position = load_world_point( Point(x,y), osize, ground_bbox );
         
+
+            /**
+             * Make sure the world position resides in the input image. Otherwise skip.
+            */
+            if( pointInConvexPolygon( imgPolygon, Point2f(world_position.at<double>(0,0), world_position.at<double>(1,0)) ) == false )continue;
+
             /** 
              * Convert the world coordinate into a pixel value in the input camera
              * camera system.
@@ -349,8 +350,6 @@ Mat orthorectify( Mat const& image, Options& options ){
             if( cnt % 100000 == 0 ){
                 cout << x << ", " << y << endl;
                 imwrite("temp.jpg",output);
-                imshow("OUTPUT", output);
-                waitKey(0);
             }
         }
     }
