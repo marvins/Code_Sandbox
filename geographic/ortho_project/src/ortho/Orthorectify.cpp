@@ -291,7 +291,6 @@ Mat orthorectify( Mat const& image, Options& options ){
     */
     int cnt = 0;
     
-    namedWindow("OUTPUT");
     for( int y=0; y<output.rows; y++){
         for( int x=0; x<output.cols; x++){
             
@@ -346,9 +345,9 @@ Mat orthorectify( Mat const& image, Options& options ){
 
             }
 
-
+            
+            // temporary debugging tool to allow you to view results, mid run
             if( cnt % 100000 == 0 ){
-                cout << x << ", " << y << endl;
                 imwrite("temp.jpg",output);
             }
         }
