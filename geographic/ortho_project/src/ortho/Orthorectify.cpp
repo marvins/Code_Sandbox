@@ -9,93 +9,354 @@
 
 using namespace cv;
 
+/**
+ *  ASSUMPTIONS:
+ *  1. Principle point is in the center of the image.
+ *  2. Pixels in an image are square in real life.
+*/
 
-Mat compute_location( Mat const& corner, Mat const& center, Mat const& principle_point, Mat const& earth_normal, Size sz, Options const& options ){
 
-    //compute the camera 2 world transformation. 
-    //   This is the camera position - focal length
-    Mat cam2world = Mat::eye( 4, 4, CV_64FC1);
-    matrix_add_translation( cam2world, options.Position_i );
+/**
+ * Convert the World Coordinate to Pixel Coordinates
+*/
+Point convert_world2pixel( Mat const& world_coordinate, 
+                           Mat const& camera_position,
+                           Mat const& camera_principle_point,
+                           Mat const& camera_normal,
+                           Mat const& camera_rotation,
+                           Size_<double> focal_plane_size,
+                           Size image_size
+                           ){
     
-    //compute the aspect ratio
-    double aspect_ratio = (double) options.image.cols/ (double) options.image.rows;
+    /**
+     * Compute the intersection between the world coordinate
+     * and the focal plane on the desired camera. 
+    */
+    Mat world_plane_coordinate = compute_plane_line_intersection( world_coordinate, 
+                                                                  camera_position, 
+                                                                  camera_normal, 
+                                                                  camera_principle_point);
+    
+    /**
+     * Transform coordinate into the camera plane coordinate system
+     *
+     * - Subtract the world coordinate by the principle point of the camera
+     *   * This will normalize the point about the focal plane
+     *   * rotate the point by the plane rotation to level the point on a flat surface
+    */
+    Mat cam2plane = Mat::eye(4,4,CV_64FC1);
+    cam2plane.at<double>(0,3) = -camera_principle_point.at<double>(0,0);
+    cam2plane.at<double>(1,3) = -camera_principle_point.at<double>(1,0);
+    cam2plane.at<double>(2,3) = -camera_principle_point.at<double>(2,0);
+    
+    //rotate by the camera rotation inverse
+    cam2plane = camera_rotation.inv() * cam2plane;
 
-    Mat pixShift = Mat::eye( 4, 4, CV_64FC1);
-    pixShift.at<double>(0,0) = options.camera_plane_width;
-    pixShift.at<double>(1,1) = options.camera_plane_height;
-    pixShift.at<double>(0,3) = -options.camera_plane_width/2.0;
-    pixShift.at<double>(1,3) = -options.camera_plane_height/2.0;
+    /** 
+     * Transform camera plane coordinate into the pixel space
+     *
+     * - add half of the image focal plane size back to make top-left origin
+     * - divide by the focal plane size to make from [0,1]
+     * - mulitply by the image size to make from [0, max rows]
+    */
+    Mat orig_shift = Mat::eye(4,4,CV_64FC1);
+    orig_shift.at<double>(0,3) = focal_plane_size.width /2.0;
+    orig_shift.at<double>(1,3) = -focal_plane_size.height/2.0;
+        
+    Mat plane2pix = Mat::eye(4,4,CV_64FC1);
+    plane2pix.at<double>(0,0) = image_size.width / focal_plane_size.width;
+    plane2pix.at<double>(1,1) = -image_size.height/ focal_plane_size.height;
 
-    //compute the pixel 2 camera transformation
-    Mat pix2cam = options.get_output_img2cam( sz, options.camera_plane_width, options.camera_plane_height, -options.get_focal_length() );
+    plane2pix = plane2pix * orig_shift;
+
     
-    /* Compute the world coordinate of the point */ 
-    Mat camera_point =  cam2world * options.RotationM * pixShift * pix2cam * corner;
+    /** 
+     * Apply all transformations
+    */
+    Mat output = plane2pix * cam2plane * world_plane_coordinate;
     
-    /* Compute the intersection between the camera and the ground */
-    Mat P1 = options.Position_i;
-    Mat P2 = camera_point;
-    Mat P3 = load_point(0, 0, 0);
-    Mat N  = earth_normal;
-            
-    /*  This is the ground point */
-    Mat ground_point = compute_plane_line_intersection( P1, P2, N, P3);
-    
-    return ground_point;
-    
+    // return point
+    return Point( _round(output.at<double>(0,0)), _round(output.at<double>(1,0)));
 }
 
-double compute_gsd( Mat const& earth_normal, Size sz, Options const& options ){
-    
-    Mat cam_pnt01, cam_pnt02, cam_pnt11, cam_pnt12;
+/**
+ * Convert the Pixel Coordinate to World Coordinates
+*/
+Mat  convert_pixel2world(  Mat const&       pixel_coord, 
+                           Size const&      image_size, 
+                           Size_<double>    image_plane_size, 
+                           Mat const&       rotation_axis,
+                           double const&    focal_length,
+                           Mat const&       camera_position,
+                           Mat const&       earth_normal      ){ 
 
-    /* Compute the camera locations of adjacent points */ 
-    cam_pnt01 = options.get_output_img2cam( sz ) * load_point( 0, 0, 0) + load_vector( 0, 0, -1);
-    cam_pnt02 = options.get_output_img2cam( sz ) * load_point( 1, 1, 0) + load_vector( 0, 0, -1);
 
-    cam_pnt11 = options.get_output_img2cam( sz ) * load_point( sz.width-2, sz.height-2, 0) + load_vector( 0, 0, -1);
-    cam_pnt12 = options.get_output_img2cam( sz ) * load_point( sz.width-1, sz.height-1, 0) + load_vector( 0, 0, -1);
+    /**************************/
+    /*     Pixel 2 Plane      */
+    /**************************/
+    // convert the pixel to camera plane coordinates
+    Mat pix2plane = Mat::eye( 4, 4, CV_64FC1 );
+    
+    // this will scale the pixels to match the range of the focal plane
+    pix2plane.at<double>(0,0) = (double) image_plane_size.width / image_size.width;
+    pix2plane.at<double>(1,1) = (double) -image_plane_size.height/ image_size.height;
+    
+    // this will center the pixel on the principle point which currently is assumed to be the center of the image.
+    pix2plane.at<double>(0,3) = -image_plane_size.width / 2.0;
+    pix2plane.at<double>(1,3) = image_plane_size.height/ 2.0;
+    
+    /********************************************/
+    /*      Plane 2 Camera Transformation       */
+    /********************************************/
+    // now compute the transformation from pixel to local camera coordinates
+    Mat plane2camera = Mat::eye( 4, 4, CV_64FC1 );
+    
+    // translate by ( 0 - focal_length )
+    plane2camera.at<double>(2,3) = - focal_length;
 
-    /* Convert the camera locations to world coordinates */
-    cam_pnt01 = options.RotationM * cam_pnt01 + options.Position_i - load_point(0,0,0);
-    cam_pnt02 = options.RotationM * cam_pnt02 + options.Position_i - load_point(0,0,0);
+    // apply rotation
+    plane2camera = rotation_axis * plane2camera;  
     
-    cam_pnt11 = options.RotationM * cam_pnt11 + options.Position_i - load_point(0,0,0);
-    cam_pnt12 = options.RotationM * cam_pnt12 + options.Position_i - load_point(0,0,0);
+
+    /**********************************************/
+    /*       Camera 2 World Transformation        */
+    /**********************************************/
+    Mat camera2world = Mat::eye( 4, 4, CV_64FC1 );
+
+    // give translation parameters equal to world camera position
+    camera2world.at<double>(0,3) = camera_position.at<double>(0,0);
+    camera2world.at<double>(1,3) = camera_position.at<double>(1,0);
+    camera2world.at<double>(2,3) = camera_position.at<double>(2,0);
+
+    /**********************************/
+    /*      Apply Transformation      */
+    /**********************************/
+    // multiply pixel coordinate by the pixel 2 coordinate transform
+    Mat plane_coord = camera2world * plane2camera * pix2plane * pixel_coord;
+   
     
-    /* Find the ground locations */
-    cam_pnt01 = compute_plane_line_intersection( options.Position_i, cam_pnt01, earth_normal, load_point(0,0,0));
-    cam_pnt02 = compute_plane_line_intersection( options.Position_i, cam_pnt02, earth_normal, load_point(0,0,0));
-    cam_pnt11 = compute_plane_line_intersection( options.Position_i, cam_pnt11, earth_normal, load_point(0,0,0));
-    cam_pnt12 = compute_plane_line_intersection( options.Position_i, cam_pnt12, earth_normal, load_point(0,0,0));
+    /********************************************************************/
+    /*     Compute the Intersection Between the view and the ground     */
+    /********************************************************************/
+    Mat ground_coord = compute_plane_line_intersection( camera_position, plane_coord, earth_normal, load_point( 0, 0, 0) );
+
+    return ground_coord;
+}
+
+
+/**
+ * Compute the ground sampling distance. 
+ * 
+ * The ground sampling distance is the ratio between the ground range and the 
+ * input image size.  Also factored in is the rotation angle.
+*/
+pair<double,double> compute_gsd( Mat const& tl, Mat const& tr, Mat const& bl, Mat const& br,  
+                                 Size const& image_size, Mat const& rotation_axis ){
+
+    // take the average span of the image width and height, then divide by the number of pixels 
+    // to determine a reasonable gsd
+    double topX =  fabs(tl.at<double>(0,0) - tr.at<double>(0,0));
+    double botX =  fabs(bl.at<double>(0,0) - br.at<double>(0,0));
+    double midX =  ( topX + botX ) / 2.0; 
     
-    /* Choose the GSD with the smallest value */
-    double gsdTL = std::min( fabs(cam_pnt01.at<double>(0,0) - cam_pnt02.at<double>(0,0)),
-                             fabs(cam_pnt01.at<double>(1,0) - cam_pnt02.at<double>(1,0)));
+    double minY =  fabs(tl.at<double>(1,0) - bl.at<double>(1,0));
+    double maxY =  fabs(tr.at<double>(1,0) - br.at<double>(1,0));
+    double midY =  ( minY + maxY ) / 2.0;
     
-    double gsdBR = std::min( fabs(cam_pnt11.at<double>(0,0) - cam_pnt12.at<double>(0,0)),
-                             fabs(cam_pnt11.at<double>(1,0) - cam_pnt12.at<double>(1,0)));
-    
-    return std::min( gsdTL, gsdBR);
+    // compute gsd elements
+    double gsdx = midX / image_size.width;
+    double gsdy = midY / image_size.height;
+
+    //return the variable
+    return pair<double,double>( gsdx, gsdy );
 }
 
 
 
-
-
-/** Primary orthorectification module */
+/** 
+ * Primary orthorectification module 
+*/
 Mat orthorectify( Mat const& image, Options& options ){
+   
+
+    /**
+     * Compute some focal length-based vectors
+    */
+
+    // focal length ( input parameter )
+    double focal_length = options.get_focal_length();
+
+    // output focal vector ( looks straight down )
+    Mat output_focal_vector = load_vector( 0, 0, -focal_length );
+
+    // input focal vector ( rotated by quaternion )
+    Mat  input_focal_vector = options.RotationM * output_focal_vector;
+
+    /**
+     * Need to compute the camera plane normals
+    */
     
-    // the focal vector is the focal length multiplied by the normal to the camera
-    Mat focal_vector = options.get_focal_length() * load_vector(0, 0, -1);
+    // this is a unit vector in the direction of the output camera
+    Mat  output_camera_normal = load_vector( 0, 0, -1);
+
+    // this is a unit vector in the direction of the input camera
+    Mat  input_camera_normal  = options.RotationM * output_camera_normal;
+
+    // this is a unit vector in the direction of the earth normal
+    Mat  earth_normal         = load_vector( 0, 0, 1);
     
-    //find the intersection between the center coordinate on the image plane and the surface of the earth
-    Mat camera_normal         = load_vector( 0, 0, -1);
-    Mat rotated_camera_normal = options.RotationM * camera_normal;
+    // this is the rotation axis
+    Mat rotation_axis = options.RotationM;
+
+    /**
+     * Need to compute the position displacement vectors
+    */
+    // the position of the input camera in world coordinates
+    Mat input_camera_position = options.Position_i;
+
+    // the position of the input camera in world coordinates ( vector format )
+    Mat input_camera_position_vector = load_vector( input_camera_position.at<double>(0,0), 
+                                                    input_camera_position.at<double>(1,0), 
+                                                    input_camera_position.at<double>(2,0));
     
-    Mat earth_normal          = load_vector( 0, 0,  1);
-    Mat rotated_earth_normal  = options.RotationM * earth_normal;
+    // The principle point on the input image is the camera position plus the focal vector
+    Mat input_camera_principle_point = input_camera_position + input_focal_vector;
     
+    /**
+     * Build a size object for the focal plane size
+    */
+    Size_<double> image_plane_size( options.camera_plane_width, options.camera_plane_height );
+
+
+    /**
+     * Compute the location of the 4 camera corners in world coordinates
+    */
+
+    // pixel coordinates
+    Mat corner00_pixel = load_point(                0  ,                0  , 0 );
+    Mat corner10_pixel = load_point( options.image.cols,                0  , 0 );
+    Mat corner01_pixel = load_point(                0  , options.image.rows, 0 );
+    Mat corner11_pixel = load_point( options.image.cols, options.image.rows, 0 );
+
+    // world coordinates
+    Mat corner00_world = convert_pixel2world( corner00_pixel, options.image.size(),  image_plane_size,  rotation_axis, focal_length, input_camera_position, earth_normal );
+    Mat corner10_world = convert_pixel2world( corner10_pixel, options.image.size(),  image_plane_size,  rotation_axis, focal_length, input_camera_position, earth_normal );
+    Mat corner01_world = convert_pixel2world( corner01_pixel, options.image.size(),  image_plane_size,  rotation_axis, focal_length, input_camera_position, earth_normal );
+    Mat corner11_world = convert_pixel2world( corner11_pixel, options.image.size(),  image_plane_size,  rotation_axis, focal_length, input_camera_position, earth_normal );
+    
+    /**
+     * Convert the world coordinates into a image bounding box
+    */
+    Rect_<double> ground_bbox = compute_ground_bbox( corner00_world, corner01_world, corner10_world, corner11_world ); 
+    
+
+    /**
+     * Now that we have the region outlined, we need to compute the proper image size. 
+     *
+     * This requires us to compute the GSD as we don't yet know what one pixel means
+    */
+    pair<double,double> gsd = compute_gsd(  corner00_world, corner10_world, 
+                                            corner01_world, corner11_world, 
+                                            options.image.size(), rotation_axis );
+    
+    
+    
+    // 
+    cout << "Image Corner World Coordinate Projections" << endl;
+    cout << "tl: "; print_mat( corner00_world.t() );
+    cout << "tr: "; print_mat( corner10_world.t() );
+    cout << "bl: "; print_mat( corner01_world.t() );
+    cout << "br: "; print_mat( corner11_world.t() );
+    cout << endl;
+
+    // 
+    cout << "Image Ground Sampling Distance" << endl;
+    cout << "x : " << gsd.first  << " meters/pixel" << endl;
+    cout << "y : " << gsd.second << " meters/pixel" << endl;
+    cout << endl;
+
+    /** 
+     * The image size is the gsd multiplied with the image dimensions
+    */
+    Size osize( ground_bbox.width  * gsd.first  + 1,
+                ground_bbox.height * gsd.second + 1);
+    
+    double viewScale = (double) osize.width / osize.height;
+    
+    cout << "input size: " << options.image.cols << ", " << options.image.rows << endl;
+    cout << "output sz : " << osize.width << ", " << osize.height << endl;
+
+    // initialize the output image
+    // TODO use the option from the config file
+    Mat output( osize, CV_8UC3 );
+    output = Scalar(0);
+
+    /**
+     *    Iterate the Output Image, performing orthorectification
+    */
+    int cnt = 0;
+    
+    namedWindow("OUTPUT");
+    for( int y=0; y<output.rows; y++){
+        for( int x=0; x<output.cols; x++){
+            
+            cnt++;
+            /**
+             * Compute the geographic position of the output pixel location
+             *
+             * - Since we are dealing with an axis-aligned coordinate system,
+             *   just interpolate the position against the bbox
+            */
+            Mat world_position = load_world_point( Point(x,y), osize, ground_bbox );
+        
+            /** 
+             * Convert the world coordinate into a pixel value in the input camera
+             * camera system.
+            */
+            
+            /**
+             * TODO Compute any dem induced intersections here
+            */
+            //dem_correction( world_position )
+
+            /**
+             * Convert the world coordinate into pixel value
+            */
+            Point pixel_position = convert_world2pixel( world_position, 
+                                                        input_camera_position,
+                                                        input_camera_principle_point,
+                                                        input_camera_normal,
+                                                        rotation_axis,
+                                                        image_plane_size,
+                                                        options.image.size());
+
+
+            // apply to image
+            if( pixel_position.x >= 0 && pixel_position.y >= 0 && pixel_position.x < options.image.cols && pixel_position.y < options.image.rows ){
+
+                if( output.type() == CV_8UC3 && options.image.type() == CV_8UC3 ){
+                    output.at<Vec3b>(y,x) = options.image.at<Vec3b>(pixel_position);
+                }
+                else if( output.type() == CV_8UC1 && options.image.type() == CV_8UC1 ){
+                    output.at<uchar>(y,x) = options.image.at<uchar>(pixel_position);
+                }
+                else 
+                    throw string("ERROR: Unknown data types" );
+
+            }
+
+
+            if( cnt % 100000 == 0 ){
+                cout << x << ", " << y << endl;
+                imwrite("temp.jpg",output);
+                imshow("OUTPUT", output);
+                waitKey(0);
+            }
+        }
+    }
+
+    
+    /*
     // this is the center of the image plane on the original photo.  
     Mat input_principle_point = options.Position_i + (options.get_focal_length() * rotated_camera_normal);
     
@@ -156,13 +417,20 @@ Mat orthorectify( Mat const& image, Options& options ){
     double width  = maxPnt.at<double>(0,0) - minPnt.at<double>(0,0);
     double height = maxPnt.at<double>(1,0) - minPnt.at<double>(1,0);
     
+    cout << "DIMENSIONS" << endl;
+    cout << (double)image.cols / image.rows << endl;
+    cout << (double)width      / height     << endl;
+    cin.get();
 
     //compute the gsd of the image as the smallest available gsd known
-    double gsd = 1;//compute_gsd( earth_normal, image.size(), options );
+    double gsd = .55;//compute_gsd( earth_normal, image.size(), options );
     
     //create a new image which spans this length
     Size osize( width/gsd, height/gsd);
     
+    cout << "output size: " << osize.width << ", " << osize.height << endl;
+    cin.get();
+
     //create the output image
     Mat output( osize, options.get_rectify_image_type());
     output = Scalar(0);
@@ -383,7 +651,9 @@ Mat orthorectify( Mat const& image, Options& options ){
 
     imwrite("temp.jpg", output);
     return output;
+    */
 
+    return output;
 }
 
 

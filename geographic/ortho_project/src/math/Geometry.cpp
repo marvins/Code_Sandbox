@@ -370,3 +370,33 @@ Mat compute_vector_norm( Mat const& mat ){
 
 }
 
+/**  
+ * Compute the bounding box for the 4 corners
+*/
+cv::Rect_<double> compute_ground_bbox( cv::Mat const& pntA, cv::Mat const& pntB, cv::Mat const& pntC, cv::Mat const& pntD ){
+    
+    // get the minimum points
+    double minX = std::min( pntA.at<double>(0,0), std::min( pntB.at<double>(0,0), std::min( pntC.at<double>(0,0), pntD.at<double>(0,0))));
+    double minY = std::min( pntA.at<double>(1,0), std::min( pntB.at<double>(1,0), std::min( pntC.at<double>(1,0), pntD.at<double>(1,0))));
+
+    // get the maximum points
+    double maxX = std::max( pntA.at<double>(0,0), std::max( pntB.at<double>(0,0), std::max( pntC.at<double>(0,0), pntD.at<double>(0,0))));
+    double maxY = std::max( pntA.at<double>(1,0), std::max( pntB.at<double>(1,0), std::max( pntC.at<double>(1,0), pntD.at<double>(1,0))));
+
+    // create the bounding box
+    return Rect_<double>( minX, minY, maxX - minX, maxY - minY );
+}
+
+
+cv::Mat load_world_point(  Point const& pix, Size const& img_size, Rect_<double> const& ground_bbox ){
+    
+    //compute the scaled position (Remember that the y axis is flipped )
+    double ranX = (double) pix.x / img_size.width;
+    double ranY = (double) ( img_size.height - pix.y ) / img_size.height; 
+
+    //apply to geographic range (Remember that the y axis is flipped )
+    return load_point( ground_bbox.width  * ranX + ground_bbox.tl().x,
+                       ground_bbox.height * ranY + ground_bbox.tl().y,
+                       0                                             );
+}
+
