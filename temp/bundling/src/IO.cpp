@@ -43,11 +43,24 @@ void directory_append_internal( const string& filename, deque<string>& container
 
 string file_basename( const string& pathname ){
 
-    return fs::path(pathname).filename();
+    return fs::path(pathname).filename().string();
 }
 
 std::string file_extension( const std::string& pathname ){
     return fs::extension( fs::path( pathname ));
+}
+
+
+/** 
+ * Given some pathname, remove the last element.  For example, 
+ * given /home/user/file.txt -> /home/user
+ * given /home/user/files/   -> /home/user
+*/
+std::string file_pop_rear( string const& filename ){
+    
+  //strip the first part
+  return fs::path( filename ).parent_path( ).string();
+
 }
     
 deque<string> file_decompose_path( string const& pathname ){
@@ -60,7 +73,7 @@ deque<string> file_decompose_path( string const& pathname ){
 
     //iterate over item
     for (fs::path::iterator it(item.begin()), it_end(item.end()); it != it_end; ++it){
-        output.push_back(*it);    
+        output.push_back((*it).string());    
     }
 
     return output;
@@ -74,5 +87,4 @@ bool is_dir( const string& name ){
 bool is_file( const string& name ){
     return fs::is_regular_file( fs::path( name ));
 }
-
 

@@ -2,33 +2,87 @@
 #include "TACID.hpp"
 
 #include <algorithm>
+#include <fstream>
 #include <sstream>
 
 using namespace std;
 
+
+ImageBundle::ImageBundle( ){
+
+    scene_number = -1;
+    data.clear(); 
+}
+
+ImageBundle::ImageBundle( const string& filename ){
+    
+    bool isValid;
+    scene_number = TACID::scene_number( filename, isValid );
+    
+    data.push_back( filename );
+
+}
+
+
+ostream& operator << ( ostream& ostr, ImageBundle const& bundle ){
+
+    ostr << "Bundle: " << bundle.scene_number << endl;
+    for( size_t i=0; i<bundle.data.size(); i++ )
+        ostr << "  -> " << bundle.data[i] << endl;
+
+    return ostr;
+
+}
+
+
+/** 
+ * Default constructor for the TimeID class. 
+*/
 TimeID::TimeID(){
     dirs.clear();
     pathnames.clear();
 }
 
+/**
+ * Parameterized constructor for the TimeID Class. 
+*/
 TimeID::TimeID( const string& dirname, const string& camname ){
 
-    //get the path elements
+    // add directory to pathname list
+    pathnames.push_back(dirname);
+    
+    //get the path elements in the form of a deque
     dirs = file_decompose_path( dirname );
         
     //look for the camname
     deque<string>::iterator pos = find( dirs.begin(), dirs.end(), camname );
+        
     
-
-    //if it is there, then delete everthing up to and including it
+    //if it is there, then delete everthing up to and including it for the dirname
+    string pathStr = "";
+    vector<string> pathstack;
     if( pos != dirs.end()){
         for( deque<string>::iterator it = dirs.begin(); it != pos; it++ ){
+            
+            //pull from the dir stack
             dirs.pop_front();
         }
+        //remove the first item, as that is our starting directory
         dirs.pop_front();
     }
 
 }
+
+
+/**
+ * Decompose the path string and add it to the pathnames list
+*/
+void TimeID::decompose_and_add_path( const string& pathStr ){
+
+    //add to path string list
+    pathnames.push_back( pathStr );
+}
+
 
 
 bool TimeID::operator <(  TimeID const& rh )const{
@@ -122,10 +176,14 @@ bool TimeID::operator !=( TimeID const& rh )const{
 }
 
 ostream& operator << ( ostream& ostr, const TimeID& id ){
-    ostr << "PATH: ";
+    ostr << "DIRS: ";
     for( size_t i=0; i<id.dirs.size(); i++) 
         cout << id.dirs[i] << " / ";
-    
+    ostr << endl;
+    ostr << "PATHS: " << endl;
+    for( size_t i=0; i<id.pathnames.size(); i++ )
+        ostr << "   " << id.pathnames[i] << endl;
+
     return ostr;
 }
 
@@ -183,16 +241,25 @@ void Camera::add_directory( string const& dir_name ){
 
 }
 
+/**
+ * Takes the base pathnames provided to the camera object and builds a tree
+ * structure consisting of the internal directories.  Since the camera has multiple
+ * base directories, each subdirectory may exist in each base. 
+*/
 void Camera::build_scene_space(){
     
-    //
+    // create our directory stack which we will perform a Depth-First-Search on.
     deque<string> image_stack;
+
+    // load the directory stack with the contents of each base directory
     for( size_t i=0; i<root_directories.size(); i++ )
         directory_append_internal( root_directories[i], image_stack, IO_ALL);
     
+    // some useful variables
     string topStr;
     SceneID id;
     
+    // keep iterating until the image stack is empty
     while( image_stack.size() > 0 ){
         
         //pop off the first item
@@ -205,12 +272,13 @@ void Camera::build_scene_space(){
             //create timeid
             TimeID id( topStr, camera_name );
 
-            //check if the element exists
+            //check if the element already exists
             set<TimeID>::iterator it = time_space.find(id);
 
             if( it != time_space.end() ){
+
                 TimeID actual = (*it);
-                actual.pathnames.push_back(topStr);
+                actual.decompose_and_add_path(topStr);
                 time_space.erase(id);
                 time_space.insert(actual);
             }
@@ -238,6 +306,95 @@ void Camera::build_scene_space(){
 }
 
 /** 
+ * Pop the top entry off of the time space and retrieve all 
+ * images. Place them onto the current image list.
+ * Make sure to sort the list. 
+*/
+void Camera::decompose_top_directories( ){
+
+    // pop the top time space entry
+    TimeID timeEntry = *time_space.begin(); 
+    time_space.erase( time_space.begin());
+   
+    // clear the current image list
+    current_image_list.clear();
+
+    // add the directory contents to the list
+    for( size_t i=0; i<timeEntry.pathnames.size(); i++ ){
+        directory_append_internal( timeEntry.pathnames[i], current_image_list, IO_FILES_ONLY );
+    }
+
+    // sort the list by scene number
+    sort_TACID_list( current_image_list );
+
+}
+
+
+/** 
+ * Compares the current image list against the input
+ * test case.  
+*/
+void Camera::union_image_list( deque<ImageBundle>& image_list )const{
+    
+    //compare each list side-by-side until image list has been iterated
+    deque<ImageBundle>::iterator itA = image_list.begin();
+    deque<string>::const_iterator itB = current_image_list.begin();
+    int result;
+    while( true ){
+        
+        //check if we have reached the end of the image list, if yes, then exit
+        if( itA == image_list.end() )
+            break;
+
+        //if we reached the end of the current image list, 
+        //   then remove the rest of the image list
+        if( itB == current_image_list.end() ){
+            while(itA != image_list.end() ){
+                itA = image_list.erase(itA);
+            }
+        }
+
+        //compare each tacid
+        result = TACID_scene_func()( itA->data[0], *itB );
+
+        //if they are equal, add the image to the bundle and increment both pointers
+        if( result == 0 ){
+            
+            itA->data.push_back(*itB);
+            itA++;
+            itB++;
+            continue;
+        }
+
+        //if itA is smaller, delete it
+        if( result < 0 ){
+            itA = image_list.erase( itA );
+            continue;
+        }
+
+        //if itB is smaller, than increment it
+        else{
+            itB++;
+            continue;
+        }
+
+    }
+}
+
+
+/**
+ * Return true if the camera is out of directories to search.
+*/
+bool Camera::empty_time_space()const{
+    
+    if( time_space.size() <= 0 )
+        return true;
+    
+    return false;
+}
+
+
+/** 
  * Output stream operator 
  */
 ostream& operator << ( ostream& ostr, Camera const& camera ){
@@ -257,6 +414,11 @@ ostream& operator << ( ostream& ostr, Camera const& camera ){
     return ostr;
 }
 
+
+/**
+ *  Convert the cam### string into an actual 
+ *  number which can be referenced in an array
+*/
 int camera2int( const string& dirname ){
 
     //pull out the last three
@@ -270,11 +432,18 @@ int camera2int( const string& dirname ){
 
 }
 
+/**
+ * Returns true if the character being evaluated
+ * is either a number or an upper-case letter between
+ * A and F inclusive. 
+*/
 bool isCharAlphaNumeric( char const& c ){
-
+    
+    // check if a number
     if( c >= '0' && c <= '9' ){
         return true;
     }
+    //otherwise check if a letter
     if( c >= 'A' && c <= 'F' )
         return true;
 
@@ -283,6 +452,11 @@ bool isCharAlphaNumeric( char const& c ){
 }
 
 
+/**
+ * checks to make sure that the string matches the requirements
+ * to be a camera directory.  The main requirement is that it follows
+ * the general template  cam### where ### is a 3 digit hex number.
+*/
 bool Camera::isValid( string const& name ){
 
     //pull out the filename from the full path
@@ -356,50 +530,144 @@ deque<Camera> find_camera_directories( Options const& options ){
 
 }
 
-map<int,ImageBundle> compute_image_bundles( deque<Camera>& cameras, Options const& options ){
+
+/**
+ * Make sure each camera in the list has the same directory 
+ * at the top of its time space. 
+*/
+void normalize_cameras( deque<Camera>& cameras ){
+
+    bool inSync;
     
-    map<int,ImageBundle> bundles;
+    //search until we have a level set of cameras
+    while( true ){
+
+        inSync = true;
+        for( size_t i=1; i<cameras.size(); i++){
+
+            //if the camera list is empty, then exit
+            if( cameras[0].time_space.size() <= 0 || cameras[i].time_space.size() <= 0 ){
+                return;
+            }
+
+            //keep moving if the elements are equal
+            if( *cameras[0].time_space.begin() == *cameras[i].time_space.begin() )
+                continue;
+
+            //otherwise, we are out of sync and must correct
+            inSync = false;
+
+            //find the smaller element and remove it.
+            if(  (*cameras[0].time_space.begin()) < (*cameras[i].time_space.begin()) )
+                cameras[0].time_space.erase(cameras[0].time_space.begin());
+            else
+                cameras[i].time_space.erase(cameras[i].time_space.begin());
+
+            break;
+        }
+
+        if( inSync == true )
+            break;
+
+    }
+
+}
+
+
+/**
+ * Decompose and pull all image sets for the selected directory
+*/
+deque<ImageBundle> decompose_top_camera_directories( deque<Camera>& cameras ){
+
+    //create output
+    deque<ImageBundle> output;
+    
+    //iterate through each camera and decompose each directory
+    for( size_t i=0; i<cameras.size(); i++ )
+        cameras[i].decompose_top_directories();
+    
+    //using the first image list as the base, union each image list set based
+    // on scene number. 
+    deque<string> imgList = cameras[0].current_image_list;
+    
+    
+    for( deque<string>::iterator it=imgList.begin(); it != imgList.end(); it++ )
+        output.push_back( ImageBundle(*it));
+
+    
+    for( size_t i=1; i<cameras.size(); i++ )
+        cameras[i].union_image_list( output );
+    
+
+    //return output
+    return output;
+}
+
+
+/** 
+ * Grab all matching and complete image bundles
+*/
+deque<ImageBundle> compute_image_bundles( deque<Camera>& cameras, Options const& options ){
+
+    ofstream fout;
+    fout.open("output.txt");
+    
+    
+    deque<ImageBundle> bundle_output;
+    deque<ImageBundle> bundles;
 
     // For each camera, initialize the time space
     for( size_t i=0; i<cameras.size(); i++ ){
-        cout << i << " : ";
         cameras[i].build_scene_space();
     }
 
-    cout << "starting sync" << endl;
-     bool inSync;
-
+    int cnt = 0;
     /** Begin comparing directories */
-    while( true ){
+    bool run_loop = true;
+    while( run_loop == true ){
         
-        //first check to make sure all cameras have the same top element
-        while( true ){
-            
-            inSync = true;
-            for( size_t i=1; i<cameras.size(); i++){
-                
-                //keep moving if the elements are equal
-                if( cameras[0].time_space.begin() == cameras[i].time_space.begin() )
-                    continue;
-
-                //otherwise, we are out of sync and must correct
-                inSync = false;
-
-                //find the smaller element and remove it.
-                if(  (*cameras[0].time_space.begin()) < (*cameras[i].time_space.begin()) )
-                    cameras[0].time_space.erase(cameras[0].time_space.begin());
-                else
-                    cameras[i].time_space.erase(cameras[i].time_space.begin());
-
+        cout << cnt++ << endl;
+        //stop processing if any camera node is empty
+        for( size_t i=0; i<cameras.size(); i++ ){
+            if( cameras[i].empty_time_space() == true ){
+                run_loop = false; 
                 break;
             }
-
-            if( inSync == true )
-                break;
-
         }
-    }
+        if( run_loop == false )
+            break;
+        
+        //first check to make sure all cameras have the same top element
+        normalize_cameras( cameras );
+        
+        cout << "B" << endl;
+        //stop processing if any camera node is empty
+        for( size_t i=0; i<cameras.size(); i++ ){
+            if( cameras[i].empty_time_space() == true ){
+                run_loop = false;
+                break;
+            }
+        }
+        if( run_loop == false )
+            break;
+        
+        cout << "C" << endl;
+        //now decompose each directory and search for matching image pairs
+        bundles.clear();
+        bundles = decompose_top_camera_directories( cameras );
+        
+        cout << "D" << endl;
+        for( size_t i=0; i<bundles.size(); i++ )
+            fout << bundles[i].scene_number << "  :  " << bundles[i].data[0] << endl;
+        
+        cout << "E" << endl;
+        //add the image bundles to the bundle list
+        bundle_output.insert( bundle_output.end(), bundles.begin(), bundles.end() );
 
-    return bundles;
+    }
+    
+    fout.close();
+
+    return bundle_output;
 }
 

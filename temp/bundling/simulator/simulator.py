@@ -72,8 +72,8 @@ def build_layout_10( BASE_PATH, _slice, collect, camera, hour, minute ):
 		
 	time_diff = (hdiff*(120*60)) + (mdiff*120)
 
-	# We need to create 120 images per directory
-	for x in xrange(0, 120):
+	# We need to create 60 images per camera directory, but split between collects 0/1 and 2/3
+	for x in xrange(0, 60):
 		
 		TACID = ''
 
@@ -87,7 +87,12 @@ def build_layout_10( BASE_PATH, _slice, collect, camera, hour, minute ):
 		TACID += SORTIE_NUMBER
 
 		# The scene number will be the current x in addition to the hour and minute combo
-		scene_number = x + time_diff
+		scene_number = 0
+		if collect == 0 or collect == 2:
+			scene_number = 2*x + time_diff
+		else:
+			scene_number = 2*x + time_diff + 1
+
 		TACID += str(scene_number).zfill(5)
 		
 		# Add the Producer Code

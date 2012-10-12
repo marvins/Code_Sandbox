@@ -1,6 +1,7 @@
 
 ///STL Libraries
 #include <deque>
+#include <fstream>
 #include <iostream>
 #include <map>
 #include <string>
@@ -34,11 +35,8 @@ int main( int argc, char * argv[] ){
         deque<Camera> cameras = find_camera_directories( options );
         
         ///build a list of image bundles
-        map<int,ImageBundle> bundles = compute_image_bundles( cameras, options );
+        deque<ImageBundle> bundles = compute_image_bundles( cameras, options );
 
-
-        cout << "pause" << endl;
-        cin.get();
 
 
     } catch (string e){
