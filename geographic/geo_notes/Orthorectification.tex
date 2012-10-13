@@ -5,51 +5,119 @@ This section is divided into the following sections$\cdots$
 
 \begin{itemize}
 \item[] Camera View Rectification
-\item[] Perspective to Parallel Transformation
-\item[] Camera Distortion Rectification
 \end{itemize}
   
 \section*{Camera View Rectification}
 \addcontentsline{toc}{section}{Camera View Rectification}
 
-In order to orthorectify aerial imagery, you must first correct the image camera angles
-such the image appears in a ``bird's eye" view.  Here is my current approach to accomplishing this...
+\begin{enumerate}
+\item Compute the geographic extents.  AKA, find the min and max coordinates
+      and construct an axis-aligned bounding box. 
+\item Given the bounding box, compute the Ground Sampling Distance.  Multiply the 
+      GSD with the image to determine the output image size.
+\item Iterate over every pixel in the output image. 
+\item For a pixel in the output image, compute its geographic world coordinate value. 
+\item Compute the vector which links the pixel's world position with the camera position
+      of the original image. 
+\item Conduct an intelligent search of the space to look for pixels which occlude
+      the original point.
+\item Given the point in world coordinates, compute the pixel in the original image. 
+\item Set the output image pixel. 
+\end{enumerate}
 
-\begin{itemize}
-\item[] Compute required parameters.
-\item[] Build output image structure
-\item[] Iterate over every pixel in the output image
-    \begin{itemize}
-    \item[] Compute the intersection of the pixel-output camera orgin line with the ground plane.
-    \item[] Compute the intersection of the ground point-input camera origin with the camera's image plane.
-    \item[] Compute the difference between the principle point and the image plane intersection. 
-    \item[] Use this vector as the pixel location to reference the input image with. 
-    \end{itemize}
-\end{itemize}
 
-\subsection*{Required Parameters}
+\subsection*{Computing the geographic bounding box.}
+\addcontentsline{toc}{subsection}{Geographic Bounding Box}
 
-\begin{itemize}
-\item[] \gls{Camera Origin}, $P_O$
-\item[] Rotation Angle, $\theta$, and the Rotation Axis $\bar{R}$.
-\item[] Ground View Point
-    \begin{itemize}
-    \item Depends on the camera world coordinates, camera rotation angle, and focal length (as a help). 
-    \end{itemize}
-\end{itemize}
-
-\subsection*{Derived Parameters}
-
-\begin{itemize}
-\item[] \gls{Principle Point}, $P_P$
-\item[] \gls{Principle Ground Point}, $P_G$
-\end{itemize}
-
-\subsubsection*{Computing the Principle Point}
-Unless otherwise stated, the principle point on the image is assumed to be the center of the image. This may not be
-the case for all cameras, however it allows for a more simple model if unknown. 
+For each corner $P_{\textup{pix}}\left( X, Y\right)$, compute the world coordinate of the pixel on the surface of the 
+image plane as $P_{\textup{img}}\left( X, Y\right)$.  This will enable you to compute the intersection of the point
+with the surface plane as $P_{\textup{world}}$.
 
 \begin{equation}
-P_P = \textup{Rotation\_Matrix}(\theta, \bar{R}) \cdot \left( f \cdot ||R|| \right ) + P_O
+P_{\textup{img}} =  M_{w} M_{c} M_{p}
 \end{equation}
+
+ $M_{p}$ is the transformation which transforms the pixel to the focal plane space. The focal plane space is the
+2D image surface originating around the principle point $P_o$.  This is often assumed to be the center of the image.
+In addition the unit of measure is in meters and the range of the image is the length and width of the CCD surface.
+
+\begin{equation}
+M_{p} = 
+\begin{bmatrix}
+ \frac{X_{f}}{X_{\textup{I}}}& 0 & 0 & -\frac{X_f}{2} \\ 
+0 & -\frac{Y_{f}}{Y_{\textup{I}}} & 0 & \frac{Y_f}{2} \\ 
+0 & 0 & 1 &0 \\ 
+0 & 0 & 0 &1 
+\end{bmatrix}
+\end{equation}
+
+
+
+Where $X_{f}$ and $Y_{f}$ are the dimensions of the focal plane and $X_{\textup{I}}$ and $Y_{\textup{I}}$
+are the dimensions of the input image.  It is important to note that the Y axis is scaled inversely
+as image coordinates must be converted from a top-left origin to a bottom-left one.
+
+\begin{equation}
+M_{c} = 
+\begin{bmatrix}
+1 & 0 & 0 & 0\\ 
+0 & 1 & 0 & 0\\ 
+0 & 0 & -f & 0\\ 
+0 & 0 & 0 & 1
+\end{bmatrix}
+\end{equation}
+
+
+$M_{c}$ converts the pixel space into the camera coordinate system. For convenience, this is merely a 3D 
+coordinate system identical to the focal plane space, where the z axis is the negative focal length.  This
+is important as this will be identical to the world coordinate system except that the camera is rotated
+into position and translated by the world coordinates of the camera. 
+
+\begin{equation}
+M_{w} = \begin{bmatrix}
+1 & 0 & 0 & T_{Cx}\\ 
+0 & 1 & 0 & T_{Cy}\\ 
+0 & 0 & 1 & T_{Cz}\\ 
+0 & 0 & 0 & 1
+\end{bmatrix} 
+\mathbf{M_{\textup{Quaternion}}}
+\end{equation}
+
+Where $T_{C}$ is the position of the camera in the world coordinate system and
+$M_{Quaternion}$ is the matrix derived from the quaternion. 
+
+This will give you the 3D coordinate of the pixel on the focal plane.  You still need
+to translate this into the actual location on the surface.  In order to compute this, you
+need to compute the intersection between the ray connecting the camera origin and the 
+point on the focal plane with the surface of the Earth.
+
+\begin{equation}
+\mu = \frac{N \cdot \left(P_n - P_c\right) }{N \cdot \left(P_p - P_c\right)}
+\end{equation}
+
+\begin{equation}
+P_{\textup{gnd}} = P_c - \mu \cdot \left( P_{p} - P_{c} \right)
+\end{equation}
+
+Where $\mu$ is the scale factor of the ray, $P_n$ is the nadir point, $P_c$ is the camera origin, 
+$P_p$ is the principle point, and $N$ is the earth normal pointing $\left( 0, 0, 1\right)$.
+ 
+ 
+Applying these equations to each of the 4 corners will determine the min and max values for the 
+coordinate system. 
+
+\subsection*{Computing the GSD}
+\addcontentsline{toc}{subsection}{Computing the GSD}
+
+The ground sampling distance is the distance per pixels, measured in this project as \emph{meters per pixel}.
+This is computed using the bounding box of the image computed in the previous section.  Incorporating the 
+rotation into this would help, however I currently am not sure how to address this. 
+
+I currently compute the GSD for the x axis as the average between the span of the top row and bottom row. 
+This span is then divided by the number of pixels.  For example, if top row of a 1000 pixel wide image is 5000 meters wide and the bottom
+row is 1000 meters (the image is rotated), then the GSD is (5000 + 1000)/1000 = 3 meters per pixel.  The 
+GSD for the Y is the same except column heights. The final GSD is the smaller of the two.  A smaller GSD is safer as you can 
+scale the image down and not lose data. 
+
+ 
 
