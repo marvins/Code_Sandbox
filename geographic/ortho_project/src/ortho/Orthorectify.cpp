@@ -285,6 +285,15 @@ Mat orthorectify( Mat const& image, Options& options ){
     // TODO use the option from the config file
     Mat output( osize, CV_8UC3 );
     output = Scalar(0);
+    
+    /**
+     *        create a progress bar object and make 
+     *        sure we have permission to show it 
+    */
+    ProgressBar progressBar(0, output.cols*output.rows, 50);
+    bool show_progress_bar = false;
+    if( ( options.logger.get_console_run_state() & LOG_INFO ) == LOG_INFO )
+        show_progress_bar = true;
 
     /**
      *    Iterate the Output Image, performing orthorectification
@@ -294,7 +303,6 @@ Mat orthorectify( Mat const& image, Options& options ){
     for( int y=0; y<output.rows; y++){
         for( int x=0; x<output.cols; x++){
             
-            cnt++;
             /**
              * Compute the geographic position of the output pixel location
              *
@@ -346,11 +354,21 @@ Mat orthorectify( Mat const& image, Options& options ){
             }
 
             
+            //update the progress bar
+            if( show_progress_bar )
+                progressBar.update( cnt );
+            
             // temporary debugging tool to allow you to view results, mid run
             if( cnt % 100000 == 0 ){
                 imwrite("temp.jpg",output);
             }
+            cnt++;
         }
+        //print the progress bar to console
+        if( show_progress_bar ){
+            cout << progressBar.toString() << '\r' << flush;
+        }
+
     }
 
     
@@ -467,15 +485,7 @@ Mat orthorectify( Mat const& image, Options& options ){
     Mat     PositionTranslation = Mat::eye(4, 4, CV_64FC1);
     matrix_add_translation( PositionTranslation, options.Position_i);
 
-    /////////////////////////////////////////////////////////
-    //        create a progress bar object and make        //
-    //          sure we have permission to show it         //
-    /////////////////////////////////////////////////////////
-    ProgressBar progressBar(0, output.cols*output.rows, 50);
-    bool show_progress_bar = false;
-    if( ( options.logger.get_console_run_state() & LOG_INFO ) == LOG_INFO )
-        show_progress_bar = true;
-    
+        
     
     /////////////////////////////////////////////////////////////////////
     //      Iterate the Output Image, performing orthorectification    //
