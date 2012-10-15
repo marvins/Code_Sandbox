@@ -123,4 +123,36 @@ scale the image down and not lose data.
 \subsection*{Iterate over image}
 \addcontentsline{toc}{subsection}{Iterate over image}
 
+Once the parameters of the output image are determined, it is necessary to iterate every pixel and find the relationship between its position in the input image. 
+Since we create a bounding box with is axis-aligned, we can easily find the ground position of the pixel in the output image. 
+
+\begin{equation}
+\textup{pos} = \begin{bmatrix}
+\frac{\textup{bbox.max}.x}{I_{cols}} & 0 & \textup{bbox.min}.x\\ 
+ 0 & \frac{\textup{bbox.max}.y}{I_{rows}} & \textup{bbox.min}.y\\ 
+  0 & 0 & 1 
+  \end{bmatrix}
+  \cdot
+  \begin{bmatrix}
+  X \\
+  Y \\
+  1
+  \end{bmatrix}
+\end{equation}
+
+Where $\textup{bbox}$ is the geographic bounding box of the image, $I$ is the output image, and $X,Y$ are the image coordinates you are iterating. 
+
+This equation will yield the ground coordinates of the output image pixel. 
+
+\subsection*{Geographic Coordinate to Image Pixel}
+\addcontentsline{toc}{subsection}{Geographic Coordinate to Image Pixel}
+
+Now that we know the geographic coordinate of the output pixel, we need to compute the input image coordinate.  This will allow us to copy its pixel to the output image. 
+Note that this current technique does zero interpolation, so this should be eventually implemented. 
+
+\begin{equation}
+P_{\textup{in}} = 
+\end{equation}
+
+
 
