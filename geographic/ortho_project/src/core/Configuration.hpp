@@ -122,7 +122,9 @@ class Options{
         
         cv::Mat image; /*< Image being used */
         cv::Mat dem;   /*< DEM Image being used */
-        
+        double max_elevation;
+        cv::Point2f maxDem, minDem;
+
         Logger logger; /*< Logger */
         
         cv::Mat get_output_img2cam( cv::Size const& sz )const;
