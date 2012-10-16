@@ -74,9 +74,9 @@ then apply each pixel independently as a thread in a mass parallel pipeline.
 Integration of DTED is going to require a lot more cycles than I anticipated.  This project
 requires well-developed algorithms and libraries to manage the large number of coordinate systems, file types, 
 header requirements, and processor/memory demands.  DTED in particular is dangerous as loading large tiles can 
-kill system memory.  Once I get a baseline working for small samples, I need to investigate a more robust and large scale method 
-for handling very large datasets. Perhaps a database structure, oct-tree, or other conceptual design will work better. Also I have not begun
-to consider what happens if holes are not filled, as the value is $-2^{16}$. This along with the fact that most geographic coordinates
+kill system memory.  Once I get a baseline working for small samples, I need to investigate a more robust and scaleable method 
+for handling very large datasets. Also I have not begun
+to consider what happens if holes are not filled, as the value is $-2^{16}+1$. This along with the fact that most geographic coordinates
 do not fall directly along a dted post, interpolation between coordinate posts will further tax our algorithm.  
 
 \section*{Future Plans}
@@ -87,8 +87,8 @@ do not fall directly along a dted post, interpolation between coordinate posts w
     \item Make DEM Correction work for test imagery 
     \item Make DEM Correction work for Geographic imagery
     \item Read camera intrinsics for Geographic imagery from nitf headers.
-    \item Build test bench for script-level testing.
-    \item Create static library build to run on better machines (GSMC Server have 64 cores).
+    \item Build test bench for batch testing.
+    \item Create static library build to run on better machines (GS2 Servers have 64 cores and are x64 RHEL).
     \item Begin laying down framework for parallelization.
     \end{itemize}
 \item Create tools to determine camera intrinsics from geographic imagery.
@@ -96,9 +96,9 @@ do not fall directly along a dted post, interpolation between coordinate posts w
     \item Have user select N+ ground points
     \item Create system of equations required to solve
     \item Use least squares if solving homography
-    \item If solveable equations, possibly Levenburg Marquardt
-    \item Finally, I have very well tested Genetic Algorithm code.
-    \item Create a single file format for saving camera models. 
+    \item If not linear, possibly Levenburg Marquardt
+    \item Finally, I have very well tested Genetic Algorithm code which I am confident will do the trick.
+    \item Create a single file format for saving camera models.  
     \end{itemize}
 \item Once all of this is solved, begin stitching/bundle adjustment process
 \end{itemize}
