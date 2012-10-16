@@ -1,3 +1,5 @@
+#! /usr/bin/env python
+
 from mpl_toolkits.mplot3d import Axes3D
 from mpl_toolkits.mplot3d.art3d import *
 import matplotlib.pyplot as plt
@@ -93,7 +95,7 @@ tlz = (maxz + minz)/2.0 - span/2.0
 
 # Create figure structures
 fig = plt.figure()
-ax = fig.gca(projection='3d')
+ax = Axes3D(fig)
 
  
 # Draw the ground surface 
