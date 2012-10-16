@@ -345,7 +345,7 @@ Mat orthorectify( Mat const& image, Options& options ){
             /**
              * TODO Compute any dem induced intersections here
             */
-            dem_correction( world_position, options );
+            dem_correction( world_position, gsd.first, options );
 
             /**
              * Convert the world coordinate into pixel value

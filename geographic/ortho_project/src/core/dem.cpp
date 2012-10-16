@@ -7,12 +7,20 @@ using namespace std;
 
 /**
  * Correct the coordinate using elevation data. 
+ *
+ * - Compute the maximum radius to search around.
+ * - Start at ground point and iterate to radius, searching for occlusions. 
  * 
 */
-void dem_correction( Mat const& world_position, Options& options ){
+void dem_correction( Mat const& world_position, const double& gsd, Options& options ){
 
+    //compute the distance from the world position to the camera on a 2D plane
+    Mat dnorm = world_position - options.Position_i;
+
+    print_mat( dnorm.t());
+
+    cin.get();
     
-
 
 }
 

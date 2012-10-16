@@ -6,7 +6,7 @@
 
 #include <opencv2/core/core.hpp>
 
-void dem_correction( cv::Mat const& world_position, Options& options );
+void dem_correction( cv::Mat const& world_position, const double& gsd, Options& options );
 
 double query_dem( cv::Mat const& pnt, const cv::Mat& stPnt, Options& options );
 double query_dem( cv::Point2f const& pnt, const cv::Point2f& stPnt, Options& options );
