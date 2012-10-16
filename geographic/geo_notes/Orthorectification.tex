@@ -127,7 +127,7 @@ Once the parameters of the output image are determined, it is necessary to itera
 Since we create a bounding box with is axis-aligned, we can easily find the ground position of the pixel in the output image. 
 
 \begin{equation}
-\textup{pos} = \begin{bmatrix}
+P_{\textup{plane}} = \begin{bmatrix}
 \frac{\textup{bbox.max}.x}{I_{cols}} & 0 & \textup{bbox.min}.x\\ 
  0 & \frac{\textup{bbox.max}.y}{I_{rows}} & \textup{bbox.min}.y\\ 
   0 & 0 & 1 
@@ -142,6 +142,8 @@ Since we create a bounding box with is axis-aligned, we can easily find the grou
 
 Where $\textup{bbox}$ is the geographic bounding box of the image, $I$ is the output image, and $X,Y$ are the image coordinates you are iterating. 
 
+From this, compute the plane-line intersection with the image-plane world coordinate and the ground.  Use the camera position as the other point. 
+
 This equation will yield the ground coordinates of the output image pixel. 
 
 \subsection*{Geographic Coordinate to Image Pixel}
@@ -150,9 +152,38 @@ This equation will yield the ground coordinates of the output image pixel.
 Now that we know the geographic coordinate of the output pixel, we need to compute the input image coordinate.  This will allow us to copy its pixel to the output image. 
 Note that this current technique does zero interpolation, so this should be eventually implemented. 
 
+\begin{itemize}
+\item Compute a line-plane intersection with the line consisting of the camera origin and the ground coordinate.  The plane will conist of the camera plane normal and
+      the principle point. This is the point in the world where the camera-ground line intersects the input camera's focal plane. 
+\item Convert the world coordinates into camera coordinates by subtracting out the camera principle point world coordinate.  Then rotate to normalize the angle. 
+\item Convert the camera coordinates into 2D image plane coordinates.  Multiply the point by the focal plane size, and subtract half. This will bring the point to [0,1]
+      range on the focal plane.  Then multiply by the image size to get the real coordinates in pixels. 
+\end{itemize}
+
 \begin{equation}
-P_{\textup{in}} = 
+P_{\textup{pix}} = 
+\begin{bmatrix} 
+\textup{img}_\textup{cols} & 0 & 0 & 0 \\
+0 & \textup{img}_\textup{rows} & 0 & 0 \\
+0 & 0 & 1 & 0 \\
+0 & 0 & 0 & 1 
+\end{bmatrix}
+\cdot
+\begin{bmatrix}
+1 & 0 & 0 & -\textup{F}_x\\ 
+0 & 1 & 0 & \textup{F}_y\\ 
+0 & 0 & 1 & 0\\ 
+0 & 0 & 0 & 1
+\end{bmatrix}
+\cdot
+R^{-1}_{\textup{quat}} \cdot \begin{bmatrix}
+1 & 0 & 0 & -P_{x_\textup{prin}} \\ 
+0 & 1 & 0 & -P_{y_\textup{prin}}\\ 
+0 & 0 & 1 & -P_{z_\textup{prin}}\\ 
+0 & 0 & 0 & 1
+\end{bmatrix} \cdot P_{\textup{gnd}} 
 \end{equation}
 
+Where $F$ is the dimensions of the focal plane, $\textup{img}$ are the dimensions of the input image, and $P_\textup{prin}$ is the principle point.
 
 

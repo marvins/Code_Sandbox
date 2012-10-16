@@ -133,13 +133,12 @@ Mat  convert_pixel2world(  Mat const&       pixel_coord,
     /**********************************/
     // multiply pixel coordinate by the pixel 2 coordinate transform
     Mat plane_coord = camera2world * plane2camera * pix2plane * pixel_coord;
-   
     
     /********************************************************************/
     /*     Compute the Intersection Between the view and the ground     */
     /********************************************************************/
     Mat ground_coord = compute_plane_line_intersection( camera_position, plane_coord, earth_normal, load_point( 0, 0, 0) );
-
+    
     return ground_coord;
 }
 
@@ -272,11 +271,13 @@ Mat orthorectify( Mat const& image, Options& options ){
                                             options.image.size(), rotation_axis );
     
     
+    cout << "GSD: " << gsd.first << ", " << gsd.second << endl;
+    
     /** 
      * The image size is the gsd multiplied with the image dimensions
     */
-    Size osize( ground_bbox.width  * gsd.first  + 1,
-                ground_bbox.height * gsd.first + 1);
+    Size osize( ground_bbox.width  / gsd.first  + 1,
+                ground_bbox.height / gsd.first + 1);
     
     double viewScale = (double) osize.width / osize.height;
     
@@ -294,6 +295,26 @@ Mat orthorectify( Mat const& image, Options& options ){
     bool show_progress_bar = false;
     if( ( options.logger.get_console_run_state() & LOG_INFO ) == LOG_INFO )
         show_progress_bar = true;
+
+    options.logger.add_message( LOG_INFO, string("Input  image size: ") + num2str(options.image.cols) + string(" x ") + num2str(options.image.rows));
+    options.logger.add_message( LOG_INFO, string("Output image size: ") + num2str(output.cols) + string(" x ") + num2str(output.rows));
+    options.logger.add_message( LOG_INFO, string("GSD: ") + num2str(gsd.first) );
+    options.logger.add_message( LOG_INFO, string("TL World: ( ") + num2str(corner00_world.at<double>(0,0)) + string(", ") +
+                                                                   num2str(corner00_world.at<double>(1,0)) + string(", ") +
+                                                                   num2str(corner00_world.at<double>(2,0)) + string(") "));
+    options.logger.add_message( LOG_INFO, string("TR World: ( ") + num2str(corner10_world.at<double>(0,0)) + string(", ") +
+                                                                   num2str(corner10_world.at<double>(1,0)) + string(", ") +
+                                                                   num2str(corner10_world.at<double>(2,0)) + string(") "));
+    options.logger.add_message( LOG_INFO, string("BL World: ( ") + num2str(corner01_world.at<double>(0,0)) + string(", ") +
+                                                                   num2str(corner01_world.at<double>(1,0)) + string(", ") +
+                                                                   num2str(corner01_world.at<double>(2,0)) + string(") "));
+    options.logger.add_message( LOG_INFO, string("BR World: ( ") + num2str(corner11_world.at<double>(0,0)) + string(", ") +
+                                                                   num2str(corner11_world.at<double>(1,0)) + string(", ") +
+                                                                   num2str(corner11_world.at<double>(2,0)) + string(") "));
+    options.logger.add_message( LOG_INFO, string("Cam Position: ( ") + num2str(options.Position_i.at<double>(0,0)) + string(", ") +
+                                                                       num2str(options.Position_i.at<double>(1,0)) + string(", ") +
+                                                                       num2str(options.Position_i.at<double>(2,0)) + string(") "));
+
 
     /**
      *    Iterate the Output Image, performing orthorectification
