@@ -5,6 +5,16 @@
 using namespace cv;
 using namespace std;
 
+/**
+ * Correct the coordinate using elevation data. 
+ * 
+*/
+void dem_correction( Mat const& world_position, Options& options ){
+
+    
+
+
+}
 
 double query_dem( Mat const& pnt, const Mat& stPnt, Options& options ){
 

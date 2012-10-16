@@ -150,7 +150,6 @@ $(BUILD)/Logger.o: $(CORE)/Logger.cpp $(HEADERS)
 $(BUILD)/OrthoExceptions.o: $(CORE)/OrthoExceptions.cpp $(HEADERS)
 	$(CPP) $< -c -o $@ $(INCL) $(FLAGS)
 
-
 ####################################
 #       UNIT TEST FRAMEWORK        #
 ####################################

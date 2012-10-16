@@ -1,6 +1,8 @@
 #include "Orthorectify.hpp"
 
 #include "../core/dem.hpp"
+
+#include "../core/dem.hpp"
 #include "../core/ProgressBar.hpp"
 #include "../core/Utilities.hpp"
 #include "../math/Geometry.hpp"
