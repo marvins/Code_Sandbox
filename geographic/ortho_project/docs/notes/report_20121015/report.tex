@@ -1,0 +1,107 @@
+\documentclass[12pt]{report}
+
+% Libraries
+\usepackage{graphicx}
+\usepackage{subfig}
+\usepackage{fullpage}
+
+\title{Ortho-Project Notes}
+\author{Marvin Smith}
+\date{\today}
+
+\begin{document}
+
+\maketitle
+
+\section*{Current Progress}
+
+\begin{itemize}
+\item Revamped and restructured the entire ortho module. Reviewed the math and structured the code in an 
+      effort to improve readability. 
+      \begin{itemize}
+      \item Note: DEM Correction is still being worked on.
+      \end{itemize}
+\item Built baseline structure for OrthoProject unit tests.  Need to start validating that the large number
+of geometric utilities are accurate to a desired level of precision.  I have tested them during development, however this is something that 
+needs to be implemented long-term. 
+\item Beginning to implement coordinate conversion utilities, testing DEM Module, and working on utilities for 
+parsing GS1 NITF Headers.  This is required to integrate DTED and geographic imagery as we are dealing with 
+complex coordinate systems and different units of measure.
+\end{itemize}
+
+\section*{Metrics}
+
+\subsection*{GeoImage}
+\begin{itemize}
+\item Lines of Code: 10223
+\item Libraries: OpenCV, Boost Filesystem, GDAL
+\item New Features since 9/14
+    \begin{itemize}
+    \item \texttt{GEO::GeoImage::get\_image( int CV\_TYPE )}
+        \begin{itemize}
+        \item You can now retrieve the image from a GeoImage in any format you wish.
+        \end{itemize}
+
+    \item \texttt{GEO::GS2::GS2\_Header}
+        \begin{itemize}
+        \item Get and set functions for various GS2 NITF header items.
+        \item Currently aircraft tail number and focal length. More planned.
+        \end{itemize}
+    \item \texttt{GEO::CoordinateBase}
+        \begin{itemize}
+        \item Framework in place to implement Coordinate Conversion using GDAL.
+        \item Currently containers in place for UTM, Geodetic, and LambertConic
+        \item Still developing overall architecture for API
+        \end{itemize}
+    \end{itemize}
+\end{itemize}
+
+\subsection*{OrthoProject}
+\begin{itemize}
+\item Lines of Code: 5333
+\item Libraries: OpenCV, Boost Filesystem, GeoImage
+\end{itemize}
+
+\section*{Issues}
+
+\subsection*{Pixel-by-pixel into Homorgraphy}
+I don't see a means of converting the pixel-by-pixel search into a homography.  This is because
+once we have the ground point, we must search for occlusions.  A homography has no method of testing 
+for occlusions as it cannot search. I think the best method is to create a highly optimized search function, 
+then apply each pixel independently as a thread in a mass parallel pipeline. 
+
+\subsection*{Overall Scope}
+Integration of DTED is going to require a lot more cycles than I anticipated.  This project
+requires well-developed algorithms and libraries to manage the large number of coordinate systems, file types, 
+header requirements, and processor/memory demands.  DTED in particular is dangerous as loading large tiles can 
+kill system memory.  Once I get a baseline working for small samples, I need to investigate a more robust and large scale method 
+for handling very large datasets. Perhaps a database structure, oct-tree, or other conceptual design will work better. Also I have not begun
+to consider what happens if holes are not filled, as the value is $-2^{16}$. This along with the fact that most geographic coordinates
+do not fall directly along a dted post, interpolation between coordinate posts will further tax our algorithm.  
+
+\section*{Future Plans}
+
+\begin{itemize}
+\item Finish OrthoProject code, specifically...
+    \begin{itemize}
+    \item Make DEM Correction work for test imagery 
+    \item Make DEM Correction work for Geographic imagery
+    \item Read camera intrinsics for Geographic imagery from nitf headers.
+    \item Build test bench for script-level testing.
+    \item Create static library build to run on better machines (GSMC Server have 64 cores).
+    \item Begin laying down framework for parallelization.
+    \end{itemize}
+\item Create tools to determine camera intrinsics from geographic imagery.
+    \begin{itemize}
+    \item Have user select N+ ground points
+    \item Create system of equations required to solve
+    \item Use least squares if solving homography
+    \item If solveable equations, possibly Levenburg Marquardt
+    \item Finally, I have very well tested Genetic Algorithm code.
+    \item Create a single file format for saving camera models. 
+    \end{itemize}
+\item Once all of this is solved, begin stitching/bundle adjustment process
+\end{itemize}
+
+\end{document}
+
