@@ -7,7 +7,6 @@
 
 #include <opencv2/highgui/highgui.hpp>
 
-using namespace cv;
 
 /**
  *  ASSUMPTIONS:
@@ -271,8 +270,6 @@ Mat orthorectify( Mat const& image, Options& options ){
                                             options.image.size(), rotation_axis );
     
     
-    cout << "GSD: " << gsd.first << ", " << gsd.second << endl;
-    
     /** 
      * The image size is the gsd multiplied with the image dimensions
     */
@@ -346,7 +343,7 @@ Mat orthorectify( Mat const& image, Options& options ){
             /**
              * TODO Compute any dem induced intersections here
             */
-            //dem_correction( world_position )
+            dem_correction( world_position, options );
 
             /**
              * Convert the world coordinate into pixel value
