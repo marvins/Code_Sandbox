@@ -49,7 +49,10 @@ class pnt_comp{
  * 
 */
 void dem_correction( Mat& world_position, const double& gsd, Options& options, const Mat& minPnt, const Mat& maxPnt ){
-    
+   
+    // return when in a live run
+    return;
+
     //compute the initial position
     Mat dnorm = options.Position_i - world_position;
     Point2f base(dnorm.at<double>(0,0), dnorm.at<double>(1,0));

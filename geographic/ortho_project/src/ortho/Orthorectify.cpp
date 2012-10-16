@@ -330,7 +330,8 @@ Mat orthorectify( Mat const& image, Options& options ){
              *   just interpolate the position against the bbox
             */
             Mat world_position = load_world_point( Point(x,y), osize, ground_bbox );
-        
+            
+            // TODO make sure this function loads the proper elevation for this coordinate
 
             /**
              * Make sure the world position resides in the input image. Otherwise skip.
