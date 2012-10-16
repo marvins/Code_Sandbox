@@ -1,0 +1,27 @@
+[0;37m[  INFO   ][0m :  
+Program Configuration
+ - Run Type      : RECTIFY
+ - Image Filename: data/test.ntf
+
+Camera Configuration
+ - Focal Length  : 0.5
+ - Rotation Angle: 0
+ - Rotation Axis : vec( 1, 0, 0 )
+
+Build Image Configuration
+ - Build Image Size: 0, 0
+ - Build Image Type: 
+ - Z Buffering     : True
+
+Rectify Image Configuration
+ - Rectify Image Type: CV_8UC3
+ - Perspective2Parallel: False
+
+[0;37m[  INFO   ][0m :  Input  image size: 4872 x 3248
+[0;37m[  INFO   ][0m :  Output image size: 4873 x 3249
+[0;37m[  INFO   ][0m :  GSD: 1
+[0;37m[  INFO   ][0m :  TL World: ( -2436, 1624, 0) 
+[0;37m[  INFO   ][0m :  TR World: ( 2436, 1624, 0) 
+[0;37m[  INFO   ][0m :  BL World: ( -2436, -1624, 0) 
+[0;37m[  INFO   ][0m :  BR World: ( 2436, -1624, 0) 
+[0;37m[  INFO   ][0m :  Cam Position: ( 0, 0, 1624) 
