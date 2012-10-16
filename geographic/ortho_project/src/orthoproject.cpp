@@ -14,6 +14,7 @@
 #include <opencv2/highgui/highgui.hpp>
 
 //Personal Libraries
+#include "core/dem.hpp"
 #include "core/Configuration.hpp"
 #include "core/OrthoExceptions.hpp"
 #include "core/Utilities.hpp"
@@ -99,7 +100,9 @@ int main( int argc, char* argv[] ){
                 // TODO Check if dem is for a geo image or from a file
                 // TODO Load from Geo Image DEM Module or from opencv
                 options.dem   = imread( options.dem_filename, 0 );
-                
+                options.max_elevation = query_max_elevation( options.dem ); 
+                options.minDem = Point2f( -500, -500);
+                options.maxDem = Point2f(  500,  500);
             }
 
             /*****************************/

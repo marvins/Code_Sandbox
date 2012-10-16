@@ -177,8 +177,7 @@ pair<double,double> compute_gsd( Mat const& tl, Mat const& tr, Mat const& bl, Ma
  * Primary orthorectification module 
 */
 Mat orthorectify( Mat const& image, Options& options ){
-   
-
+    
     /**
      * Compute some focal length-based vectors
     */
@@ -297,6 +296,7 @@ Mat orthorectify( Mat const& image, Options& options ){
 
     options.logger.add_message( LOG_INFO, string("Input  image size: ") + num2str(options.image.cols) + string(" x ") + num2str(options.image.rows));
     options.logger.add_message( LOG_INFO, string("Output image size: ") + num2str(output.cols) + string(" x ") + num2str(output.rows));
+    options.logger.add_message( LOG_INFO, string("Max Elevation: ") + num2str(options.max_elevation));
     options.logger.add_message( LOG_INFO, string("GSD: ") + num2str(gsd.first) );
     options.logger.add_message( LOG_INFO, string("TL World: ( ") + num2str(corner00_world.at<double>(0,0)) + string(", ") +
                                                                    num2str(corner00_world.at<double>(1,0)) + string(", ") +
@@ -345,7 +345,8 @@ Mat orthorectify( Mat const& image, Options& options ){
             /**
              * TODO Compute any dem induced intersections here
             */
-            dem_correction( world_position, gsd.first, options );
+            dem_correction( world_position, gsd.first, options, load_point( ground_bbox.tl().x, ground_bbox.br().y, 0),
+                                                                load_point( ground_bbox.br().x, ground_bbox.tl().y, 0));
 
             /**
              * Convert the world coordinate into pixel value
