@@ -1,12 +1,14 @@
 #include "Options.hpp"
 
+#include <cstdlib>
+
 Options::Options( const int argc, char** argv ){
 
     bool found;
 
     //set defaults
     status_filename = ".frame_analyzer";
-    config_filename = "data/frame_analyzer.cfg";
+    config_filename = "frame_analyzer.cfg";
 
     //initialize the parser
     parser.init( argc, argv, config_filename );
@@ -43,7 +45,23 @@ Options::Options( const int argc, char** argv ){
     max_bundle_limit = parser.getItem_int("MAX_BUNDLE_LIMIT", found );
     if( found == false )
         throw string("ERROR: no MAX_BUNDLE_LIMIT found in configuration" );
+    
+    // load the type of collection 
+    string ctype = parser.getItem_string("COLLECT_TYPE", found );
+    if( found == false )
+        throw string("ERROR: no COLLECT_TYPE found in configuration");
 
+    if( ctype == "RAW" )
+        collect_type = COLLECT_RAW;
+    else if( ctype == "NITF" )
+        collect_type = COLLECT_NITF;
+    else
+        throw string("ERROR: Unsupported COLLECT_TYPE value");
+    
+    // load the collection path
+    collect_camera_path = parser.getItem_string("COLLECT_CAMERA_PATH", found);
+    if( found == false )
+        throw string("ERROR: no COLLECT_CAMERA_PATH found in configuration");
 
 }
 
@@ -69,6 +87,10 @@ void Options::print()const{
     cout << "  - Number IR Frames=" << number_ir_frames << endl;
     cout << endl;
     cout << "  - MAX_BUNDLE_LIMIT=" << max_bundle_limit << endl;
+    cout << endl;
+    cout << "  -COLLECT_TYPE=" << collect_type << endl;
+    cout << "  -COLLECT_CAMERA_PATH=" << collect_camera_path << endl;
+
 }
 
 

@@ -94,7 +94,8 @@ class Camera{
 
     public:
 
-        static bool isValid( string const& name );
+        static int isValid( string const& name );
+        static int isValid( string const& name, string const& cam_path_regex );
         
         void add_directory( string const& dir_name );
         

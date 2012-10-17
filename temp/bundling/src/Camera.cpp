@@ -430,7 +430,7 @@ bool isCharAlphaNumeric( char const& c ){
  * to be a camera directory.  The main requirement is that it follows
  * the general template  cam### where ### is a 3 digit hex number.
 */
-bool Camera::isValid( string const& name ){
+int Camera::isValid( string const& name ){
 
     //pull out the filename from the full path
     string fpath = file_basename(name);
@@ -451,6 +451,80 @@ bool Camera::isValid( string const& name ){
     return true;
 }
 
+
+/**
+ *  Compare two strings and see if they match
+*/
+bool string_match( const string& filename, const string& regex_name ){
+    
+    // if the regex is a single astrick, then pass
+    if( regex_name == "*" )
+        return true;
+    
+    //make sure they are the same size
+    if( filename.size() != regex_name.size() )
+        return false;
+    
+    // iterate over the regex_name
+    for( size_t i=0; i<filename.size(); i++ ){
+
+        // if the regex has a #, then pass automatically
+        if( regex_name[i] == '#' )
+            continue;
+
+        // otherwise, compare
+        if( filename[i] != regex_name[i] )
+            return false;
+    }
+
+    return true;
+
+}
+
+
+/**
+ * checks to make sure that the string matches the requirements
+ * to be a camera directory.  The main requirement is that it follows
+ * the general template  cam### where ### is a 3 digit hex number.
+*/
+int Camera::isValid( string const& name, string const& cam_path_regex ){
+
+    int result = 1;
+    
+    //split the path into components
+    deque<string> path_parts = file_decompose_path( name );
+
+    //split the name into components
+    deque<string> regx_parts = file_decompose_path( cam_path_regex );
+
+    //compare each pair of elements
+    for( size_t i=0; i<path_parts.size(); i++ ){
+        
+        // make sure that we still have elements in the regx parts
+        //  if not, then the path is longer than the regx.  That means we need to quit
+        if( i >= regx_parts.size() ){
+            result = -1;
+            break;
+        }
+
+        // check that the elements compare successfully
+        //   if not, then we should not proceed any further
+        if( string_match( path_parts[i], regx_parts[i] ) == false ){
+            result = -1;
+            break;
+        }
+
+    }
+
+    // if the path parts is shorter than the regx parts, then the name string is a sub-path of the regx path
+    if( result == 1 && path_parts.size() < regx_parts.size() ){
+        result = 0;
+    } 
+
+    return result;
+}
+
+
 /***********************************************************************/
 /*                                                                     */
 /***********************************************************************/
@@ -458,6 +532,11 @@ bool Camera::isValid( string const& name ){
  * Find Camera Directories
  * 
  * Searches and loads all camera directories found in system
+ *
+ * Algorithm:
+ * - Determine if we are looking for raws or nitfs
+ *   1. RAW Algorithm
+ *      a.  Starting with the base directory, search for every camera directory
  */
 deque<Camera> find_camera_directories( Options const& options ){
 
@@ -466,6 +545,9 @@ deque<Camera> find_camera_directories( Options const& options ){
 
     //create a list of directories to search
     deque<string> dir_tree(0);
+
+    //create a camera list structure
+    deque<string> camera_list;
 
     string cdir;
 
@@ -480,8 +562,11 @@ deque<Camera> find_camera_directories( Options const& options ){
         cdir = dir_tree.front();
         dir_tree.pop_front();
 
-        //check to see if it is a valid camera directory
-        if( Camera::isValid(cdir)){
+
+        /* Check to see if the directory matches the pattern */
+        int dir_state = Camera::isValid(cdir, options.input_base + string("/") + options.collect_camera_path);
+        
+        if( dir_state == 1 ){
 
             //extract the camera number
             int camNum = camera2int( cdir );
@@ -491,7 +576,7 @@ deque<Camera> find_camera_directories( Options const& options ){
             output[camNum].camera_name = file_basename( cdir );
 
         }
-        else{
+        else if( dir_state == 0 ){
 
             //query the directory for all internal directories
             directory_append_internal( cdir, dir_tree, IO_DIRECTORIES_ONLY  ); 

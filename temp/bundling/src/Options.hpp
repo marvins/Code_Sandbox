@@ -18,6 +18,8 @@ using namespace std;
 const int CAMERA_EO = 0;
 const int CAMERA_IR = 1;
 
+const int COLLECT_RAW  = 0;
+const int COLLECT_NITF = 1;
 
 /**
  * @class Options
@@ -45,8 +47,10 @@ class Options{
         */
         void usage();
         
+        int collect_type;              /*< Collection type */
+        string collect_camera_path;    /*< Collection camera path */
 
-    
+
         string status_filename; /*< Name of the file which manages the program state */
         string config_filename; /*< Name of the configuration file */
             

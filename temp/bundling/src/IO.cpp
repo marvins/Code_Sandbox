@@ -139,7 +139,7 @@ void directory_create( std::string const& dirname ){
 
 string file_basename( const string& pathname ){
 
-    return fs::path(pathname).filename().string();
+    return fs::path(pathname).filename();//.string();
 }
 
 std::string file_extension( const std::string& pathname ){
@@ -169,7 +169,7 @@ deque<string> file_decompose_path( string const& pathname ){
 
     //iterate over item
     for (fs::path::iterator it(item.begin()), it_end(item.end()); it != it_end; ++it){
-        output.push_back((*it).string());    
+        output.push_back((*it));//.string());    
     }
 
     return output;

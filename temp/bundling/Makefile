@@ -10,6 +10,8 @@ DIRS=$(BIN) $(BLD) $(SRC)
 # name of executable
 EXEC=$(BIN)/frame_analyzer
 
+# name of config file
+CFG=frame_analyzer.cfg
 
 #-----------------------------------------------#
 #-               Main Requirements             -#
@@ -27,11 +29,11 @@ FLAGS= -Wall -O3
 #-----------------------------------------#
 #-              Dependencies             -#
 #-----------------------------------------#
-BOOST_DIR=/usr/local
-#BOOST_DIR=/usr
+#BOOST_DIR=/usr/local
+BOOST_DIR=/usr
 BOOST_INCL=-I$(BOOST_DIR)/include
-BOOST_LIBS=$(BOOST_DIR)/lib/libboost_system.a $(BOOST_DIR)/lib/libboost_filesystem.a
-#BOOST_LIBS=$(BOOST_DIR)/lib64/libboost_system.a $(BOOST_DIR)/lib64/libboost_filesystem.a
+#BOOST_LIBS=$(BOOST_DIR)/lib/libboost_system.a $(BOOST_DIR)/lib/libboost_filesystem.a
+BOOST_LIBS=$(BOOST_DIR)/lib64/libboost_system.a $(BOOST_DIR)/lib64/libboost_filesystem.a
 
 INCL= $(BOOST_INCL)
 LIBS= $(BOOST_LIBS)
@@ -90,4 +92,12 @@ $(SRC):
 clean:
 	rm -r $(BIN)/* $(BLD)/*
 
+#-----------------------------------------#
+#-         Install to a machinie          #
+#-----------------------------------------#
+install:
+	mkdir -p frame_analyzer
+	cp $(EXEC) frame_analyzer
+	cp $(CFG)  frame_analyzer
+	scp -r frame_analyzer root@gsam-server:	
 
