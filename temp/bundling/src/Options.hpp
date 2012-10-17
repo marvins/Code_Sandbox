@@ -61,7 +61,8 @@ class Options{
         int number_eo_frames;   /*< Number of eo frames per step  */
         int number_ir_frames;   /*< Number of ir frames per step  */
 
-
+        int number_bundles;     /*< Number of bundles to collect */
+        int max_bundle_limit;   /*< The max number of bundles to search before stopping the search  */
 };
 
 

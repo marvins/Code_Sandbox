@@ -1,5 +1,6 @@
 
 ///STL Libraries
+#include <cstdio>
 #include <deque>
 #include <fstream>
 #include <iostream>
@@ -23,6 +24,9 @@ using namespace std;
 */
 int main( int argc, char * argv[] ){
     
+    cout << "Hello world" << endl;
+    return 0;
+
     try{
 
         ///load the configuration here
@@ -33,11 +37,12 @@ int main( int argc, char * argv[] ){
         
         ///find the camera directories
         deque<Camera> cameras = find_camera_directories( options );
-        
+
         ///build a list of image bundles
         deque<ImageBundle> bundles = compute_image_bundles( cameras, options );
-
-
+        
+        ///Compress and ship files
+        compress_bundles( bundles, options );
 
     } catch (string e){
         cout << e << endl;

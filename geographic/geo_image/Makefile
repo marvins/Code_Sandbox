@@ -120,8 +120,8 @@ $(BUILD):
 $(BIN): 
 	mkdir -p $(BIN)
 
-tools: $(BIN)/geo_viewer $(BIN)/geo_meta_parser
-	mkdir -p $(BIN)
+tools: $(BIN)  $(BIN)/geo_meta_parser
+	
 
 ###################################################################
 #				BUILD SEQUENCE		
@@ -129,14 +129,6 @@ tools: $(BIN)/geo_viewer $(BIN)/geo_meta_parser
 VIEWER_HDR=                       src/tools/geo_viewer/Quaternion.h src/tools/geo_viewer/visualization.h  src/tools/geo_viewer/camera.h  src/tools/geo_viewer/Cube.h    src/tools/geo_viewer/vector.h  src/tools/geo_viewer/initialization.h   src/tools/geo_viewer/keyboard.h  src/tools/geo_viewer/Options.h
 VIEWER_OBJ=$(BUILD)/geo_viewer.o  $(BUILD)/Quaternion.o             $(BUILD)/visualization.o              $(BUILD)/camera.o              $(BUILD)/Cube.o                $(BUILD)/vector.o              $(BUILD)/initialization.o               $(BUILD)/keyboard.o              $(BUILD)/Options.o
 
-# Viewer Program
-$(BIN)/geo_viewer: $(VIEWER_OBJ) $(VIEWER_HDR)
-	g++ -o $@ $(VIEWER_OBJ) $(OPENGL) $(BOOST) -lgdal -I/opt/local/include -L/opt/local/lib `pkg-config opencv --cflags --libs` -lgeoimage
-
-
-# Geo Metadata Parser Program
-$(BIN)/geo_meta_parser:  src/tools/geo_meta_parser.cpp  src/tools/geo_meta_parser/*.cpp src/tools/geo_meta_parser/*.h
-	g++ -o $@ $<  src/tools/geo_meta_parser/*.cpp -I/opt/local/include -I/usr/include/gdal  -L/opt/local/lib -lgeoimage -lncurses `pkg-config opencv --cflags --libs` -g -lboost_system -lboost_filesystem
 
 # Main Shared Libraries
 $(BUILD)/libgeoimage.so: $(OBJECTS)
@@ -292,44 +284,10 @@ build/Orthorectify_DEBUG.o: src/ortho/Orthorectify.cpp $(HEADERS)
 ###################################################################
 #				   		      Geo Rectify						  #
 ###################################################################
-RECTIFY_OBJ=$(BUILD)/geo_rectify.o
+# Geo Metadata Parser Program
+$(BIN)/geo_meta_parser:  src/tools/geo_meta_parser.cpp  src/tools/geo_meta_parser/*.cpp src/tools/geo_meta_parser/*.h
+	g++ -o $@ $<  src/tools/geo_meta_parser/*.cpp -I/opt/local/include -I/usr/include/gdal  -L/opt/local/lib -lgeoimage -lncurses `pkg-config opencv --cflags --libs` -g -lboost_system -lboost_filesystem
 
-$(BIN)/geo_rectify:  $(RECTIFY_OBJ)
-	g++ $(RECTIFY_OBJ) -o $@ 
-
-$(BUILD)/geo_rectify.o: src/tools/geo_rectify.cpp $(RECTIFY_HDR)
-	g++ $< -c -o $@ $(GEOIMAGE_INCLUDE)
-
-
-###################################################################
-#				   		      Geo Viewer						  #
-###################################################################
-$(BUILD)/geo_viewer.o: src/tools/geo_viewer.cpp $(VIEWER_HDR)
-	g++ $< -c -o $@  $(OPENGL_INCLUDE) $(GDAL_INCLUDE) $(GEOIMAGE_INCLUDE)
-
-$(BUILD)/initialization.o: src/tools/geo_viewer/initialization.cpp $(VIEWER_HDR)
-	g++ $< -c -o $@  $(OPENGL_INCLUDE)
-
-$(BUILD)/keyboard.o: src/tools/geo_viewer/keyboard.cpp $(VIEWER_HDR)
-	g++ $< -c -o $@  $(OPENGL_INCLUDE) $(GDAL_INCLUDE) $(GEOIMAGE_INCLUDE)
-
-$(BUILD)/Options.o:  src/tools/geo_viewer/Options.cpp $(VIEWER_HDR)
-	g++ $< -c -o $@  $(GDAL_INCLUDE) $(GEOIMAGE_INCLUDE)
-
-$(BUILD)/vector.o:   src/tools/geo_viewer/vector.cpp  $(VIEWER_HDR)
-	g++ $< -c -o $@ $(OPENGL_INCLUDE)
-
-$(BUILD)/Cube.o:	 src/tools/geo_viewer/Cube.cpp    $(VIEWER_HDR)
-	g++ $< -c -o $@ $(OPENGL_INCLUDE) $(GDAL_INCLUDE) $(GEOIMAGE_INCLUDE)
-
-$(BUILD)/camera.o:	 src/tools/geo_viewer/camera.cpp    $(VIEWER_HDR)
-	g++ $< -c -o $@ $(OPENGL_INCLUDE)
-
-$(BUILD)/visualization.o:	 src/tools/geo_viewer/visualization.cpp    $(VIEWER_HDR)
-	g++ $< -c -o $@ $(OPENGL_INCLUDE) $(GDAL_INCLUDE) $(GEOIMAGE_INCLUDE)
-
-$(BUILD)/Quaternion.o:  src/tools/geo_viewer/Quaternion.cpp $(VIEWER_HDR)
-	g++ $< -c -o $@ 
 
 ###################################################################
 # 				MISC TOOLS

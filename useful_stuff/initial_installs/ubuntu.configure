@@ -43,7 +43,7 @@ packages="vim
           gstreamer0.10-plugins-ugly 
           gstreamer0.10-plugins-bad 
           gstreamer0.10-ffmpeg
-	  libopencv-dev
+	      libopencv-dev
           "
 
 for package in ${packages}

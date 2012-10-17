@@ -8,33 +8,6 @@
 using namespace std;
 
 
-ImageBundle::ImageBundle( ){
-
-    scene_number = -1;
-    data.clear(); 
-}
-
-ImageBundle::ImageBundle( const string& filename ){
-    
-    bool isValid;
-    scene_number = TACID::scene_number( filename, isValid );
-    
-    data.push_back( filename );
-
-}
-
-
-ostream& operator << ( ostream& ostr, ImageBundle const& bundle ){
-
-    ostr << "Bundle: " << bundle.scene_number << endl;
-    for( size_t i=0; i<bundle.data.size(); i++ )
-        ostr << "  -> " << bundle.data[i] << endl;
-
-    return ostr;
-
-}
-
-
 /** 
  * Default constructor for the TimeID class. 
 */
@@ -609,9 +582,6 @@ deque<ImageBundle> decompose_top_camera_directories( deque<Camera>& cameras ){
 */
 deque<ImageBundle> compute_image_bundles( deque<Camera>& cameras, Options const& options ){
 
-    ofstream fout;
-    fout.open("output.txt");
-    
     
     deque<ImageBundle> bundle_output;
     deque<ImageBundle> bundles;
@@ -640,7 +610,6 @@ deque<ImageBundle> compute_image_bundles( deque<Camera>& cameras, Options const&
         //first check to make sure all cameras have the same top element
         normalize_cameras( cameras );
         
-        cout << "B" << endl;
         //stop processing if any camera node is empty
         for( size_t i=0; i<cameras.size(); i++ ){
             if( cameras[i].empty_time_space() == true ){
@@ -656,18 +625,20 @@ deque<ImageBundle> compute_image_bundles( deque<Camera>& cameras, Options const&
         bundles.clear();
         bundles = decompose_top_camera_directories( cameras );
         
-        cout << "D" << endl;
-        for( size_t i=0; i<bundles.size(); i++ )
-            fout << bundles[i].scene_number << "  :  " << bundles[i].data[0] << endl;
-        
         cout << "E" << endl;
         //add the image bundles to the bundle list
         bundle_output.insert( bundle_output.end(), bundles.begin(), bundles.end() );
+        
+        cout << "Current Size: " << bundle_output.size() << endl;
+        if( bundle_output.size() > options.max_bundle_limit )
+        {
+            cout << "hard limit reached" << endl;
+            break;
+        }
 
     }
     
-    fout.close();
-
+    
     return bundle_output;
 }
 

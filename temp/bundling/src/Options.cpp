@@ -33,6 +33,16 @@ Options::Options( const int argc, char** argv ){
     number_ir_frames = parser.getItem_int("NUMBER_IR_FRAMES", found );
     if( found == false )
         throw string("ERROR: no NUMBER_IR_FRAMES found in configuration");
+    
+    //load the number of bundles to collect
+    number_bundles = parser.getItem_int("NUMBER_BUNDLES", found);
+    if( found == false )
+        throw string("ERROR: no NUMBER_BUNDLES found in configuration");
+    
+    //load the max number of bundles to search for
+    max_bundle_limit = parser.getItem_int("MAX_BUNDLE_LIMIT", found );
+    if( found == false )
+        throw string("ERROR: no MAX_BUNDLE_LIMIT found in configuration" );
 
 
 }
@@ -50,12 +60,15 @@ void Options::print()const{
     cout << "  - config_filename = " << config_filename << endl;
     cout << endl;
     cout << "  - CAMERA_TYPE=" << camera_type << endl;
+    cout << "  - NUMBER_BUNDLES=" << number_bundles << endl;
     cout << endl;
     cout << "  - INPUT_BASE=" << input_base << endl;
     cout << "  - COLLECT_NAME=" << collect_name << endl;
     cout << endl;
     cout << "  - Number EO Frames=" << number_eo_frames << endl;
     cout << "  - Number IR Frames=" << number_ir_frames << endl;
+    cout << endl;
+    cout << "  - MAX_BUNDLE_LIMIT=" << max_bundle_limit << endl;
 }
 
 

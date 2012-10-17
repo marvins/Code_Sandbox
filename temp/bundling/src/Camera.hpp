@@ -16,32 +16,6 @@ using namespace std;
 
 
 /**
- * @class ImageBundle
-*/
-class ImageBundle{
-
-    public:
-    
-        /**
-         * Default Constructor
-        */
-        ImageBundle();
-        
-        /**
-         * Parameterized Constructor
-        */
-        ImageBundle( const string& imagename );
-        
-        int scene_number;
-        deque<string> data;
-
-};
-
-
-ostream& operator << ( ostream& ostr, ImageBundle const& bundle );
-
-
-/**
  * @class TimeID
  * 
  * A basic structure which contains a directory path. 
