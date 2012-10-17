@@ -19,6 +19,8 @@ TACID::TACID( ){
 
 /**
  * Parameterized constructor
+ *
+ * Open and decompose the GS2 TACID
 */
 TACID::TACID( string const& filename ){
 
@@ -77,14 +79,6 @@ TACID::TACID( string const& filename ){
     m_producer_serial_number = temp.substr(0,len); 
     temp = temp.substr(len);
     
-
-    /*
-		# Add the extension
-		TACID += EXT
-
-		# Create the file
-		create_file( BASE_PATH + '/' + TACID )
-        */
 
         
 }
