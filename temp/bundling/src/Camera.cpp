@@ -8,6 +8,17 @@
 using namespace std;
 
 
+class camlist_sort{
+
+    public:
+
+        bool operator() ( string const& a, string const& b ){
+            return (a.substr(a.size()-4) < b.substr(b.size()-4));
+        }
+
+};
+
+
 /** 
  * Default constructor for the TimeID class. 
 */
@@ -148,6 +159,9 @@ bool TimeID::operator !=( TimeID const& rh )const{
 
 }
 
+/** 
+ *  Output Stream operator for the TimeID class
+*/
 ostream& operator << ( ostream& ostr, const TimeID& id ){
     ostr << "DIRS: ";
     for( size_t i=0; i<id.dirs.size(); i++) 
@@ -207,6 +221,20 @@ bool SceneID::operator != ( SceneID const& rh )const{
     return true;
 
 }
+
+
+Camera::Camera(){
+
+}
+
+Camera::Camera( const string& cam_id, const string& root_dir ){
+
+    root_directories.push_back(root_dir);
+
+    CAM_ID = cam_id;
+
+}
+
 
 void Camera::add_directory( string const& dir_name ){
 
@@ -373,7 +401,7 @@ bool Camera::empty_time_space()const{
 ostream& operator << ( ostream& ostr, Camera const& camera ){
 
     ///print header
-    ostr << "Camera: " << endl;
+    ostr << "Camera: " << camera.CAM_ID << endl;
 
     ///print root directories
     ostr << "   root directories: " << endl;
@@ -386,6 +414,8 @@ ostream& operator << ( ostream& ostr, Camera const& camera ){
 
     return ostr;
 }
+
+
 
 
 /**
@@ -426,33 +456,6 @@ bool isCharAlphaNumeric( char const& c ){
 
 
 /**
- * checks to make sure that the string matches the requirements
- * to be a camera directory.  The main requirement is that it follows
- * the general template  cam### where ### is a 3 digit hex number.
-*/
-int Camera::isValid( string const& name ){
-
-    //pull out the filename from the full path
-    string fpath = file_basename(name);
-
-    //we first need to ensure there is a cam in the first three letters
-    if( fpath.substr(0,3) != "cam" )
-        return false;
-
-    //we need to make sure that the length is 6 characters
-    if( fpath.size() != 6 )
-        return false;
-
-    //we need to make sure the last three values are alpha numeric
-    if( isCharAlphaNumeric( fpath[3] ) == false ) return false;
-    if( isCharAlphaNumeric( fpath[4] ) == false ) return false;
-    if( isCharAlphaNumeric( fpath[5] ) == false ) return false;
-
-    return true;
-}
-
-
-/**
  *  Compare two strings and see if they match
 */
 bool string_match( const string& filename, const string& regex_name ){
@@ -487,7 +490,7 @@ bool string_match( const string& filename, const string& regex_name ){
  * to be a camera directory.  The main requirement is that it follows
  * the general template  cam### where ### is a 3 digit hex number.
 */
-int Camera::isValid( string const& name, string const& cam_path_regex ){
+int Camera::isValid( string const& name, string const& cam_path_regex, string const& collect_name ){
 
     int result = 1;
     
@@ -507,6 +510,10 @@ int Camera::isValid( string const& name, string const& cam_path_regex ){
             break;
         }
 
+        // check if the regex part is _COLLECT_ as this represent the collect name and not the regex
+        if( regx_parts[i] == "_COLLECT_" )
+            regx_parts[i] = collect_name;
+
         // check that the elements compare successfully
         //   if not, then we should not proceed any further
         if( string_match( path_parts[i], regx_parts[i] ) == false ){
@@ -522,6 +529,14 @@ int Camera::isValid( string const& name, string const& cam_path_regex ){
     } 
 
     return result;
+}
+
+
+/**
+ *  Create a TAG ID for the input camera file
+*/
+string Camera::create_CAM_ID( const string& directory_name ){
+    return directory_name.substr(directory_name.size()-3);
 }
 
 
@@ -541,7 +556,7 @@ int Camera::isValid( string const& name, string const& cam_path_regex ){
 deque<Camera> find_camera_directories( Options const& options ){
 
     //create a list of cameras
-    deque<Camera> output( options.number_eo_frames );
+    deque<Camera> output(0);
 
     //create a list of directories to search
     deque<string> dir_tree(0);
@@ -564,16 +579,12 @@ deque<Camera> find_camera_directories( Options const& options ){
 
 
         /* Check to see if the directory matches the pattern */
-        int dir_state = Camera::isValid(cdir, options.input_base + string("/") + options.collect_camera_path);
+        int dir_state = Camera::isValid(cdir, options.input_base + string("/") + options.collect_camera_path, options.collect_name);
         
         if( dir_state == 1 ){
-
-            //extract the camera number
-            int camNum = camera2int( cdir );
-
-            //add camera to the camera list
-            output[camNum].root_directories.push_back(cdir);
-            output[camNum].camera_name = file_basename( cdir );
+        
+            //place directory name onto camera list
+            camera_list.push_back( cdir );
 
         }
         else if( dir_state == 0 ){
@@ -587,6 +598,45 @@ deque<Camera> find_camera_directories( Options const& options ){
             break;
     }
 
+    
+    /** 
+     * sort list by camera number
+    */
+    sort( camera_list.begin(), camera_list.end(), camlist_sort() );
+
+    /**
+     * convert to camera objects
+    */
+    bool camera_found;
+    while( camera_list.size() > 0 ){
+        
+        //retrieve the next camera name
+        string tname = camera_list.back();
+        camera_list.pop_back();
+
+        //create a tag ID to test against
+        string CAM_ID = Camera::create_CAM_ID( tname );
+        
+        //check if there is a camera with the same CAM_ID
+        camera_found = false;
+        for( int j=(int)output.size()-1; j>=0; j-- ){
+            
+            // if the CAM_IDs match, then append the directory to the current camera
+            if( output[j].CAM_ID == CAM_ID ){
+                output[j].add_directory( tname );
+                camera_found = true;
+                break;
+            }
+
+        }
+
+        // if no camera was found with the CAM_ID, then create a camera
+        if( camera_found == false ){
+            output.push_front( Camera(CAM_ID, tname));
+        }
+
+    }
+    
     return output;
 
 }

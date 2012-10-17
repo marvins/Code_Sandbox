@@ -93,10 +93,27 @@ class SceneID{
 class Camera{
 
     public:
-
-        static int isValid( string const& name );
-        static int isValid( string const& name, string const& cam_path_regex );
         
+        /**
+         * Default Constructor
+        */
+        Camera( );
+
+        /**
+         * Parameterized Constructor
+         *
+         * Inputs are the Camera ID and the starting directory name
+        */
+        Camera( const string& CAM_ID, const string& directory_name );
+
+        /**
+         * Helper functions to determine if a camera path name is valid
+        */
+        static int isValid( string const& name, string const& cam_path_regex, string const& collect_name );
+       
+        /**
+         *  Add a camera path to the root directory list
+        */
         void add_directory( string const& dir_name );
         
         void build_scene_space();
@@ -104,6 +121,8 @@ class Camera{
         void decompose_top_directories( );
         
         bool empty_time_space()const;
+
+        static string create_CAM_ID( const string& cam_name );
 
         /**
          * Compare and prune the image list
@@ -117,6 +136,8 @@ class Camera{
         deque<string> root_directories;  /*< Name of the base camera directory */
         
         string camera_name;
+
+        string CAM_ID;
 
         set<TimeID> time_space;
         deque<string> current_image_list;
