@@ -17,8 +17,8 @@ CFG=frame_analyzer.cfg
 #-               Main Requirements             -#
 #-----------------------------------------------#
 # List of objects to build
-OBJECTS=$(BLD)/frame_analyzer.o $(BLD)/Parser.o $(BLD)/Options.o $(BLD)/Camera.o $(BLD)/IO.o $(BLD)/TACID.o
-HEADERS=$(SRC)/TACID.hpp $(SRC)/Camera.hpp $(SRC)/Options.hpp $(SRC)/Parser.hpp  $(SRC)/IO.hpp
+OBJECTS=$(BLD)/Core.o    $(BLD)/Context.o   $(BLD)/TACID.o   $(BLD)/Metrics.o    $(BLD)/frame_analyzer.o $(BLD)/Parser.o $(BLD)/Options.o $(BLD)/Camera.o $(BLD)/IO.o 
+HEADERS=$(SRC)/Core.hpp  $(SRC)/Context.hpp $(SRC)/TACID.hpp $(SRC)/Metrics.hpp  $(SRC)/Camera.hpp $(SRC)/Options.hpp $(SRC)/Parser.hpp  $(SRC)/IO.hpp
 
 # Desired C++ Compiler
 CPP=g++
@@ -71,6 +71,18 @@ $(BLD)/IO.o: $(SRC)/IO.cpp $(HEADERS)
 
 # TACID
 $(BLD)/TACID.o: $(SRC)/TACID.cpp $(HEADERS)
+	$(CPP) $< -c -o $@  $(INCL)  $(FLAGS)
+
+# Context
+$(BLD)/Context.o: $(SRC)/Context.cpp $(HEADERS)
+	$(CPP) $< -c -o $@  $(INCL)  $(FLAGS)
+
+# Core
+$(BLD)/Core.o: $(SRC)/Core.cpp $(HEADERS)
+	$(CPP) $< -c -o $@  $(INCL)  $(FLAGS)
+
+# Metrics
+$(BLD)/Metrics.o: $(SRC)/Metrics.cpp $(HEADERS)
 	$(CPP) $< -c -o $@  $(INCL)  $(FLAGS)
 
 #-----------------------------------------#

@@ -13,6 +13,22 @@ const int  IO_ALL = 3;
 
 
 /**
+ * @class camlist_sort
+ *
+ * This is a simple functor which will sort two strings
+ * assuming that they are camera CAM_IDs.
+*/
+class camlist_sort{
+
+    public:
+
+        bool operator() ( string const& a, string const& b ){
+            return (a.substr(a.size()-4) < b.substr(b.size()-4));
+        }
+
+};
+
+/**
  * @class ImageBundle
 */
 class ImageBundle{
@@ -35,9 +51,16 @@ class ImageBundle{
 };
 
 
+/**
+ * Output stream operator for the ImageBundle Object
+*/
 std::ostream& operator << ( std::ostream& ostr, ImageBundle const& bundle );
 
 
+/**
+ * Query the computer for a date/time stamp
+*/
+std::string query_datetime();
 
 /**
  * Create a zip file
@@ -68,12 +91,23 @@ std::deque<std::string> file_decompose_path( std::string const& pathname );
 bool is_dir(  const std::string& name );
 bool is_file( const std::string& name );
 
+bool file_exists( std::string const& filename );
+
 void file_copy( std::string const& filename, std::string const& dest_filename );
 
+void file_delete( std::string const& filename );
 
 void sort_image_list( std::deque<std::string>& image_list );
 
 
+
+/**************************************************************************/
+/*                           String Utilities                             */
+/**************************************************************************/
+
+/**
+ * Convert a string into a number
+*/
 template <typename TP>
 TP str2num( std::string const& value ){
     
@@ -100,6 +134,16 @@ std::string num2str( TP const& value ){
     sin << value;
     return sin.str();
 }
+
+/**
+ * Trim a string
+*/
+std::string string_trim( const string& str );
+
+/**
+ * Split a string
+*/
+std::vector<std::string> string_split( const std::string& str, const std::string& pattern );
 
 
 #endif

@@ -1,5 +1,7 @@
 #include "Options.hpp"
 
+#include "IO.hpp"
+
 #include <cstdlib>
 
 /**
@@ -109,6 +111,11 @@ void Options::load_eval_configuration(){
         eval_refresh_context = parser.getItem_bool("NEW_CONTEXT", found);
         if( found == false )
             throw string("ERROR: NEW_CONTEXT was not found. If USE_CONTEXT=true, then you must include CONTEXT_FILENAME");
+        
+        //if we do wish to refresh the context file, then we should delete the file now so that during the 
+        //context file load, it doesn't find it, prompting the file to be generated.
+        if( eval_refresh_context == true )
+            file_delete( eval_context_filename );
 
      }
 

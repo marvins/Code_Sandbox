@@ -2,12 +2,16 @@
 #include "TACID.hpp"
 
 #include <algorithm>
+#include <cstdio>
+
+#include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 
 
 using namespace std;
 
 namespace fs = boost::filesystem;
+namespace ba = boost::algorithm;
 
 const int  FILES = 1;
 const int  DIRECTORIES = 2;
@@ -40,6 +44,26 @@ ostream& operator << ( ostream& ostr, ImageBundle const& bundle ){
 
 }
 
+
+
+/**
+ * Query the computer for a date/time value.
+*/
+string query_datetime(){
+
+    //create a file to store results
+    FILE* res = popen( "date", "r");
+
+    if( !res ){
+        return "NO TIME AVAILABLE";
+    }
+
+    char buffer[1024];
+    char *line_p = fgets( buffer, sizeof(buffer), res);
+
+    return string_trim(string(line_p));
+
+}
 
 
 void compress_bundles( deque<ImageBundle> const& bundles, Options const& options ){
@@ -176,13 +200,35 @@ deque<string> file_decompose_path( string const& pathname ){
 }
 
 /**
+ * Check if the file exists
+*/
+bool file_exists( std::string const& filename ){
+
+    return fs::exists( fs::path( filename ));
+}
+
+/**
  * Copy the file to the destination
 */
 void file_copy( string const& filename, string const& dest_filename ){
 
     fs::copy_file( fs::path( filename), fs::path( dest_filename ) );
+}
+
+/**
+ * Delete the specified file
+*/
+void file_delete( string const& filename ){
+
+    //make sure file exists
+    if( file_exists( filename ) == true ){
+        
+        // remove file
+        fs::remove( fs::path( filename ));
+    }
 
 }
+
 
 bool is_dir( const string& name ){
     return fs::is_directory( fs::path( name ) );
@@ -190,5 +236,41 @@ bool is_dir( const string& name ){
 
 bool is_file( const string& name ){
     return fs::is_regular_file( fs::path( name ));
+}
+
+
+/**
+ * Trim a string of leading and trailing spaces. 
+*/
+std::string string_trim( const string& str ){
+    
+    string tstr = str;
+    boost::algorithm::trim( tstr );
+    return tstr;
+}
+
+/**
+ * Split a string
+*/
+vector<string> string_split( const string& str, const string& pattern ){
+
+    vector<string> output;
+    vector<string> substrs;
+    string pre_split = str;
+
+    // split the string according to the specified pattern
+    ba::split( substrs, pre_split, ba::is_any_of(pattern));
+
+    // iterate over each item in the substrings and fix
+    for( size_t i=0; i<substrs.size(); i++ ){
+
+        // trim the spaces and other fat from the string
+        ba::trim(substrs[i]);
+        if( substrs[i].size() > 0 )
+            output.push_back(substrs[i]);
+    }
+
+    return output;
+
 }
 

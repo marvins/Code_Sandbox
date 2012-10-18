@@ -149,7 +149,15 @@ class Camera{
 ostream& operator << ( ostream& ostr, Camera const& camera );
 
 
-
+/**
+ *
+*/
+class CameraSortFunc{
+    
+    public:
+        
+        bool operator ( ) ( const Camera& a, const Camera& b )const;
+};
 
 /**  
  * Convert the camera directory name into an index for the 

@@ -8,16 +8,6 @@
 using namespace std;
 
 
-class camlist_sort{
-
-    public:
-
-        bool operator() ( string const& a, string const& b ){
-            return (a.substr(a.size()-4) < b.substr(b.size()-4));
-        }
-
-};
-
 
 /** 
  * Default constructor for the TimeID class. 
@@ -223,10 +213,17 @@ bool SceneID::operator != ( SceneID const& rh )const{
 }
 
 
+/**
+ * Default constructor
+*/
 Camera::Camera(){
 
 }
 
+
+/**
+ * Parameterized constructor given a CAM_ID value and root directory entry.
+*/
 Camera::Camera( const string& cam_id, const string& root_dir ){
 
     root_directories.push_back(root_dir);
@@ -236,9 +233,17 @@ Camera::Camera( const string& cam_id, const string& root_dir ){
 }
 
 
+/**
+ * Add a root directory to the camera object.
+*/
 void Camera::add_directory( string const& dir_name ){
 
+    // add the filename to the root directory list
     root_directories.push_back(dir_name);
+
+    // sort the list for sanity
+    sort( root_directories.begin(), root_directories.end() );
+
 
 }
 
@@ -537,6 +542,11 @@ int Camera::isValid( string const& name, string const& cam_path_regex, string co
 */
 string Camera::create_CAM_ID( const string& directory_name ){
     return directory_name.substr(directory_name.size()-3);
+}
+    
+    
+bool CameraSortFunc::operator ( ) ( const Camera& a, const Camera& b )const{
+    return a.CAM_ID < b.CAM_ID;
 }
 
 

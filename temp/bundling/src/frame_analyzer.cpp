@@ -9,9 +9,10 @@
 #include <vector>
 
 ///Personal Libraries
-#include "Camera.hpp"
+#include "Core.hpp"
 #include "Options.hpp"
-
+#include "Context.hpp"
+#include "Metrics.hpp"
 
 ///useful namespaces
 using namespace std;
@@ -23,7 +24,7 @@ using namespace std;
  * Implements the primary status interface
 */
 int main( int argc, char * argv[] ){
-    
+
     try{
 
         ///load the configuration here
@@ -52,15 +53,45 @@ int main( int argc, char * argv[] ){
         }
         else if( options.program_mode == PROGRAM_EVAL ){
             
-            //if there is no context, then look for a new set of cameras
-            deque<Camera> cameras = find_camera_directories( options );
-
-            //if there is a context or history, then load the camera list
+            //create the context object
+            Context context( options.eval_use_context_file && options.eval_refresh_context);
             
-            cout << "Cameras" << endl;
-            for( size_t i=0; i<cameras.size(); i++ ){
-                cout << cameras[i] << endl;
-                cin.get();
+            //create a container for our new metrics
+            Metrics metrics;
+
+            //skip find camera flag
+            bool skip_finding_cameras = options.eval_use_context_file;
+
+            /**
+             * We must either find the camera directories or load them from the context.
+            */
+            if( skip_finding_cameras == true ){
+
+                //load the context back into the flag just in case we mess up
+                skip_finding_cameras = context.load_context( options.eval_context_filename );
+
+            }
+            
+            // there may be a problem with the context file, so regardless of the config flag, we may need to rebuild the data
+            if( skip_finding_cameras == false ){
+
+                //lets find the camera directories
+                context.cameras = find_camera_directories( options );
+            }
+
+            /**
+             * start searching through the image directories.
+            */
+            metrics = evaluate_frame_sets( context.cameras, options );            
+                        
+
+            /**
+             * Now that we have completed our task, lets save the context back.
+            */
+            if( options.eval_use_context_file == true ){
+
+               context.write_context( options.eval_context_filename ); 
+
             }
 
         }
