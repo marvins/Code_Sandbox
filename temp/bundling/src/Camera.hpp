@@ -115,7 +115,10 @@ class Camera{
          *  Add a camera path to the root directory list
         */
         void add_directory( string const& dir_name );
-        
+       
+        /**
+         * Initialize the scene space for the camera, basically load a boatload of camera directories.
+        */
         void build_scene_space();
 
         void decompose_top_directories( );

@@ -77,6 +77,9 @@ int main( int argc, char * argv[] ){
 
                 //lets find the camera directories
                 context.cameras = find_camera_directories( options );
+
+                // since the image depth is used in the context file, add it here from the config file
+                context.image_depth = options.image_depth;
             }
 
             /**

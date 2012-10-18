@@ -46,7 +46,11 @@ Options::Options( const int argc, char** argv ){
     number_ir_frames = parser.getItem_int("NUMBER_IR_FRAMES", found );
     if( found == false )
         throw string("ERROR: no NUMBER_IR_FRAMES found in configuration");
-
+    
+    // load the image frame depth
+    image_depth = parser.getItem_int("IMAGE_DEPTH", found );
+    if( found == false )
+        throw string("ERROR: no IMAGE_DEPTH found in configuration");
 
     // load the type of collection 
     string ctype = parser.getItem_string("COLLECT_TYPE", found );
@@ -150,6 +154,9 @@ void Options::print()const{
 
     cout << "Current Configuration" << endl;
     cout << endl;
+    cout << "Core Options" << endl;
+    cout << "------------" << endl;
+    cout << endl;
     cout << "  - status_filename = " << status_filename << endl;
     cout << "  - config_filename = " << config_filename << endl;
     cout << endl;
@@ -163,7 +170,7 @@ void Options::print()const{
     cout << endl;
     cout << "  -COLLECT_TYPE=" << collect_type << endl;
     cout << "  -COLLECT_CAMERA_PATH=" << collect_camera_path << endl;
-    
+    cout << "  -IMAGE_DEPTH=" << image_depth << endl; 
     cout << endl;
     if( program_mode == PROGRAM_EVAL ){
         cout << "Evaluation Options" << endl;

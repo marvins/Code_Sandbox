@@ -108,6 +108,11 @@ bool Context::load_context( const string& filename ){
             //do nothing
         }
 
+        // Image Depth
+        else if( tag == "IMAGE_DEPTH" ){
+            image_depth = str2num<int>(val);
+        }
+
         // Number of cameras
         else if( tag == "NUMBER_OF_CAMERAS" ){
 
@@ -235,6 +240,10 @@ void Context::write_context( const string& filename )const{
     // write the update timestamp
     fout << "LAST_MODIFIED=" << query_datetime() << endl;
     fout << endl;
+    
+    /////////////////////////////////////////////
+    // write the frame depth 
+    fout << "IMAGE_DEPTH=" << image_depth << endl;
 
     ////////////////////////////////////////////
     // write the number of cameras

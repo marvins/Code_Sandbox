@@ -43,6 +43,9 @@ class Context{
         
         // this contains all global metrics
         Metrics metrics;
+        
+        // this is the depth of which images appear in the cam directory
+        int image_depth;
 
     private:
         

@@ -80,6 +80,7 @@ class Options{
         int number_eo_frames;   /*< Number of eo frames per step  */
         int number_ir_frames;   /*< Number of ir frames per step  */
 
+        int image_depth;        /*< Image depth */
 
         /**************************************************************/
         /*                      EVAL-ONLY PARAMETERS                  */
