@@ -107,6 +107,14 @@ bool Context::load_context( const string& filename ){
         else if( tag == "LAST_MODIFIED" ){
             //do nothing
         }
+        
+        // Collection Type
+        else if( tag == "COLLECT_TYPE" ){
+            if( val == "RAW" )
+                collect_type = COLLECT_RAW;
+            else
+                collect_type = COLLECT_NITF;
+        }
 
         // Image Depth
         else if( tag == "IMAGE_DEPTH" ){
@@ -248,6 +256,15 @@ void Context::write_context( const string& filename )const{
     ////////////////////////////////////////////
     // write the number of cameras
     fout << "NUMBER_OF_CAMERAS=" << cameras.size() << endl;
+    fout << endl;
+
+    ////////////////////////////////////////////
+    // write the collect type
+    fout << "COLLECT_TYPE=";
+    if( collect_type == COLLECT_RAW )
+        fout << "RAW" << endl;
+    else
+        fout << "NITF" << endl;
     fout << endl;
 
     ///////////////////////////////////////////

@@ -175,7 +175,17 @@ void Options::print()const{
     if( program_mode == PROGRAM_EVAL ){
         cout << "Evaluation Options" << endl;
         cout << "------------------" << endl;
+        cout << endl;
+        cout << " -EVAL_USE_CONTEXT_FILE=";
+        if( eval_use_context_file == true ) cout << "TRUE"  << endl;
+        else                                cout << "FALSE" << endl;
         
+        cout << " -EVAL_CONTEXT_FILENAME=" << eval_context_filename << endl;
+        
+        cout << " -NEW_CONTEXT=";
+        if( eval_refresh_context == true ) cout << "TRUE"  << endl;
+        else                               cout << "FALSE" << endl;
+
         cout << endl;
     }
     else if( program_mode == PROGRAM_BUNDLE ){

@@ -22,7 +22,7 @@ TACID::TACID( ){
  *
  * Open and decompose the GS2 TACID
 */
-TACID::TACID( string const& filename ){
+TACID::TACID( string const& filename, const int& collectType ){
 
     //set the pathname
     pathname = filename;
@@ -31,56 +31,106 @@ TACID::TACID( string const& filename ){
     basename = file_basename( filename );
 
     //make sure the file is valid
-    isValid = is_valid( filename );
+    isValid = is_valid( filename, collectType );
     if( !isValid )
         return;
-
+    
+    //set the collect type
+    collect_type = collectType;
+        
     //create a temporary variable to strip characters from
     string temp = basename;
-    
+        
     //pointers
     int len;
-
-    //[0,7]- DATE (DDMMMYY) DD and YY are numeric, MMM is a string
-    len=7;
-    temp = temp.substr(len);
     
-    //[7,2]- PROGRAM CODE: 9Z
-    len = 2;
-    temp = temp.substr(len);
+    /**
+     * NITF use the GS TACID nomenclature
+    */
+    if( collect_type == COLLECT_NITF ){
 
-    //[9,2]- SORTIE NUMBER: 00
-    len = 2;
-    temp = temp.substr(len);
-
-    //[11,5]- SCENE NUMBER: 00001
-    len = 5;
-    m_scene_number = str2num<int>(temp.substr(0,len));
-    temp = temp.substr(len);
+        //[0,7]- DATE (DDMMMYY) DD and YY are numeric, MMM is a string
+        len=7;
+        temp = temp.substr(len);
     
-    //[13,2]- PRODUCER CODE: ZX
-    len = 2;
-    temp = temp.substr(len);
+        //[7,2]- PROGRAM CODE: 9Z
+        len = 2;
+        temp = temp.substr(len);
 
-    //[15,6]- PRODUCT NUMBER: GEO000
-    len = 6;
-    temp = temp.substr(len);
+        //[9,2]- SORTIE NUMBER: 00
+        len = 2;
+        temp = temp.substr(len);
 
-    //[21,2]- PROJECT CODE: GS
-    len = 2;
-    temp = temp.substr(len);
-
-    //[23,3]- REPLAY CODE: 000
-    len = 3;
-    temp = temp.substr(len);
+        //[11,5]- SCENE NUMBER: 00001
+        len = 5;
+        m_scene_number = str2num<int>(temp.substr(0,len));
+        temp = temp.substr(len);
     
-    //[26,3]- PRODUCER SERIAL NUMBER: 000
-    len = 3;
-    m_producer_serial_number = temp.substr(0,len); 
-    temp = temp.substr(len);
-    
+        //[13,2]- PRODUCER CODE: ZX
+        len = 2;
+        temp = temp.substr(len);
 
+        //[15,6]- PRODUCT NUMBER: GEO000
+        len = 6;
+        temp = temp.substr(len);
+
+        //[21,2]- PROJECT CODE: GS
+        len = 2;
+        temp = temp.substr(len);
+    
+        //[23,3]- REPLAY CODE: 000
+        len = 3;
+        temp = temp.substr(len);
+    
+        //[26,3]- PRODUCER SERIAL NUMBER: 000
+        len = 3;
+        m_producer_serial_number = temp.substr(0,len); 
+        temp = temp.substr(len);
+    }
+    /**
+     * RAW Images use
+    */
+    else if( collect_type == COLLECT_RAW ){
+
+        //Link ID
+        temp = temp.substr(1); //L
         
+        len = 4;
+        temp = temp.substr(len); //LinkID
+        
+        temp = temp.substr(1); //-
+        
+        //FSM ID
+        temp = temp.substr(1); //F
+        
+        len = 4;
+        temp = temp.substr(len); //FSM ID
+        
+        temp = temp.substr(1);//-
+        
+        //Channel
+        temp = temp.substr(1); //C
+        
+        len = 2;
+        temp = temp.substr(len); //Channel
+        
+        temp = temp.substr(1); //-
+
+        //Frame Number
+        temp = temp.substr(1); //N
+        
+        len = 8;
+        m_scene_number = hexstr2decnum<int>(temp.substr(0,len));
+        temp = temp.substr(len); //Frame
+
+        temp = temp.substr(1); //-
+        
+    }
+    else{
+        throw string("ERROR: Unknown collect type");
+    }
+    
+
 }
 
 
@@ -95,22 +145,14 @@ string TACID::get_pathname()const{
  * Return the scene number.
  *
 */
-int TACID::scene_number( string const& filename, bool& isValid ){
-
-    //set to false just in case
-    isValid = false;
-
-    //grab basename
-    string basename = file_basename( filename ); 
+int TACID::scene_number( string const& filename, const int& collect_type, bool& isValid ){
     
-    //make sure extension is nitf
-    string ext = file_extension( basename );
-    if( ext != ".ntf" && ext != ".nitf" )
-        return -1;
-    
-    isValid = true;
+    //create a TACID
+    TACID temp( filename, collect_type );
 
-    return  str2num<int>(basename.substr(11,5));
+    isValid = temp.is_valid();
+
+    return temp.scene_number();
 }
 
 /**
@@ -147,7 +189,7 @@ bool TACID::is_valid( )const{
  * 
  * 2.  The length of the file is 40 characters without the extension
 */
-bool TACID::is_valid( const string& filename ){
+bool TACID::is_valid( const string& filename, const int& collect_type ){
 
     
     //set to false just in case
@@ -156,9 +198,22 @@ bool TACID::is_valid( const string& filename ){
     //grab basename
     string basename = file_basename( filename ); 
     
-    //make sure extension is nitf
-    string ext = file_extension( basename );
-    if( ext != ".ntf" && ext != ".nitf" )
+    if( collect_type == COLLECT_NITF ){
+
+        //make sure extension is nitf
+        string ext = file_extension( basename );
+        if( ext != ".ntf" && ext != ".nitf" )
+            return false;
+    }
+    else if( collect_type == COLLECT_RAW ){
+
+        //make sure the extension is rawl
+        string ext = basename.substr(basename.size()-11);
+        if( ext != "-image.rawl" && ext != "-IMAGE.RAWL" )
+            return false;
+
+    }
+    else
         return false;
 
     return isValid;
@@ -194,15 +249,15 @@ bool TACID_scene_func::operator( )( TACID const& a, TACID const& b){
  * - Create a list of structures which contain the full path, the basename, and the scene number
  * - Sort that list using a functor and the sort function in stl library
 */
-void sort_TACID_list( deque<string>& image_list ){
+void sort_TACID_list( deque<string>& image_list, const int& collect_type ){
     
     //create a list of TACID containers
     deque<TACID> tacid_list;
     for( deque<string>::iterator it = image_list.begin(); it != image_list.end(); it++ ){
 
         //make sure the file is a valid TACID
-        if( TACID::is_valid(*it) == true )
-            tacid_list.push_back( TACID(*it));
+        if( TACID::is_valid(*it, collect_type ) == true )
+            tacid_list.push_back( TACID(*it, collect_type));
     }
 
     //sort the image list

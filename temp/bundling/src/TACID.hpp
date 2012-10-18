@@ -24,7 +24,7 @@ class TACID{
         /** 
          * Parameterized Constructor
         */
-        TACID( string const& filename );
+        TACID( string const& filename, const int& collectType );
          
         /**
          * Retrieve the full pathname
@@ -36,7 +36,7 @@ class TACID{
          *
          * This is a static function, so feel free to use it anywhere. 
         */
-        static int scene_number( string const& filename, bool& isValid );
+        static int scene_number( string const& filename, const int& scene_type, bool& isValid );
         
         /**
          * Return the scene number
@@ -63,7 +63,7 @@ class TACID{
          * This is the preferred method before you create a list of TACIDs as you will
          * waste the construction and destruction of the TACID object. 
         */
-        static bool is_valid( const string& filename );
+        static bool is_valid( const string& filename, const int& collect_type );
         
         
         /**
@@ -80,6 +80,8 @@ class TACID{
 
         int m_scene_number; // scene number
         string m_producer_serial_number;
+        
+        int collect_type;
 
 };
 
@@ -98,7 +100,7 @@ class TACID_scene_func{
  * Sort the list of images by their TACIDs.  
  *
 */
-void sort_TACID_list( deque<string>& image_list );
+void sort_TACID_list( deque<string>& image_list, const int& collect_type );
 
 #endif
 

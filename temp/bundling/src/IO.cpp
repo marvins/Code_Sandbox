@@ -24,10 +24,10 @@ ImageBundle::ImageBundle( ){
     data.clear(); 
 }
 
-ImageBundle::ImageBundle( const string& filename ){
+ImageBundle::ImageBundle( const string& filename, const int& collectType ){
     
     bool isValid;
-    scene_number = TACID::scene_number( filename, isValid );
+    scene_number = TACID::scene_number( filename, collectType, isValid );
     
     data.push_back( filename );
 
@@ -272,5 +272,15 @@ vector<string> string_split( const string& str, const string& pattern ){
 
     return output;
 
+}
+
+/**
+ * Convert a string to lower case
+*/
+std::string string_toLower( const string& str ){
+
+    string data = str;
+    std::transform( data.begin(), data.end(), data.begin(), ::tolower);
+    return data;
 }
 

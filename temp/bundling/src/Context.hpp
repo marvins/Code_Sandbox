@@ -46,6 +46,9 @@ class Context{
         
         // this is the depth of which images appear in the cam directory
         int image_depth;
+        
+        // this is the type of collection (COLLECT_RAW or COLLECT_NITF)
+        int collect_type;
 
     private:
         

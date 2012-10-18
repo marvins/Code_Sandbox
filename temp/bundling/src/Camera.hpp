@@ -9,6 +9,7 @@
 #include <vector>
 
 ///Personal Libraries
+#include "Metrics.hpp"
 #include "Options.hpp"
 #include "IO.hpp"
 
@@ -65,26 +66,6 @@ class TimeID{
 ostream& operator << ( ostream& ostr, const TimeID& id );
 
 
-/** 
- * @class SceneID
- *
- * A basic structure for managing scene numbers
-*/
-class SceneID{
-    
-    public:
-        SceneID();        
-        SceneID( const string& name );
-
-        bool operator < ( SceneID const& rh )const;
-        bool operator > ( SceneID const& rh )const;
-        bool operator == ( SceneID const& rh )const;
-        bool operator != ( SceneID const& rh )const;
-
-        string m_major;
-        int    m_minor;
-};
-
 /**
  * @class Camera
  *
@@ -104,7 +85,7 @@ class Camera{
          *
          * Inputs are the Camera ID and the starting directory name
         */
-        Camera( const string& CAM_ID, const string& directory_name );
+        Camera( const string& CAM_ID, const int& collectType, const string& directory_name );
 
         /**
          * Helper functions to determine if a camera path name is valid
@@ -121,12 +102,12 @@ class Camera{
         */
         void build_scene_space();
 
-        void decompose_top_directories( );
+        bool decompose_top_directories( );
         
         bool empty_time_space()const;
 
         static string create_CAM_ID( const string& cam_name );
-
+        
         /**
          * Compare and prune the image list
          *
@@ -136,11 +117,14 @@ class Camera{
         */
         void union_image_list( deque<ImageBundle>& image_list )const;
 
+        void build_scene_list( vector<SceneID>& scene_list, const int& current_idx );
+
         deque<string> root_directories;  /*< Name of the base camera directory */
         
-        string camera_name;
+        TimeID last_time_entry;
 
         string CAM_ID;
+        int collect_type;
 
         set<TimeID> time_space;
         deque<string> current_image_list;

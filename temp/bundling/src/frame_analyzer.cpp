@@ -74,6 +74,8 @@ int main( int argc, char * argv[] ){
             
             // there may be a problem with the context file, so regardless of the config flag, we may need to rebuild the data
             if( skip_finding_cameras == false ){
+                
+                context.collect_type = options.collect_type;
 
                 //lets find the camera directories
                 context.cameras = find_camera_directories( options );
@@ -86,7 +88,9 @@ int main( int argc, char * argv[] ){
              * start searching through the image directories.
             */
             metrics = evaluate_frame_sets( context.cameras, options );            
-                        
+               
+            //merge the results with the current metrics in the context
+            context.metrics.merge( metrics );
 
             /**
              * Now that we have completed our task, lets save the context back.

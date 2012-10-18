@@ -1,6 +1,7 @@
 #ifndef __SRC_IO_HPP__
 #define __SRC_IO_HPP__
 
+#include <algorithm>
 #include <deque>
 #include <sstream>
 #include <string>
@@ -43,7 +44,7 @@ class ImageBundle{
         /**
          * Parameterized Constructor
         */
-        ImageBundle( const std::string& imagename );
+        ImageBundle( const std::string& imagename, const int& collectType );
         
         int scene_number;
         std::deque<std::string> data;
@@ -106,6 +107,21 @@ void sort_image_list( std::deque<std::string>& image_list );
 /**************************************************************************/
 
 /**
+ * Convert a hex string into a decimal number
+*/
+template <typename TP>
+TP hexstr2decnum( std::string const& value ){
+    
+    std::string data = value;
+    std::transform( data.begin(), data.end(), data.begin(), ::tolower );
+
+    std::stringstream sin;
+    TP result;
+    sin << std::hex << data;
+    sin >> result;
+    return result;
+}
+/**
  * Convert a string into a number
 */
 template <typename TP>
@@ -145,6 +161,10 @@ std::string string_trim( const string& str );
 */
 std::vector<std::string> string_split( const std::string& str, const std::string& pattern );
 
+/**
+ * Convert a string to lower
+*/
+std::string string_toLower( const string& str );
 
 #endif
 

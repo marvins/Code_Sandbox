@@ -20,11 +20,13 @@ TimeID::TimeID(){
 /**
  * Parameterized constructor for the TimeID Class. 
 */
-TimeID::TimeID( const string& dirname, const string& camname ){
+TimeID::TimeID( const string& dirname, const string& cam_id ){
+    
+    string camname = string("cam") + cam_id;
 
     // add directory to pathname list
     pathnames.push_back(dirname);
-    
+   
     //get the path elements in the form of a deque
     dirs = file_decompose_path( dirname );
         
@@ -44,7 +46,7 @@ TimeID::TimeID( const string& dirname, const string& camname ){
         //remove the first item, as that is our starting directory
         dirs.pop_front();
     }
-
+    
 }
 
 
@@ -164,54 +166,6 @@ ostream& operator << ( ostream& ostr, const TimeID& id ){
     return ostr;
 }
 
-SceneID::SceneID( ): m_major("0"), m_minor(0){}
-
-SceneID::SceneID( string const& filename ){
-
-    m_major = "0";
-    
-    //pull out scene number
-    bool isValid;
-    m_minor = TACID::scene_number( filename, isValid );
-
-}
-
-
-bool SceneID::operator < ( SceneID const& rh )const{
-    if( m_major == rh.m_major ){
-        if( m_minor < rh.m_minor ) return true;
-    }
-    else if( m_major < rh.m_major )
-        return true;
-        
-    return false;
-}
-
-bool SceneID::operator > ( SceneID const& rh )const{
-    if( m_major == rh.m_major ){
-        if( m_minor > rh.m_minor ) 
-            return true;
-    }
-    else if( m_major > rh.m_major )
-        return true;
-        
-    return false;
-}
-
-bool SceneID::operator == ( SceneID const& rh )const{
-    if( m_major == rh.m_major )
-        if( m_minor == rh.m_minor ) return true;
-    return false;
-}
-
-bool SceneID::operator != ( SceneID const& rh )const{
-
-    if( m_major == rh.m_major )
-        if( m_minor == rh.m_minor ) return false;
-    return true;
-
-}
-
 
 /**
  * Default constructor
@@ -224,9 +178,11 @@ Camera::Camera(){
 /**
  * Parameterized constructor given a CAM_ID value and root directory entry.
 */
-Camera::Camera( const string& cam_id, const string& root_dir ){
+Camera::Camera( const string& cam_id, const int& collectType, const string& root_dir ){
 
     root_directories.push_back(root_dir);
+
+    collect_type = collectType;
 
     CAM_ID = cam_id;
 
@@ -263,7 +219,6 @@ void Camera::build_scene_space(){
     
     // some useful variables
     string topStr;
-    SceneID id;
     
     // keep iterating until the image stack is empty
     while( image_stack.size() > 0 ){
@@ -274,10 +229,10 @@ void Camera::build_scene_space(){
 
         //if item is a directory, then add it to the directory tree and keep digging
         if( is_dir( topStr ) == true ){
-
+            
             //create timeid
-            TimeID id( topStr, camera_name );
-
+            TimeID id( topStr, CAM_ID );
+            
             //check if the element already exists
             set<TimeID>::iterator it = time_space.find(id);
 
@@ -289,14 +244,16 @@ void Camera::build_scene_space(){
                 time_space.insert(actual);
             }
             else{
+                
+                //TODO: DO HISTORICAL PRUNING HERE!!!
 
                 //only add if the depth is less than the max
                 //compute the depth
-                int depth = TimeID( topStr, camera_name).dirs.size();
+                int depth = id.dirs.size();
                 if( depth == 3 ){
                     
                     //add to directory space
-                    time_space.insert( TimeID( topStr, camera_name ) );
+                    time_space.insert( TimeID( topStr, CAM_ID ) );
                 }
                 
                 if( depth < 3 ){
@@ -307,8 +264,7 @@ void Camera::build_scene_space(){
         }
 
     }
-
-
+    
 }
 
 /** 
@@ -316,12 +272,18 @@ void Camera::build_scene_space(){
  * images. Place them onto the current image list.
  * Make sure to sort the list. 
 */
-void Camera::decompose_top_directories( ){
+bool Camera::decompose_top_directories( ){
+    
+    //return false if we are out of time entris
+    if( time_space.size() <= 0 )
+        return false;
 
     // pop the top time space entry
     TimeID timeEntry = *time_space.begin(); 
     time_space.erase( time_space.begin());
-   
+    
+    last_time_entry = timeEntry;
+
     // clear the current image list
     current_image_list.clear();
 
@@ -329,10 +291,11 @@ void Camera::decompose_top_directories( ){
     for( size_t i=0; i<timeEntry.pathnames.size(); i++ ){
         directory_append_internal( timeEntry.pathnames[i], current_image_list, IO_FILES_ONLY );
     }
-
+    
     // sort the list by scene number
-    sort_TACID_list( current_image_list );
-
+    sort_TACID_list( current_image_list, collect_type );
+    
+    return true;
 }
 
 
@@ -361,7 +324,7 @@ void Camera::union_image_list( deque<ImageBundle>& image_list )const{
         }
 
         //compare each tacid
-        result = TACID_scene_func()( itA->data[0], *itB );
+        result = TACID_scene_func()( TACID( itA->data[0], collect_type), TACID(*itB, collect_type) );
 
         //if they are equal, add the image to the bundle and increment both pointers
         if( result == 0 ){
@@ -397,6 +360,38 @@ bool Camera::empty_time_space()const{
         return true;
     
     return false;
+}
+    
+/**
+ * Given the scene list, update any frame which do or do not exist in either. 
+*/
+void Camera::build_scene_list( vector<SceneID>& scene_list, const int& current_idx ){
+
+    bool isValid = false;
+
+    //iterate through the current image list. if the scene does not exist in the 
+    //list, then add it
+    for( size_t i=0; i<current_image_list.size(); i++ ){
+        
+        //grab the current scene number
+        int tscene = TACID::scene_number( current_image_list[i], collect_type, isValid );
+        
+        bool scene_exists = false;
+
+        //check if it exists in the current scene list
+        for( size_t j=0; j<scene_list.size(); j++ )
+            if( scene_list[j].scene_number == tscene ){
+                scene_list[j].camera_idx_list.push_back(current_idx);
+                scene_exists = true;
+                break;
+            }
+        
+        //add the scene if it does not exist
+        if( scene_exists == false )
+            scene_list.push_back( SceneID( tscene, current_idx ));
+
+    }
+
 }
 
 
@@ -642,7 +637,7 @@ deque<Camera> find_camera_directories( Options const& options ){
 
         // if no camera was found with the CAM_ID, then create a camera
         if( camera_found == false ){
-            output.push_front( Camera(CAM_ID, tname));
+            output.push_front( Camera(CAM_ID, options.collect_type, tname));
         }
 
     }
@@ -713,7 +708,7 @@ deque<ImageBundle> decompose_top_camera_directories( deque<Camera>& cameras ){
     
     
     for( deque<string>::iterator it=imgList.begin(); it != imgList.end(); it++ )
-        output.push_back( ImageBundle(*it));
+        output.push_back( ImageBundle(*it, cameras[0].collect_type));
 
     
     for( size_t i=1; i<cameras.size(); i++ )
