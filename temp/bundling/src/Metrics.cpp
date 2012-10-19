@@ -14,6 +14,10 @@ class Fail_Cam_Func{
         }
 };
 
+SceneID::SceneID(  ){
+
+
+}
 
 SceneID::SceneID( const int& sn, const int& camid ){
      
@@ -21,6 +25,13 @@ SceneID::SceneID( const int& sn, const int& camid ){
     camera_idx_list.push_back(camid);
 
 }
+
+SceneID::SceneID( const int& sn, const deque<int>& camids ){
+
+    scene_number = sn;
+    camera_idx_list = camids;
+}
+
 
 bool SceneID::operator  < ( const SceneID& rhs )const{
     return (scene_number < rhs.scene_number );
@@ -160,14 +171,28 @@ void Metrics::merge( Metrics const& new_metrics ){
     // merge the frame counts
     for( set<SceneID>::iterator it=new_metrics.scene_list.begin(); it != new_metrics.scene_list.end(); it++ ){
         
-        //check if the new item is already present.  THIS SHOULD NOT HAPPEN AND MUST BE CAUGHT
-        if( scene_list.find( *it ) != scene_list.end() ){
-            cout << *it << endl;
-            throw string("ERROR: Duplicate scenes found, NOT ALLOWED.");
+        //check if the new item is already present. 
+        set<SceneID>::iterator fit = scene_list.find( *it );
+        deque<int>::iterator rit;
+        if( fit != scene_list.end() ){
+            
+            //if its scene being added already exists, then merge the camera index lists.  
+            //   Merge the idx list,  sort, then call unique
+            deque<int> new_cam_list = it->camera_idx_list;
+            new_cam_list.insert( new_cam_list.end(), fit->camera_idx_list.begin(), fit->camera_idx_list.end() );
+        
+            sort( new_cam_list.begin(), new_cam_list.end() );
+            rit = unique( new_cam_list.begin(), new_cam_list.end());
+
+            new_cam_list.resize( rit - new_cam_list.begin() );
+
+            scene_list.erase( *it );
+            scene_list.insert( SceneID( it->scene_number, new_cam_list ));
         }
 
-    }
 
+    }
+    
     //union the sets
     scene_list.insert( new_metrics.scene_list.begin(), new_metrics.scene_list.end());
     

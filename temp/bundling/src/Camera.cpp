@@ -370,6 +370,8 @@ bool Camera::decompose_top_directories( ){
         directory_append_internal( timeEntry.pathnames[i], current_image_list, IO_FILES_ONLY );
     }
     
+    // TODO Prune images with a later scene number than the last visited frame
+    
     // sort the list by scene number
     sort_TACID_list( current_image_list, collect_type );
 

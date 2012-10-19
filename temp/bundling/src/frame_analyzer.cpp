@@ -92,7 +92,8 @@ int main( int argc, char * argv[] ){
             
             //merge the results with the current metrics in the context
             context.metrics.merge( metrics );
-            
+            context.metrics.validate_scene_list( context.cameras.size() );
+
             /**
              * Now that we have completed our task, lets save the context back.
             */

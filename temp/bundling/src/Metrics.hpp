@@ -11,7 +11,9 @@ class SceneID{
 
     public:
         
+        SceneID( );
         SceneID( const int& sn, const int& camid );
+        SceneID( const int& sn, const std::deque<int>& camids );
 
         bool operator  < ( const SceneID& rhs )const;
         bool operator  > ( const SceneID& rhs )const;

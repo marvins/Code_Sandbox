@@ -6,6 +6,10 @@
 #include <iostream>
 #include <vector>
 
+#include <boost/algorithm/string.hpp>
+
+namespace ba = boost::algorithm;
+
 using namespace std;
 
 
@@ -228,15 +232,48 @@ bool Context::load_context( const string& filename ){
 
         }
         
-        else if( tag == "METRIC_NUMBER_TOTAL_FRAMES" )
+        else if( tag == "METRIC_NUMBER_TOTAL_FRAMES" ){
             metrics.number_total_frames = str2num<int>(val);
+        }
         else if( tag == "METRIC_NUMBER_COMPLETE_FRAMES" )
             metrics.number_complete_frames = str2num<int>(val);
         else if( tag == "METRIC_NUMBER_INCOMPLETE_FRAMES" )
             metrics.number_incomplete_frames = str2num<int>(val);
         else if( tag == "SCENE" ){
+            
+            
+            //split the string into components
+            vector<string> components = string_split( val, ", ");
+            
+            // create a temp scene
+            SceneID temp_scene;
+            temp_scene.camera_idx_list.clear();
+            temp_scene.scene_number = 0;
 
-            throw string("HERE" );
+            //for every component, split the string with the equal sign and evaluate
+            for( size_t c=0; c<components.size(); c++ ){
+
+                //create tag and val strings
+                string compTag;
+                string compVal;
+                
+                size_t comp_idx = components[c].find_first_of("=");
+                compTag = components[c].substr(0, comp_idx );
+                compVal = components[c].substr( comp_idx + 1 );
+                
+                //parse the expected options
+                if( compTag == "ID" ){
+                    
+                    temp_scene.scene_number = str2num<int>(compVal);
+
+                }
+                else if( compTag == "CAM" ){
+                    
+                    temp_scene.camera_idx_list.push_back(str2num<int>(compVal));
+                }
+            }
+
+            temp_scenes.push_front( temp_scene);
 
         }
         //last resort
@@ -260,10 +297,15 @@ bool Context::load_context( const string& filename ){
     // sort cameras by camera name
     sort( cameras.begin(), cameras.end(), CameraSortFunc() );
     
+    // add all scenes to the metrics
+    metrics.scene_list.insert( temp_scenes.begin(), temp_scenes.end() );
+    
     /**
      * We have parsed the configuration file, lets validate our findings
     */
     
+
+
     return true;
 }
 
@@ -373,9 +415,9 @@ void Context::write_context( const string& filename )const{
         //write camera indeces
         if( it->camera_idx_list.size() > 0 ){
 
-            fout << " CAMS= " << it->camera_idx_list[0];
+            fout << ",CAM=" << it->camera_idx_list[0];
             for( size_t i=1; i<it->camera_idx_list.size(); i++ )
-                fout << ", " << it->camera_idx_list[i];
+                fout << ",CAM=" << it->camera_idx_list[i];
         }
         fout << endl;
             
