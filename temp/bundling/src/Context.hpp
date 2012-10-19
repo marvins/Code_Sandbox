@@ -33,7 +33,12 @@ class Context{
          * This will write the current context to a file.
         */
         void write_context( const string& filename )const;
-       
+        
+        /**
+         * Write the pretty formatted data to file for user consumption
+        */
+        void write_evaluation_results( )const;
+
         /**
          * Clean out the current context, deleting everything.
         */

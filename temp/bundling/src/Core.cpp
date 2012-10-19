@@ -1,5 +1,6 @@
 #include "Core.hpp"
 #include "FilePtr.hpp"
+#include "ProgressBar.hpp"
 
 #include <cstdlib>
 
@@ -11,22 +12,32 @@ using namespace std;
  * since the last run.
 */
 Metrics evaluate_frame_sets( deque<Camera>& cameras, Options& options, FilePtr& newest_file ){
+    
 
+    cout << endl << "Evaluating Frame Sets" << endl;
+    
     /**
      * Initialize the time space for every camera
     */
-    for( size_t i=0; i<cameras.size(); i++ )
+    ProgressBar build_bar;
+    cout << "Building Scene Space" << endl;
+    for( size_t i=0; i<cameras.size(); i++ ){
+        build_bar.update( (double)i/cameras.size() );
+        cout << build_bar << flush;
         cameras[i].build_scene_space( newest_file, options.image_depth );
-    
-    
+    }
+    build_bar.update(1); 
+    cout << build_bar << endl;
+    cout << endl;
+
     // create a return metrics container
     Metrics metrics;
     
     // pass the metrics list with a table of indeces to CAM_IDS
     metrics.camera_names.clear();
-    for( size_t i=0; i<cameras.size(); i++ )
+    for( size_t i=0; i<cameras.size(); i++ ){
         metrics.camera_names.push_back( cameras[i].CAM_ID);
-    
+    }
     
     /**
      * Start searching the filesystem
@@ -57,8 +68,9 @@ Metrics evaluate_frame_sets( deque<Camera>& cameras, Options& options, FilePtr& 
         //add all new scenes to the metrics tree
         metrics.append_scene_list( scene_list );
         
-        cout << metrics << endl;
+        cout << "\r                  \r Found " << metrics.scene_list.size() << " Frame Sets" << flush;
     }
+    cout << endl;
 
     // iterate through all scenes and check if they are complete or not
     metrics.validate_scene_list( cameras.size() );

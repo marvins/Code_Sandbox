@@ -17,8 +17,8 @@ CFG=frame_analyzer.cfg
 #-               Main Requirements             -#
 #-----------------------------------------------#
 # List of objects to build
-OBJECTS=$(BLD)/FilePtr.o    $(BLD)/Core.o    $(BLD)/Context.o   $(BLD)/TACID.o   $(BLD)/Metrics.o    $(BLD)/frame_analyzer.o $(BLD)/Parser.o $(BLD)/Options.o $(BLD)/Camera.o $(BLD)/IO.o 
-HEADERS=$(SRC)/FilePtr.hpp  $(SRC)/Core.hpp  $(SRC)/Context.hpp $(SRC)/TACID.hpp $(SRC)/Metrics.hpp  $(SRC)/Camera.hpp $(SRC)/Options.hpp $(SRC)/Parser.hpp  $(SRC)/IO.hpp
+OBJECTS=$(BLD)/ProgressBar.o    $(BLD)/FilePtr.o    $(BLD)/Core.o    $(BLD)/Context.o   $(BLD)/TACID.o   $(BLD)/Metrics.o    $(BLD)/frame_analyzer.o $(BLD)/Parser.o $(BLD)/Options.o $(BLD)/Camera.o $(BLD)/IO.o 
+HEADERS=$(SRC)/ProgressBar.hpp  $(SRC)/FilePtr.hpp  $(SRC)/Core.hpp  $(SRC)/Context.hpp $(SRC)/TACID.hpp $(SRC)/Metrics.hpp  $(SRC)/Camera.hpp $(SRC)/Options.hpp $(SRC)/Parser.hpp  $(SRC)/IO.hpp
 
 # Desired C++ Compiler
 CPP=g++
@@ -89,7 +89,11 @@ $(BLD)/Metrics.o: $(SRC)/Metrics.cpp $(HEADERS)
 # FilePtr
 $(BLD)/FilePtr.o: $(SRC)/FilePtr.cpp $(HEADERS)
 	$(CPP) $< -c -o $@  $(INCL)  $(FLAGS)
-	
+
+# ProgressBar
+$(BLD)/ProgressBar.o: $(SRC)/ProgressBar.cpp $(HEADERS)
+	$(CPP) $< -c -o $@  $(INCL)  $(FLAGS)
+
 #-----------------------------------------#
 #-          Required Directories         -#
 #-----------------------------------------#

@@ -1,4 +1,5 @@
 #include "Camera.hpp"
+#include "ProgressBar.hpp"
 #include "TACID.hpp"
 
 #include <algorithm>
@@ -277,7 +278,7 @@ void Camera::build_scene_space( FilePtr const& newest_file, const int& image_dep
         //pop off the first item
         topStr = image_stack.front();
         image_stack.pop_front();
-
+        
         //if item is a directory, then add it to the directory tree and keep digging
         if( is_dir( topStr ) == true ){
             
@@ -288,11 +289,12 @@ void Camera::build_scene_space( FilePtr const& newest_file, const int& image_dep
             set<TimeID>::iterator it = time_space.find(id);
 
             if( it != time_space.end() ){
-
+                
                 TimeID actual = (*it);
                 actual.decompose_and_add_path(topStr);
                 time_space.erase(id);
                 time_space.insert(actual);
+            
             }
             else{
                 
@@ -637,7 +639,8 @@ deque<Camera> find_camera_directories( Options const& options ){
     deque<string> camera_list;
 
     string cdir;
-
+    
+    cout << "Finding Cameras" << endl;
     /**
       start at the base directory and begin building a list of camera directories.  When 
       we discover one, add it to the respective camera.
@@ -665,6 +668,7 @@ deque<Camera> find_camera_directories( Options const& options ){
             directory_append_internal( cdir, dir_tree, IO_DIRECTORIES_ONLY  ); 
         }
 
+        
         //exit if we are out of directories
         if( dir_tree.size() <= 0 )
             break;
@@ -706,8 +710,10 @@ deque<Camera> find_camera_directories( Options const& options ){
         if( camera_found == false ){
             output.push_front( Camera(CAM_ID, options.collect_type, tname));
         }
-
+        cout << '\r' << "                            " << '\r' << "Found: " << output.size() << flush;
+        
     }
+    cout << endl;
 
     return output;
 

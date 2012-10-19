@@ -41,6 +41,7 @@ class Metrics{
         void validate_scene_list( const int& camera_count );
         
         std::vector<std::pair<std::string,int> > query_failures_by_camera()const;
+        std::vector<std::pair<int,std::vector<std::string> > > query_failures_by_scene( )const;
 
         void merge( const Metrics& rhs );
 

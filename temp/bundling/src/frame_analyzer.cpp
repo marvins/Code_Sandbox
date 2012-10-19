@@ -76,7 +76,7 @@ int main( int argc, char * argv[] ){
             if( skip_finding_cameras == false ){
                 
                 context.collect_type = options.collect_type;
-
+                
                 //lets find the camera directories
                 context.cameras = find_camera_directories( options );
                 

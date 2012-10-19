@@ -5,6 +5,7 @@
 using namespace std;
 
 
+
 class Fail_Cam_Func{
 
     public:
@@ -128,8 +129,19 @@ void Metrics::validate_scene_list( const int& camera_count ){
 
 vector<pair<string,int> > Metrics::query_failures_by_camera()const{
 
+    //make sure we have enough cameras to print
+    if( camera_cnt <= 0 )
+        return vector<pair<string,int> >();
+    
+    //make sure we have camera names to add
+    if( camera_names.size() <= 0 ){
+        cout << "ERROR: No camera names" << endl;
+        return vector<pair<string,int> >();
+    }
+
     //failure list
     vector<pair<string,int> > failure_list( camera_cnt);
+
 
     //build names into list
     for( size_t i=0; i<failure_list.size(); i++ ){
@@ -155,6 +167,42 @@ vector<pair<string,int> > Metrics::query_failures_by_camera()const{
 
 
     return failure_list;
+}
+
+
+vector<pair<int,vector<string> > > Metrics::query_failures_by_scene( )const{
+
+    vector<pair<int,vector<string> > > results; 
+    pair<int,vector<string> > temp_item; 
+
+    //iterate through every scene, add the CAM_IDs of any missing cameras to the list
+    for( set<SceneID>::const_iterator it = scene_list.begin(); it != scene_list.end(); it++ ){
+        
+        //clear the missing camera list
+        temp_item.second.clear();
+
+        //check if there are any missing frames
+        if( (int)it->camera_idx_list.size() == camera_cnt ){
+            temp_item.first = it->scene_number;
+            temp_item.second.clear();
+        }
+        else{
+            
+            // set up the temp item
+            temp_item.first = it->scene_number;
+
+            //iterate through the complete range of camera indeces, compare this to the index list
+            for( size_t i=0; i<(size_t)camera_cnt; i++ ){
+
+                //check if the index is in the list, skip, else add it to the results
+                if( find(it->camera_idx_list.begin(), it->camera_idx_list.end(), i) != it->camera_idx_list.end() )
+                    temp_item.second.push_back(camera_names[i]);
+            }
+        }
+        results.push_back( temp_item );
+    }
+
+    return results;
 }
 
 
@@ -190,6 +238,10 @@ void Metrics::merge( Metrics const& new_metrics ){
             scene_list.insert( SceneID( it->scene_number, new_cam_list ));
         }
 
+        //merge the camera names if the current metric object has none
+        if( camera_names.size() <= 0 )
+            camera_names = new_metrics.camera_names;
+
 
     }
     
@@ -214,7 +266,6 @@ std::ostream& operator << ( std::ostream& ostr, const Metrics& metrics ){
     ostr << "------------------------" << endl;
     
     ostr << endl;
-    ostr << "TEST: " << metrics.scene_list.size()  << endl;
     if( metrics.validated == true ){
         vector<pair<string,int> > failure_list = metrics.query_failures_by_camera();
         for( size_t i=0; i<failure_list.size(); i++ ){

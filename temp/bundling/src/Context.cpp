@@ -13,6 +13,60 @@ namespace ba = boost::algorithm;
 using namespace std;
 
 
+void printChars( ostream& ostr, int numCh, char chOut ){
+
+
+    // check for number of characters greater than zero
+    if( numCh > 0 ){
+
+        // output the character
+        ostr << chOut;
+
+        // repeat the process for the remaining characters
+        printChars( ostr, numCh - 1, chOut );
+       }
+}
+
+void printString( ostream& ostr, const string &stringVal, int blockSize, const string &justify )
+{
+    // initialize function/variables
+    const char SPACE = ' ';
+    int preSpace = 0, postSpace = 0;
+    int length = stringVal.length();
+
+    // check for right justification
+    if( justify == "RIGHT" )
+        // add front-end spaces
+        preSpace = blockSize - length;
+
+    // check for center justification
+    else if( justify == "CENTER" ){
+
+        // add spaces on both ends
+        preSpace = ( blockSize / 2 ) - ( length / 2 );
+        postSpace = blockSize - preSpace - length;
+    }
+
+    // otherwise, assume left justification
+    // default if not "RIGHT" or "CENTER"
+    else 
+       {
+        // add back-end spaces
+        postSpace = blockSize - length;
+       }
+
+    // print front-end spaces, if any
+    printChars( ostr, preSpace, SPACE );
+
+    // print the string
+    ostr << stringVal;
+
+    // print back-end spaces, if any
+    printChars( ostr, postSpace, SPACE );
+}
+
+
+
 
 /**
  * Default constructor for the Context.
@@ -28,6 +82,12 @@ Context::Context( const bool& newfile ){
 }
 
 
+/**
+ * Load the context file and import all relevant settings and history. 
+ * The most important aspect of this file is that its accurate and loads
+ * the scene number PERFECTLY.  The metrics class can merge metrics objects
+ * with overlapping scenes, so keep that in mind. 
+*/
 bool Context::load_context( const string& filename ){
 
     // the first step is to make sure the context file exists. If not then exit and return false
@@ -79,8 +139,6 @@ bool Context::load_context( const string& filename ){
      *  This flag is used to identify when the NUMBER_OF_CAMERAS tag is reached and set.
      *  This is necessary as it allows us to check if the camera list loaded properly.
     */
-    bool valid_size = false;
-    int actual_size = 0;
     
     // create a container to store the camera cam_ids and the index positions
     //    this will serve us well to debug our efforts.
@@ -131,10 +189,6 @@ bool Context::load_context( const string& filename ){
         // Number of cameras
         else if( tag == "NUMBER_OF_CAMERAS" ){
 
-            //once this appears, it is necessary to resize the camera list
-            actual_size = str2num<int>(val);
-
-            valid_size = true;
         }
         
         //context
@@ -177,9 +231,6 @@ bool Context::load_context( const string& filename ){
             Camera temp_cam;
             temp_cam.root_directories.clear();
 
-            // create a counter for the number of root directories
-            int num_roots;
-            
             //reset the reference
             temp_reference.first  = -1;
             temp_reference.second = "__NONE__";
@@ -209,12 +260,16 @@ bool Context::load_context( const string& filename ){
                 // check for the number of root directories
                 // TODO Remember that this is only used for validation
                 else if( compTag == "NUMBER_ROOT_DIRECTORIES" ){
-                    num_roots = str2num<int>(compVal); 
+                //    num_roots = str2num<int>(compVal); 
                 }
 
                 // check for camera root directory
                 else if( compTag == "ROOT_DIR" ){
                     
+                    //validate that the root directory exists
+                    if( file_exists( compVal ) == false )
+                        throw string(string("ERROR: ") + compVal + string("is not a valid camera root directory" ));
+
                     temp_cam.root_directories.push_back(compVal);
 
                 }
@@ -314,6 +369,9 @@ bool Context::load_context( const string& filename ){
  * Writes the context to file
 */
 void Context::write_context( const string& filename )const{
+    
+    ///write the evaluation results to file
+    write_evaluation_results( );
 
     /**
      * Open file
@@ -425,7 +483,7 @@ void Context::write_context( const string& filename )const{
 
     // close the file
     fout.close();
-
+    
 
 }
 
@@ -438,5 +496,66 @@ void Context::clear_context( ){
     //delete all cameras
     cameras.clear();
 
+}
+
+
+/**
+ * Write the pretty formatted data 
+*/
+void Context::write_evaluation_results( )const{
+
+
+    //write the accuracy to file
+    ofstream fout;
+    fout.open("output.txt");
+    
+    fout << "Frame Analyzer Results" << endl;
+    fout << "======================" << endl;
+    fout << endl;
+    fout << "     Total Counts" << endl;
+    fout << "----------------------" << endl;
+    fout << "Total Number of Scenes: " << metrics.number_total_frames << endl;
+    fout << "Total Number of Complete Frame Sets: " << metrics.number_complete_frames << endl;
+    fout << "Total Number of Incomplete Frame Sets: " << metrics.number_incomplete_frames << endl;
+    fout << endl;
+    fout << "+---------------------------------+" << endl;
+    fout << "| Dropped Frame Counts By Camera  |" << endl;
+    fout << "|----------+----------------------+" << endl;
+    fout << "|  NAME    |   FRAMES DROPPED     |" << endl;
+    fout << "+----------+----------------------+" << endl;
+    vector<pair<string,int> > dropped_results = metrics.query_failures_by_camera( );
+    for( size_t i=0; i<dropped_results.size(); i++ )
+        if( dropped_results[i].second > 0 ){
+            fout << "| ";
+            printString( fout, "cam"+num2str(dropped_results[i].first), 8, "CENTER");
+            fout << " | ";
+            printString( fout, num2str(dropped_results[i].second), 22, "CENTER");
+            fout << " |" << endl;
+        }
+    fout << "+----------+----------------------+" << endl;
+    fout << endl << endl;
+    vector<pair<int,vector<string> > > scene_results = metrics.query_failures_by_scene( );
+    fout << "|  Scene    |   Number of       |    List of Cameras " << endl;
+    fout << "|  Number   |   Missing Frames  |    missing Frames  " << endl;
+    fout << "+-----------+-------------------+---------------------" << endl;
+    for( size_t i=0; i<scene_results.size(); i++ ){
+
+
+        fout << "| ";
+        printString( fout, num2str(scene_results[i].first), 8, "CENTER");
+        fout << "  | ";
+        printString( fout, num2str(scene_results[i].second.size()), 16, "CENTER" );
+        fout << "  |  ";
+        if( scene_results[i].second.size() <= 0 )
+            fout << " NONE" << endl;
+        else{
+
+            for( size_t j=0; j<scene_results[i].second.size(); j++ )
+                fout << scene_results[i].second[j] << ", ";
+            fout << endl;
+        }
+    }
+
+    fout.close();
 }
 
