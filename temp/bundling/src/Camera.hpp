@@ -9,6 +9,7 @@
 #include <vector>
 
 ///Personal Libraries
+#include "FilePtr.hpp"
 #include "Metrics.hpp"
 #include "Options.hpp"
 #include "IO.hpp"
@@ -52,7 +53,8 @@ class TimeID{
          * entry.  This will get rid of the cam###/COLLECT/HOUR/MIN stuff. 
         */
         void decompose_and_add_path( const string& str );
-
+        
+        static deque<string> get_image_path_parts( const string& str );
 
         bool operator < (  TimeID const& rh )const;
         bool operator > (  TimeID const& rh )const;
@@ -100,7 +102,7 @@ class Camera{
         /**
          * Initialize the scene space for the camera, basically load a boatload of camera directories.
         */
-        void build_scene_space();
+        void build_scene_space( FilePtr const& newest_file, const int& image_depth );
 
         bool decompose_top_directories( );
         
@@ -117,7 +119,7 @@ class Camera{
         */
         void union_image_list( deque<ImageBundle>& image_list )const;
 
-        void build_scene_list( vector<SceneID>& scene_list, const int& current_idx );
+        void build_scene_list( vector<SceneID>& scene_list, const int& current_idx, FilePtr& newest_file );
 
         deque<string> root_directories;  /*< Name of the base camera directory */
         

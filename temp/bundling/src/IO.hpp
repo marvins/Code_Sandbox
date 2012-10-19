@@ -89,6 +89,8 @@ std::string file_pop_rear( std::string const& filename );
 
 std::deque<std::string> file_decompose_path( std::string const& pathname );
 
+std::string file_merge_path( std::deque<std::string> const& pathname );
+
 bool is_dir(  const std::string& name );
 bool is_file( const std::string& name );
 

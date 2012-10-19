@@ -69,7 +69,7 @@ int main( int argc, char * argv[] ){
 
                 //load the context back into the flag just in case we mess up
                 skip_finding_cameras = context.load_context( options.eval_context_filename );
-
+                
             }
             
             // there may be a problem with the context file, so regardless of the config flag, we may need to rebuild the data
@@ -79,19 +79,20 @@ int main( int argc, char * argv[] ){
 
                 //lets find the camera directories
                 context.cameras = find_camera_directories( options );
-
+                
                 // since the image depth is used in the context file, add it here from the config file
                 context.image_depth = options.image_depth;
+                context.metrics.camera_cnt = context.cameras.size();
             }
 
             /**
              * start searching through the image directories.
             */
-            metrics = evaluate_frame_sets( context.cameras, options );            
-               
+            metrics = evaluate_frame_sets( context.cameras, options, context.newest_file );            
+            
             //merge the results with the current metrics in the context
             context.metrics.merge( metrics );
-
+            
             /**
              * Now that we have completed our task, lets save the context back.
             */

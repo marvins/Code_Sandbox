@@ -191,13 +191,12 @@ bool TACID::is_valid( )const{
 */
 bool TACID::is_valid( const string& filename, const int& collect_type ){
 
-    
     //set to false just in case
     bool isValid = true;
 
     //grab basename
     string basename = file_basename( filename ); 
-    
+
     if( collect_type == COLLECT_NITF ){
 
         //make sure extension is nitf
@@ -206,7 +205,7 @@ bool TACID::is_valid( const string& filename, const int& collect_type ){
             return false;
     }
     else if( collect_type == COLLECT_RAW ){
-
+        
         //make sure the extension is rawl
         string ext = basename.substr(basename.size()-11);
         if( ext != "-image.rawl" && ext != "-IMAGE.RAWL" )
@@ -254,6 +253,7 @@ void sort_TACID_list( deque<string>& image_list, const int& collect_type ){
     //create a list of TACID containers
     deque<TACID> tacid_list;
     for( deque<string>::iterator it = image_list.begin(); it != image_list.end(); it++ ){
+        
 
         //make sure the file is a valid TACID
         if( TACID::is_valid(*it, collect_type ) == true )

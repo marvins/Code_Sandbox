@@ -4,6 +4,7 @@
 #include <deque>
 
 #include "Camera.hpp"
+#include "FilePtr.hpp"
 #include "Metrics.hpp"
 
 using namespace std;
@@ -49,6 +50,8 @@ class Context{
         
         // this is the type of collection (COLLECT_RAW or COLLECT_NITF)
         int collect_type;
+        
+        FilePtr newest_file;
 
     private:
         

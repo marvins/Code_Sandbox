@@ -6,6 +6,7 @@
 #include <string>
 
 ///Personal Libraries
+#include "FilePtr.hpp"
 #include "Parser.hpp"
 
 ///useful includes
@@ -89,7 +90,6 @@ class Options{
         bool   eval_use_context_file; /*< Whether or not to use a context file */
         string eval_context_filename; /*< Name of the context file */
         bool   eval_refresh_context;  /*< Whether or not to refresh the context file. */
-        
         
         /**************************************************************/
         /*                     BUNDLE-ONLY PARAMETERS                 */

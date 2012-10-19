@@ -35,6 +35,9 @@ bool Context::load_context( const string& filename ){
         return false;
     }
 
+    //create a temporary container for our computed results
+    deque<SceneID> temp_scenes;
+
     // the next step is to open the file and start parsing data from it
     vector<pair<string,string> > lines;
 
@@ -129,6 +132,36 @@ bool Context::load_context( const string& filename ){
 
             valid_size = true;
         }
+        
+        //context
+        else if( tag == "CONTEXT" ){
+
+            //split the string useing hte comma
+            vector<string> components = string_split( val, ", ");
+
+            //for every component, split the string with the equal sign and evaluate
+            for( size_t c=0; c<components.size(); c++ ){
+
+                string compTag, compVal;
+                size_t comp_idx = components[c].find_first_of("=");
+                compTag = components[c].substr(0, comp_idx );
+                compVal = components[c].substr( comp_idx + 1 );
+
+                if( compTag == "LAST_SCENE" )
+                    newest_file.scene_number = str2num<int>(compVal);
+                
+                else if( compTag == "PATH" )
+                    newest_file.file_parts = file_decompose_path( compVal );
+                
+                else
+                    throw string("ERROR: Bad argument in CONTEXT group" );
+                    
+
+            }
+
+            newest_file.initialized = true;
+
+        }
 
         // Individual Camera
         else if( tag == "CAMERA" ){
@@ -194,7 +227,18 @@ bool Context::load_context( const string& filename ){
 
 
         }
+        
+        else if( tag == "METRIC_NUMBER_TOTAL_FRAMES" )
+            metrics.number_total_frames = str2num<int>(val);
+        else if( tag == "METRIC_NUMBER_COMPLETE_FRAMES" )
+            metrics.number_complete_frames = str2num<int>(val);
+        else if( tag == "METRIC_NUMBER_INCOMPLETE_FRAMES" )
+            metrics.number_incomplete_frames = str2num<int>(val);
+        else if( tag == "SCENE" ){
 
+            throw string("HERE" );
+
+        }
         //last resort
         else{
             cout << "WARNING: Unidentified tag=" << tag << " found in context file, aborting and reconfiguring." << endl;
@@ -206,15 +250,20 @@ bool Context::load_context( const string& filename ){
 
     }
     
+    // distribute the collect type to every camera
+    for(size_t i=0; i<cameras.size(); i++ )
+        cameras[i].collect_type = collect_type;
+    
+    // distribute the camera count to the metric class
+    metrics.camera_cnt = cameras.size();
 
+    // sort cameras by camera name
+    sort( cameras.begin(), cameras.end(), CameraSortFunc() );
+    
     /**
      * We have parsed the configuration file, lets validate our findings
     */
     
-    // sort by camera name
-    sort( cameras.begin(), cameras.end(), CameraSortFunc() );
-
-
     return true;
 }
 
@@ -257,6 +306,11 @@ void Context::write_context( const string& filename )const{
     // write the number of cameras
     fout << "NUMBER_OF_CAMERAS=" << cameras.size() << endl;
     fout << endl;
+    
+    ////////////////////////////////////////////
+    // Write the previous positions 
+    fout << "CONTEXT= LAST_SCENE=" << newest_file.scene_number << ", PATH=" << file_merge_path( newest_file.file_parts );
+    fout << endl << endl;
 
     ////////////////////////////////////////////
     // write the collect type
@@ -295,7 +349,37 @@ void Context::write_context( const string& filename )const{
 
     }
 
+    
+    ///////////////////////////////////////////////
+    //  Write all scene metric results
+    fout << endl;
+    fout << endl;
+    
+    fout << "METRIC_NUMBER_TOTAL_FRAMES=" << metrics.number_total_frames << endl;
+    fout << "METRIC_NUMBER_COMPLETE_FRAMES=" << metrics.number_complete_frames << endl;
+    fout << "METRIC_NUMBER_INCOMPLETE_FRAMES=" << metrics.number_incomplete_frames << endl;
+    fout << endl;
+    fout << endl;
 
+    set<SceneID>::iterator  it = metrics.scene_list.begin();
+    for(; it != metrics.scene_list.end(); it++ ){
+    
+        //write tag
+        fout << "SCENE="; 
+        
+        //write scene number
+        fout << " ID=" << it->scene_number;
+        
+        //write camera indeces
+        if( it->camera_idx_list.size() > 0 ){
+
+            fout << " CAMS= " << it->camera_idx_list[0];
+            for( size_t i=1; i<it->camera_idx_list.size(); i++ )
+                fout << ", " << it->camera_idx_list[i];
+        }
+        fout << endl;
+            
+    }
 
     // close the file
     fout.close();

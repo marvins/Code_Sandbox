@@ -9,6 +9,27 @@ using namespace std;
 
 
 
+/**
+ * Returns true if the character being evaluated
+ * is either a number or an upper-case letter between
+ * A and F inclusive. 
+*/
+bool isCharAlphaNumeric( char const& c ){
+    
+    // check if a number
+    if( c >= '0' && c <= '9' ){
+        return true;
+    }
+    //otherwise check if a letter
+    if( c >= 'A' && c <= 'F' )
+        return true;
+
+    return false;
+
+}
+
+
+
 /** 
  * Default constructor for the TimeID class. 
 */
@@ -59,6 +80,36 @@ void TimeID::decompose_and_add_path( const string& pathStr ){
     pathnames.push_back( pathStr );
 }
 
+
+deque<string> TimeID::get_image_path_parts( const string& str ){
+
+    //create output
+    deque<string> output = file_decompose_path( str );
+    
+    //remove the early stuff
+    while( output.size() > 0 ){ 
+        
+       //check if a camera directory
+       if( output[0].size() == 6 && 
+           output.front().substr(0,3) == "cam" &&
+           isCharAlphaNumeric( output.front()[3] ) &&
+           isCharAlphaNumeric( output.front()[4] ) &&
+           isCharAlphaNumeric( output.front()[5] ) ){
+
+            output.pop_front();
+            break;
+       }
+
+       // otherwise just delete
+       output.pop_front();
+
+    }
+    
+    //remove the last item
+    output.pop_back();
+
+    return output;
+}
 
 
 bool TimeID::operator <(  TimeID const& rh )const{
@@ -157,7 +208,7 @@ bool TimeID::operator !=( TimeID const& rh )const{
 ostream& operator << ( ostream& ostr, const TimeID& id ){
     ostr << "DIRS: ";
     for( size_t i=0; i<id.dirs.size(); i++) 
-        cout << id.dirs[i] << " / ";
+        ostr << id.dirs[i] << " / ";
     ostr << endl;
     ostr << "PATHS: " << endl;
     for( size_t i=0; i<id.pathnames.size(); i++ )
@@ -208,7 +259,7 @@ void Camera::add_directory( string const& dir_name ){
  * structure consisting of the internal directories.  Since the camera has multiple
  * base directories, each subdirectory may exist in each base. 
 */
-void Camera::build_scene_space(){
+void Camera::build_scene_space( FilePtr const& newest_file, const int& image_depth ){
     
     // create our directory stack which we will perform a Depth-First-Search on.
     deque<string> image_stack;
@@ -245,21 +296,47 @@ void Camera::build_scene_space(){
             }
             else{
                 
-                //TODO: DO HISTORICAL PRUNING HERE!!!
 
                 //only add if the depth is less than the max
                 //compute the depth
                 int depth = id.dirs.size();
-                if( depth == 3 ){
+
+                //if the depth is larger than the newest file, file parts size, then ignore
+                bool is_newer = true;
+                
+                
+                ////////////////////////////////////////////////////////////////////
+                // HISTORICAL PRUNING 
+                
+                if( newest_file.initialized == true && depth-1 > newest_file.file_parts.size() ){
+                    is_newer = false;
+                }
+
+                deque<string> filepath = file_decompose_path( topStr );
+                //TODO if depth == 0, then we are evaluating a date.  make sure the date is longer
+                
+                
+                //if depth is anything else, normal comparison should work
+                if( newest_file.initialized == true && depth-1 > 0 && depth-1 < newest_file.file_parts.size() &&
+                    filepath.back() < newest_file.file_parts[depth-1] ){
+                    is_newer = false;
+                }
+                
+                // END OF HISTORICAL PRUNING
+                ////////////////////////////////////////////////////////////////////
+
+                if( is_newer && depth == image_depth ){
                     
                     //add to directory space
                     time_space.insert( TimeID( topStr, CAM_ID ) );
                 }
                 
-                if( depth < 3 ){
+                else if( is_newer && depth < image_depth ){
+
                     //keep adding
                     directory_append_internal( topStr, image_stack, IO_ALL );  
                 }
+            
             }
         }
 
@@ -274,6 +351,9 @@ void Camera::build_scene_space(){
 */
 bool Camera::decompose_top_directories( ){
     
+    // clear the current image list
+    current_image_list.clear();
+    
     //return false if we are out of time entris
     if( time_space.size() <= 0 )
         return false;
@@ -284,8 +364,6 @@ bool Camera::decompose_top_directories( ){
     
     last_time_entry = timeEntry;
 
-    // clear the current image list
-    current_image_list.clear();
 
     // add the directory contents to the list
     for( size_t i=0; i<timeEntry.pathnames.size(); i++ ){
@@ -294,7 +372,7 @@ bool Camera::decompose_top_directories( ){
     
     // sort the list by scene number
     sort_TACID_list( current_image_list, collect_type );
-    
+
     return true;
 }
 
@@ -365,10 +443,10 @@ bool Camera::empty_time_space()const{
 /**
  * Given the scene list, update any frame which do or do not exist in either. 
 */
-void Camera::build_scene_list( vector<SceneID>& scene_list, const int& current_idx ){
+void Camera::build_scene_list( vector<SceneID>& scene_list, const int& current_idx, FilePtr& newest_file ){
 
     bool isValid = false;
-
+    
     //iterate through the current image list. if the scene does not exist in the 
     //list, then add it
     for( size_t i=0; i<current_image_list.size(); i++ ){
@@ -376,6 +454,13 @@ void Camera::build_scene_list( vector<SceneID>& scene_list, const int& current_i
         //grab the current scene number
         int tscene = TACID::scene_number( current_image_list[i], collect_type, isValid );
         
+        //update the FilePtr if it is not initialized or not the largest
+        if( newest_file.initialized == false || newest_file.scene_number < tscene ){
+            newest_file.initialized = true;
+            newest_file.file_parts = TimeID::get_image_path_parts( current_image_list[i] );
+            newest_file.scene_number = tscene;
+        }
+
         bool scene_exists = false;
 
         //check if it exists in the current scene list
@@ -434,26 +519,6 @@ int camera2int( const string& dirname ){
     return output;
 
 }
-
-/**
- * Returns true if the character being evaluated
- * is either a number or an upper-case letter between
- * A and F inclusive. 
-*/
-bool isCharAlphaNumeric( char const& c ){
-    
-    // check if a number
-    if( c >= '0' && c <= '9' ){
-        return true;
-    }
-    //otherwise check if a letter
-    if( c >= 'A' && c <= 'F' )
-        return true;
-
-    return false;
-
-}
-
 
 /**
  *  Compare two strings and see if they match
@@ -641,7 +706,7 @@ deque<Camera> find_camera_directories( Options const& options ){
         }
 
     }
-    
+
     return output;
 
 }
@@ -730,16 +795,15 @@ deque<ImageBundle> compute_image_bundles( deque<Camera>& cameras, Options const&
     deque<ImageBundle> bundles;
 
     // For each camera, initialize the time space
-    for( size_t i=0; i<cameras.size(); i++ ){
-        cameras[i].build_scene_space();
-    }
+    //for( size_t i=0; i<cameras.size(); i++ ){
+    //    cameras[i].build_scene_space();
+    //}
 
     int cnt = 0;
     /** Begin comparing directories */
     bool run_loop = true;
     while( run_loop == true ){
         
-        cout << cnt++ << endl;
         //stop processing if any camera node is empty
         for( size_t i=0; i<cameras.size(); i++ ){
             if( cameras[i].empty_time_space() == true ){
@@ -763,19 +827,15 @@ deque<ImageBundle> compute_image_bundles( deque<Camera>& cameras, Options const&
         if( run_loop == false )
             break;
         
-        cout << "C" << endl;
         //now decompose each directory and search for matching image pairs
         bundles.clear();
         bundles = decompose_top_camera_directories( cameras );
         
-        cout << "E" << endl;
         //add the image bundles to the bundle list
         bundle_output.insert( bundle_output.end(), bundles.begin(), bundles.end() );
         
-        cout << "Current Size: " << bundle_output.size() << endl;
         if( bundle_output.size() > options.max_bundle_limit )
         {
-            cout << "hard limit reached" << endl;
             break;
         }
 

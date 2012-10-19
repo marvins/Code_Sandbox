@@ -199,6 +199,28 @@ deque<string> file_decompose_path( string const& pathname ){
     return output;
 }
 
+string file_merge_path( deque<string> const& pathname ){
+
+    if( pathname.size() <= 0 )
+        return "";
+
+    string output = "";
+
+    if( pathname [0] == "/" )
+        output = "/";
+    else
+        output = pathname[0] + "/";
+
+    for( size_t i=1; i<pathname.size(); i++ ){
+        output += pathname[i];
+        if( i < (pathname.size()-1))
+            output += "/";
+    }
+
+    return output;
+
+}
+
 /**
  * Check if the file exists
 */

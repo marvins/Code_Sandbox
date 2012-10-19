@@ -54,7 +54,8 @@ Metrics::Metrics( ){
     number_complete_frames   = 0;
     number_incomplete_frames = 0;
     number_total_frames      = 0;
-
+    
+    validated = false;
 }
        
 
@@ -65,7 +66,7 @@ void Metrics::append_scene_list( vector<SceneID> const& scenes ){
     
     // iterate through each scene
     for( size_t i=0; i<scenes.size(); i++ ){
-
+        
         //check to see if it already exists
         if( scene_list.find(scenes[i]) != scene_list.end() )
             throw string("Unexpected condition");
@@ -110,6 +111,8 @@ void Metrics::validate_scene_list( const int& camera_count ){
     
     //swap scene lists
     scene_list = new_scene_list;
+
+    validated = true;
 }
 
 vector<pair<string,int> > Metrics::query_failures_by_camera()const{
@@ -149,7 +152,7 @@ vector<pair<string,int> > Metrics::query_failures_by_camera()const{
  * object with the previous results.
 */
 void Metrics::merge( Metrics const& new_metrics ){
-
+    
     // make sure the camera counts are uniform
     if( camera_cnt != 0 && camera_cnt != new_metrics.camera_cnt )
         throw string("ERROR: cameras have different counts.");
@@ -167,7 +170,8 @@ void Metrics::merge( Metrics const& new_metrics ){
 
     //union the sets
     scene_list.insert( new_metrics.scene_list.begin(), new_metrics.scene_list.end());
-
+    
+    validated = true;
 
 }
 
@@ -184,12 +188,16 @@ std::ostream& operator << ( std::ostream& ostr, const Metrics& metrics ){
     ostr << "Camera Failures by Group" << endl;
     ostr << "------------------------" << endl;
     
-    vector<pair<string,int> > failure_list = metrics.query_failures_by_camera();
-    for( size_t i=0; i<failure_list.size(); i++ ){
-        if( failure_list[i].second <= 0 )
-            break;
+    ostr << endl;
+    ostr << "TEST: " << metrics.scene_list.size()  << endl;
+    if( metrics.validated == true ){
+        vector<pair<string,int> > failure_list = metrics.query_failures_by_camera();
+        for( size_t i=0; i<failure_list.size(); i++ ){
+            if( failure_list[i].second <= 0 )
+                break;
 
-        cout << failure_list[i].first << " has " << failure_list[i].second << " failures" << endl;
+            ostr << failure_list[i].first << " has " << failure_list[i].second << " failures" << endl;
+        }
     }
 
     return ostr;

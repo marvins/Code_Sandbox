@@ -51,7 +51,8 @@ class Metrics{
         int number_total_frames;
 
         int camera_cnt;
-
+        
+        bool validated;
 };
 
 
