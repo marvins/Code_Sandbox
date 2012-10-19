@@ -518,21 +518,21 @@ void Context::write_evaluation_results( )const{
     fout << "Total Number of Complete Frame Sets: " << metrics.number_complete_frames << endl;
     fout << "Total Number of Incomplete Frame Sets: " << metrics.number_incomplete_frames << endl;
     fout << endl;
-    fout << "+---------------------------------+" << endl;
-    fout << "| Dropped Frame Counts By Camera  |" << endl;
-    fout << "|----------+----------------------+" << endl;
-    fout << "|  NAME    |   FRAMES DROPPED     |" << endl;
-    fout << "+----------+----------------------+" << endl;
+    fout << "+-----------------------------------+" << endl;
+    fout << "| Dropped Frame Counts By Camera    |" << endl;
+    fout << "|------------+----------------------+" << endl;
+    fout << "|    NAME    |   FRAMES DROPPED     |" << endl;
+    fout << "+------------+----------------------+" << endl;
     vector<pair<string,int> > dropped_results = metrics.query_failures_by_camera( );
     for( size_t i=0; i<dropped_results.size(); i++ )
         if( dropped_results[i].second > 0 ){
             fout << "| ";
-            printString( fout, "cam"+num2str(dropped_results[i].first), 8, "CENTER");
+            printString( fout, string("cam") + dropped_results[i].first, 10, "CENTER");
             fout << " | ";
-            printString( fout, num2str(dropped_results[i].second), 22, "CENTER");
+            printString( fout, num2str(dropped_results[i].second), 20, "CENTER");
             fout << " |" << endl;
         }
-    fout << "+----------+----------------------+" << endl;
+    fout << "+------------+----------------------+" << endl;
     fout << endl << endl;
     vector<pair<int,vector<string> > > scene_results = metrics.query_failures_by_scene( );
     fout << "|  Scene    |   Number of       |    List of Cameras " << endl;
@@ -551,7 +551,7 @@ void Context::write_evaluation_results( )const{
         else{
 
             for( size_t j=0; j<scene_results[i].second.size(); j++ )
-                fout << scene_results[i].second[j] << ", ";
+                fout << "cam" << scene_results[i].second[j] << ", ";
             fout << endl;
         }
     }
