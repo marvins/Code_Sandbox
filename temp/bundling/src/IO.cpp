@@ -79,7 +79,7 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
     /**
      * We need to select a subset of the total bundles 
     */
-    if( bundles.size() > options.number_bundles ){
+    if( (int)bundles.size() > options.number_bundles ){
     
         // find the max and min time
         int stride = bundles.size()/options.number_bundles;
@@ -106,7 +106,7 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
 
 
     }
-    else if( bundles.size() < options.number_bundles ){
+    else if( (int)bundles.size() < options.number_bundles ){
     
         throw string("NOT IMPLEMENTED YET");
     
@@ -163,7 +163,12 @@ void directory_create( std::string const& dirname ){
 
 string file_basename( const string& pathname ){
 
+#ifdef BOOST_LEGACY
     return fs::path(pathname).filename();//.string();
+#else
+    return fs::path(pathname).filename().string();
+#endif
+
 }
 
 std::string file_extension( const std::string& pathname ){
@@ -193,7 +198,12 @@ deque<string> file_decompose_path( string const& pathname ){
 
     //iterate over item
     for (fs::path::iterator it(item.begin()), it_end(item.end()); it != it_end; ++it){
-        output.push_back((*it));//.string());    
+
+#ifdef BOOST_LEGACY
+    output.push_back((*it));//.string());    
+#else
+    output.push_back((*it).string());    
+#endif
     }
 
     return output;
