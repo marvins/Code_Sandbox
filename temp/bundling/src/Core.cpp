@@ -6,6 +6,68 @@
 
 using namespace std;
 
+/** 
+ * Grab all matching and complete image bundles
+*/
+deque<ImageBundle> compute_image_bundles( deque<Camera>& cameras, Options const& options ){
+
+    
+    deque<ImageBundle> bundle_output;
+    deque<ImageBundle> bundles;
+
+    // For each camera, initialize the time space
+    for( size_t i=0; i<cameras.size(); i++ ){
+        cameras[i].build_scene_space( options.image_depth );
+    }
+
+    int cnt = 0;
+
+    /** Begin comparing directories */
+    bool run_loop = true;
+    while( run_loop == true ){
+        
+        //stop processing if any camera node is empty
+        for( size_t i=0; i<cameras.size(); i++ ){
+            if( cameras[i].empty_time_space() == true ){
+                run_loop = false; 
+                break;
+            }
+        }
+        if( run_loop == false )
+            break;
+        
+        //first check to make sure all cameras have the same top element
+        normalize_cameras( cameras );
+        
+        //stop processing if any camera node is empty
+        for( size_t i=0; i<cameras.size(); i++ ){
+            if( cameras[i].empty_time_space() == true ){
+                run_loop = false;
+                break;
+            }
+        }
+        if( run_loop == false )
+            break;
+        
+        //now decompose each directory and search for matching image pairs
+        bundles.clear();
+        bundles = decompose_top_camera_directories( cameras );
+        
+        //add the image bundles to the bundle list
+        bundle_output.insert( bundle_output.end(), bundles.begin(), bundles.end() );
+        
+        if( bundle_output.size() > options.max_bundle_limit )
+        {
+            break;
+        }
+
+    }
+    
+    
+    return bundle_output;
+}
+
+
 
 /**
  * Compute all required metrics for any new images created

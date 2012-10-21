@@ -80,8 +80,10 @@ void Metrics::append_scene_list( vector<SceneID> const& scenes ){
     for( size_t i=0; i<scenes.size(); i++ ){
         
         //check to see if it already exists
-        if( scene_list.find(scenes[i]) != scene_list.end() )
-            throw string("Unexpected condition");
+        if( scene_list.find(scenes[i]) != scene_list.end() ){
+            
+            //throw string("Unexpected condition");
+        }
         
         //otherwise add the scene 
         scene_list.insert(scenes[i]);

@@ -11,6 +11,13 @@
 #include "Metrics.hpp"
 #include "Options.hpp"
 
+
+/**
+ * Compute the image bundles
+*/
+deque<ImageBundle> compute_image_bundles( deque<Camera>& cameras, Options const& options );
+
+
 /**
  * Evaluate the frame sets for the cameras and report 
  * any required metrics.

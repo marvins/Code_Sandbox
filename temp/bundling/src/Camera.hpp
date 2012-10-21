@@ -102,6 +102,8 @@ class Camera{
         /**
          * Initialize the scene space for the camera, basically load a boatload of camera directories.
         */
+        void build_scene_space( const int& image_depth );
+        
         void build_scene_space( FilePtr const& newest_file, const int& image_depth );
 
         bool decompose_top_directories( );
@@ -172,11 +174,6 @@ deque<Camera> find_camera_directories( Options const& options );
  * the first position of its time space tree.
 */
 void normalize_cameras( deque<Camera>& cameras );
-
-/**
- * Compute the image bundles
-*/
-deque<ImageBundle> compute_image_bundles( deque<Camera>& cameras, Options const& options );
 
 #endif
 

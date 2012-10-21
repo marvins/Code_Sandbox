@@ -255,6 +255,75 @@ void Camera::add_directory( string const& dir_name ){
 
 }
 
+
+/**
+ * Takes the base pathnames provided to the camera object and builds a tree
+ * structure consisting of the internal directories.  Since the camera has multiple
+ * base directories, each subdirectory may exist in each base. 
+*/
+void Camera::build_scene_space( const int& image_depth ){
+    
+    // create our directory stack which we will perform a Depth-First-Search on.
+    deque<string> image_stack;
+
+    // load the directory stack with the contents of each base directory
+    for( size_t i=0; i<root_directories.size(); i++ )
+        directory_append_internal( root_directories[i], image_stack, IO_ALL);
+    
+    // some useful variables
+    string topStr;
+    
+    // keep iterating until the image stack is empty
+    while( image_stack.size() > 0 ){
+        
+        //pop off the first item
+        topStr = image_stack.front();
+        image_stack.pop_front();
+        
+        //if item is a directory, then add it to the directory tree and keep digging
+        if( is_dir( topStr ) == true ){
+            
+            //create timeid
+            TimeID id( topStr, CAM_ID );
+            
+            //check if the element already exists
+            set<TimeID>::iterator it = time_space.find(id);
+
+            if( it != time_space.end() ){
+                
+                TimeID actual = (*it);
+                actual.decompose_and_add_path(topStr);
+                time_space.erase(id);
+                time_space.insert(actual);
+            
+            }
+            else{
+                
+
+                //only add if the depth is less than the max
+                //compute the depth
+                int depth = id.dirs.size();
+
+                if( depth == image_depth ){
+                    
+                    //add to directory space
+                    time_space.insert( TimeID( topStr, CAM_ID ) );
+                }
+                
+                else if( depth < image_depth ){
+
+                    //keep adding
+                    directory_append_internal( topStr, image_stack, IO_ALL );  
+                }
+            
+            }
+        }
+
+    }
+    
+}
+
+
 /**
  * Takes the base pathnames provided to the camera object and builds a tree
  * structure consisting of the internal directories.  Since the camera has multiple
@@ -793,63 +862,4 @@ deque<ImageBundle> decompose_top_camera_directories( deque<Camera>& cameras ){
 }
 
 
-/** 
- * Grab all matching and complete image bundles
-*/
-deque<ImageBundle> compute_image_bundles( deque<Camera>& cameras, Options const& options ){
-
-    
-    deque<ImageBundle> bundle_output;
-    deque<ImageBundle> bundles;
-
-    // For each camera, initialize the time space
-    //for( size_t i=0; i<cameras.size(); i++ ){
-    //    cameras[i].build_scene_space();
-    //}
-
-    int cnt = 0;
-    /** Begin comparing directories */
-    bool run_loop = true;
-    while( run_loop == true ){
-        
-        //stop processing if any camera node is empty
-        for( size_t i=0; i<cameras.size(); i++ ){
-            if( cameras[i].empty_time_space() == true ){
-                run_loop = false; 
-                break;
-            }
-        }
-        if( run_loop == false )
-            break;
-        
-        //first check to make sure all cameras have the same top element
-        normalize_cameras( cameras );
-        
-        //stop processing if any camera node is empty
-        for( size_t i=0; i<cameras.size(); i++ ){
-            if( cameras[i].empty_time_space() == true ){
-                run_loop = false;
-                break;
-            }
-        }
-        if( run_loop == false )
-            break;
-        
-        //now decompose each directory and search for matching image pairs
-        bundles.clear();
-        bundles = decompose_top_camera_directories( cameras );
-        
-        //add the image bundles to the bundle list
-        bundle_output.insert( bundle_output.end(), bundles.begin(), bundles.end() );
-        
-        if( bundle_output.size() > options.max_bundle_limit )
-        {
-            break;
-        }
-
-    }
-    
-    
-    return bundle_output;
-}
 
