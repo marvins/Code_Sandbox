@@ -18,6 +18,16 @@ TP str2num( std::string const& in ){
 
 }
 
+template <typename TP>
+std::string num2str( TP const& value ){
+
+    std::stringstream sin;
+    sin << value;
+    return sin.str();
+}
+
+
+
 std::string file_basename( std::string const& in );
 
 } // end of STR

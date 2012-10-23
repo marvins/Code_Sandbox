@@ -101,6 +101,11 @@ namespace GS2{
              * Parse the TACID data into key=value pairs for output
             */
             std::vector<std::pair<std::string,std::string> >  query_TACID_data()const;
+            
+            /**
+             * Get the product number
+            */
+            std::string get_product_no( )const;
 
         private:
             std::string extension;          /*< Extension          */

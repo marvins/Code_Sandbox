@@ -9,7 +9,6 @@
 PREFIX = /opt/local
 GEOIMAGE_INCLUDE=-I$(PREFIX)/include
 GEOIMAGE_LIBS=-L$(PREFIX)/lib -lgeoimage
-GEOIMAGE_STATIC=$(PREFIX)/lib/libgeoimage.a
 
 #Build directory   (DO NOT TOUCH -fPIC)
 BUILD = build
@@ -36,6 +35,7 @@ GDAL_STATIC     = $(GDAL_PATH)/lib/libgdal.a
 #
 OPENCV = `pkg-config opencv --cflags --libs`
 OPENCV_INCLUDE = `pkg-config opencv --cflags`
+OPENCV_STATIC  = `ls /usr/lib/libopencv*.a`
 
 #
 # Boost Libraries
@@ -45,20 +45,6 @@ BOOST_INCLUDE = -I/opt/local/include
 BOOST_LIBS    = -L/opt/local/lib -lboost_filesystem -lboost_system
 BOOST		  = $(BOOST_INCLUDE) $(BOOST_LIBS)
 BOOST_STATIC  = $(BOOST_PATH)/lib/libboost_filesystem.a $(BOOST_PATH)/lib/libboost_system.a
-
-#
-# OpenGL Libraries
-#
-UNAME := $(shell uname)
-ifeq ($(UNAME),Darwin)
-  OPENGL_INCLUDE = 
-  OPENGL_LIBS    = -framework OpenGL -framework GLUT
-  OPENGL         = $(OPENGL_INCLUDE) $(OPENGL_LIBS)
-else
-  OPENGL_INCLUDE = -I/usr/include
-  OPENGL_LIBS    = -L/usr/lib -lglut -lGLU -lGL -lGLEW
-  OPENGL         = $(OPENGL_INCLUDE) $(OPENGL_LIBS)
-endif
 
 
 #
@@ -77,7 +63,7 @@ TEST = $(TEST_INCLUDE) $(TEST_SOURCES)
 #
 # Geographic NITF Libraries
 #
-HEADERS = src/core/*.h src/dem/*.h src/extensions/*.h src/image/*.h src/utilities/*.h
+HEADERS = src/core/*.h src/dem/*.h src/extensions/*.hpp src/image/*.h src/utilities/*.h
 
 #
 # List of objects to build
@@ -113,19 +99,18 @@ endif
 #
 # Global build script
 #
-all: $(BIN) $(BUILD) $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE)  $(BUILD)/libgeoimage.a
+all: $(BIN) $(BUILD) $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE)  
 	mkdir -p $(BUILD)/bin
 	mkdir -p $(BUILD)/lib
 	mkdir -p $(BUILD)/include
 	mkdir -p $(BUILD)/include/geoimage
 	cp $(BUILD)/libgeoimage.$(LIB_TYPE) 	  $(BUILD)/lib
 	cp $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE) $(BUILD)/lib
-	cp $(BUILD)/libgeoimage.a                 $(BUILD)/lib
 	cp src/GeoImage.hpp	  	$(BUILD)/include/GeoImage.hpp
 	cp src/coordinates/*.h  $(BUILD)/include/geoimage
 	cp src/core/*.h		  	$(BUILD)/include/geoimage
 	cp src/dem/*.h		 	$(BUILD)/include/geoimage
-	cp src/extensions/*.h   $(BUILD)/include/geoimage
+	cp src/extensions/*.hpp $(BUILD)/include/geoimage
 	cp src/extensions/*.hpp $(BUILD)/include/geoimage
 	cp src/image/*.h 		$(BUILD)/include/geoimage
 	cp src/utilities/*.h  	$(BUILD)/include/geoimage
@@ -145,6 +130,7 @@ tools: $(BIN)  $(BIN)/geo_meta_parser
 ###################################################################
 VIEWER_HDR=                       src/tools/geo_viewer/Quaternion.h src/tools/geo_viewer/visualization.h  src/tools/geo_viewer/camera.h  src/tools/geo_viewer/Cube.h    src/tools/geo_viewer/vector.h  src/tools/geo_viewer/initialization.h   src/tools/geo_viewer/keyboard.h  src/tools/geo_viewer/Options.h
 VIEWER_OBJ=$(BUILD)/geo_viewer.o  $(BUILD)/Quaternion.o             $(BUILD)/visualization.o              $(BUILD)/camera.o              $(BUILD)/Cube.o                $(BUILD)/vector.o              $(BUILD)/initialization.o               $(BUILD)/keyboard.o              $(BUILD)/Options.o
+
 
 #########################################
 #    Main Libraries  (LINUX)

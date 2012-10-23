@@ -27,6 +27,23 @@ cv::Mat getSensorPosition( GEO::GeoImage const& img );
 */
 std::vector<std::pair<std::string,std::string> > query_GS2_metadata( GeoImage const& gimg );
 
+/**
+ * Parse the ACFTB Header
+*/
+std::vector<std::pair<std::string,std::string> > parse_ACFTB( const std::string& tre );
+
+/**
+ * Parse the AIMIDB header
+*/
+std::vector<std::pair<std::string,std::string> > parse_AIMIDB( const std::string& tre );
+
+
+/**
+ * Parse the BANDSB Header
+*/
+std::vector<std::pair<std::string,std::string> > parse_BANDSB( const std::string& tre );
+
+
 } // end of GS2 Namespace 
 } // end of GEO Namespace
 

@@ -1,4 +1,4 @@
-#include "TACID.h"
+#include "TACID.hpp"
 
 #include <iostream>
 #include <sstream>
@@ -235,7 +235,11 @@ namespace GS2{
     void TACID::setBasepath( const std::string& path ){
         dirname = path;
     }
+    
 
+    string TACID::get_product_no() const{
+        return product_number;
+    }
 
     vector<pair<string,string> > TACID::query_TACID_data( )const{
 
