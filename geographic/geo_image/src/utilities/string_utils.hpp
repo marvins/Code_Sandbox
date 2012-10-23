@@ -18,6 +18,8 @@ TP str2num( std::string const& in ){
 
 }
 
+std::string file_basename( std::string const& in );
+
 } // end of STR
 } // end of GEO
 

@@ -9,7 +9,7 @@
 PREFIX = /opt/local
 GEOIMAGE_INCLUDE=-I$(PREFIX)/include
 GEOIMAGE_LIBS=-L$(PREFIX)/lib -lgeoimage
-
+GEOIMAGE_STATIC=$(PREFIX)/lib/libgeoimage.a
 
 #Build directory   (DO NOT TOUCH -fPIC)
 BUILD = build
@@ -25,10 +25,11 @@ OFLAGS = $(CFLAGS) -O3
 #
 # GDAL LIBRARY
 #
+GDAL_PATH   = /usr
 GDAL_LIBS 	= -L$(GDAL_DIR)/lib -lgdal
 GDAL_INCLUDE 	= -I$(GDAL_DIR)/include/gdal
 GDAL         	= $(GDAL_LIBS) $(GDAL_INCLUDE)
-
+GDAL_STATIC     = $(GDAL_PATH)/lib/libgdal.a
 
 #
 # OpenCV Libraries
@@ -39,9 +40,11 @@ OPENCV_INCLUDE = `pkg-config opencv --cflags`
 #
 # Boost Libraries
 #
+BOOST_PATH    = /usr
 BOOST_INCLUDE = -I/opt/local/include
 BOOST_LIBS    = -L/opt/local/lib -lboost_filesystem -lboost_system
 BOOST		  = $(BOOST_INCLUDE) $(BOOST_LIBS)
+BOOST_STATIC  = $(BOOST_PATH)/lib/libboost_filesystem.a $(BOOST_PATH)/lib/libboost_system.a
 
 #
 # OpenGL Libraries
@@ -76,11 +79,18 @@ TEST = $(TEST_INCLUDE) $(TEST_SOURCES)
 #
 HEADERS = src/core/*.h src/dem/*.h src/extensions/*.h src/image/*.h src/utilities/*.h
 
-OBJECTS       = build/Orthorectify.o       build/string_utils.o       build/GS2_Header.o        build/CoordinateLatLon.o        build/CoordinateBase.o        build/TACID.o		  build/DTEDUtils.o    	  build/DEM.o 	     build/SRTMHeader.o       build/DTEDHeader.o	 	  build/NITFHeader.o       build/DEMHeader.o       build/ImageHeader.o	     build/GeoHeader.o 	     build/PixelType.o	      build/OpenCVUtils.o	    build/GDAL_Data.o	    build/GeoImage.o       build/GDAL2OpenCV.o	
-OBJECTS_DEBUG = build/Orthorectify_DEBUG.o build/string_utils_DEBUG.o build/GS2_Header_DEBUG.o  build/CoordinateLatLon_DEBUG.o  build/CoordinateBase_DEBUG.o  build/TACID_DEBUG.o build/DTEDUtils_DEBUG.o build/DEM_DEBUG.o  build/SRTMHeader_DEBUG.o build/DTEDHeader_DEBUG.o build/NITFHeader_DEBUG.o build/DEMHeader_DEBUG.o build/ImageHeader_DEBUG.o build/GeoHeader_DEBUG.o build/PixelType_DEBUG.o  build/OpenCVUtils_DEBUG.o build/GDAL_Data_DEBUG.o build/GeoImage_DEBUG.o build/GDAL2OpenCV_DEBUG.o
+#
+# List of objects to build
+OBJECTS        = build/Orthorectify.o         build/string_utils.o         build/GS2_Header.o         build/CoordinateLatLon.o          build/CoordinateBase.o         build/TACID.o		 build/DTEDUtils.o    	   build/DEM.o 	       build/SRTMHeader.o         build/DTEDHeader.o	 	 build/NITFHeader.o         build/DEMHeader.o         build/ImageHeader.o	      build/GeoHeader.o 	    build/PixelType.o	      build/OpenCVUtils.o	      build/GDAL_Data.o	        build/GeoImage.o         build/GDAL2OpenCV.o	
+OBJECTS_DEBUG  = build/Orthorectify_DEBUG.o   build/string_utils_DEBUG.o   build/GS2_Header_DEBUG.o   build/CoordinateLatLon_DEBUG.o    build/CoordinateBase_DEBUG.o   build/TACID_DEBUG.o   build/DTEDUtils_DEBUG.o   build/DEM_DEBUG.o   build/SRTMHeader_DEBUG.o   build/DTEDHeader_DEBUG.o   build/NITFHeader_DEBUG.o   build/DEMHeader_DEBUG.o   build/ImageHeader_DEBUG.o   build/GeoHeader_DEBUG.o   build/PixelType_DEBUG.o   build/OpenCVUtils_DEBUG.o   build/GDAL_Data_DEBUG.o   build/GeoImage_DEBUG.o   build/GDAL2OpenCV_DEBUG.o
+OBJECTS_STATIC = build/Orthorectify_STATIC.o  build/string_utils_STATIC.o  build/GS2_Header_STATIC.o  build/CoordinateLatLon_STATIC.o   build/CoordinateBase_STATIC.o  build/TACID_STATIC.o	 build/DTEDUtils_STATIC.o  build/DEM_STATIC.o  build/SRTMHeader_STATIC.o  build/DTEDHeader_STATIC.o	 build/NITFHeader_STATIC.o  build/DEMHeader_STATIC.o  build/ImageHeader_STATIC.o  build/GeoHeader_STATIC.o 	build/PixelType_STATIC.o  build/OpenCVUtils_STATIC.o  build/GDAL_Data_STATIC.o	build/GeoImage_STATIC.o  build/GDAL2OpenCV_STATIC.o	
 
+# Include directories for GeoImage library
 GEO_INCLUDE = -Isrc/coordinates -Isrc/core -Isrc/dem -Isrc/image -Isrc/extensions -Isrc/utilities
 
+
+#
+# Location of sources for unit test library
 UTEST_SOURCES = tests/unit_test.cpp \
 	        	tests/dem/TEST_dem.cpp \
 				tests/extensions/TEST_extensions.cpp \
@@ -90,6 +100,9 @@ UTEST_SOURCES = tests/unit_test.cpp \
 				tests/utilities/TEST_utilities.cpp 
 
 
+#
+#	Platform specific build requirements
+#
 UNAME := $(shell uname)
 ifeq ($(UNAME),Darwin)
 	LIB_TYPE=dylib
@@ -97,15 +110,18 @@ else
 	LIB_TYPE=so
 endif
 
-all: $(BIN) $(BUILD) $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE)
-	mkdir -p $(BUILD)
+#
+# Global build script
+#
+all: $(BIN) $(BUILD) $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE)  $(BUILD)/libgeoimage.a
 	mkdir -p $(BUILD)/bin
 	mkdir -p $(BUILD)/lib
 	mkdir -p $(BUILD)/include
 	mkdir -p $(BUILD)/include/geoimage
-	cp $(BUILD)/libgeoimage.$(LIB_TYPE) 		$(BUILD)/lib
+	cp $(BUILD)/libgeoimage.$(LIB_TYPE) 	  $(BUILD)/lib
 	cp $(BUILD)/libgeoimage_DEBUG.$(LIB_TYPE) $(BUILD)/lib
-	cp src/GeoImage.h	  	$(BUILD)/include/GeoImage.h
+	cp $(BUILD)/libgeoimage.a                 $(BUILD)/lib
+	cp src/GeoImage.hpp	  	$(BUILD)/include/GeoImage.hpp
 	cp src/coordinates/*.h  $(BUILD)/include/geoimage
 	cp src/core/*.h		  	$(BUILD)/include/geoimage
 	cp src/dem/*.h		 	$(BUILD)/include/geoimage
@@ -113,6 +129,7 @@ all: $(BIN) $(BUILD) $(BUILD)/libgeoimage.$(LIB_TYPE) $(BUILD)/libgeoimage_DEBUG
 	cp src/extensions/*.hpp $(BUILD)/include/geoimage
 	cp src/image/*.h 		$(BUILD)/include/geoimage
 	cp src/utilities/*.h  	$(BUILD)/include/geoimage
+
 
 $(BUILD):
 	mkdir -p $(BUILD)
@@ -129,16 +146,21 @@ tools: $(BIN)  $(BIN)/geo_meta_parser
 VIEWER_HDR=                       src/tools/geo_viewer/Quaternion.h src/tools/geo_viewer/visualization.h  src/tools/geo_viewer/camera.h  src/tools/geo_viewer/Cube.h    src/tools/geo_viewer/vector.h  src/tools/geo_viewer/initialization.h   src/tools/geo_viewer/keyboard.h  src/tools/geo_viewer/Options.h
 VIEWER_OBJ=$(BUILD)/geo_viewer.o  $(BUILD)/Quaternion.o             $(BUILD)/visualization.o              $(BUILD)/camera.o              $(BUILD)/Cube.o                $(BUILD)/vector.o              $(BUILD)/initialization.o               $(BUILD)/keyboard.o              $(BUILD)/Options.o
 
-
-# Main Shared Libraries
+#########################################
+#    Main Libraries  (LINUX)
+#########################################
 $(BUILD)/libgeoimage.so: $(OBJECTS)
 	g++ -o $@ $(OBJECTS)       $(GDAL) $(OPENCV) $(BOOST) $(OFLAGS) -shared
 
 $(BUILD)/libgeoimage_DEBUG.so: $(OBJECTS_DEBUG)
 	g++ -o $@ $(OBJECTS_DEBUG) $(GDAL) $(OPENCV) $(BOOST) $(DFLAGS) -shared
 
+$(BUILD)/libgeoimage.a: $(OBJECTS)
+	ar -cvq $@ $(OBJECTS)  $(GDAL_STATIC) $(OPENCV_STATIC)  $(BOOST_STATIC)
 
-# Main Shared Libraries
+#########################################
+#    Main Libraries  (MAC OSX)
+#########################################
 $(BUILD)/libgeoimage.dylib: $(OBJECTS)
 	g++ -dynamiclib -install_name $(PREFIX)/lib/libgeoimage.dylib -o $@ $(OBJECTS)       $(GDAL) $(OPENCV) $(BOOST) $(OFLAGS)
 
@@ -146,8 +168,9 @@ $(BUILD)/libgeoimage_DEBUG.dylib: $(OBJECTS_DEBUG)
 	g++ -dynamiclib -install_name $(PREFIX)/lib/libgeoimage.dylib -o $@ $(OBJECTS_DEBUG) $(GDAL) $(OPENCV) $(BOOST) $(DFLAGS)
 
 
-
-# GeoImage Core
+######################
+#    GeoImage Core   #
+######################
 build/GeoImage.o:	src/image/GeoImage.cpp $(HEADERS)
 	g++ $< -fPIC -c -o $@ $(OPENCV_INCLUDE) $(GDAL_INCLUDE) $(OFLAGS) $(GEO_INCLUDE)
 
@@ -285,8 +308,9 @@ build/Orthorectify_DEBUG.o: src/ortho/Orthorectify.cpp $(HEADERS)
 #				   		      Geo Rectify						  #
 ###################################################################
 # Geo Metadata Parser Program
-$(BIN)/geo_meta_parser:  src/tools/geo_meta_parser.cpp  src/tools/geo_meta_parser/*.cpp src/tools/geo_meta_parser/*.h
-	g++ -o $@ $<  src/tools/geo_meta_parser/*.cpp -I/opt/local/include -I/usr/include/gdal  -L/opt/local/lib -lgeoimage -lncurses `pkg-config opencv --cflags --libs` -g -lboost_system -lboost_filesystem
+$(BIN)/geo_meta_parser:  src/tools/geo_meta_parser.cpp  src/tools/geo_meta_parser/*.cpp src/tools/geo_meta_parser/*.hpp
+	g++ -o $@ $<  src/tools/geo_meta_parser/*.cpp $(GEOIMAGE_LIBS) $(GDAL) $(BOOST) 
+	
 
 
 ###################################################################
@@ -316,6 +340,6 @@ install:
 uninstall:
 	rm -r $(PREFIX)/lib/libgeoimage.$(LIB_TYPE)
 	rm -r $(PREFIX)/lib/libgeoimage_DEBUG.$(LIB_TYPE)
-	rm -r $(PREFIX)/include/GeoImage.h
+	rm -r $(PREFIX)/include/GeoImage.hpp
 	rm -r $(PREFIX)/include/geoimage
 

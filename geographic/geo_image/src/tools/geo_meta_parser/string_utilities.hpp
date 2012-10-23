@@ -1,6 +1,8 @@
-#ifndef _STRING_UTILITIES_H__
-#define _STRING_UTILITIES_H__
 
+#ifndef _STRING_UTILITIES_HPP__
+#define _STRING_UTILITIES_HPP__
+
+#include <sstream>
 #include <string>
 
 template <typename TP>
@@ -21,5 +23,10 @@ std::string num2str( TP const& value ){
     return sin.str();
 }
 
+
+/**
+ * Trim whitespace from the ends of a string
+*/
+std::string string_trim( const std::string& str );
 
 #endif

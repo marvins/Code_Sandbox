@@ -3,6 +3,8 @@
 
 #include <iostream>
 #include <string>
+#include <utility>
+#include <vector>
 
 #ifdef DEPLOYED
 #include "NITFHeader.h"
@@ -94,6 +96,11 @@ namespace GS2{
              * @param[in] basepath
             */
             void setBasepath( const std::string& path );
+            
+            /**
+             * Parse the TACID data into key=value pairs for output
+            */
+            std::vector<std::pair<std::string,std::string> >  query_TACID_data()const;
 
         private:
             std::string extension;          /*< Extension          */

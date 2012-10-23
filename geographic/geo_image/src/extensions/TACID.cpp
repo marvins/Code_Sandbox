@@ -6,6 +6,8 @@
 
 #include <boost/filesystem.hpp>
 
+#include "../utilities/string_utils.hpp"
+
 namespace fs = boost::filesystem;
 
 using namespace std;
@@ -180,7 +182,10 @@ namespace GS2{
 
 
     /** Check to make sure that a TACID is valie */    
-    bool TACID::isValidTACID( const std::string& tacid ){
+    bool TACID::isValidTACID( const std::string& fname ){
+        
+        //grab the basename
+        string tacid = GEO::STR::file_basename( fname );
 
         //check size
         if( tacid.size() != 44 && tacid.size() != 40 ) return false;
@@ -229,6 +234,48 @@ namespace GS2{
 
     void TACID::setBasepath( const std::string& path ){
         dirname = path;
+    }
+
+
+    vector<pair<string,string> > TACID::query_TACID_data( )const{
+
+        vector<pair<string,string> > output;
+
+        /**
+         * take each item and insert into the list according to item key/value names
+        */
+        
+        // acqusition date
+        output.push_back( pair<string,string>( "TACID_ACQUISITION_DATE", day+month+year ));
+        
+        // program code
+        output.push_back( pair<string,string>( "TACID_PROGRAM_CODE", program_code ));
+        
+        // sortie number
+        output.push_back( pair<string,string>( "TACID_SORTIE_NO", sortie_number ));
+        
+        //  Scene Number
+        output.push_back( pair<string,string>( "TACID_SCNUM", scene_number ));
+
+        // Producer Code
+        output.push_back( pair<string,string>( "PRODUCER_CODE", producer_code ));
+
+        // Product Number
+        output.push_back( pair<string,string>( "PRODUCT_NO" , product_number ));
+        
+        // Project Code
+        output.push_back( pair<string,string>( "PROJECT_CODE", project_code ));
+        
+        // Replay
+        output.push_back( pair<string,string>( "REPLAY", replay_code ));
+        
+        // Producer SN
+        output.push_back( pair<string,string>( "PRODUCER_SN" , producer_sn ));
+        
+        // Production DATIM
+        output.push_back( pair<string,string>( "PRODUCTION_DATIM" , production_datim ));
+    
+        return output;
     }
 
 }// end of GS2 Namespace

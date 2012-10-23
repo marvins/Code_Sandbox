@@ -57,6 +57,19 @@ cv::Mat getSensorPosition( GEO::GeoImage const& img ){
     return output;
 }
 
+/**
+ * In an effort to encourage development of useable helper functions, I will use as
+ * many helper functions to extract this data as possible.
+*/
+std::vector<std::pair<std::string,std::string> > query_GS2_metadata( GeoImage const& gimg ){
+    
+    // output information
+    vector<pair<string,string> > output;
+
+    
+    return output;
+}
+
 
 } //end of GS2 Namespace 
 } //end of GEO Namespace 

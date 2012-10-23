@@ -7,13 +7,8 @@
 
 #include "utils.h"
 
-void init_gui( Options const& configuration );
-
-void stop_gui( Options const& configuration );
 
 void main_menu( Options& configuration );
-
-void process_arguments( std::vector<std::pair<std::string,std::string> >const& args, Options& configuration );
 
 void usage( );
 
