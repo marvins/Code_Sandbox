@@ -24,7 +24,7 @@ bool file_exists( string const& filename ){
  * Return the basename of a file
 */
 string file_basename( string const& pathname ){
-#if ( BOOST_VERSION / 100 ) < 5
+#if ( BOOST_VERSION / 1000 - 100 ) < 5
     return fs::path(pathname).filename();//.string();
 #else
     return fs::path(pathname).filename().string();
