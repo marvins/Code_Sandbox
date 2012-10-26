@@ -5,8 +5,6 @@
 #include "../../utilities/File_Utilities.hpp"
 #include "../../utilities/String_Utilities.hpp"
 
-#include <GeoImage.hpp>
-
 #include <fstream>
 
 using namespace std;
