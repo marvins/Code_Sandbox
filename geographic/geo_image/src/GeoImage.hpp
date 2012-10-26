@@ -4,9 +4,16 @@
 #ifndef __GEOIMAGE_CORE_H__
 #define __GEOIMAGE_CORE_H__
 
-#define GEOVERSION 1.0
 #define DEPLOYED
 
+// version file
+#include <geoimage/core/GeoImage_Version.hpp>
+
+//IO Libraries
+#include <geoimage/io/GeoLoader.hpp>
+#include <geoimage/io/GDALLoader.hpp>
+
+#ifdef __NOTHING__
 #include <geoimage/TACID.hpp>
 #include <geoimage/DEM.h>
 #include <geoimage/Enumerations.h>
@@ -19,6 +26,7 @@
 #include <geoimage/GDAL2OpenCV.h>
 #include <geoimage/DTEDUtils.h>
 #include <geoimage/GS2_Header.hpp>
+#endif
 
 #endif
 

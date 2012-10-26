@@ -1,25 +1,78 @@
-#include <boost/algorithm/string.hpp>
 
-#include "GDAL_Data.h"
+// load the header file
+#include "GDALLoader.hpp"
+#include "../utilities/File_Utilities.hpp"
+
+// STL Libraries
 #include <iostream>
 
-#include "../utilities/OpenCVUtils.h"
-
-#include <cstdio>
+// Boost Libraries
+#include <boost/algorithm/string.hpp>
 
 using namespace std;
 
+
+/// start of GEO Namespace
 namespace GEO{
 
-    /** Create the GDAL Dataset
+    /** Create the GDALLoader
      *
      * @brief This initializes all GDAL Dataset objects to NULL
      */
-    GDAL_Data::GDAL_Data(){
+    GDALLoader::GDALLoader(){
+        
+        //driver = NULL;
+        //dataset = NULL;
+        //gdalLoadFailed = false;
+    }
 
-        driver = NULL;
-        dataset = NULL;
+    /**
+     * Create a GDALLoader object given a filename
+    */
+    GDALLoader::GDALLoader( const string& fname ){
+        
+        // make sure that the file exists
+        if( STR::file_exists( fname ) == false )
+            throw string( "ERROR: File does not exist" );
+        
+        // make sure we have an appropriate extension
+        string ext = STR::file_extension( fname );
+        if( ext != ".ntf" && ext != ".NTF" && ext != ".nitf" && ext != ".NITF" &&
+            ext != ".dt2" && ext != ".DT2"                                        )
+            throw string(string("ERROR: did not recognize extension (") + ext + string(")"));
+
+
+        // register the gdal driver
+        GDALAllRegister();
+    
+        // load the dataset 
+        dataset = (GDALDataset*) GDALOpen( fname.c_str(), GA_ReadOnly);
+        
+        // if the file returns null, then exit
+        if( dataset == NULL ){
+            openCVCompatible = false;
+            gdalLoadFailed   = true;
+            return;
+        }
+    
+        //check for pixel data and halt action if it is not present
+        if ( dataset->GetRasterCount() <= 0 ){
+            return;
+        }
+
+        openCVCompatible = true;
         gdalLoadFailed = false;
+
+        
+        //check to make sure its open
+        if ( dataset == NULL ){
+            throw std::string("Dataset did not load");
+        }
+
+        //get the driver infomation
+        driver = dataset->GetDriver();
+
+
     }
 
     /** Destroy the GDAL Data object
@@ -27,7 +80,7 @@ namespace GEO{
      * @brief This will close the dataset and delete all allocated
      * gdal-specific memory
      */
-    GDAL_Data::~GDAL_Data(){
+    GDALLoader::~GDALLoader(){
 
         if( dataset != NULL )
             GDALClose( dataset );
@@ -36,7 +89,7 @@ namespace GEO{
 
     /** Write an image to a NITF Format
      *
-     */
+     *
     void GDAL_Data::write( std::string const& image_filename, std::string const& image_format ){
 
         //currently the only supported format is NITF
@@ -52,7 +105,7 @@ namespace GEO{
         GDALDataset *outputData = driver->CreateCopy( image_filename.c_str(), 
                 dataset, FALSE, papszOptions, NULL, NULL);
 
-        /*
+        *
            for( size_t i=0; i<header_info.size(); i++ )
            papszOptions = CSLSetNameValue( papszOptions, header_info[i].first.c_str(), header_info[i].second.c_str());
 
@@ -62,7 +115,7 @@ namespace GEO{
 
         //create an output dataset
         GDALDataset *outputData = oDriver->Create( image_filename.c_str(), image.cols, image.rows, image.channels(), header_data->get_pixel_type().get_gdal_type(), NULL );
-         */
+         *
 
         //Set the metadata
         outputData->SetMetadata( driver->GetMetadata() );
@@ -123,13 +176,22 @@ namespace GEO{
         CSLDestroy( papszOptions );
 
 
-    }
+    }*/
 
-    vector<pair<string,string> >  GDAL_Data::retrieve_header_data()const{
 
+    /**
+     * Query for the header metadata
+    */
+    vector<pair<string,string> >  GDALLoader::get_header_data()const{
+    
+        //create output data
         vector<pair<string,string> > headerList;
+        
+        // grab the metadata
         char ** metadata = dataset->GetMetadata();
-
+        
+        // iterate through the metadata, inserting the key/value pairs into
+        // the output structure
         int idx = 0;
         string original;
         std::pair<string, string> item;
@@ -154,6 +216,7 @@ namespace GEO{
         return headerList;
     }
 
+    /*
     void GDAL_Data::get_corner_coordinates( double& ul_lat, double& ul_lon, double& br_lat, double& br_lon )const{
 
         double adfGeoTransform[6];
@@ -220,9 +283,9 @@ namespace GEO{
         return true;
     }
 
-    /** 
+    ** 
      *
-     */
+     *
     void GDAL_Data::clean(){
 
         if( dataset != NULL )
@@ -232,4 +295,7 @@ namespace GEO{
         driver  = NULL;
         gdalLoadFailed = false;
     }
+
+    */
+
 } //end of GEO namespace 
