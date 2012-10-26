@@ -215,6 +215,29 @@ namespace GEO{
 
         return headerList;
     }
+    
+    /**
+     * Get header metadata in the TRE module
+    */
+    string  GDALLoader::get_header_tre()const{
+        
+        char ** tre_info = NULL;
+    
+        string tre_output = "";
+        char ** results = dataset->GetMetadata("TRE");
+    
+        int idx = 0;
+        if( results != NULL ){
+        
+            while( results[idx] != NULL ){
+                tre_output += results[idx++];
+            }
+        }
+
+        return tre_output;
+
+    }
+
 
     /*
     void GDAL_Data::get_corner_coordinates( double& ul_lat, double& ul_lon, double& br_lat, double& br_lon )const{

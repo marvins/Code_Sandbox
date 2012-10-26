@@ -56,6 +56,12 @@ class GDALLoader : public GeoLoader {
          * @return header metadata list
         */
         std::vector<std::pair<std::string,std::string> >  get_header_data()const;
+        
+        
+        /**
+         * Get Header TRE Metadata
+        */
+        std::string  get_header_tre()const;
 
 
     private:

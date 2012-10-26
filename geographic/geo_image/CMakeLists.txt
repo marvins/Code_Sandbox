@@ -32,8 +32,20 @@ include_directories( ${Boost_INCLUDE_DIRS} )
 set( LIBS ${LIBS} ${Boost_LIBRARIES} )
 
 
-# Add the install targets
+# Create the GeoImage Library
 add_library( "${LIBRARY_NAME}" SHARED ${GEO_SOURCES} ${LIBS} )
 
 
+# Create the geo_meta_parser binary
+add_executable( geo_meta_parser
+                ${GEO_SOURCES} 
+                ${PROJECT_SOURCE_DIR}/src/tools/geo_meta_parser.cpp
+                ${PROJECT_SOURCE_DIR}/src/tools/geo_meta_parser/io.cpp
+                ${PROJECT_SOURCE_DIR}/src/tools/geo_meta_parser/utilities.cpp
+              )
+
+target_link_libraries( geo_meta_parser   ${LIBS} )
+
 install (FILES "${PROJECT_BINARY_DIR}/lib${LIBRARY_NAME}.so" DESTINATION lib ) 
+install (FILES "${PROJECT_BINARY_DIR}/geo_meta_parser"       DESTINATION bin )
+

@@ -6,12 +6,6 @@
 #include <utility>
 #include <vector>
 
-#ifdef DEPLOYED
-#include "NITFHeader.h"
-#else
-#include <NITFHeader.h>
-#endif
-
 namespace GEO{
 namespace GS2{
 

@@ -7,7 +7,7 @@
 namespace GEO{
 namespace STR{
 
-std::string trim( std::string const& in );
+std::string string_trim( std::string const& in );
 
 template <typename TP>
 TP str2num( std::string const& in ){
@@ -28,7 +28,6 @@ std::string num2str( TP const& value ){
 
 
 
-std::string file_basename( std::string const& in );
 
 } // end of STR
 } // end of GEO

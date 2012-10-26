@@ -6,7 +6,8 @@
 
 #include <boost/filesystem.hpp>
 
-#include "../utilities/string_utils.hpp"
+#include "../utilities/File_Utilities.hpp"
+#include "../utilities/String_Utilities.hpp"
 
 namespace fs = boost::filesystem;
 

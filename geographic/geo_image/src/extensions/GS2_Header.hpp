@@ -5,27 +5,24 @@
 #include <vector>
 #include <utility>
 
-#ifdef DEPLOYED
-#include "GeoImage.h"
-#else
-#include <GeoImage.h>
-#endif 
+//#include <opencv2/core/core.hpp>
 
-#include <opencv2/core/core.hpp>
+#include "../io/GDALLoader.hpp"
+
 
 namespace GEO{
 namespace GS2{
 
-std::string getAcftTailNumber( GEO::GeoImage const& img );
+//std::string getAcftTailNumber( GEO::GeoImage const& img );
 
-double getFocalLength( GEO::GeoImage const& img );
+//double getFocalLength( GEO::GeoImage const& img );
 
-cv::Mat getSensorPosition( GEO::GeoImage const& img );
+//cv::Mat getSensorPosition( GEO::GeoImage const& img );
 
 /**
  * Query the GeoImage for any GS2-related header information
 */
-std::vector<std::pair<std::string,std::string> > query_GS2_metadata( GeoImage const& gimg );
+std::vector<std::pair<std::string,std::string> > query_GS2_metadata( const std::string& fname, GDALLoader const& gimg );
 
 /**
  * Parse the ACFTB Header
