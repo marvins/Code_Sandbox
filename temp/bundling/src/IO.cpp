@@ -121,6 +121,7 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
 
     //call zip
     string command = string("zip -r ") + temp_filename + string(" ") + temp_directory + " >> /dev/null";
+    cout << command << endl;
     system( command.c_str());
 
     return;
