@@ -204,6 +204,7 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
     bool     intersection;
     
     //generate a ground coordinate list
+    cout << "start out coordinate list" << endl;
     vector<vector<Point3f> > outCoordinateList = build_ground_coordinate_list( options.dem.get_tile(), 
                                                                             output_image.size(), 
                                                                             options.get_focal_length(), 
@@ -212,11 +213,14 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
                                                                             options.get_output_img2cam(output_image.size()));   
    
     vector<vector<Point3f> > inCoordinateList( input_image.cols);
-    for( int i=0; i<input_image.cols; i++){
-        inCoordinateList[i].resize(input_image.rows);
-        for( int j=0; j<input_image.rows; j++){
-            inCoordinateList[i][j] = Point3f( i - (input_image.cols/2), j - (input_image.rows/2), options.dem.get_tile().at<uchar>(j,i));
-        }
+    if( options.doZBuffering() == true ){
+        cout << "start in coordinate list" << endl;
+        for( int i=0; i<input_image.cols; i++){
+            inCoordinateList[i].resize(input_image.rows);
+            for( int j=0; j<input_image.rows; j++){
+                inCoordinateList[i][j] = Point3f( i - (input_image.cols/2), j - (input_image.rows/2), options.dem.get_tile().at<uchar>(j,i));
+            }
+        }   
     }
     
     vector<vector<double> > astack, cstack, estack;
