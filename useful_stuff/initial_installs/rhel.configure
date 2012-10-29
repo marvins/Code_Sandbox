@@ -4,21 +4,35 @@
 # machine with the required development software. 
 
 packages="gcc-c++
-          boost-devel
-          boost-static
           qt-devel
           ant
           vim-enhanced
           epel-release
           yum-conf-epel
+          gtk+-devel
+          gstreamer-devel
+          texlive-latex
+          python-sphinx
+          yasm-devel
+          gstreamer-plugins-base-devel
+          yum-plugin-priorities
+          PackageKit-gstreamer-plugin
+          gtk2-devel
           zlib-devel
+          libgeotiff-devel
+          libtiff-devel
+          ffmpeg-devel
+          bzip2-devel
           thunderbird
           cmake-gui"
 
 
 for package in ${packages}
     do
+        clear
+        echo "Installing: ${package}"
         sudo yum install ${package}
+        read -p "Press [Enter] key to continue..." 
     done
 
 ######################################
