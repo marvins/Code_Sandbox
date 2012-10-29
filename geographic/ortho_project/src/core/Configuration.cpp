@@ -2,8 +2,6 @@
 #include "Utilities.hpp"
 #include "OrthoExceptions.hpp"
 
-#include <GeoImage.h>
-
 #include <iostream>
 #include <sstream>
 #include <vector>

@@ -68,11 +68,15 @@ int TEST_dem_constructors( string& note ){
     // create a series of DEM objects
     GEO::DEM dem01;
     GEO::DEM dem02( Point2f(-500, -500), Point2f(500,500), timg01 );
-    
+    GEO::DEM dem03( Point2f(-500, -500), Point2f(500,500), imread("tests/dem01.png",0));
+
     // check for the tile size
     note = "Tile not correct size.";
-    if( dem01.get_tile().cols != 0   || dem01.get_tile().rows != 0   ) return false;
-    if( dem02.get_tile().cols != 100 || dem02.get_tile().rows != 100 ) return false;
+    if( dem01.get_tile().cols != 0    || dem01.get_tile().rows != 0   ) return false;
+    if( dem02.get_tile().cols != 100  || dem02.get_tile().rows != 100 ) return false;
+    if( dem03.get_tile().cols != 1000 || dem03.get_tile().rows != 1000 ) return false;
+    
+    //check corners
     
 
     //GEO::DEM dem_01( tl_lat, tl_lon, br_lat, br_lon, GEO::DEM_Params( GEO::DTED, "data/dted")); 
@@ -83,6 +87,6 @@ int TEST_dem_constructors( string& note ){
     //double elev = dem_01.max_elevation( lat01, lon01 );
     
     note = "Successful Operation";
-    return false;
+    return true;
 }
 
