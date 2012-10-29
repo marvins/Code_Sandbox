@@ -73,6 +73,11 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
     string temp_filename = "/tmp/file.zip";
     string temp_directory= "/tmp/bundles";
 
+    //check if files exist and delete
+    if( file_exists( temp_filename ) == true ) file_delete( temp_filename );
+    if( file_exists( temp_directory) == true ) 
+        system(string(string("rm -rf ") + temp_directory ).c_str());
+
     //create a temporary directory
     directory_create( temp_directory );
 
@@ -115,7 +120,8 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
         throw string("NOT IMPLEMENTED YET");
 
     //call zip
-    system("ls");
+    string command = string("zip -r ") + temp_filename + string(" ") + temp_directory + " >> /dev/null";
+    system( command.c_str());
 
     return;
 
