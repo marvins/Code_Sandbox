@@ -855,7 +855,6 @@ deque<ImageBundle> decompose_top_camera_directories( deque<Camera>& cameras ){
     
     for( size_t i=1; i<cameras.size(); i++ )
         cameras[i].union_image_list( output );
-    
 
     //return output
     return output;

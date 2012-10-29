@@ -1,14 +1,13 @@
-#include "TEST_dem.h"
+#include "TEST_dem.hpp"
 
-#include <cv.h>
-#include <cvaux.h>
-#include <highgui.h>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
 
 #include <string> 
 
-#include <Logger.h>
+#include <Logger.hpp>
 
-#include <GeoImage.h>
+#include <GeoImage.hpp>
 
 using namespace cv;
 using namespace std;
@@ -62,15 +61,40 @@ int TEST_dem_constructors( string& note ){
     double tl_lon = -118.91;
     double br_lat =   38.00;
     double br_lon = -118.01;
-   
-    GEO::DEM dem_01( tl_lat, tl_lon, br_lat, br_lon, GEO::DEM_Params( GEO::DTED, "data/dted")); 
     
-    Mat tile01 = dem_01.get_raw();
+    Mat timg01 = Mat::ones( 100, 100, CV_16SC1 );
+
+    // create a series of DEM objects
+    GEO::DEM dem01;
+    GEO::DEM dem02( Point2f(-500, -500), Point2f(500,500), timg01 );
+    GEO::DEM dem03( Point2f(-500, -500), Point2f(500,500), imread("tests/dem01.png",0));
+
+    // check for the tile size
+    note = "Tile not correct size.";
+    if( dem01.get_tile().cols != 0    || dem01.get_tile().rows != 0   ) return false;
+    if( dem02.get_tile().cols != 100  || dem02.get_tile().rows != 100 ) return false;
+    if( dem03.get_tile().cols != 1000 || dem03.get_tile().rows != 1000 ) return false;
     
-    double lat01, lon01;
-    double elev = dem_01.max_elevation( lat01, lon01 );
+    //check corners
+    Point2f ne(  500,  500);
+    Point2f nw( -500,  500);
+    Point2f se(  500, -500);
+    Point2f sw( -500, -500);
+    note = "Corner Locations Failed";
+    if( norm(dem01.ne() - Point2f(0,0) ) > 0.001 ) return false;
+    if( norm(dem02.ne() - ne ) > 0.001 ) return false;
+    if( norm(dem02.nw() - nw ) > 0.001 ) return false;
+    if( norm(dem02.se() - se ) > 0.001 ) return false;
+    if( norm(dem02.sw() - sw ) > 0.001 ) return false;
+
+    //GEO::DEM dem_01( tl_lat, tl_lon, br_lat, br_lon, GEO::DEM_Params( GEO::DTED, "data/dted")); 
     
-    note = "Operation failed";
-    return false;
+    //Mat tile01 = dem_01.get_raw();
+    
+    //double lat01, lon01;
+    //double elev = dem_01.max_elevation( lat01, lon01 );
+    
+    note = "Successful Operation";
+    return true;
 }
 

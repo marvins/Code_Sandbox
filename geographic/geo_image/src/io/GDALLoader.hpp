@@ -4,8 +4,10 @@
 
 #ifdef DEPLOYED
 #include <geoimage/io/GeoLoader.hpp>
+#include <geoimage/io/IO_Configuration.hpp>
 #else
 #include "GeoLoader.hpp"
+#include "IO_Configuration.hpp"
 #endif 
 
 #include <cpl_conv.h>
@@ -16,6 +18,12 @@
 #include <vector>
 
 #include <boost/scoped_ptr.hpp>
+
+// OpenCV Library
+#if USE_OPENCV == 1
+#include <opencv2/core/core.hpp>
+#endif
+
 
 namespace GEO{
 
@@ -51,6 +59,11 @@ class GDALLoader : public GeoLoader {
 
 
         /**
+         * Initialize GDAL Dataset and load information
+        */
+        void initialize( const std::string& fname );
+
+        /**
          * Get Header Metadata
          *
          * @return header metadata list
@@ -63,6 +76,40 @@ class GDALLoader : public GeoLoader {
         */
         std::string  get_header_tre()const;
 
+        /**
+         * Returns if data is opencv compatible
+        */
+        bool isOpenCVCompatible( )const;
+
+        /**
+         * Returns if data is valid
+        */
+        bool isValid( )const;
+
+        /**
+         * Returns the number of image channels
+        */
+        int get_image_channels( )const;
+        
+        /**
+         * Get Raster Dimensions
+        */
+        std::pair<int,int> getRasterDimensions( )const;
+
+#if USE_OPENCV == 1
+        /**
+         * Check the opencv pixel type
+        */
+        int getOpenCVPixelType( )const;
+        
+        /**
+         * Pull out the OpenCV image data.
+        */
+        cv::Mat getOpenCVMat( const int& pixType )const;
+
+#endif
+        
+        std::string getImageTypeName() const;
 
     private:
         
@@ -81,10 +128,13 @@ class GDALLoader : public GeoLoader {
 
         GDALDriver*    driver;    /*<  Driver Object */
         GDALDataset*   dataset;   /*<  Dataset Object */
+        
+        bool  valid_data;       /*<  Whether or not the data is currently valid. */
         bool  gdalLoadFailed;   /*<  Whether or not the load operation failed */
         bool  openCVCompatible; /*<  Whether or not the data is compatible with OpenCV */
 
-        //double adfMinMax[2];
+
+        double adfMinMax[2];
 
 };
 

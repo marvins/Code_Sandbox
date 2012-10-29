@@ -32,7 +32,7 @@ GDAL            = $(GDAL_INCLUDE) $(GDAL_LIBS)
 #####################
 #      GEOIMAGE     #
 #####################
-GEOIMAGE_LIBS    = -L/opt/local/lib -lgeoimage
+GEOIMAGE_LIBS    = -L/opt/local/lib -lGeoImage
 GEOIMAGE_INCLUDE = -I/opt/local/include
 GEOIMAGE         = $(GEOIMAGE_LIBS) $(GEOIMAGE_INCLUDE)
 

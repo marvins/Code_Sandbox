@@ -20,7 +20,8 @@ packages="vim
           mesa-utils
           libqt4-designer
           swig
-          swig2.0
+          alpine
+	  swig2.0
           libbz2-dev
           libqt4-dev
           qt4-qmake
@@ -31,8 +32,8 @@ packages="vim
           python-gdal
           libgdal-doc
           libgdal1-dev
-          libgdal1-1.7.0
-          libgdal1-1.7.0-grass
+          libgdal1-1.9.0
+          libgdal1-1.9.0-grass
           libopencore-amrnb-dev
           libgstreamer0.10-0 
           libgstreamer0.10-dev

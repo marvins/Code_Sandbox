@@ -1,4 +1,4 @@
-#include "Color.h"
+#include "Color.hpp"
 
 Color::Color(int v) : val(v) {}
     

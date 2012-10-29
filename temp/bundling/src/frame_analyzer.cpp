@@ -43,7 +43,7 @@ int main( int argc, char * argv[] ){
 
             ///find the camera directories
             deque<Camera> cameras = find_camera_directories( options );
-
+            
             ///build a list of image bundles
             deque<ImageBundle> bundles = compute_image_bundles( cameras, options );
         

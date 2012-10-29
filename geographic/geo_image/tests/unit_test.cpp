@@ -5,12 +5,11 @@
 #include <iostream>
 #include <string>
 
-#include <Logger.h>
+#include <Logger.hpp>
 
-#include "dem/TEST_dem.h"
-#include "extensions/TEST_extensions.h"
-#include "image/TEST_structures.h"
-#include "utilities/TEST_utilities.h"
+#include "dem/TEST_dem.hpp"
+#include "image/TEST_image.hpp"
+
 
 using namespace std;
 
@@ -21,20 +20,16 @@ using namespace std;
 int main(int argc, char* argv[]) {
 
     try {
+        // print header
         print_module_header("GeoImage Unit Test Framework");
         
-        //begin dem module test
+        // run the image module
+        TEST_image_module();
+
+        // run the dem module
         TEST_dem_module();
-
-        //begin extensions module test
-        TEST_extensions_module();
-
-        //begin structure module test
-        TEST_structures_module();
-
-        //begin utilities module test
-        TEST_utilities_module();
-
+        
+        // print footer
         print_module_footer("GeoImage Unit Test Framework");
     
     

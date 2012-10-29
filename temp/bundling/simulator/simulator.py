@@ -134,7 +134,7 @@ def build_layout_09( BASE_PATH, _slice, collect, camera, hour ):
 	for x in xrange( ran[0], ran[1]):
 		cdir = BASE_PATH + '/' + str(x).zfill(2)
 		create_directory(cdir)
-		#build_layout_10( cdir, _slice, collect, camera, hour, x )	
+		build_layout_10( cdir, _slice, collect, camera, hour, x )	
 
 #---------------------------------------------#
 #-          BUILD THE HOUR DIRECTORY         -#

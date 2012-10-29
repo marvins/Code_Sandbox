@@ -1,73 +1,59 @@
-#include "GeoHeader.h"
-
-#include <boost/filesystem.hpp>
+#include "GeoHeader.hpp"
 
 #include <iostream>
 using namespace std;
 
-namespace fs = boost::filesystem;
 
 namespace GEO{
 
-GeoHeader_Info::GeoHeader_Info(){ 
+GeoHeader::GeoHeader(){ 
     valid = false;
-    pixeltype.set( PixelType::UNKNOWN );
+    pixeltype =  -1;
 }
 
-GeoHeader_Info::~GeoHeader_Info(){
+GeoHeader::~GeoHeader(){
 
 }
 
-std::string GeoHeader_Info::get_image_filename()const{
+std::string GeoHeader::get_image_filename()const{
     return image_filename;
 }
 
-void GeoHeader_Info::set_image_filename( std::string const& filename ){
+void GeoHeader::set_image_filename( std::string const& filename ){
     image_filename = filename;
 }
 
-bool GeoHeader_Info::image_filename_exists()const{
-
-   if(fs::exists(fs::path(image_filename)) == true )
-      return true;
-
-   return false;
-}
-
-bool GeoHeader_Info::file_exists( string const& filename ){
-    return fs::exists( fs::path(filename) );
-}
-
-
-void GeoHeader_Info::set_pixel_type( PixelType const& pix){
+void GeoHeader::set_pixel_type( int const& pix){
    
     //copy pixel type
     pixeltype = pix;
     
 }
 
-PixelType GeoHeader_Info::get_pixel_type()const{
+
+int GeoHeader::get_pixel_type()const{
     
     return pixeltype;
 }
       
-bool GeoHeader_Info::isValid()const{
+bool GeoHeader::isValid()const{
     return valid;
 }
 
-void GeoHeader_Info::setValid( const bool& flag ){
+void GeoHeader::setValid( const bool& flag ){
     valid = flag;
 }
 
-void GeoHeader_Info::set_header_data( std::vector<std::pair<std::string, std::string> >const& hdata ){
+/*
+void GeoHeader::set_header_data( std::vector<std::pair<std::string, std::string> >const& hdata ){
     header_data = hdata;
 }
 
-std::vector<std::pair<std::string,std::string> > GeoHeader_Info::get_header_data()const{
+std::vector<std::pair<std::string,std::string> > GeoHeader::get_header_data()const{
     return header_data;
 }
 
-bool GeoHeader_Info::get_header_item( std::string const& key, std::string& result ){
+bool GeoHeader::get_header_item( std::string const& key, std::string& result ){
     
     for( size_t i=0; i<header_data.size(); i++ ){
         if( header_data[i].first == key ){
@@ -80,7 +66,7 @@ bool GeoHeader_Info::get_header_item( std::string const& key, std::string& resul
     return false;
 }
 
-bool GeoHeader_Info::set_header_item( std::string const& key, std::string const& value ){
+bool GeoHeader::set_header_item( std::string const& key, std::string const& value ){
 
     bool fndKey = false;
     for( size_t i=0; i<header_data.size(); i++){
@@ -92,6 +78,6 @@ bool GeoHeader_Info::set_header_item( std::string const& key, std::string const&
     if( fndKey == false )
         header_data.push_back( pair<string,string>(key, value));
     return true;
-}
+}*/
 
 }//end of GEO namespace

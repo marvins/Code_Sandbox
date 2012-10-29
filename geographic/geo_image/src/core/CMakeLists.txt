@@ -10,5 +10,6 @@ configure_file(
 )
 
 install (FILES "${PROJECT_BINARY_DIR}/src/core/GeoImage_Version.hpp" DESTINATION "include/geoimage/core" )
+install (FILES "${PROJECT_SOURCE_DIR}/src/core/Enumerations.hpp"     DESTINATION "include/geoimage/core" )
 
 
