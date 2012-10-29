@@ -76,7 +76,16 @@ int TEST_dem_constructors( string& note ){
     if( dem03.get_tile().cols != 1000 || dem03.get_tile().rows != 1000 ) return false;
     
     //check corners
-    
+    Point2f ne(  500,  500);
+    Point2f nw( -500,  500);
+    Point2f se(  500, -500);
+    Point2f sw( -500, -500);
+    note = "Corner Locations Failed";
+    if( norm(dem01.ne() - Point2f(0,0) ) > 0.001 ) return false;
+    if( norm(dem02.ne() - ne ) > 0.001 ) return false;
+    if( norm(dem02.nw() - nw ) > 0.001 ) return false;
+    if( norm(dem02.se() - se ) > 0.001 ) return false;
+    if( norm(dem02.sw() - sw ) > 0.001 ) return false;
 
     //GEO::DEM dem_01( tl_lat, tl_lon, br_lat, br_lon, GEO::DEM_Params( GEO::DTED, "data/dted")); 
     

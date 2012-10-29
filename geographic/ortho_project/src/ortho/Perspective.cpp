@@ -20,7 +20,7 @@ Mat generate_perspective_test_image( Options& options ){
     //create an output image
     Mat output, dem, flat_img;
     create_flat_test_image( options, flat_img, dem );
-    options.dem = dem;
+    options.dem.set_tile( dem );
     
     
     namedWindow("Flat Test Image");
@@ -35,8 +35,10 @@ Mat generate_perspective_test_image( Options& options ){
     destroyWindow("DEM");
     
     //rotate the scene of the image accordingly
+    cout << "START ROTATION " << endl;
     rotate_image_scene( flat_img, dem, output, options );
-    
+    cout << "END ROTATION" << endl;
+
 
     return output;
 }
@@ -202,18 +204,19 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
     bool     intersection;
     
     //generate a ground coordinate list
-    vector<vector<Point3f> > outCoordinateList = build_ground_coordinate_list( options.dem, 
+    vector<vector<Point3f> > outCoordinateList = build_ground_coordinate_list( options.dem.get_tile(), 
                                                                             output_image.size(), 
                                                                             options.get_focal_length(), 
                                                                             options.RotationM, 
                                                                             final_position, 
                                                                             options.get_output_img2cam(output_image.size()));   
-    
+   
     vector<vector<Point3f> > inCoordinateList( input_image.cols);
     for( int i=0; i<input_image.cols; i++){
         inCoordinateList[i].resize(input_image.rows);
-        for( int j=0; j<input_image.rows; j++)
-            inCoordinateList[i][j] = Point3f( i - (input_image.cols/2), j - (input_image.rows/2), options.dem.at<uchar>(j,i));
+        for( int j=0; j<input_image.rows; j++){
+            inCoordinateList[i][j] = Point3f( i - (input_image.cols/2), j - (input_image.rows/2), options.dem.get_tile().at<uchar>(j,i));
+        }
     }
     
     vector<vector<double> > astack, cstack, estack;
@@ -240,12 +243,9 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
                     std::max( outCoordinateList[            0      ][output_image.rows-1].y, 
                     std::max( outCoordinateList[output_image.cols-1][            0      ].y, 
                               outCoordinateList[output_image.cols-1][output_image.rows-1].y))));
-
     
-    Point2f demMin(-500,-500);
-    Point2f demMax( 500, 500);
-    double maxElevation = query_max_elevation( imgMin, imgMax, Point2f(0,0), options );
-
+    double maxElevation = options.dem.max_elevation( );
+    
     //this will rotate the image according to the required values
     int cnt = 0;
     for( int x=0; x<output_image.cols; x++ ){
@@ -321,7 +321,9 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
 
                 //first find the actual location of the pixel
                 Point pix( _round(maxZPnt.x) + (input_image.cols/2), _round(maxZPnt.y) + (input_image.rows/2) );
-
+                
+                cout << pix << endl;
+                cin.get();
                 //pull the image
                 if( pix.x >= 0 && pix.y >= 0 && pix.x <= input_image.cols && pix.y <= input_image.rows ){
 

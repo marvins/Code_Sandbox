@@ -121,7 +121,7 @@ class Options{
         Quaternion RotationQ;
         
         cv::Mat image; /*< Image being used */
-        cv::Mat dem;   /*< DEM Image being used */
+        GEO::DEM dem;   /*< DEM Image being used */
         double max_elevation;
         cv::Point2f maxDem, minDem;
 

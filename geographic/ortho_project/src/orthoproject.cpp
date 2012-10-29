@@ -99,10 +99,11 @@ int main( int argc, char* argv[] ){
                 //load dem
                 // TODO Check if dem is for a geo image or from a file
                 // TODO Load from Geo Image DEM Module or from opencv
-                options.dem   = imread( options.dem_filename, 0 );
-                options.max_elevation = query_max_elevation( options.dem ); 
-                options.minDem = Point2f( -500, -500);
-                options.maxDem = Point2f(  500,  500);
+                options.minDem = Point2f( -500,  500);
+                options.maxDem = Point2f(  500, -500);
+                options.dem   = GEO::DEM( options.minDem, options.maxDem, imread( options.dem_filename, 0 ) );
+                options.max_elevation = options.dem.max_elevation( );
+            
             }
 
             /*****************************/
