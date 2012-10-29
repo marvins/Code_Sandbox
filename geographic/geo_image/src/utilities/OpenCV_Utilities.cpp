@@ -132,5 +132,24 @@ void cvSetPixel( Mat& image, Point const& pix, double const& val ){
 
 }
 
+/**
+ * Get the image pixel
+*/
+double cvGetPixel( cv::Mat const& image, cv::Point const&  pix, const int& channel ){
+
+    if( image.type() == CV_8UC1 )
+        return image.at<uchar>(pix);
+    
+    if( image.type() == CV_8UC3 )
+        return image.at<Vec3b>(pix)[channel];
+    
+    if( image.type() == CV_16UC1 )
+        return image.at<unsigned short>(pix);
+    
+    else
+        throw string("ERROR: Unknown type");
+
+}
+
 
 } // End of GEO Namespace 

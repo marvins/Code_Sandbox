@@ -55,8 +55,14 @@ class DEM{
         ~DEM();
 
         cv::Mat get_tile()const;
+        void set_tile( const cv::Mat& data );
     
-        //double max_elevation( double& lat, double& lon )const;
+        // return the max elevation
+        double max_elevation( double& lat, double& lon )const;
+        double max_elevation( )const;
+
+        // return the specific elevation
+        double query_elevation( const cv::Point2f& location )const;
         
         //double get_elevation()const;
 
@@ -72,8 +78,8 @@ class DEM{
 
     private:
         cv::Mat tile;   /*< Loaded Image Tile            */
-        cv::Point2f m_tl; /*< Top Left Corner of Image     */
-        cv::Point2f m_br; /*< Bottom Right Corner of Image */
+        cv::Point2f m_min; /*< Top Right Corner of Image     */
+        cv::Point2f m_max; /*< Bottom Left Corner of Image */
         
 
 }; //end of DEM class

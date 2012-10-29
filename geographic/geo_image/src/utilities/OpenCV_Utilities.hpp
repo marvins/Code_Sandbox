@@ -30,6 +30,10 @@ std::string opencvDepth2string( const int& depth );
 */
 void cvSetPixel( cv::Mat& image, cv::Point const& pix, double const& val );
 
+/**
+ * Get the pixel value
+*/
+double cvGetPixel( cv::Mat const& image, cv::Point const&  pix, const int& channel );
 
 } // End of GEO Namespace
 

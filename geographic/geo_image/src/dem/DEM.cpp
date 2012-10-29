@@ -1,5 +1,7 @@
 #include "DEM.hpp"
 
+#include "../utilities/OpenCV_Utilities.hpp"
+
 #include <iostream>
 #include <string>
 
@@ -31,8 +33,8 @@ namespace GEO{
     DEM::DEM( const Point2f& _tl, const Point2f& _br, const Mat& data ){
         
         //set the image corners
-        m_tl = _tl;
-        m_br = _br;
+        m_min = Point2f( std::min(_tl.x, _br.x), std::min(_tl.y, _br.y));
+        m_max = Point2f( std::max(_tl.x, _br.x), std::max(_tl.y, _br.y));
         
         //set the tile data
         tile = data.clone();
@@ -236,24 +238,43 @@ namespace GEO{
             return Mat();
         return tile.clone();
     } //end of get_raw function
+    
+    /**
+     * Set the tile data
+    */
+    void DEM::set_tile( const Mat& data ){
+        tile = data.clone();
+    }
+    
+    /**
+     * Return the value of the highest elevation
+     * in the tile.
+     */
+    double DEM::max_elevation( )const{
 
+        double _max = 0;
+        for( size_t i=0; i<tile.cols; i++)
+            for( size_t j=0; j<tile.rows; j++ )
+                if( cvGetPixel( tile, Point(i,j), 0 ) > _max ){
+                        _max = cvGetPixel( tile, Point(i, j), 0);
+                    }
+        return _max;
+    }
 
     /**
      * Return the value and location of the highest elevation
      * in the tile.
-     *
+     */
     double DEM::max_elevation( double& lat, double& lon )const{
 
         double _max = 0;
         int I = 0, J = 0;
         for( size_t i=0; i<tile.cols; i++)
             for( size_t j=0; j<tile.rows; j++ )
-                if( tile.type() == CV_16SC1 ){
-                    if( tile.at<short>(j,i) > _max ){
-                        _max = tile.at<short>(j,i);
+                if( cvGetPixel( tile, Point(i,j), 0 ) > _max ){
+                        _max = cvGetPixel( tile, Point(i,j), 0 );
                         I = i;
                         J = j;
-                    }
                 }
         lat = J;
         lon = I;
@@ -261,6 +282,15 @@ namespace GEO{
         return _max;
     }
 
+
+    /** 
+     * Return the elevation at the specified coordinate.
+    */
+    double DEM::query_elevation( const Point2f& pix )const{
+        double realX = (pix.x - m_min.x)/(m_max.x-m_min.x) * ( m_max.x-m_min.x) + m_min.x;
+        double realY = (pix.y - m_min.y)/(m_max.y-m_min.y) * ( m_max.y-m_min.y) + m_min.y;
+    }
+/*
     double DEM::get_elevation()const{
         return elevation;
     }
@@ -313,10 +343,10 @@ Point DEM::get_pixel_coordinate( Point2f const& coordinate ){
 
 */
     
-    Point2f DEM::ne()const{  return Point2f( m_br.x, m_tl.y ); }
-    Point2f DEM::nw()const{  return Point2f( m_tl.x, m_tl.y ); }
-    Point2f DEM::se()const{  return Point2f( m_br.x, m_br.y ); }
-    Point2f DEM::sw()const{  return Point2f( m_tl.x, m_br.y ); }
+    Point2f DEM::ne()const{  return Point2f( m_max.x, m_max.y ); }
+    Point2f DEM::nw()const{  return Point2f( m_min.x, m_max.y ); }
+    Point2f DEM::se()const{  return Point2f( m_max.x, m_min.y ); }
+    Point2f DEM::sw()const{  return Point2f( m_min.x, m_min.y ); }
 
 }//end of GEO namespace
 
