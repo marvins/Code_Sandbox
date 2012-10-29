@@ -7,6 +7,7 @@
 
 #include <Logger.hpp>
 
+#include "dem/TEST_dem.hpp"
 #include "image/TEST_image.hpp"
 
 
@@ -24,6 +25,9 @@ int main(int argc, char* argv[]) {
         
         // run the image module
         TEST_image_module();
+
+        // run the dem module
+        TEST_dem_module();
         
         // print footer
         print_module_footer("GeoImage Unit Test Framework");

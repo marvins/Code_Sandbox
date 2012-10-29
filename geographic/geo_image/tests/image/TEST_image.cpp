@@ -116,12 +116,14 @@ int TEST_GeoImage_get_image( string& note ){
     Mat img01 = geoimage01.get_image( CV_8UC3 );
     Mat img02 = geoimage02.get_image( CV_8UC3 );
 
-    imshow("TEST", img01 );
-    waitKey(0);
+    // check the image size
+    note = "Image size is not correct.";
+    if( img01.cols != 1024 || img01.rows != 1024 ) return false;
+    if( img02.cols != 0    || img02.rows != 0    ) return false;
 
     // return results
-    note = "Not Implemented Yet.";
-    return 0;
+    note = "Successful Operation";
+    return 1;
 
 }
 

@@ -63,6 +63,11 @@ if( BUILD_UTILITY_MODULE )
 endif( BUILD_UTILITY_MODULE )
 
 
+####################################################
+#               DEM Requirements                   #
+####################################################
+option (BUILD_DEM_MODULE  "Build DEM Module" ON )
+
 #Include the source directory
 include_directories( "${PROJECT_SOURCE_DIR}/src" )
 add_subdirectory( src )

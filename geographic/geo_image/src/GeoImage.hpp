@@ -9,28 +9,29 @@
 // version file
 #include <geoimage/core/GeoImage_Version.hpp>
 
+//CORE Libraries
+#include <geoimage/core/Enumerations.hpp>
+
+//DEM Libraries
+#include <geoimage/dem/DEM.hpp>
+
+//EXTENSION Libraries
+#include <geoimage/extensions/GS2_Header.hpp>
+#include <geoimage/extensions/TACID.hpp>
+
 //IMAGE Libraries
 #include <geoimage/image/GeoImage.hpp>
+#include <geoimage/image/GeoHeader.hpp>
 
 //IO Libraries
 #include <geoimage/io/GeoLoader.hpp>
 #include <geoimage/io/GDALLoader.hpp>
 #include <geoimage/io/IO_Configuration.hpp>
 
-#ifdef __NOTHING__
-#include <geoimage/TACID.hpp>
-#include <geoimage/DEM.h>
-#include <geoimage/Enumerations.h>
-#include <geoimage/GeoImage.h>
-#include <geoimage/GeoHeader.h>
-#include <geoimage/GDAL_Data.h>
-#include <geoimage/NITFHeader.h>
-#include <geoimage/PixelType.h>
-#include <geoimage/OpenCVUtils.h>
-#include <geoimage/GDAL2OpenCV.h>
-#include <geoimage/DTEDUtils.h>
-#include <geoimage/GS2_Header.hpp>
-#endif
+//UTILITY Libraries
+#include <geoimage/utilities/File_Utilities.hpp>
+#include <geoimage/utilities/OpenCV_Utilities.hpp>
+#include <geoimage/utilities/String_Utilities.hpp>
 
 #endif
 
