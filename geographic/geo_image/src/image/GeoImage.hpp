@@ -6,16 +6,17 @@
 #include <iostream>
 #include <string>
 
-#include "GDAL_Data.h"
+#ifdef DEPLOYED
+#include <geoimage/io/GDALLoader.hpp>
+#include <geoimage/image/GeoHeader.hpp>
+#else
+#include "../io/GDALLoader.hpp"
+#include "GeoHeader.hpp"
+#endif
 
-#include "NITFHeader.h"
-#include "DTEDHeader.h"
-#include "SRTMHeader.h"
-#include "GeoHeader.h"
-#include "GDAL_Data.h"
-#include "PixelType.h"
-#include "CoordinateLatLon.h"
 
+
+/// Enter GEO Namespace
 namespace GEO{
 
 /**
@@ -58,34 +59,34 @@ class GeoImage{
     void init();
     
     /** Clean out the geoimage and start from scratch */
-    void clean();
+    //void clean();
 
     std::string getImageTypeName()const;
 
     cv::Mat  get_image();
     cv::Mat  get_image( const int& imtype );
-    void     set_image( const cv::Mat& img );
+    //void     set_image( const cv::Mat& img );
 
     /** Get the size of the opencv image */
-    cv::Size getMatSize()const;
+    //cv::Size getMatSize()const;
 
     /** Return true if the image is valid with OpenCV */
     bool isOpenCVValid()const;
 
     /** Return true if the gdal was loaded */
-    bool gdal_load()const;
+    bool isDataValid()const;
 
     /** Get the maximum pixel value (Grayscale 64FC1 image only) */
-    double getMin()const;
+    //double getMin()const;
 
     /** Get the minimum pixel value (Grayscale 64FC1 image only) */
-    double getMax()const;
+    //double getMax()const;
 
     /** Write the GeoImage to file */
-    void write_image( const std::string& imgFilename = "__NONE__" );
+    //void write_image( const std::string& imgFilename = "__NONE__" );
     
     /** Return a copy of the header data */
-    GeoHeader_Info*& get_header()const;
+    //GeoHeader_Info*& get_header()const;
 
     /** Modify the header of the image 
      *  ACTION PARAMETERS
@@ -95,12 +96,12 @@ class GeoImage{
      *  4.  DELETE FIRST ENTRY WHICH MATCHES TAG
      *  5.  DELETE FIRST ENTRY WHICH MATCHES VALUE
     */
-    void modify_header_metadata( const std::string& tag, const std::string& val, const int& action );
+    //void modify_header_metadata( const std::string& tag, const std::string& val, const int& action );
     
-    void get_corner_coordinates( cv::Point2f& ul, cv::Point2f& br ) const;
-    void get_corner_coordinates( CoordinateLatLon& ul, CoordinateLatLon& br );
+    //void get_corner_coordinates( cv::Point2f& ul, cv::Point2f& br ) const;
+    //void get_corner_coordinates( CoordinateLatLon& ul, CoordinateLatLon& br );
     
-    std::string get_tre()const;
+    //std::string get_tre()const;
 
     private:
 
@@ -109,29 +110,28 @@ class GeoImage{
      * @brief if you are using GDAL, then it will open, do sanity
      * checking, then load the image dataset.
      */
-    void load_image();
+    void load_data();
 
 
     /** Merge multiple gdal bands into a coherent RGB Image
     */
-    cv::Mat  merge_bands( std::vector<cv::Mat>const& imgStack, std::vector<int> colors, std::vector<int> depths )const;
+    //cv::Mat  merge_bands( std::vector<cv::Mat>const& imgStack, std::vector<int> colors, std::vector<int> depths )const;
 
 
     /**
      * Image Metadata 
      */
-    GeoHeader_Info* header_data; /*< Container for image header and meta-data */
+    GeoHeader header_data; /*< Container for image header and meta-data */
 
     /** 
      * GDAL Container
      */
-    GDAL_Data gdal_data;
+    GDALLoader gdal_data;
 
     /**
      * Sanity Flags 
      */
     bool initialize;             /*< Flag for whether or not to load data */
-    bool openCVCompatible;       /*< Flag for whether or not the image is valid with OpenCV */
 
     /**
      *  Retrieve the type of file a particular string is
@@ -141,7 +141,7 @@ class GeoImage{
 
 };
 
-cv::Point2f getElevationMeters( cv::Point2f coordinate );
+//cv::Point2f getElevationMeters( cv::Point2f coordinate );
 
 } //end of GEO namespace 
 

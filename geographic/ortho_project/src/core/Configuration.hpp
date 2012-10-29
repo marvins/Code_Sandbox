@@ -13,7 +13,7 @@
 
 #include <opencv2/core/core.hpp>
 
-#include <GeoImage.h>
+#include <GeoImage.hpp>
 
 #include "Logger.hpp"
 #include "Parser.hpp"

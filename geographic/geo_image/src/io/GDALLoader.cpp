@@ -2,12 +2,18 @@
 // load the header file
 #include "GDALLoader.hpp"
 #include "../utilities/File_Utilities.hpp"
+#include "../utilities/OpenCV_Utilities.hpp"
 
 // STL Libraries
 #include <iostream>
 
 // Boost Libraries
 #include <boost/algorithm/string.hpp>
+
+// OpenCV Library
+#if USE_OPENCV == 1
+using namespace cv;
+#endif
 
 using namespace std;
 
@@ -21,9 +27,12 @@ namespace GEO{
      */
     GDALLoader::GDALLoader(){
         
-        //driver = NULL;
-        //dataset = NULL;
-        //gdalLoadFailed = false;
+        driver = NULL;
+        dataset = NULL;
+        
+        gdalLoadFailed   = false;
+        openCVCompatible = false;
+        valid_data       = false;
     }
 
     /**
@@ -31,15 +40,39 @@ namespace GEO{
     */
     GDALLoader::GDALLoader( const string& fname ){
         
+        initialize( fname );
+    }
+
+    /** Destroy the GDAL Data object
+     *
+     * @brief This will close the dataset and delete all allocated
+     * gdal-specific memory
+     */
+    GDALLoader::~GDALLoader(){
+
+        if( dataset != NULL )
+            GDALClose( dataset );
+
+    }
+    
+    
+    void GDALLoader::initialize( const string& fname ){
+
         // make sure that the file exists
-        if( STR::file_exists( fname ) == false )
+        if( STR::file_exists( fname ) == false ){
+            valid_data = false;
+            gdalLoadFailed = true;
             throw string( "ERROR: File does not exist" );
+        }
         
         // make sure we have an appropriate extension
         string ext = STR::file_extension( fname );
         if( ext != ".ntf" && ext != ".NTF" && ext != ".nitf" && ext != ".NITF" &&
-            ext != ".dt2" && ext != ".DT2"                                        )
+            ext != ".dt2" && ext != ".DT2"                                        ){
+            valid_data = false;
+            gdalLoadFailed = true;
             throw string(string("ERROR: did not recognize extension (") + ext + string(")"));
+        }
 
 
         // register the gdal driver
@@ -52,11 +85,15 @@ namespace GEO{
         if( dataset == NULL ){
             openCVCompatible = false;
             gdalLoadFailed   = true;
+            valid_data = false;
             return;
         }
+        else
+            valid_data = true;
     
         //check for pixel data and halt action if it is not present
         if ( dataset->GetRasterCount() <= 0 ){
+            openCVCompatible = false;
             return;
         }
 
@@ -74,19 +111,6 @@ namespace GEO{
 
 
     }
-
-    /** Destroy the GDAL Data object
-     *
-     * @brief This will close the dataset and delete all allocated
-     * gdal-specific memory
-     */
-    GDALLoader::~GDALLoader(){
-
-        if( dataset != NULL )
-            GDALClose( dataset );
-
-    }
-
     /** Write an image to a NITF Format
      *
      *
@@ -320,5 +344,133 @@ namespace GEO{
     }
 
     */
+    
+    /**
+    */
+    bool GDALLoader::isOpenCVCompatible( )const{
+        return openCVCompatible;
+    }
+
+    bool GDALLoader::isValid()const{
+        return valid_data && !gdalLoadFailed;
+    }
+        
+    int GDALLoader::get_image_channels( )const{
+        
+        //make sure the image is initialized
+        if( isValid() == false )
+            return -1;
+        
+        return dataset->GetRasterCount();
+
+    }
+    
+
+    pair<int,int>  GDALLoader::getRasterDimensions( )const{
+        
+        return pair<int,int>( dataset->GetRasterXSize(), dataset->GetRasterYSize() );
+
+    }
+
+#if USE_OPENCV == 1
+    int GDALLoader::getOpenCVPixelType( )const{
+        
+        int gdalType  = dataset->GetRasterBand(1)->GetRasterDataType();
+        int nchannels = get_image_channels( );
+
+        if( gdalType == GDT_Byte   && nchannels == 1 ) return CV_8UC1;
+        if( gdalType == GDT_Byte   && nchannels == 2 ) return CV_8UC2;
+        if( gdalType == GDT_Byte   && nchannels == 3 ) return CV_8UC3;
+        if( gdalType == GDT_UInt16 && nchannels == 1 ) return CV_16UC1;
+        if( gdalType == GDT_UInt16 && nchannels == 2 ) return CV_16UC2;
+        if( gdalType == GDT_UInt16 && nchannels == 3 ) return CV_16UC3;
+        if( gdalType == GDT_Int16  && nchannels == 1 ) return CV_16SC1;
+        if( gdalType == GDT_Int16  && nchannels == 2 ) return CV_16SC2;
+        if( gdalType == GDT_Int16  && nchannels == 3 ) return CV_16SC3;
+        if( gdalType == GDT_UInt32 && nchannels == 1 ) return CV_32SC1;
+        if( gdalType == GDT_UInt32 && nchannels == 2 ) return CV_32SC2;
+        if( gdalType == GDT_UInt32 && nchannels == 3 ) return CV_32SC3;
+        if( gdalType == GDT_Int32  && nchannels == 1 ) return CV_32SC1;
+        if( gdalType == GDT_Int32  && nchannels == 2 ) return CV_32SC2;
+        if( gdalType == GDT_Int32  && nchannels == 3 ) return CV_32SC3;
+
+        throw std::string("TYPE NOT SUPPORTED");
+
+    }
+
+    /**
+     * Get the OpenCV Image Data.
+    */
+    Mat GDALLoader::getOpenCVMat( const int& pixType )const{
+    
+        // get relevant image data
+        pair<int,int> dims =  getRasterDimensions();
+        
+        // create an output image
+        vector<Mat> layers( dataset->GetRasterCount() );
+        for( size_t i=0; i<layers.size(); i++ )
+            layers[i] = Mat( dims.second, dims.first, cvDepthChannel2Type(cvType2Depth( pixType), 1));
+        
+        // iterate through each band
+        for (int i = 0; i < dataset->GetRasterCount(); i++) {
+        
+            //create objects
+            GDALRasterBand *band = dataset->GetRasterBand(i + 1);
+
+            //load pixels
+            double minP = 0;
+            double maxP = 0;
+            for ( int r = 0; r < layers[i].rows; r++) {
+                
+                float* pafScanline;
+                pafScanline = (float*) CPLMalloc(sizeof (float) *layers[i].cols);
+                band->RasterIO(GF_Read, 0, r, layers[i].cols, 1, pafScanline, layers[i].cols, 1, GDT_Float32, 0, 0);
+            
+                for ( int c = 0; c < layers[i].cols; c++) {
+
+                    if (r == 0 && c == 0) {
+                        minP = pafScanline[c];
+                        maxP = pafScanline[c];
+                    }
+                    if (pafScanline[c] > maxP) {
+                        maxP = pafScanline[c];
+                    }
+                    if (pafScanline[c] < minP) {
+                        minP = pafScanline[c];
+                    }
+                
+                    // set the pixel value
+                    cvSetPixel( layers[i], Point(c,r), pafScanline[c] );
+                }
+            
+            }
+
+            if (layers[i].depth() == CV_16U && maxP < 4096)
+                layers[i] = layers[i].clone()*16;
+        
+            else if (layers[i].depth() == CV_16U && maxP < 16384)
+                layers[i] = layers[i].clone()*4;
+        }
+
+        //merge channels into single image
+        Mat output;
+        if( layers.size() > 1 )
+            merge( output, layers );
+        else
+            output = layers[0].clone();
+
+        return output;
+    }
+
+
+#endif
+
+    string GDALLoader::getImageTypeName( )const{
+        
+        //return nothing if the dataset is null
+        if( dataset == NULL ) return "__NONE__";
+        
+        return driver->GetDescription();
+    }
 
 } //end of GEO namespace 

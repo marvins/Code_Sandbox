@@ -9,9 +9,13 @@
 // version file
 #include <geoimage/core/GeoImage_Version.hpp>
 
+//IMAGE Libraries
+#include <geoimage/image/GeoImage.hpp>
+
 //IO Libraries
 #include <geoimage/io/GeoLoader.hpp>
 #include <geoimage/io/GDALLoader.hpp>
+#include <geoimage/io/IO_Configuration.hpp>
 
 #ifdef __NOTHING__
 #include <geoimage/TACID.hpp>
