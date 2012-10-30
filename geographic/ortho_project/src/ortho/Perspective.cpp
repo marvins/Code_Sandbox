@@ -35,9 +35,7 @@ Mat generate_perspective_test_image( Options& options ){
     destroyWindow("DEM");
     
     //rotate the scene of the image accordingly
-    cout << "START ROTATION " << endl;
     rotate_image_scene( flat_img, dem, output, options );
-    cout << "END ROTATION" << endl;
 
 
     return output;
@@ -255,8 +253,7 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
     for( int x=0; x<output_image.cols; x++ ){
         for( int y=0; y<output_image.rows; y++ ){
             
-
-            /** Now we know what we are staring at.  Its time to now find what pixel will be shown here. */
+            /** Enter this area if we are testing for dem occlusions */
             if( options.doZBuffering() == true ){
                 
                 // relate the position to image coordinates in the original
@@ -308,7 +305,7 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
                                     double dist;
                                     int result = compute3d_line_line_intersection( Mat2Point3f(final_position), Point3f(outCoordinateList[x][y].x, outCoordinateList[x][y].y, 0), 
                                             inCoordinateList[xx][yy], Point3f( inCoordinateList[xx][yy].x, inCoordinateList[xx][yy].y, 0), 
-                                            dist, 1 );
+                                            dist, 0.75 );
                                     
                                     /** If there is an intersection, then update the buffer for that point */
                                     if( result > 0 && dist < maxZDist ){
@@ -326,8 +323,6 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
                 //first find the actual location of the pixel
                 Point pix( _round(maxZPnt.x) + (input_image.cols/2), _round(maxZPnt.y) + (input_image.rows/2) );
                 
-                cout << pix << endl;
-                cin.get();
                 //pull the image
                 if( pix.x >= 0 && pix.y >= 0 && pix.x <= input_image.cols && pix.y <= input_image.rows ){
 
@@ -384,8 +379,10 @@ void rotate_image_scene( Mat const& input_image, Mat const& dem_image, Mat& outp
 
         }
         //print the progress bar to console
-        if( show_progress_bar )
+        if( show_progress_bar ){
             cout << progressBar.toString() << '\r' << flush;
+            imwrite( "test.jpg", output_image );
+        }
 
     }
     if( show_progress_bar )

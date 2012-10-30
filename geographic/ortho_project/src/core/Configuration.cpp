@@ -327,7 +327,7 @@ void Options::load_rectify_configuration(){
     /*   - The dem mode must exist and be a supported option, as */
     /*     determines how we will load the dem model information.*/
     /*************************************************************/
-    string dem_mode = parser.getItem_string("DEM_MODE", found);
+    dem_mode = parser.getItem_string("DEM_MODE", found);
 
     //make sure flag exists
     if( found == false )

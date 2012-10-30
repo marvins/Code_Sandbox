@@ -68,9 +68,17 @@ endif( BUILD_UTILITY_MODULE )
 ####################################################
 option (BUILD_DEM_MODULE  "Build DEM Module" ON )
 
+####################################################
+#           COORDINATE Requirements                #
+####################################################
+option (BUILD_COORDINATE_MODULE  "Build COORDINATE Module" ON )
+
+
+
 #Include the source directory
 include_directories( "${PROJECT_SOURCE_DIR}/src" )
 add_subdirectory( src )
+
 
 
 

@@ -74,7 +74,7 @@ class Options{
          * - CV_8UC1
          * - CV_8UC3
         */
-        int      get_rectify_image_type()const;
+        int  get_rectify_image_type()const;
 
         
         /**
@@ -106,7 +106,7 @@ class Options{
          * this will return the desired image type
          * @return Image Type
         */
-        int      get_build_image_type()const;
+        int  get_build_image_type()const;
         
         //position of the original camera
         cv::Mat Position_i;

@@ -7,7 +7,7 @@ BOOST_LIB=-L/usr/lib -lboost_system -lboost_filesystem
 
 OPENCV=`pkg-config opencv --cflags --libs`
 
-TEST_SOURCES=tests/unit_test.cpp tests/image/TEST_image.cpp tests/dem/TEST_dem.cpp
+TEST_SOURCES=tests/unit_test.cpp tests/image/TEST_image.cpp tests/dem/TEST_dem.cpp tests/coordinate/TEST_coordinate.cpp
 
 FRAMEWORK_SOURCES=../../useful_stuff/cpp/unit_test/src
 FRAMEWORK_INCLUDE=-I../../useful_stuff/cpp/unit_test/src

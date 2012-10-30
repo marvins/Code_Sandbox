@@ -5,6 +5,8 @@
 
 #include <vector>
 
+#include <GeoImage.hpp>
+
 bool pointInConvexPolygon( std::vector<cv::Point2f>const& lst, cv::Point2f const& testPoint );
 
 /** 
@@ -64,6 +66,6 @@ cv::Mat compute_vector_norm( cv::Mat const& mat );
 
 cv::Rect_<double> compute_ground_bbox( cv::Mat const& pntA, cv::Mat const& pntB, cv::Mat const& pntC, cv::Mat const& pntD );
 
-cv::Mat load_world_point( cv::Point const& pix, cv::Size const& img_size, cv::Rect_<double> const& ground_bbox );
+cv::Mat load_world_point( cv::Point const& pix, cv::Size const& img_size, cv::Rect_<double> const& ground_bbox, const GEO::DEM& dem );
 
 #endif

@@ -243,20 +243,37 @@ Mat orthorectify( Mat const& image, Options& options ){
     Mat corner01_world = convert_pixel2world( corner01_pixel, options.image.size(),  image_plane_size,  rotation_axis, focal_length, input_camera_position, earth_normal );
     Mat corner11_world = convert_pixel2world( corner11_pixel, options.image.size(),  image_plane_size,  rotation_axis, focal_length, input_camera_position, earth_normal );
     
-    cout << image_plane_size.width << ", " << image_plane_size.height << endl;
-    cout << "Rotation A: "; print_mat( rotation_axis.t() );
-    cout << "Focal Le: " << focal_length << endl;
-    cout << "Input Cam: "; print_mat( input_camera_position.t() );
-    cout << "Earth norm: "; print_mat( earth_normal.t() );
-    cout << "Pixel TL: "; print_mat( corner00_pixel.t());
-    cout << "World TL: "; print_mat( corner00_world.t() );
-    cin.get();
-
     /**
      * Convert the world coordinates into a image bounding box
     */
     Rect_<double> ground_bbox = compute_ground_bbox( corner00_world, corner01_world, corner10_world, corner11_world ); 
     
+    
+    //load dem
+    cout << "DEM Mode: " << options.dem_mode << endl;
+    if( options.dem_mode == "FILE" ){
+        
+        options.minDem = Point2f( -500,  500);
+        options.maxDem = Point2f(  500, -500);
+        options.dem   = GEO::DEM( options.minDem, options.maxDem, imread( options.dem_filename, 0 ) );
+        options.max_elevation = options.dem.max_elevation( );
+    }
+    else if( options.dem_mode == "DTED" ){
+        
+        options.dem = GEO::DEM( Point2f( ground_bbox.tl().x, ground_bbox.tl().y ),
+                                Point2f( ground_bbox.br().x, ground_bbox.br().y ),
+                                GEO::DEM_Params( GEO::DTED, options.dem_filename ));
+        
+        
+        options.logger.add_message( LOG_INFO, string("DEM NE Corner: (") + num2str(options.dem.ne().x) + string(", ") + num2str(options.dem.ne().y) + string(") "));
+        options.logger.add_message( LOG_INFO, string("DEM NW Corner: (") + num2str(options.dem.nw().x) + string(", ") + num2str(options.dem.nw().y) + string(") "));
+        options.logger.add_message( LOG_INFO, string("DEM SE Corner: (") + num2str(options.dem.se().x) + string(", ") + num2str(options.dem.se().y) + string(") "));
+        options.logger.add_message( LOG_INFO, string("DEM SW Corner: (") + num2str(options.dem.sw().x) + string(", ") + num2str(options.dem.sw().y) + string(") "));
+        cin.get(); 
+    }
+    else
+        throw string("ERROR: Unknown DEM Mode");
+
     /** 
      * Create a simple polygon which we can use to test if points in the output image exist 
      * in the input image.  For images with extreme rotations, this will save significant 
@@ -327,7 +344,7 @@ Mat orthorectify( Mat const& image, Options& options ){
      *    Iterate the Output Image, performing orthorectification
     */
     int cnt = 0;
-    
+    bool occluded; 
     for( int y=0; y<output.rows; y++){
         for( int x=0; x<output.cols; x++){
             
@@ -337,8 +354,9 @@ Mat orthorectify( Mat const& image, Options& options ){
              * - Since we are dealing with an axis-aligned coordinate system,
              *   just interpolate the position against the bbox
             */
-            Mat world_position = load_world_point( Point(x,y), osize, ground_bbox );
+            Mat world_position = load_world_point( Point(x,y), osize, ground_bbox, options.dem );
             
+
             // TODO make sure this function loads the proper elevation for this coordinate
 
             /**
@@ -354,8 +372,19 @@ Mat orthorectify( Mat const& image, Options& options ){
             /**
              * TODO Compute any dem induced intersections here
             */
-            dem_correction( world_position, gsd.first, options, load_point( ground_bbox.tl().x, ground_bbox.br().y, 0),
-                                                                load_point( ground_bbox.br().x, ground_bbox.tl().y, 0));
+            occluded = dem_correction( world_position, gsd.first, options, load_point( ground_bbox.tl().x, ground_bbox.br().y, 0),
+                                                                           load_point( ground_bbox.br().x, ground_bbox.tl().y, 0));
+            if( occluded == true ){
+                
+                if( output.type() == CV_8UC3 && options.image.type() == CV_8UC3 ){
+                    output.at<Vec3b>(y,x) = Vec3b(0,255,0);
+                }
+                else if( output.type() == CV_8UC1 && options.image.type() == CV_8UC1 ){
+                    output.at<uchar>(y,x) = 0;
+                }
+                else 
+                    throw string("ERROR: Unknown data types" );
+            }
 
             /**
              * Convert the world coordinate into pixel value

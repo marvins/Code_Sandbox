@@ -1,4 +1,4 @@
-#include "CoordinateLatLon.h"
+#include "CoordinateLatLon.hpp"
 
 #include <sstream>
 #include <string>
@@ -49,7 +49,16 @@ CoordinateLatLon::CoordinateLatLon( const int& latDeg, const int&    latMin, con
 
     datum = dat;
     
-    throw string("ERROR: Not Implemented");
+    if( latDeg >= 0 )
+        lat = latDeg + latMin/60.0 + latSec/3600.0;
+    else
+        lat = latDeg - latMin/60.0 - latSec/3600.0;
+    
+    if( lonDeg >= 0 )
+        lon = lonDeg + lonMin/60.0 + lonSec/3600.0;
+    else    
+        lon = lonDeg - lonMin/60.0 - lonSec/3600.0;
+
 }
 
 

@@ -6,6 +6,6 @@
 
 #include <opencv2/core/core.hpp>
 
-void dem_correction( cv::Mat& world_position, const double& gsd, Options& options, cv::Mat const& minPnt, cv::Mat const& maxPnt );
+bool dem_correction( cv::Mat& world_position, const double& gsd, Options& options, cv::Mat const& minPnt, cv::Mat const& maxPnt );
 
 #endif

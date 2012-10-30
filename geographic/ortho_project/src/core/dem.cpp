@@ -48,10 +48,10 @@ class pnt_comp{
  * - Start at ground point and iterate to radius, searching for occlusions. 
  * 
 */
-void dem_correction( Mat& world_position, const double& gsd, Options& options, const Mat& minPnt, const Mat& maxPnt ){
+bool dem_correction( Mat& world_position, const double& gsd, Options& options, const Mat& minPnt, const Mat& maxPnt ){
    
     // return when in a live run
-    return;
+    return false;
 
     //compute the initial position
     Mat dnorm = options.Position_i - world_position;

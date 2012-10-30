@@ -390,15 +390,17 @@ cv::Rect_<double> compute_ground_bbox( cv::Mat const& pntA, cv::Mat const& pntB,
 }
 
 
-cv::Mat load_world_point(  Point const& pix, Size const& img_size, Rect_<double> const& ground_bbox ){
+cv::Mat load_world_point(  Point const& pix, Size const& img_size, Rect_<double> const& ground_bbox, const GEO::DEM& dem ){
     
     //compute the scaled position (Remember that the y axis is flipped )
     double ranX = (double) pix.x / img_size.width;
     double ranY = (double) ( img_size.height - pix.y ) / img_size.height; 
+    
+    Point2f pnt( ground_bbox.width * ranX + ground_bbox.tl().x, 
+                 ground_bbox.height* ranY + ground_bbox.tl().y);
 
     //apply to geographic range (Remember that the y axis is flipped )
-    return load_point( ground_bbox.width  * ranX + ground_bbox.tl().x,
-                       ground_bbox.height * ranY + ground_bbox.tl().y,
-                       0                                             );
+    return load_point( pnt.x, pnt.y, dem.query_elevation( pnt ));
+
 }
 
