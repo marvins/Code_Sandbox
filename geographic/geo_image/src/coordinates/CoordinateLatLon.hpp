@@ -28,14 +28,14 @@ class CoordinateLatLon{
          * @param[in] latDD Latitude  in Decimal Degree Format
          * @param[in] lonDD Longitude in Decimal Degree Format
         */
-        CoordinateLatLon( const double& latDD, const double& lonDD, int const& dat = WGS84 );
+        CoordinateLatLon( const double& latDD, const double& lonDD, const double& _elevation = 0, std::string const& dat = "WGS84" );
         
         /**
          * OpenCV Point Constructor 
          *
          * @param[in] coord OpenCV Coordinate
         */
-        CoordinateLatLon( const cv::Point2f& coord, int const& dat = WGS84 );
+        CoordinateLatLon( const cv::Point2f& coord, const double& _elevation, std::string const& dat = "WGS84" );
         
         /**
          * Lat Lon Coordinate in Degree, Minutes Format
@@ -47,7 +47,8 @@ class CoordinateLatLon{
         */
         CoordinateLatLon( const int& latDeg, const double& latMin, 
                           const int& lonDeg, const double& lonMin,
-                          int const& dat = WGS84 );
+                          const double& _elevation = 0,
+                          std::string const& _datum = "WGS84" );
         
         /**
          * Lat Lon Coordinate in Degree, Minutes Format
@@ -61,7 +62,8 @@ class CoordinateLatLon{
         */
         CoordinateLatLon( const int& latDeg, const int&  latMin, const double& latSec,
                           const int& lonDeg, const int&  lonMin, const double& lonSec,
-                          int const& dat = WGS84 );
+                          const double& _elevation = 0,
+                          std::string const& _datum = "WGS84" );
 
         
         
@@ -71,11 +73,11 @@ class CoordinateLatLon{
         std::string toString()const;
 
 
-        double lat; /*< Latitude  */
-        double lon; /*< Longitude */
-        int  datum; /*< Datum     */
+        double lat;        /*< Latitude               */
+        double lon;        /*< Longitude              */
+        double elevation;  /*< Meters above sea level */
         
-        double elevation;
+        std::string datum; /*< Datum     */
 };
 
 }// end of GEO namespace 

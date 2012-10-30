@@ -18,17 +18,17 @@ class CoordinateUTM {
         
         CoordinateUTM();
         
-        CoordinateUTM( const int& _zone, const char& _hemisphere, const double& _easting, const double& _northing );
+        CoordinateUTM( const int& _zone, const bool& _isNorth, const double& _easting, const double& _northing, const double& _elevation = 0, const std::string& _datum = "WGS84" );
 
         std::string toString()const;
 
         int zone;
-        char hemisphere;
+        bool   isNorth;
         double easting;
         double northing;
         
         double elevation;
-        int datum;
+        std::string datum;
 };
 
 }

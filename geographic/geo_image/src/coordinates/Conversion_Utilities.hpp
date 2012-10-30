@@ -11,8 +11,10 @@
 
 namespace GEO{
 
+int compute_utm_zone( CoordinateLatLon const& coord, bool& isNorth );
 
-CoordinateLatLon convert_coordinate( CoordinateUTM const& coord );
+CoordinateLatLon convert_coordinate( CoordinateUTM    const& coord );
+CoordinateUTM    convert_coordinate( CoordinateLatLon const& coord );
 
 
 } // End of GEO Namespace

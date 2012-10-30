@@ -7,29 +7,35 @@ using namespace std;
 namespace GEO{
 
 CoordinateUTM::CoordinateUTM(){
+    
     zone = 0;
-    hemisphere = 'N';
+    isNorth = true;
     easting = 166022;
     northing = 0;
+    elevation = 0;
     
-    datum = WGS84;
+    datum = "WGS84";
 }
 
 
-CoordinateUTM::CoordinateUTM( const int& _zone, const char& _hemi, const double& _easting, const double& _northing ){
+CoordinateUTM::CoordinateUTM( const int& _zone, const bool& _isNorth, const double& _easting, const double& _northing, const double& _elevation, const string& _datum ){
 
     zone = _zone;
-    hemisphere = _hemi;
+    isNorth = _isNorth;
     easting = _easting;
     northing = _northing;
 
-    datum = WGS84;
+    elevation = _elevation;
+    datum = "WGS84";
 }
 
 
 string CoordinateUTM::toString()const{
 
-    return (string("<") + STR::num2str(zone) + string(", E:") + STR::num2str(easting) + string(", N:") + STR::num2str(northing) + string(">"));
+    if( isNorth == true )
+        return (string("<") + STR::num2str(zone) + string(", Hemi:N, E:") + STR::num2str(easting) + string(", N:") + STR::num2str(northing) + string(", Elev: ") + STR::num2str(elevation) + string(", D:") + datum +  string(">"));
+    else    
+        return (string("<") + STR::num2str(zone) + string(", Hemi:S, E:") + STR::num2str(easting) + string(", N:") + STR::num2str(northing) + string(", Elev: ") + STR::num2str(elevation) + string(", D:") + datum +  string(">"));
 }
 
 }
