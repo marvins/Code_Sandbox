@@ -212,16 +212,15 @@ namespace GEO{
     /** 
      * Return the elevation at the specified coordinate.
     */
-    double DEM::query_elevation( const Point2f& pix )const{
-        double realX = (pix.x - m_min.x)/(m_max.x-m_min.x) * ( m_max.x-m_min.x) + m_min.x;
-        double realY = (pix.y - m_min.y)/(m_max.y-m_min.y) * ( m_max.y-m_min.y) + m_min.y;
+    double DEM::query_elevation( const Point2f& coordinate )const{
+        int realX = (coordinate.x - m_min.x)/(m_max.x-m_min.x) * tile.cols;
+        int realY = (coordinate.y - m_min.y)/(m_max.y-m_min.y) * tile.rows;
+        
+        return cvGetPixel( tile, Point(realX, realY), 0 );
     }
+
+
 /*
-    double DEM::get_elevation()const{
-        return elevation;
-    }
-
-
 Vec3b color_relief( double elevation, double minC, double maxC ){
 
     double maxR = maxC;
