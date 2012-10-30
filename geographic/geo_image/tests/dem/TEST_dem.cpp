@@ -103,15 +103,19 @@ int TEST_dem_constructors( string& note ){
 int TEST_dem_elevation_accuracy( string& note ){
 
     // Create the DEM objects
-    GEO::DEM dem04( Point2f( -120,   38), Point2f(-119, 39 ), GEO::DEM_Params( GEO::DTED, "data/dted" )); 
+    GEO::DEM dem04( Point2f(-119, 36), Point2f(-118, 37), GEO::DEM_Params( GEO::DTED, "data/dted" )); 
     
     // make sure the max elevation is expected
     note = "Max Elevation is incorrect";
-    if( fabs( dem04.max_elevation() - 3783 ) > 0.001 ) return false; 
+    if( fabs( dem04.max_elevation() - 4412 ) > 0.001 ) return false; 
     
+    // get the max elevation coordinate
     Point2f max04;
-    if( fabs( dem04.max_elevation(max04) - 3783 ) > 0.001 ) return false; 
-    cout << max04 << endl;
+    if( fabs( dem04.max_elevation(max04) - 4412 ) > 0.001 ) return false; 
+    
+    // make sure the point gets the same value
+    note = "Query elevation failed to find the high pixel value";
+    if( fabs( dem04.query_elevation( max04 ) - 4412 ) > 0.0001 ) return false;
 
     note = "Successful Operation";
     return true;

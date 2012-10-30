@@ -3,6 +3,7 @@
 #include "../image/GeoImage.hpp"
 #include "../utilities/DEM_Utilities.hpp"
 #include "../utilities/File_Utilities.hpp"
+#include "../utilities/Math_Utilities.hpp"
 #include "../utilities/OpenCV_Utilities.hpp"
 
 #include <cmath>
@@ -202,8 +203,8 @@ namespace GEO{
                         I = i;
                         J = j;
                 }
-        coord.y = (( J - m_min.y )/(m_max.y - m_min.y))*(m_max.y-m_min.y) + m_min.y;
-        coord.x = (( I - m_min.x )/(m_max.x - m_min.x))*(m_max.x-m_min.x) + m_min.x;
+        coord.y = (1 - J/(double)tile.rows) * (m_max.y - m_min.y) + m_min.y;
+        coord.x = (I/(double)tile.cols) * (m_max.x - m_min.x) + m_min.x;
 
         return _max;
     }
@@ -213,8 +214,8 @@ namespace GEO{
      * Return the elevation at the specified coordinate.
     */
     double DEM::query_elevation( const Point2f& coordinate )const{
-        int realX = (coordinate.x - m_min.x)/(m_max.x-m_min.x) * tile.cols;
-        int realY = (coordinate.y - m_min.y)/(m_max.y-m_min.y) * tile.rows;
+        int realX = math_round((coordinate.x - m_min.x)/(m_max.x-m_min.x) * tile.cols);
+        int realY = math_round((1 - (coordinate.y - m_min.y)/(m_max.y-m_min.y)) * tile.rows);
         
         return cvGetPixel( tile, Point(realX, realY), 0 );
     }
