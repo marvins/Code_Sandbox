@@ -97,6 +97,26 @@ if( BUILD_GEO_META_PARSER )
 endif( BUILD_GEO_META_PARSER )
 
 
+########################################################
+#                 Geo_Convert Application              #
+########################################################
+option (BUILD_GEO_CONVERT  "Build the geo_convert" ON )
+if( BUILD_GEO_CONVERT )
+
+    # Create the geo_meta_parser binary
+    add_executable( geo_convert
+                    ${GEO_SOURCES} 
+                    ${PROJECT_SOURCE_DIR}/src/tools/geo_convert.cpp
+                )
+    target_link_libraries( geo_convert   ${LIBS} ${OpenCV_LIBS}  )
+    install (FILES "${PROJECT_BINARY_DIR}/geo_convert"   
+             PERMISSIONS WORLD_EXECUTE
+             DESTINATION bin )
+
+endif( BUILD_GEO_CONVERT )
+
+
+
 ########################################
 #        Unit Test Application         #
 ########################################

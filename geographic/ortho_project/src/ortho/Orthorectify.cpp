@@ -181,7 +181,7 @@ Mat orthorectify( Mat const& image, Options& options ){
     /**
      * Compute some focal length-based vectors
     */
-
+    
     // focal length ( input parameter )
     double focal_length = options.get_focal_length();
 
@@ -230,7 +230,7 @@ Mat orthorectify( Mat const& image, Options& options ){
     /**
      * Compute the location of the 4 camera corners in world coordinates
     */
-
+    
     // pixel coordinates
     Mat corner00_pixel = load_point(                0  ,                0  , 0 );
     Mat corner10_pixel = load_point( options.image.cols,                0  , 0 );
@@ -243,11 +243,19 @@ Mat orthorectify( Mat const& image, Options& options ){
     Mat corner01_world = convert_pixel2world( corner01_pixel, options.image.size(),  image_plane_size,  rotation_axis, focal_length, input_camera_position, earth_normal );
     Mat corner11_world = convert_pixel2world( corner11_pixel, options.image.size(),  image_plane_size,  rotation_axis, focal_length, input_camera_position, earth_normal );
     
+    cout << image_plane_size.width << ", " << image_plane_size.height << endl;
+    cout << "Rotation A: "; print_mat( rotation_axis.t() );
+    cout << "Focal Le: " << focal_length << endl;
+    cout << "Input Cam: "; print_mat( input_camera_position.t() );
+    cout << "Earth norm: "; print_mat( earth_normal.t() );
+    cout << "Pixel TL: "; print_mat( corner00_pixel.t());
+    cout << "World TL: "; print_mat( corner00_world.t() );
+    cin.get();
+
     /**
      * Convert the world coordinates into a image bounding box
     */
     Rect_<double> ground_bbox = compute_ground_bbox( corner00_world, corner01_world, corner10_world, corner11_world ); 
-    
     
     /** 
      * Create a simple polygon which we can use to test if points in the output image exist 

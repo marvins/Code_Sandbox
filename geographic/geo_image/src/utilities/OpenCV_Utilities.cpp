@@ -57,6 +57,7 @@ int cvDepthChannel2Type( const int Depth, const int Channels ){
     if( Depth == CV_32S && Channels == 3 ) return CV_32SC3;
     if( Depth == CV_32S && Channels == 2 ) return CV_32SC2;
     if( Depth == CV_32S && Channels == 1 ) return CV_32SC1;
+    if( Depth == CV_64F && Channels == 1 ) return CV_64FC1;
 
     throw string("Error: combo not supported");
 
@@ -74,6 +75,10 @@ std::string opencvType2string( const int& type ){
     if( type == CV_16UC1 ) return "CV_16UC1";
     if( type == CV_16UC2 ) return "CV_16UC2";
     if( type == CV_16UC3 ) return "CV_16UC3";
+    
+    if( type == CV_16SC1 ) return "CV_16SC1";
+    if( type == CV_16SC2 ) return "CV_16SC2";
+    if( type == CV_16SC3 ) return "CV_16SC3";
     
     if( type == CV_32SC1 ) return "CV_32SC1";
     if( type == CV_32SC2 ) return "CV_32SC2"; 
@@ -145,6 +150,9 @@ double cvGetPixel( cv::Mat const& image, cv::Point const&  pix, const int& chann
     
     if( image.type() == CV_16UC1 )
         return image.at<unsigned short>(pix);
+    
+    if( image.type() == CV_16SC1 )
+        return image.at<short>(pix);
     
     else
         throw string("ERROR: Unknown type");

@@ -110,7 +110,7 @@ int main( int argc, char* argv[] ){
             /*      RECTIFY run_type     */
             /*****************************/
             if( options.get_run_type() == "FULL" || options.get_run_type() == "RECTIFY" ){
-                    
+                
                 //rectify the image
                 Mat corrected_image = orthorectify( options.image, options );  
 
