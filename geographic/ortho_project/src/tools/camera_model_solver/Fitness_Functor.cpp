@@ -103,6 +103,10 @@ double convert_bits2double( vector<bool>const& genome, const int& start, const i
     return value;
 }
 
+Variables::Variables( ){
+
+
+}
 
 /**
  * This is the class which holds the required parameters for our class
@@ -119,11 +123,11 @@ Variables::Variables( vector<bool> const& genome, Point3f const& earth_point ){
       The following is our bit map which we will follow
      */
 
-    // focal_length: [min=-1, max=10, step=.01] , total length=log2(11*100)=11
+    // focal_length: [min=-1, max=2, step=.01] , total length=log2(3*100)=9
     start  = 0;
-    length = 11;
+    length = 9;
     step   = 0.01;
-    focal_length  = convert_bits2double( genome, start, length, step, -1, 10 );
+    focal_length  = convert_bits2double( genome, start, length, step, -1, 2 );
 
     // image plane.x: [min=0, max=2, step=0.01] , total length=2*100=log2(200)=8
     start  += length;
@@ -165,12 +169,14 @@ Variables::Variables( vector<bool> const& genome, Point3f const& earth_point ){
     camera_position.y = convert_bits2double( genome, start, length, step, -10000, 10000);
     
     start += length;
-    camera_position.z = convert_bits2double( genome, start, length, step, -10000, 10000);
+    length =14;
+    camera_position.z = convert_bits2double( genome, start, length, step, 0, 10000);
 
     camera_position += earth_point;
 
     total_length = start + length;
     
+    if( total_length != genome.size() )throw string( "ERROR: Sizes do not match");
 }
 
 void Variables::print( ostream& ostr )const{
@@ -221,6 +227,21 @@ double Fitness_Functor::operator()( std::vector<bool>const& genome )const{
 
     return -sum;
 }
+
+/**
+ * This is the main fitness function
+*/
+double Fitness_Functor::operator()( Variables const& vars )const{
+
+    // iterate through each pair of points, computing the sum of difference
+    double sum = 0;
+    for( size_t i=0; i<image_points.size(); i++ )
+        sum += pixel2world( image_points[i], earth_points[i], image_size, vars );
+    
+
+    return -sum;
+}
+
 
 void Fitness_Functor::print_vars( ostream& ostr, vector<bool>const& str )const{
 

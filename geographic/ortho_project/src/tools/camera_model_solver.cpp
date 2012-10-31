@@ -16,9 +16,9 @@ using namespace cv;
 using namespace std;
 
 
-const int     POPULATION_SIZE    = 100000;
+const int     POPULATION_SIZE    = 50000;
 const int     PRESERVATION_COUNT = 10;
-const double  SELECTION_RATE     = 0.6;
+const double  SELECTION_RATE     = 0.8;
 
 vector<Point> image_values;
 vector<Point3f> earth_values;
@@ -40,11 +40,10 @@ int main( int argc, char* argv[] ){
         // initialize the random number generator
         srand( time( NULL ) );
     
-    
         // parse the command line options
         point_filename = argv[1];
         //image_filename = argv[2];
-    
+        
         // load the test image
         //Mat image = imread( image_filename.c_str(), 0 );
 
@@ -53,7 +52,7 @@ int main( int argc, char* argv[] ){
     
         // create a fitness functor to store our evaluation methods
         Fitness_Functor fitness_functor( image_values, earth_values, Size(1000,1000) );
-
+        
         // initialize the Genetic Algorithm
         GA::GA genetic_algorithm( fitness_functor, MAX_GENOME_LENGTH, POPULATION_SIZE, PRESERVATION_COUNT, SELECTION_RATE );
     

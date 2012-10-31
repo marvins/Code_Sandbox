@@ -90,7 +90,7 @@ void GA::crossover( ){
 
     // for the remaining population items, minus the elites, choose pairs
     int num_items = population_size - elites.size();
-    for( int i=0; i<num_items; i++ ){
+    for( int i=0; i<num_items-5; i++ ){
         
         // choose first index
         int idxA = rand()%survivors.size();
@@ -102,6 +102,11 @@ void GA::crossover( ){
         population.push_back( pair<vector<bool>, double>( uniform_crossover( survivors[idxA].first, survivors[idxB].first  ), 0));
 
     }
+
+    // always add 5 random strings as well
+    for( int i=0; i<5; i++ )
+        population.push_back( pair<vector<bool>,double>( generate_genome(number_bits), 0));
+
     
     if( population.size() != population_size )
         throw string("ERROR: Sizes are not uniform");
@@ -134,6 +139,10 @@ void GA::print()const{
     ofstream fout;
     fout.open("best.txt");
     fitness_func.print_vars( fout, population[0].first);
+    fitness_func.print_vars( fout, population[1].first);
+    fitness_func.print_vars( fout, population[2].first);
+    fitness_func.print_vars( fout, population[3].first);
+    fitness_func.print_vars( fout, population[4].first);
     fitness_func.print_vars( cout, population[0].first);
     fout.close();
 }

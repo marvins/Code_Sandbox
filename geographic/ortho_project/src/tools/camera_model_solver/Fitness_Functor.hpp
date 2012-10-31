@@ -8,7 +8,7 @@
 #include <utility>
 #include <vector>
 
-const int MAX_GENOME_LENGTH=112;
+const int MAX_GENOME_LENGTH=109;
 
 int bits2int( std::vector<bool>const& genome, const int& start, const int& length );
 
@@ -23,6 +23,8 @@ class Variables{
 
     public:
         
+        Variables( );
+
         /** 
          * Constructor which converts the genome into parameters.
         */
@@ -66,6 +68,9 @@ class Fitness_Functor{
          * @param[in] genome Genome strain to test against.
         */
         double operator()( std::vector<bool>const& genome )const;
+        
+        
+        double operator()( Variables const& var )const;
         
         void print_vars( std::ostream& ostr, std::vector<bool>const& str )const;
 
