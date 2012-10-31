@@ -455,7 +455,7 @@ bool Camera::decompose_top_directories( ){
  * test case.  
 */
 void Camera::union_image_list( deque<ImageBundle>& image_list )const{
-    
+   
     //compare each list side-by-side until image list has been iterated
     deque<ImageBundle>::iterator itA = image_list.begin();
     deque<string>::const_iterator itB = current_image_list.begin();
@@ -471,9 +471,13 @@ void Camera::union_image_list( deque<ImageBundle>& image_list )const{
         if( itB == current_image_list.end() ){
             while(itA != image_list.end() ){
                 itA = image_list.erase(itA);
+                break;
             }
+            //check if the list is now empty
+            if( current_image_list.size() <= 0 || image_list.size() <= 0 )
+                break;
         }
-
+        
         //compare each tacid
         result = TACID_scene_func()( TACID( itA->data[0], collect_type), TACID(*itB, collect_type) );
 
@@ -485,7 +489,7 @@ void Camera::union_image_list( deque<ImageBundle>& image_list )const{
             itB++;
             continue;
         }
-
+        
         //if itA is smaller, delete it
         if( result < 0 ){
             itA = image_list.erase( itA );
@@ -836,7 +840,7 @@ void normalize_cameras( deque<Camera>& cameras ){
  * Decompose and pull all image sets for the selected directory
 */
 deque<ImageBundle> decompose_top_camera_directories( deque<Camera>& cameras ){
-
+    
     //create output
     deque<ImageBundle> output;
     
@@ -852,7 +856,6 @@ deque<ImageBundle> decompose_top_camera_directories( deque<Camera>& cameras ){
     for( deque<string>::iterator it=imgList.begin(); it != imgList.end(); it++ )
         output.push_back( ImageBundle(*it, cameras[0].collect_type));
 
-    
     for( size_t i=1; i<cameras.size(); i++ )
         cameras[i].union_image_list( output );
 

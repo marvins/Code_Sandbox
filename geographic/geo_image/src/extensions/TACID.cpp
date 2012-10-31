@@ -45,8 +45,12 @@ namespace GS2{
     /** TACID Parameterized Constructor */
     TACID::TACID( std::string const& tacinput ){
 
+#if ( BOOST_VERSION / 1000 - 100 ) < 5
+        extension    = fs::path(tacinput).extension();
+#else
         extension    = fs::path(tacinput).extension().string();
-        dirname      = fs::path(tacinput).parent_path().string();
+#endif
+    dirname      = fs::path(tacinput).parent_path().string();
         string tacid = fs::basename(fs::path(tacinput));
         if( dirname != "" ) dirname += "/";
 

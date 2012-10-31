@@ -25,7 +25,7 @@ deque<ImageBundle> compute_image_bundles( deque<Camera>& cameras, Options const&
     /** Begin comparing directories */
     bool run_loop = true;
     while( run_loop == true ){
-        
+    
         //stop processing if any camera node is empty
         for( size_t i=0; i<cameras.size(); i++ ){
             if( cameras[i].empty_time_space() == true ){
