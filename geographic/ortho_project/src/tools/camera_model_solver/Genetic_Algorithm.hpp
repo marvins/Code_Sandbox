@@ -35,7 +35,8 @@ class GA{
          * Perform Mutation
         */
         void mutation( );
-
+        
+        double best_fitness()const;
 
         void print()const;
 

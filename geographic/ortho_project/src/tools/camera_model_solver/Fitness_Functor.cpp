@@ -9,6 +9,61 @@ using namespace cv;
 using namespace std;
 
 
+
+void printChars( ostream& ostr, int numCh, char chOut ){
+
+
+    // check for number of characters greater than zero
+    if( numCh > 0 ){
+
+        // output the character
+        ostr << chOut;
+
+        // repeat the process for the remaining characters
+        printChars( ostr, numCh - 1, chOut );
+       }
+}
+
+void printString( ostream& ostr, const string &stringVal, int blockSize, const string &justify )
+{
+    // initialize function/variables
+    const char SPACE = ' ';
+    int preSpace = 0, postSpace = 0;
+    int length = stringVal.length();
+
+    // check for right justification
+    if( justify == "RIGHT" )
+        // add front-end spaces
+        preSpace = blockSize - length;
+
+    // check for center justification
+    else if( justify == "CENTER" ){
+
+        // add spaces on both ends
+        preSpace = ( blockSize / 2 ) - ( length / 2 );
+        postSpace = blockSize - preSpace - length;
+    }
+
+    // otherwise, assume left justification
+    // default if not "RIGHT" or "CENTER"
+    else 
+       {
+        // add back-end spaces
+        postSpace = blockSize - length;
+       }
+
+    // print front-end spaces, if any
+    printChars( ostr, preSpace, SPACE );
+
+    // print the string
+    ostr << stringVal;
+
+    // print back-end spaces, if any
+    printChars( ostr, postSpace, SPACE );
+}
+
+
+
 double  pixel2world( Point const& pix, Point3f const& expected, Size const& image_size, Variables const& vars ){
 
 
@@ -72,6 +127,7 @@ double  pixel2world( Point const& pix, Point3f const& expected, Size const& imag
     /********************************************************************/
     Mat ground_coord = compute_plane_line_intersection( camera_position, plane_coord, earth_normal, expected_coord );
     
+
     Point3f result( ground_coord.at<double>(0,0),
                     ground_coord.at<double>(1,0),
                     ground_coord.at<double>(2,0));
@@ -123,29 +179,29 @@ Variables::Variables( vector<bool> const& genome, Point3f const& earth_point ){
       The following is our bit map which we will follow
      */
 
-    // focal_length: [min=-1, max=2, step=.01] , total length=log2(3*100)=9
+    // focal_length: [min=0.01, max=2, step=.01] , total length=log2(199)=8
     start  = 0;
-    length = 9;
+    length = 8;
     step   = 0.01;
-    focal_length  = convert_bits2double( genome, start, length, step, -1, 2 );
+    focal_length  = convert_bits2double( genome, start, length, step, 0.1, 2 );
 
-    // image plane.x: [min=0, max=2, step=0.01] , total length=2*100=log2(200)=8
+    // image plane.x: [min=0.01, max=2, step=0.01] , total length=2*100=log2(200)=8
     start  += length;
     length =  8;
     step   = 0.01;
-    image_plane.x = convert_bits2double( genome, start, length, step, 0, 2);
+    image_plane.x = convert_bits2double( genome, start, length, step, 0.01, 2);
     
-    // image plane.y: [min=0, max=2, step=0.01] , total length=2*100=log2(200)=8
+    // image plane.y: [min=0.01, max=2, step=0.01] , total length=2*100=log2(200)=8
     start += length;
     length = 8;
     step   = 0.01;
-    image_plane.y = convert_bits2double( genome, start, length, step, 0, 2);
+    image_plane.y = convert_bits2double( genome, start, length, step, 0.01, 2);
     
-    // rotation angle: [min=0, max=359.99, step=0.01], total length=log2(360*100-1)=16
+    // rotation angle: [min=0, max=3.1415, step=0.0001], total length=log2(31415)=16
     start += length;
-    length = 16;
-    step   = 0.01;
-    rotation_angle = convert_bits2double( genome, start, length, step, 0, 359.99);
+    length = 15;
+    step   = 0.0001;
+    rotation_angle = convert_bits2double( genome, start, length, step, 0, 3.1415);
     
     // rotation axis x: [min=-1, max=1, step=0.01], total length=log2(1*100)=16
     // rotation axis y: [min=-1, max=1, step=0.01], total length=log2(1*100)=16
@@ -158,6 +214,9 @@ Variables::Variables( vector<bool> const& genome, Point3f const& earth_point ){
     rotation_axis[1] = convert_bits2double( genome, start, length, step, -1, 1);
     start += length;
     rotation_axis[2] = convert_bits2double( genome, start, length, step, -1, 1);
+    
+    if( fabs(fabs(rotation_axis[0] - 0 ) + fabs( rotation_axis[1] - 0 ) + fabs( rotation_axis[2] - 0 )) < 0.001 )
+        rotation_axis[0] = 1; 
     
     // camera_position.x: [min=-10000,max=10000, step=1], total length=log2(20000)=15
     start += length;
@@ -176,7 +235,8 @@ Variables::Variables( vector<bool> const& genome, Point3f const& earth_point ){
 
     total_length = start + length;
     
-    if( total_length != genome.size() )throw string( "ERROR: Sizes do not match");
+    if( total_length != (int)genome.size() )throw string( "ERROR: Sizes do not match");
+
 }
 
 void Variables::print( ostream& ostr )const{
@@ -224,6 +284,7 @@ double Fitness_Functor::operator()( std::vector<bool>const& genome )const{
     for( size_t i=0; i<image_points.size(); i++ )
         sum += pixel2world( image_points[i], earth_points[i], image_size, vars );
     
+    sum = sum / (double)image_points.size();
 
     return -sum;
 }
@@ -238,6 +299,7 @@ double Fitness_Functor::operator()( Variables const& vars )const{
     for( size_t i=0; i<image_points.size(); i++ )
         sum += pixel2world( image_points[i], earth_points[i], image_size, vars );
     
+    sum = sum / (double)image_points.size();
 
     return -sum;
 }

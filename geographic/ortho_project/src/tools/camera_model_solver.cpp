@@ -16,8 +16,8 @@ using namespace cv;
 using namespace std;
 
 
-const int     POPULATION_SIZE    = 50000;
-const int     PRESERVATION_COUNT = 10;
+const int     POPULATION_SIZE    = 100000;
+const int     PRESERVATION_COUNT = 100;
 const double  SELECTION_RATE     = 0.8;
 
 vector<Point> image_values;
@@ -37,6 +37,8 @@ int main( int argc, char* argv[] ){
     
     try{
         
+        double threshold = -0.01;
+
         // initialize the random number generator
         srand( time( NULL ) );
     
@@ -50,9 +52,19 @@ int main( int argc, char* argv[] ){
         // load the point file
         parse_pointfile();
     
+        Variables vars;
+        vars.focal_length=1;
+        vars.image_plane = Point2f( 1, 1);
+        vars.rotation_angle = 0;
+        vars.rotation_axis.resize(3);
+        vars.rotation_axis[0] = 1;
+        vars.rotation_axis[1] = 0;
+        vars.rotation_axis[2] = 0;
+        vars.camera_position = Point3f(0,0,1000);
+        
         // create a fitness functor to store our evaluation methods
         Fitness_Functor fitness_functor( image_values, earth_values, Size(1000,1000) );
-        
+
         // initialize the Genetic Algorithm
         GA::GA genetic_algorithm( fitness_functor, MAX_GENOME_LENGTH, POPULATION_SIZE, PRESERVATION_COUNT, SELECTION_RATE );
     
@@ -62,6 +74,9 @@ int main( int argc, char* argv[] ){
             // selection
             genetic_algorithm.selection();
             genetic_algorithm.print();
+            
+            if( genetic_algorithm.best_fitness() > threshold )
+                break;
 
             // crossover
             genetic_algorithm.crossover();
@@ -78,6 +93,9 @@ int main( int argc, char* argv[] ){
             */
 
         }
+        
+        cout << "Optimized Result" << endl;
+        genetic_algorithm.print();
 
     } catch( string e ){
         cout << e << endl;

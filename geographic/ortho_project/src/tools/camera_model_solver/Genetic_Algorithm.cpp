@@ -5,6 +5,8 @@
 #include <fstream>
 #include <iostream>
 
+#include <GeoImage.hpp>
+
 using namespace std;
 
 namespace GA{
@@ -34,6 +36,49 @@ vector<bool> uniform_crossover( vector<bool>const& a, vector<bool>const& b ){
     return out;
 }
 
+
+vector<bool> single_point_crossover( vector<bool>const& a, vector<bool>const& b ){
+
+    if( a.size() != b.size() ) throw string("ERROR: both items are different sizes");
+    
+    vector<bool> out(a.size());
+    
+    //select a single index value to use as the pivot point
+    int idx = rand()%a.size();
+    for( size_t i=0; i<a.size(); i++ ){
+        
+        if( (int)i < idx )
+            out[i] = a[i];
+        else
+            out[i] = b[i];
+    }
+    
+    return out;
+}
+
+
+vector<bool> two_point_crossover( vector<bool>const& a, vector<bool>const& b ){
+
+    if( a.size() != b.size() ) throw string("ERROR: both items are different sizes");
+    
+    vector<bool> out(a.size());
+    
+    //select a single index value to use as the pivot point
+    int idxA = rand()%(a.size()-1);
+    int idxB = rand()%(a.size()-idxA);
+
+    for( size_t i=0; i<a.size(); i++ ){
+        
+        if( (int)i < idxA && (int)i < idxB)
+            out[i] = a[i];
+        else if( (int)i < idxB )
+            out[i] = b[i];
+        else
+            out[i] = a[i];
+    }
+    
+    return out;
+}
 
 GA::GA( const Fitness_Functor& fit_func, const int& num_bits, const int& pop_size, const int& preserve_cnt, const double& sel_rate ): 
     number_bits(num_bits), 
@@ -72,7 +117,7 @@ void GA::selection( ){
     for( size_t i=0; i<(population.size()*selection_rate); i++ ){
         
         // select a random index
-        int idx = rand()%population.size();
+        int idx = rand()%(int)(population.size()*selection_rate);
         survivors.push_back( population[idx] );
     }
 
@@ -81,7 +126,9 @@ void GA::selection( ){
 
 
 void GA::crossover( ){
-    
+   
+    int number_refresh = 100;
+
     // add the elites to the new population
     population.clear();
     for( size_t i=0; i<elites.size(); i++ )
@@ -90,7 +137,7 @@ void GA::crossover( ){
 
     // for the remaining population items, minus the elites, choose pairs
     int num_items = population_size - elites.size();
-    for( int i=0; i<num_items-10; i++ ){
+    for( int i=0; i<num_items-number_refresh; i++ ){
         
         // choose first index
         int idxA = rand()%survivors.size();
@@ -99,16 +146,16 @@ void GA::crossover( ){
         int idxB = rand()%survivors.size();
         
         // add the uniform cross
-        population.push_back( pair<vector<bool>, double>( uniform_crossover( survivors[idxA].first, survivors[idxB].first  ), 0));
+        population.push_back( pair<vector<bool>, double>( two_point_crossover( survivors[idxA].first, survivors[idxB].first  ), 0));
 
     }
 
     // always add 5 random strings as well
-    for( int i=0; i<10; i++ )
+    for( int i=0; i<number_refresh; i++ )
         population.push_back( pair<vector<bool>,double>( generate_genome(number_bits), 0));
 
     
-    if( population.size() != population_size )
+    if( (int)population.size() != population_size )
         throw string("ERROR: Sizes are not uniform");
 
 }
@@ -119,30 +166,48 @@ void GA::mutation( ){
     // perform random mutation
     for( size_t i=preservation_count; i<population.size(); i++ )
         for( size_t j=0; j<population[i].first.size(); j++ )
-            if( rand()%1000 > 5 )
+            if( rand()%1000 < 5 )
                 population[i].first[j] = (bool)((int)rand()%2);
 
 }
 
 
+double GA::best_fitness( )const{
+    return population[0].second;
+}
+
 void GA::print()const{
     
-    cout << endl << endl;
+    system("clear");
+    cout << "Current Genetic Algorithm Progress" << endl;
     cout << "---------------------------------------------------------------------------" << endl;
-    cout << "First 10 Strings" << endl;
-    for( int i=0; i<10; i++ ){
-        cout << "Item: " << population[i].second << ", Data: ";
+    cout << "First 20 of " << population.size() << " Strings" << endl;
+    for( int i=0; i<20; i++ ){
+        cout << "Fitness: ";
+        printString( cout, GEO::STR::num2str(population[i].second), 10, "LEFT");
+        cout << ", Genotype: ";
         for( size_t j=0; j<population[i].first.size(); j++ )
             cout << population[i].first[j];
         cout << endl;
     }
+    cout << endl;
+    cout << "---------------------------------------------------------------------------" << endl;
+    cout << population.size()-100 << " through " << population.size()-90 << " Strings" << endl;
+    for( int i=population.size()-100; i<population.size()-90; i++ ){
+        cout << "Fitness: ";
+        printString( cout, GEO::STR::num2str(population[i].second), 10, "LEFT");
+        cout << ", Genotype: ";
+        for( size_t j=0; j<population[i].first.size(); j++ )
+            cout << population[i].first[j];
+        cout << endl;
+    }
+    cout << endl;
+    cout << "Current Best Fit" << endl;
     ofstream fout;
     fout.open("best.txt");
-    fitness_func.print_vars( fout, population[0].first);
-    fitness_func.print_vars( fout, population[1].first);
-    fitness_func.print_vars( fout, population[2].first);
-    fitness_func.print_vars( fout, population[3].first);
-    fitness_func.print_vars( fout, population[4].first);
+    
+    for( size_t i=0; i<20; i++ )
+        fitness_func.print_vars( fout, population[i].first);
     fitness_func.print_vars( cout, population[0].first);
     fout.close();
 }

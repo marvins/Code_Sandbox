@@ -5,10 +5,14 @@
 
 #include <fstream>
 #include <iostream>
+#include <string>
 #include <utility>
 #include <vector>
 
-const int MAX_GENOME_LENGTH=109;
+void printChars( std::ostream& ostr, int numCh, char chOut );
+void printString( std::ostream& ostr, const std::string &stringVal, int blockSize, const std::string &justify );
+
+const int MAX_GENOME_LENGTH=107;
 
 int bits2int( std::vector<bool>const& genome, const int& start, const int& length );
 
