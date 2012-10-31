@@ -61,6 +61,7 @@ int main( int argc, char* argv[] ){
 
             // selection
             genetic_algorithm.selection();
+            genetic_algorithm.print();
 
             // crossover
             genetic_algorithm.crossover();
@@ -68,7 +69,6 @@ int main( int argc, char* argv[] ){
             // evolution
             genetic_algorithm.mutation();
         
-            genetic_algorithm.print();
             // check the fitness function
             /**
              * first query each data string

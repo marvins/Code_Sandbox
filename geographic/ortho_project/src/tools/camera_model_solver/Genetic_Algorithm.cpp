@@ -90,7 +90,7 @@ void GA::crossover( ){
 
     // for the remaining population items, minus the elites, choose pairs
     int num_items = population_size - elites.size();
-    for( int i=0; i<num_items-5; i++ ){
+    for( int i=0; i<num_items-10; i++ ){
         
         // choose first index
         int idxA = rand()%survivors.size();
@@ -104,7 +104,7 @@ void GA::crossover( ){
     }
 
     // always add 5 random strings as well
-    for( int i=0; i<5; i++ )
+    for( int i=0; i<10; i++ )
         population.push_back( pair<vector<bool>,double>( generate_genome(number_bits), 0));
 
     

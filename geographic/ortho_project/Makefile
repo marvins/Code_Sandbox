@@ -153,7 +153,7 @@ $(BUILD)/OrthoExceptions.o: $(CORE)/OrthoExceptions.cpp $(HEADERS)
 
 SOLVER_SRC=src/math/Quaternion.cpp src/math/Vector.cpp src/core/Utilities.cpp src/math/Geometry.cpp src/tools/camera_model_solver/*.cpp
 solver:
-	g++ src/tools/camera_model_solver.cpp $(SOLVER_SRC) $(LIBS) -lboost_filesystem $(FLAGS)
+	g++ src/tools/camera_model_solver.cpp $(SOLVER_SRC) $(LIBS) -lboost_filesystem -Wall -O3
 
 
 ####################################
