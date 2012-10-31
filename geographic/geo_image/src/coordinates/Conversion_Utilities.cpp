@@ -26,7 +26,6 @@ int compute_utm_zone( CoordinateLatLon const& coord, bool& isNorth ){
     return zone;
 }
 
-
 CoordinateLatLon convert_coordinate( CoordinateUTM const& coord ){
     
     // create a spatial reference object
@@ -51,10 +50,11 @@ CoordinateLatLon convert_coordinate( CoordinateUTM const& coord ){
     
     if( !poTransform->Transform( 1, &x, &y, &z ) )
         throw string("ERROR: transform failed");
+   
+    OCTDestroyCoordinateTransformation( poTransform );
 
     //create output coordinate
     return CoordinateLatLon( y, x, z, coord.datum );
-
 }
 
 
@@ -85,6 +85,8 @@ CoordinateUTM convert_coordinate( CoordinateLatLon const& coord ){
     
     if( !poTransform->Transform( 1, &x, &y, &z ) )
         throw string("ERROR: transform failed");
+    
+    OCTDestroyCoordinateTransformation( poTransform );
     
     return CoordinateUTM( zone, isNorth, x, y, z, coord.datum );
 

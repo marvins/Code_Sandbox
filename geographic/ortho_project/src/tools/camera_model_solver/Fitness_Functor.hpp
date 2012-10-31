@@ -9,13 +9,25 @@
 #include <utility>
 #include <vector>
 
+
+const int MAX_GENOME_LENGTH=104;
+
+
+/**
+ * String output utilities
+*/
 void printChars( std::ostream& ostr, int numCh, char chOut );
 void printString( std::ostream& ostr, const std::string &stringVal, int blockSize, const std::string &justify );
 
-const int MAX_GENOME_LENGTH=107;
 
+/**
+ * Convert a boolean array into an integer
+*/
 int bits2int( std::vector<bool>const& genome, const int& start, const int& length );
 
+/**
+ * Convert a boolean array into a double
+*/
 double convert_bits2double( std::vector<bool>const& genome, const int& start, const int& length, 
                             const double& step, const double& _min, const double& _max );
 
@@ -32,7 +44,7 @@ class Variables{
         /** 
          * Constructor which converts the genome into parameters.
         */
-        Variables( std::vector<bool> const& genome, const cv::Point3f& earth_point );
+        Variables( std::vector<bool> const& genome, const cv::Point3f& camera_origin );
         
         /**
          * 
@@ -64,7 +76,8 @@ class Fitness_Functor{
         
         Fitness_Functor( const std::vector<cv::Point>&   img_pnts, 
                          const std::vector<cv::Point3f>& earth_pnts,
-                         const cv::Size& img_size );
+                         const cv::Size& img_size,
+                         const cv::Point3f& cam_origin );
         
         /**
          * Fitness Function
@@ -77,6 +90,11 @@ class Fitness_Functor{
         double operator()( Variables const& var )const;
         
         void print_vars( std::ostream& ostr, std::vector<bool>const& str )const;
+        
+        /** 
+         * Print the hard-coded values initialized
+        */
+        void print_config( std::ostream& ostr )const;
 
     private:
         
@@ -87,7 +105,10 @@ class Fitness_Functor{
         const std::vector<cv::Point3f> earth_points;
         
         /** This is the image size */
-        cv::Size image_size;
+        const cv::Size image_size;
+
+        /** This is the camera origin */
+        const cv::Point3f camera_origin;
 };
 
 

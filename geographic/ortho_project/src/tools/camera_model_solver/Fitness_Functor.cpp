@@ -64,8 +64,10 @@ void printString( ostream& ostr, const string &stringVal, int blockSize, const s
 
 
 
-double  pixel2world( Point const& pix, Point3f const& expected, Size const& image_size, Variables const& vars ){
-
+double  pixel2world( Point const& pix, Point3f const& _expected, Size const& image_size, Variables const& vars ){
+    
+    // convert all coordinates into UTM
+    GEO::CoordinateUTM cam_exp = GEO::convert_coordinate( GEO::CoordinateLatLon( _expected ));
 
     // convert each variable into a usable item
     Mat camera_position = load_point( vars.camera_position );
@@ -76,7 +78,7 @@ double  pixel2world( Point const& pix, Point3f const& expected, Size const& imag
     // set some given values
     Mat pixel_coord     = load_point( pix.x, pix.y, 0);
     Mat earth_normal    = load_vector(   0 ,    0 , 1);
-    Mat expected_coord  = load_point( expected.x, expected.y, expected.z);
+    Mat expected_coord  = load_point( cam_exp.easting, cam_exp.northing, cam_exp.elevation );
 
 
     ////////////////////////////////////////////////////////////////////////
@@ -132,6 +134,8 @@ double  pixel2world( Point const& pix, Point3f const& expected, Size const& imag
                     ground_coord.at<double>(1,0),
                     ground_coord.at<double>(2,0));
     
+    Point3f expected = cam_exp.toPoint3f( );
+    
     return norm( result - expected );
 
 }
@@ -167,9 +171,11 @@ Variables::Variables( ){
 /**
  * This is the class which holds the required parameters for our class
 */
-Variables::Variables( vector<bool> const& genome, Point3f const& earth_point ){
+Variables::Variables( vector<bool> const& genome, Point3f const& camera_origin ){
     
+    rotation_axis.clear();
     rotation_axis.resize(3);
+    
     total_length = 0;
     int start=0;
     int length=0;
@@ -178,13 +184,13 @@ Variables::Variables( vector<bool> const& genome, Point3f const& earth_point ){
     /** 
       The following is our bit map which we will follow
      */
-
-    // focal_length: [min=0.01, max=2, step=.01] , total length=log2(199)=8
+    
+    // focal_length: [min=0.01, max=3, step=.01] , total length=log2(199)=8
     start  = 0;
-    length = 8;
+    length = 7;
     step   = 0.01;
-    focal_length  = convert_bits2double( genome, start, length, step, 0.1, 2 );
-
+    focal_length  = convert_bits2double( genome, start, length, step, 0.1, 1.5 );
+    
     // image plane.x: [min=0.01, max=2, step=0.01] , total length=2*100=log2(200)=8
     start  += length;
     length =  8;
@@ -228,27 +234,34 @@ Variables::Variables( vector<bool> const& genome, Point3f const& earth_point ){
     camera_position.y = convert_bits2double( genome, start, length, step, -10000, 10000);
     
     start += length;
-    length =14;
-    camera_position.z = convert_bits2double( genome, start, length, step, 0, 10000);
+    length =12;
+    camera_position.z = convert_bits2double( genome, start, length, step, -2000, 2000);
 
-    camera_position += earth_point;
+    // convert the camera_origin to UTM
+    GEO::CoordinateUTM cam_orig = GEO::convert_coordinate( GEO::CoordinateLatLon( camera_origin ));
+    camera_position.x += cam_orig.easting;
+    camera_position.y += cam_orig.northing;
+    camera_position.z += cam_orig.elevation;
 
     total_length = start + length;
     
     if( total_length != (int)genome.size() )throw string( "ERROR: Sizes do not match");
-
+    
 }
 
 void Variables::print( ostream& ostr )const{
+    
+    // convert the camera position to lat lon
+    Point3f cam_pos = GEO::CoordinateLatLon( GEO::convert_coordinate( GEO::CoordinateUTM( 13, true, camera_position.x, camera_position.y, camera_position.z ))).toPoint3f();
 
-    ostr << "Variable Container" << endl;
+    ostr << "Current Camera Variables" << endl;
     ostr << "- Focal Length: " << focal_length   << endl;
     ostr << "- Image Plane : " << image_plane    << endl;
     ostr << "- Rotation Ang: " << rotation_angle << endl;
     ostr << "- Rotation_x  : " << rotation_axis[0] << endl;
     ostr << "- Rotation_y  : " << rotation_axis[1] << endl;
     ostr << "- Rotation_z  : " << rotation_axis[2] << endl;
-    ostr << "- Cam Position: " << camera_position << endl;
+    ostr << "- Cam Position: " << cam_pos << endl;
 
 }
 
@@ -264,8 +277,8 @@ bool Fitness_Func_Sort::operator()( pair<vector<bool>,double>const& a, pair<vect
 /**
  * Parameterized Constructor
 */
-Fitness_Functor::Fitness_Functor( const vector<Point>& image_pnts, const vector<Point3f>& earth_pnts, const Size& img_size ): 
-                                  image_points(image_pnts), earth_points(earth_pnts), image_size(img_size) {
+Fitness_Functor::Fitness_Functor( const vector<Point>& image_pnts, const vector<Point3f>& earth_pnts, const Size& img_size, const Point3f& cam_origin ): 
+                                  image_points(image_pnts), earth_points(earth_pnts), image_size(img_size), camera_origin( cam_origin)  {
 
 
 }
@@ -277,7 +290,7 @@ Fitness_Functor::Fitness_Functor( const vector<Point>& image_pnts, const vector<
 double Fitness_Functor::operator()( std::vector<bool>const& genome )const{
 
     //convert the boolean string into a useable class
-    Variables vars( genome, earth_points[0] );
+    Variables vars( genome, camera_origin );
     
     // iterate through each pair of points, computing the sum of difference
     double sum = 0;
@@ -307,6 +320,18 @@ double Fitness_Functor::operator()( Variables const& vars )const{
 
 void Fitness_Functor::print_vars( ostream& ostr, vector<bool>const& str )const{
 
-    Variables( str, earth_points[0] ).print( ostr );
+    Variables( str, camera_origin ).print( ostr );
+}
+
+
+void Fitness_Functor::print_config( ostream& ostr )const{
+
+    ostr << "Fitness Functor Configuration" << endl;
+    ostr << " - Camera Origin: " << camera_origin << endl;
+    ostr << " - Image Size: " << image_size.width << ", " << image_size.height << endl;
+    ostr << " - Coordinates" << endl;
+    for( size_t i=0; i<earth_points.size(); i++ )
+        ostr << "      " << image_points[i] << " -> " << earth_points[i] << endl;
+
 }
 

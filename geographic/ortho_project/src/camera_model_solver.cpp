@@ -7,8 +7,8 @@
 #include <string>
 #include <vector>
 
-#include "camera_model_solver/Fitness_Functor.hpp"
-#include "camera_model_solver/Genetic_Algorithm.hpp"
+#include "tools/camera_model_solver/Fitness_Functor.hpp"
+#include "tools/camera_model_solver/Genetic_Algorithm.hpp"
 
 #include <GeoImage.hpp>
 
@@ -16,11 +16,12 @@ using namespace cv;
 using namespace std;
 
 
-const int     POPULATION_SIZE    = 100000;
+const int     POPULATION_SIZE    = 10000;
 const int     PRESERVATION_COUNT = 100;
 const double  SELECTION_RATE     = 0.8;
 
-vector<Point> image_values;
+Point3f         camera_origin;
+vector<Point>   image_values;
 vector<Point3f> earth_values;
 
 string point_filename;
@@ -44,27 +45,18 @@ int main( int argc, char* argv[] ){
     
         // parse the command line options
         point_filename = argv[1];
-        //image_filename = argv[2];
+        image_filename = argv[2];
         
         // load the test image
-        //Mat image = imread( image_filename.c_str(), 0 );
+        Mat image = imread( image_filename.c_str(), 0 );
+        global_image_size = image.size();
 
         // load the point file
         parse_pointfile();
     
-        Variables vars;
-        vars.focal_length=1;
-        vars.image_plane = Point2f( 1, 1);
-        vars.rotation_angle = 0;
-        vars.rotation_axis.resize(3);
-        vars.rotation_axis[0] = 1;
-        vars.rotation_axis[1] = 0;
-        vars.rotation_axis[2] = 0;
-        vars.camera_position = Point3f(0,0,1000);
-        
         // create a fitness functor to store our evaluation methods
-        Fitness_Functor fitness_functor( image_values, earth_values, Size(1000,1000) );
-
+        Fitness_Functor fitness_functor( image_values, earth_values, global_image_size, camera_origin );
+        
         // initialize the Genetic Algorithm
         GA::GA genetic_algorithm( fitness_functor, MAX_GENOME_LENGTH, POPULATION_SIZE, PRESERVATION_COUNT, SELECTION_RATE );
     
@@ -74,7 +66,7 @@ int main( int argc, char* argv[] ){
             // selection
             genetic_algorithm.selection();
             genetic_algorithm.print();
-            
+                
             if( genetic_algorithm.best_fitness() > threshold )
                 break;
 
@@ -117,23 +109,63 @@ void parse_pointfile( ){
     while( !fin.eof() ){
 
         // check for tag
-        if( line.substr(0,6) == "POINT:"){
+        if( line.substr(0,7) == "ORIGIN:" ){
+
+            // remove tag
+            line = GEO::STR::string_trim(line.substr(7));
+            
+            // parse 
+            vector<string> items = GEO::STR::string_split(line, ", ");
+            for( int i=0; i<(int)items.size(); i++ ){
+                items[i] = GEO::STR::string_trim(items[i]);
+                if( items[i].size() <= 0 ){
+                    items.erase(items.begin()+i);
+                    i--;
+                }
+            }
+
+            // quick sanity check
+            if( items.size() != 3 )
+                throw string("ERROR: Point file has incorrectly formatted camera origin entry");
+
+            // load the camera origin object
+            camera_origin.x = GEO::STR::str2num<double>(items[1]);
+            camera_origin.y = GEO::STR::str2num<double>(items[0]);
+            camera_origin.z = GEO::STR::str2num<double>(items[2]);
+
+        }
+        else if( line.substr(0,6) == "POINT:"){
             
             // remove tag
-            line = line.substr(6);
+            line = GEO::STR::string_trim(line.substr(6));
             
+            //check for image values
+            if( line.substr(0,4) != "IMG=" ) throw string("ERROR: Point has incorrectly formatted IMG entry");
+            line = GEO::STR::string_trim(line.substr(4));
+
             // parse values
-            vector<string> items = GEO::STR::string_split(GEO::STR::string_trim(line), ", ");
+            vector<string> items = GEO::STR::string_split(GEO::STR::string_trim(line), " ,=");
+            for( int i=0; i<(int)items.size(); i++ ){
+                items[i] = GEO::STR::string_trim(items[i]);
+                if( items[i].size() <= 0 ){
+                    items.erase(items.begin()+i);
+                    i--;
+                }
+            }
             
+            if( items[2] != "WORLD" ) throw string("ERROR: Point has incorrectly formatted WORLD entry");  
+
+            // convert the strings to numbers
             Point tmpPnt;
             Point3f tmpPnt3;
 
             tmpPnt.x = GEO::STR::str2num<int>(GEO::STR::string_trim(items[0]));
             tmpPnt.y = GEO::STR::str2num<int>(GEO::STR::string_trim(items[1]));
-            tmpPnt3.y = GEO::STR::str2num<double>(GEO::STR::string_trim(items[2]));
-            tmpPnt3.x = GEO::STR::str2num<double>(GEO::STR::string_trim(items[3]));
-            tmpPnt3.z = GEO::STR::str2num<double>(GEO::STR::string_trim(items[4]));
+            tmpPnt3.y = GEO::STR::str2num<double>(GEO::STR::string_trim(items[3]));
+            tmpPnt3.x = GEO::STR::str2num<double>(GEO::STR::string_trim(items[4]));
+            tmpPnt3.z = GEO::STR::str2num<double>(GEO::STR::string_trim(items[5]));
             
+            // add to the point lists
             image_values.push_back( tmpPnt );
             earth_values.push_back( tmpPnt3 );
 
@@ -144,6 +176,7 @@ void parse_pointfile( ){
 
 
     fin.close();
+    
 
 }
 

@@ -42,6 +42,7 @@ LIBS = $(OPENCV) $(BOOST) $(GEOIMAGE) $(GDAL)
 INCL = $(OPENCV_INCLUDE) $(BOOST_INCLUDE) $(GEOIMAGE_INCLUDE) $(GDAL_INCLUDE)
 
 EXEC = $(BIN)/orthoproject
+TOOL = $(BIN)/camera_model_solver
 
 CPP=g++
 FLAGS = -Wall -g
@@ -151,9 +152,11 @@ $(BUILD)/OrthoExceptions.o: $(CORE)/OrthoExceptions.cpp $(HEADERS)
 	$(CPP) $< -c -o $@ $(INCL) $(FLAGS)
 
 
+tools: $(TOOL)
+
 SOLVER_SRC=src/math/Quaternion.cpp src/math/Vector.cpp src/core/Utilities.cpp src/math/Geometry.cpp src/tools/camera_model_solver/*.cpp
-solver:
-	g++ src/tools/camera_model_solver.cpp $(SOLVER_SRC) $(LIBS) -lboost_filesystem -Wall -O3
+$(TOOL): src/camera_model_solver.cpp $(SOLVER_SRC) $(HEADERS)
+	g++ $< $(SOLVER_SRC) -o $@ $(LIBS) -lboost_filesystem -Wall -O3
 
 
 ####################################

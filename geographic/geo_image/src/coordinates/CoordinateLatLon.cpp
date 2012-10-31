@@ -43,6 +43,19 @@ CoordinateLatLon::CoordinateLatLon( const Point2f& coord, const double& _elevati
 
 }
 
+/**
+ * Constructor for decimal degrees.  Z is the elevation
+*/
+CoordinateLatLon::CoordinateLatLon( const cv::Point3f& coord, std::string const& _datum ){
+
+    lat = coord.y;
+    lon = coord.x;
+    elevation = coord.z;
+    
+    datum = _datum;
+}
+
+
 CoordinateLatLon::CoordinateLatLon( const int& latDeg, const double& latMin, 
                                     const int& lonDeg, const double& lonMin,
                                     const double& _elevation,
@@ -98,6 +111,11 @@ std::string CoordinateLatLon::toString()const{
 cv::Point2f CoordinateLatLon::toPoint2f( )const{
     return Point2f( lon, lat );
 }
+
+cv::Point3f CoordinateLatLon::toPoint3f( )const{
+    return Point3f( lon, lat, elevation );
+}
+
 
 #endif
 

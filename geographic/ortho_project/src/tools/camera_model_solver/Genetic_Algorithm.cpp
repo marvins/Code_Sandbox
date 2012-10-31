@@ -133,10 +133,10 @@ void GA::crossover( ){
     population.clear();
     for( size_t i=0; i<elites.size(); i++ )
         population.push_back( elites[i] );
-
+    elites.clear();
 
     // for the remaining population items, minus the elites, choose pairs
-    int num_items = population_size - elites.size();
+    int num_items = population_size - preservation_count;;
     for( int i=0; i<num_items-number_refresh; i++ ){
         
         // choose first index
@@ -193,7 +193,7 @@ void GA::print()const{
     cout << endl;
     cout << "---------------------------------------------------------------------------" << endl;
     cout << population.size()-100 << " through " << population.size()-90 << " Strings" << endl;
-    for( int i=population.size()-100; i<population.size()-90; i++ ){
+    for( int i=population.size()-100; i<(int)population.size()-90; i++ ){
         cout << "Fitness: ";
         printString( cout, GEO::STR::num2str(population[i].second), 10, "LEFT");
         cout << ", Genotype: ";

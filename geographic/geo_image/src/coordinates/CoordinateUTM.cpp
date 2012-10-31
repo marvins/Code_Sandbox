@@ -2,6 +2,7 @@
 
 #include "../utilities/String_Utilities.hpp"
 
+using namespace cv;
 using namespace std;
 
 namespace GEO{
@@ -29,6 +30,10 @@ CoordinateUTM::CoordinateUTM( const int& _zone, const bool& _isNorth, const doub
     datum = "WGS84";
 }
 
+
+Point3f CoordinateUTM::toPoint3f( )const{
+    return Point3f( easting, northing, elevation );
+}
 
 string CoordinateUTM::toString()const{
 

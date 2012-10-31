@@ -43,6 +43,13 @@ class CoordinateLatLon{
         CoordinateLatLon( const cv::Point2f& coord, const double& _elevation, std::string const& dat = "WGS84" );
         
         /**
+         * OpenCV Point Constructor
+         *
+         * @param[in] coord OpenCV Coordinate
+        */
+        CoordinateLatLon( const cv::Point3f& coord, std::string const& dat = "WGS84" );
+        
+        /**
          * Lat Lon Coordinate in Degree, Minutes Format
          *
          * @param[in] latDeg Latitude Degree Component
@@ -80,9 +87,14 @@ class CoordinateLatLon{
 #if USE_OPENCV == 1
 
         /**
-         * Convert the Coordinate into an OpenCV String
+         * Convert the Coordinate into an OpenCV Point
         */
         cv::Point2f toPoint2f( )const;
+
+        /**
+         * Convert the Coordinate into an OpenCV Point
+        */
+        cv::Point3f toPoint3f( )const;
 #endif
 
         double lat;        /*< Latitude               */
