@@ -106,8 +106,16 @@ void Options::load_camera_parameters_file( ){
     if( found == false )
         throw ParserTagNotFoundException("CAMERA_WORLD_POSITION", run_type, __FILE__, __LINE__ );
 
+    // create a geographic coordinate to contain this object
+    GEO::CoordinateLatLon tempPnt( position[0], position[1], position[2] );
+
+    // convert this to utm
+    GEO::CoordinateUTM tempUTMPnt = GEO::convert_coordinate( tempPnt );
+
     //set the camera position
-    Position_i = load_point( position );
+    zone    = tempUTMPnt.zone;
+    isNorth = tempUTMPnt.isNorth;
+    Position_i = load_point( tempUTMPnt.easting, tempUTMPnt.northing, tempUTMPnt.elevation );
 
 
 }

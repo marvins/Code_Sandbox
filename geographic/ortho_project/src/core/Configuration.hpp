@@ -123,7 +123,7 @@ class Options{
         cv::Mat image; /*< Image being used */
         GEO::DEM dem;   /*< DEM Image being used */
         double max_elevation;
-        cv::Point2f maxDem, minDem;
+        GEO::CoordinateUTM  maxDem, minDem;
 
         Logger logger; /*< Logger */
         
@@ -193,6 +193,8 @@ class Options{
         std::string rectify_image_type; /*< Rectify Image Type */
         std::string rectify_corrected_filename;  
 
+        bool isNorth;
+        int  zone;
 
         double focal_length;    /*< Camera Focal Length */
 

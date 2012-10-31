@@ -3,11 +3,15 @@
 
 #include <sstream>
 #include <string>
+#include <vector>
 
 namespace GEO{
 namespace STR{
 
 std::string string_trim( std::string const& in );
+
+std::vector<std::string> string_split( std::string const& original, std::string const& pattern );
+
 
 template <typename TP>
 TP str2num( std::string const& in ){

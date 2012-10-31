@@ -150,7 +150,7 @@ int main( int argc, char* argv[] ){
             
             // pull out opencv mat
             Mat image = geoimage.get_image(CV_8UC3);
-        
+            
             // write to output
             imwrite( options.output_filename, image );
         }

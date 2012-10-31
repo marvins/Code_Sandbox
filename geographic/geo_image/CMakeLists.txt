@@ -100,7 +100,9 @@ if( BUILD_GEO_META_PARSER )
                     ${PROJECT_SOURCE_DIR}/src/tools/geo_meta_parser/utilities.cpp
                 )
     target_link_libraries( geo_meta_parser   ${LIBS} ${OpenCV_LIBS}  )
-    install (FILES "${PROJECT_BINARY_DIR}/geo_meta_parser"       DESTINATION bin )
+    install (FILES "${PROJECT_BINARY_DIR}/geo_meta_parser"       
+             PERMISSIONS WORLD_EXECUTE
+             DESTINATION bin )
 
 endif( BUILD_GEO_META_PARSER )
 

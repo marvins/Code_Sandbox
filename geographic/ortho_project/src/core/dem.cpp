@@ -94,7 +94,7 @@ bool dem_correction( Mat& world_position, const double& gsd, Options& options, c
 
             //increment and decrement by gsd
             Point3f tpnt( pnt1.x + (x*gsd), pnt1.y + (y*gsd), 
-                         options.dem.query_elevation( Point2f( pnt1.x + (x*gsd), pnt1.y + (y*gsd)) ));
+                         options.dem.query_elevation( GEO::convert_coordinate( GEO::CoordinateUTM( options.minDem.zone, options.minDem.isNorth, pnt1.x + (x*gsd), pnt1.y + (y*gsd)) )));
 
             //add point to set
             pntList.push_back( tpnt );

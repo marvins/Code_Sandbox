@@ -25,7 +25,7 @@ BOOST         = $(BOOST_INCLUDE) $(BOOST_LIBS)
 ####################
 #       GDAL       #
 ####################
-GDAL_LIBS       = -lgdal
+GDAL_LIBS       = -L/usr/lib -lgdal
 GDAL_INCLUDE    = -I/usr/include/gdal
 GDAL            = $(GDAL_INCLUDE) $(GDAL_LIBS)
 
@@ -149,6 +149,12 @@ $(BUILD)/Logger.o: $(CORE)/Logger.cpp $(HEADERS)
 # OrthoExceptions
 $(BUILD)/OrthoExceptions.o: $(CORE)/OrthoExceptions.cpp $(HEADERS)
 	$(CPP) $< -c -o $@ $(INCL) $(FLAGS)
+
+
+SOLVER_SRC=src/math/Quaternion.cpp src/math/Vector.cpp src/core/Utilities.cpp src/math/Geometry.cpp src/tools/camera_model_solver/*.cpp
+solver:
+	g++ src/tools/camera_model_solver.cpp $(SOLVER_SRC) $(LIBS) -lboost_filesystem $(FLAGS)
+
 
 ####################################
 #       UNIT TEST FRAMEWORK        #

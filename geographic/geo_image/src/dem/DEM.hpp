@@ -7,8 +7,10 @@
 
 #ifdef DEPLOYED
 #include <geoimage/core/Enumerations.hpp>
+#include <geoimage/coordinates/CoordinateLatLon.hpp>
 #else
 #include "../core/Enumerations.hpp"
+#include "../coordinates/CoordinateLatLon.hpp"
 #endif
 
 namespace GEO{
@@ -73,6 +75,7 @@ class DEM{
 
         // return the specific elevation
         double query_elevation( const cv::Point2f& location )const;
+        double query_elevation( const GEO::CoordinateLatLon& coord )const;
         
         //double get_elevation()const;
 

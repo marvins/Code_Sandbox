@@ -219,7 +219,16 @@ namespace GEO{
         
         return cvGetPixel( tile, Point(realX, realY), 0 );
     }
-
+    
+    /**
+     * Same as before, but with a LatLon Coordinate
+    */
+    double DEM::query_elevation( const CoordinateLatLon& coordinate )const{
+        int realX = math_round((coordinate.lon - m_min.x)/(m_max.x-m_min.x) * tile.cols);
+        int realY = math_round((1 - (coordinate.lat - m_min.y)/(m_max.y-m_min.y)) * tile.rows);
+        
+        return cvGetPixel( tile, Point(realX, realY), 0 );
+    }
 
 /*
 Vec3b color_relief( double elevation, double minC, double maxC ){

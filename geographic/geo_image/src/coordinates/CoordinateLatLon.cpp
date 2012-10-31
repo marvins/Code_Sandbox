@@ -93,4 +93,12 @@ std::string CoordinateLatLon::toString()const{
 
 }
 
+#if USE_OPENCV == 1
+
+cv::Point2f CoordinateLatLon::toPoint2f( )const{
+    return Point2f( lon, lat );
+}
+
+#endif
+
 } //end of GEO namespace 

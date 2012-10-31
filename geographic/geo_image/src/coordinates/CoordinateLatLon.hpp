@@ -1,15 +1,20 @@
 #ifndef __SRC_COORDINATES_LATLONCOORD_H__
 #define __SRC_COORDINATES_LATLONCOORD_H__
 
-#include <opencv2/core/core.hpp>
-
 #include <string>
 
 #ifdef DEPLOYED
 #include <geoimage/coordinates/Datum.hpp>
+#include <geoimage/io/IO_Configuration.hpp>
 #else
 #include "Datum.hpp"
+#include "../io/IO_Configuration.hpp"
 #endif
+
+#if USE_OPENCV == 1
+#include <opencv2/core/core.hpp>
+#endif
+
 
 namespace GEO{
 
@@ -71,7 +76,14 @@ class CoordinateLatLon{
           * Convert the Coordinate into a readable string 
         */
         std::string toString()const;
+        
+#if USE_OPENCV == 1
 
+        /**
+         * Convert the Coordinate into an OpenCV String
+        */
+        cv::Point2f toPoint2f( )const;
+#endif
 
         double lat;        /*< Latitude               */
         double lon;        /*< Longitude              */
