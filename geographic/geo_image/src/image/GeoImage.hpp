@@ -141,8 +141,6 @@ class GeoImage{
 
 };
 
-//cv::Point2f getElevationMeters( cv::Point2f coordinate );
-
 } //end of GEO namespace 
 
 #endif

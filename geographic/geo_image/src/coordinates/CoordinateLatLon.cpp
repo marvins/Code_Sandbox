@@ -1,4 +1,4 @@
-#include "CoordinateLatLon.h"
+#include "CoordinateLatLon.hpp"
 
 #include <sstream>
 #include <string>
@@ -14,42 +14,77 @@ namespace GEO{
 CoordinateLatLon::CoordinateLatLon(){
     lat = 0;
     lon = 0;
-    datum = WGS84;
+    elevation = 0;
+    datum = "WGS84";
 }
 
-CoordinateLatLon::CoordinateLatLon( const double& latDD, const double& lonDD, const int& dat ){
+/**
+ * Constructor for Decimal Degree Computation
+*/
+CoordinateLatLon::CoordinateLatLon( const double& latDD, const double& lonDD, const double& _elevation, const string& _datum ){
 
     lat   = latDD;
     lon   = lonDD;
-    datum = dat;
+    elevation = _elevation;
+    datum = _datum;
 
 }
 
 
-CoordinateLatLon::CoordinateLatLon( const Point2f& coord, const int& dat ){
+/**
+ * Constructor for Decimal Degrees.  Note that the coord.x is lon and .y is lat.
+*/
+CoordinateLatLon::CoordinateLatLon( const Point2f& coord, const double& _elevation, const string& _datum ){
 
     lat   = coord.y;
     lon   = coord.x;
-    datum = dat;
+    elevation = _elevation;
+    datum = _datum;
 
 }
 
+/**
+ * Constructor for decimal degrees.  Z is the elevation
+*/
+CoordinateLatLon::CoordinateLatLon( const cv::Point3f& coord, std::string const& _datum ){
+
+    lat = coord.y;
+    lon = coord.x;
+    elevation = coord.z;
+    
+    datum = _datum;
+}
+
+
 CoordinateLatLon::CoordinateLatLon( const int& latDeg, const double& latMin, 
                                     const int& lonDeg, const double& lonMin,
-                                    const int& dat ){
+                                    const double& _elevation,
+                                    const string& _datum ){
 
-    datum = dat;
+    
+    elevation = _elevation;
+    datum = _datum;
         
     throw string("ERROR: Not Implemented");
 }
 
 CoordinateLatLon::CoordinateLatLon( const int& latDeg, const int&    latMin, const double& latSec,
                                     const int& lonDeg, const int&    lonMin, const double& lonSec,
-                                    const int& dat ){
+                                    const double& _elevation,
+                                    const string& _datum ){
 
-    datum = dat;
+    datum = _datum;
     
-    throw string("ERROR: Not Implemented");
+    if( latDeg >= 0 )
+        lat = latDeg + latMin/60.0 + latSec/3600.0;
+    else
+        lat = latDeg - latMin/60.0 - latSec/3600.0;
+    
+    if( lonDeg >= 0 )
+        lon = lonDeg + lonMin/60.0 + lonSec/3600.0;
+    else    
+        lon = lonDeg - lonMin/60.0 - lonSec/3600.0;
+
 }
 
 
@@ -66,9 +101,22 @@ std::string CoordinateLatLon::toString()const{
     sin << lon;
     sin >> slon;
     
-    string output = string("LatLon<") + slat + string(", ") + slon + string(", datum: ") + datum2string(datum) + string(" >");
+    string output = string("LatLon<") + slat + string(", ") + slon + string(", datum: ") + datum + string(" >");
     return output;
 
 }
+
+#if USE_OPENCV == 1
+
+cv::Point2f CoordinateLatLon::toPoint2f( )const{
+    return Point2f( lon, lat );
+}
+
+cv::Point3f CoordinateLatLon::toPoint3f( )const{
+    return Point3f( lon, lat, elevation );
+}
+
+
+#endif
 
 } //end of GEO namespace 

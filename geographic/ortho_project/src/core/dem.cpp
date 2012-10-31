@@ -48,10 +48,10 @@ class pnt_comp{
  * - Start at ground point and iterate to radius, searching for occlusions. 
  * 
 */
-void dem_correction( Mat& world_position, const double& gsd, Options& options, const Mat& minPnt, const Mat& maxPnt ){
+bool dem_correction( Mat& world_position, const double& gsd, Options& options, const Mat& minPnt, const Mat& maxPnt ){
    
     // return when in a live run
-    return;
+    return false;
 
     //compute the initial position
     Mat dnorm = options.Position_i - world_position;
@@ -94,7 +94,7 @@ void dem_correction( Mat& world_position, const double& gsd, Options& options, c
 
             //increment and decrement by gsd
             Point3f tpnt( pnt1.x + (x*gsd), pnt1.y + (y*gsd), 
-                         options.dem.query_elevation( Point2f( pnt1.x + (x*gsd), pnt1.y + (y*gsd)) ));
+                         options.dem.query_elevation( GEO::convert_coordinate( GEO::CoordinateUTM( options.minDem.zone, options.minDem.isNorth, pnt1.x + (x*gsd), pnt1.y + (y*gsd)) )));
 
             //add point to set
             pntList.push_back( tpnt );

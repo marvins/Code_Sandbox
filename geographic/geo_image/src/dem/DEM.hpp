@@ -5,6 +5,14 @@
 
 #include <string>
 
+#ifdef DEPLOYED
+#include <geoimage/core/Enumerations.hpp>
+#include <geoimage/coordinates/CoordinateLatLon.hpp>
+#else
+#include "../core/Enumerations.hpp"
+#include "../coordinates/CoordinateLatLon.hpp"
+#endif
+
 namespace GEO{
 
 /**
@@ -32,7 +40,6 @@ class DEM_Params{
 class DEM{
 
     public:
-        //DEM( double const& tl_lat, double const& tl_lon, double const& br_lat, double const& br_lon, DEM_Params const&  params );
         //DEM( cv::Point2f const& pnt, DEM_Params const& params );
         
         /**
@@ -48,6 +55,11 @@ class DEM{
          * @param[in] data DEM Data to set the tile to.
         */
         DEM( const cv::Point2f& _tl, const cv::Point2f& _br, const cv::Mat& data );
+        
+        /**
+         * Construct a DEM Model given the bounds as well as the parameters required to load data.
+        */
+        DEM( const cv::Point2f& _min, const cv::Point2f& _max, DEM_Params const& params );
 
         /**
          * DEM Destructor
@@ -58,11 +70,12 @@ class DEM{
         void set_tile( const cv::Mat& data );
     
         // return the max elevation
-        double max_elevation( double& lat, double& lon )const;
+        double max_elevation( cv::Point2f& coord )const;
         double max_elevation( )const;
 
         // return the specific elevation
         double query_elevation( const cv::Point2f& location )const;
+        double query_elevation( const GEO::CoordinateLatLon& coord )const;
         
         //double get_elevation()const;
 

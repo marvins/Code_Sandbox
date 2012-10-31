@@ -1,7 +1,12 @@
 #include "DEM.hpp"
 
+#include "../image/GeoImage.hpp"
+#include "../utilities/DEM_Utilities.hpp"
+#include "../utilities/File_Utilities.hpp"
+#include "../utilities/Math_Utilities.hpp"
 #include "../utilities/OpenCV_Utilities.hpp"
 
+#include <cmath>
 #include <iostream>
 #include <string>
 
@@ -41,32 +46,28 @@ namespace GEO{
 
     }
 
-    /*
     //DEM Constructor
-    DEM::DEM( double const& tl_lat, double const& tl_lon, 
-              double const& br_lat, double const& br_lon, 
+    DEM::DEM( Point2f const& _min, Point2f const& _max, 
               DEM_Params const& params ){
         
         /** need to start looking at how many files we need
          * 
          * 1.  DTED uses 1 deg x 1 deg grids
-         *
+         */
         double tempD;
         if( params.filetype == DTED ){
 
-
             //compute range
-            br.x = max( tl_lon, br_lon);  br.y = min( tl_lat, br_lat);  
-            tl.x = min( tl_lon, br_lon);  tl.y = max( tl_lat, br_lat);
-            
-            if( fabs(tl.x)-std::floor(fabs(tl.x)) < 0.00001 )
-                tl.x += 0.00001;
+            m_min = Point2f( std::min( _min.x, _max.x), std::min( _min.y, _max.y));
+            m_max = Point2f( std::max( _min.x, _max.x), std::max( _min.y, _max.y));
 
             //check to see if we have one file or multiple files
             //build list of images required
-            int lat_needed = 1 + fabs( std::floor(tl.y) - std::floor(br.y) );
-            int lon_needed = 1 + fabs( std::floor(tl.x) - std::floor(br.x) );
-            
+            int lat_needed = 1 + fabs( std::floor(m_max.y) - std::floor(m_min.y) );
+            int lon_needed = 1 + fabs( std::floor(m_max.x) - std::floor(m_min.x) );
+           
+            GEO::DTED_adjust_needed_tiles( lat_needed, lon_needed, m_min, m_max );
+
             //create 2d array of final images
             vector<vector<Mat> > image_set(lon_needed);
             for( int i=0; i<lon_needed; i++)
@@ -78,35 +79,30 @@ namespace GEO{
                 for( int i=0; i<lon_needed; i++ ){
                     
                     //compute the required filename
-                    string exp_filename = DTEDUtils::coordinate2filename( 
-                            /** Lat *std::floor(br.y)+(lat_needed - j - 1)+0.0001, 
-                            /** Lon *std::floor(tl.x)+(i)+0.0001 
+                    string exp_filename = DTED_coordinate2filename( 
+                            /** Lat */std::floor(m_min.y)+(lat_needed - j - 1)+0.0001, 
+                            /** Lon */std::floor(m_min.x)+(i)+0.0001 
                             );
                     
                     string act_filename = params.dted_root_dir + "/" + exp_filename;
                     
                     //make sure the filename exists
-                    if( bf::exists(bf::path(act_filename)) == false ){
+                    if( STR::file_exists(act_filename) == false ){
                         throw string("Error: File does not exist");
                     }
                     
                     //load crop
                     Mat subcrop = GEO::GeoImage( act_filename, true ).get_image();
                     
-                    //make sure that pixel type is proper
-                    if( subcrop.type() != CV_16SC1 )
-                        throw string("Image must be CV_16SC1" );
-                   
-                    
                     //get crop range
-                    pair<double,double> lat_ran( std::max( std::floor(tl.y-j), br.y ), std::min( std::ceil(tl.y-j), tl.y));
-                    pair<double,double> lon_ran( std::max( std::floor(tl.x+i), tl.x ), std::min( std::ceil(tl.x+i), br.x));
+                    pair<double,double> lat_ran( std::max( std::floor(m_min.y+j), m_min.y ), std::min( std::ceil(m_max.y-j), m_max.y));
+                    pair<double,double> lon_ran( std::max( std::floor(m_min.x+i), m_min.x ), std::min( std::ceil(m_max.x-i), m_max.x));
                     
-
                     //compute the percentage of the image you are using
                     pair<double,double> lat_pct( lat_ran.first - std::floor(lat_ran.first), 1 - (std::ceil(lat_ran.second) - lat_ran.second));
                     pair<double,double> lon_pct( lon_ran.first - std::floor(lon_ran.first), 1 - (std::ceil(lon_ran.second) - lon_ran.second));
-                  
+                    
+                    //since images have an inverse range, we need to flip values
                     tempD  = 1 - lat_pct.first;
                     lat_pct.first = 1 - lat_pct.second;
                     lat_pct.second= tempD;
@@ -143,84 +139,15 @@ namespace GEO{
                 }//end i
             }//end j
 
-            /** We have now compiled a list of required tiles 
-             *  - Now we need to merge them into a single image
-             *
+            // merge all bands
+            if( image_set.size() > 1 ) throw string("MULTI-BAND DTED NOT SUPPORTED YET");
+            if( image_set[0].size() > 1 ) throw string("MULTI-BAND DTED NOT SUPPORTED YET");
+            
+            tile = image_set[0][0];
 
-            //compute the expected width and height of the image
-            int final_x = 0;
-            int final_y = 0;
-            for( int i=0; i<lon_needed; i++ )
-                final_x += image_set[i][0].cols;
-            for( int i=0; i<lat_needed; i++ )
-                final_y += image_set[0][i].rows;
-        
-            //create final tile
-            tile = Mat( Size( final_x, final_y), image_set[0][0].type() );
-            tile = Scalar(0);
-
-            int cx = 0;
-            int cy = 0;
-
-            //start loading each image in image set into final tile
-            for( int i=0; i<(int)image_set.size(); i++){
-                cy = 0;
-                for( int j=0; j<(int)image_set[i].size(); j++){
-                    
-                    //iterate over specific image
-                    for( int x =0; x < image_set[i][j].cols; x++ ){
-                        for( int y =0; y < image_set[i][j].rows; y++ ){
-                            
-                            if( y+cy >= tile.rows ){ 
-                                cout << x << ", " << y << " vs " << cx << ", " << cy << endl;
-                                throw string("ROWS FAILED"); }
-                            if( x+cx >= tile.cols ){ 
-                                cout << x << ", " << y << " vs " << cx << ", " << cy << endl;
-                                throw string("COLS FAILED"); }
-
-                            if( image_set[0][0].type() == CV_16UC1 )
-                                tile.at<ushort>( y+cy, x+cx) = image_set[i][j].at<ushort>( y, x);
-                            else if( image_set[0][0].type() == CV_16SC1 )
-                                tile.at<short>(  y+cy, x+cx) = image_set[i][j].at<short>(  y, x);
-                            else
-                                throw string("ERROR: unsupported dem format");
-
-                        }}
-
-                    //update cx, cy
-                    cy += image_set[0][j].rows;
-                }
-                cx += image_set[i][0].cols;
-            }
-
-        }
-        else{
-            throw std::string("Error: unsupported DEM format");
-        }
-
+        }// end of dted module load
     }
 
-    DEM::DEM( cv::Point2f const& point, DEM_Params const& params ){
-
-        //compute the proper dted filename
-        string exp_filename = DTEDUtils::coordinate2filename( 
-                /** Lat *std::floor(point.y)+0.0001, 
-                /** Lon *std::floor(point.x)+0.0001 );
-        
-        //append the dted root directory
-        string act_filename = params.dted_root_dir + "/" + exp_filename;
-
-        //load the GeoImage
-        GEO::GeoImage gimg( act_filename, true );
-
-        //since we are dealing with DTED, we want 1 deg by 1 deg squares
-        int pctX = (     point.x - std::floor(point.x)) *3601;
-        int pctY = (1 - (point.y - std::floor(point.y)))*3601;
-        
-        current   = Point2f( pctX, pctY);
-        elevation = (gimg.get_image().at<short>(pctY, pctX));
-        
-    }
 
     /**
      * Destructor
@@ -251,7 +178,7 @@ namespace GEO{
      * in the tile.
      */
     double DEM::max_elevation( )const{
-
+        
         double _max = 0;
         for( size_t i=0; i<tile.cols; i++)
             for( size_t j=0; j<tile.rows; j++ )
@@ -265,7 +192,7 @@ namespace GEO{
      * Return the value and location of the highest elevation
      * in the tile.
      */
-    double DEM::max_elevation( double& lat, double& lon )const{
+    double DEM::max_elevation( cv::Point2f& coord )const{
 
         double _max = 0;
         int I = 0, J = 0;
@@ -276,8 +203,8 @@ namespace GEO{
                         I = i;
                         J = j;
                 }
-        lat = J;
-        lon = I;
+        coord.y = (1 - J/(double)tile.rows) * (m_max.y - m_min.y) + m_min.y;
+        coord.x = (I/(double)tile.cols) * (m_max.x - m_min.x) + m_min.x;
 
         return _max;
     }
@@ -286,16 +213,24 @@ namespace GEO{
     /** 
      * Return the elevation at the specified coordinate.
     */
-    double DEM::query_elevation( const Point2f& pix )const{
-        double realX = (pix.x - m_min.x)/(m_max.x-m_min.x) * ( m_max.x-m_min.x) + m_min.x;
-        double realY = (pix.y - m_min.y)/(m_max.y-m_min.y) * ( m_max.y-m_min.y) + m_min.y;
+    double DEM::query_elevation( const Point2f& coordinate )const{
+        int realX = math_round((coordinate.x - m_min.x)/(m_max.x-m_min.x) * tile.cols);
+        int realY = math_round((1 - (coordinate.y - m_min.y)/(m_max.y-m_min.y)) * tile.rows);
+        
+        return cvGetPixel( tile, Point(realX, realY), 0 );
     }
+    
+    /**
+     * Same as before, but with a LatLon Coordinate
+    */
+    double DEM::query_elevation( const CoordinateLatLon& coordinate )const{
+        int realX = math_round((coordinate.lon - m_min.x)/(m_max.x-m_min.x) * tile.cols);
+        int realY = math_round((1 - (coordinate.lat - m_min.y)/(m_max.y-m_min.y)) * tile.rows);
+        
+        return cvGetPixel( tile, Point(realX, realY), 0 );
+    }
+
 /*
-    double DEM::get_elevation()const{
-        return elevation;
-    }
-
-
 Vec3b color_relief( double elevation, double minC, double maxC ){
 
     double maxR = maxC;

@@ -398,6 +398,16 @@ namespace GEO{
 
     }
 
+    double GDAL2OpenCV( double const& val, const int cvtype, const int gdaltype ){
+        
+        if( cvtype == CV_8U && gdaltype == GDT_Byte ) return val;
+        if( cvtype == CV_8U && gdaltype == GDT_Int16 ) return val/16.0;
+        if( cvtype == CV_8U && gdaltype == GDT_UInt16 ) return val/16.0;
+        
+        else throw string("UNKNOWN TYPE");
+
+    }
+
     /**
      * Get the OpenCV Image Data.
     */
@@ -416,6 +426,8 @@ namespace GEO{
         
             //create objects
             GDALRasterBand *band = dataset->GetRasterBand(i + 1);
+
+            int datatype = band->GetRasterDataType();
 
             //load pixels
             double minP = 0;
@@ -438,9 +450,10 @@ namespace GEO{
                     if (pafScanline[c] < minP) {
                         minP = pafScanline[c];
                     }
-                
+                    
+                    double value = GDAL2OpenCV( pafScanline[c], layers[i].depth(), datatype );
                     // set the pixel value
-                    cvSetPixel( layers[i], Point(c,r), pafScanline[c] );
+                    cvSetPixel( layers[i], Point(c,r), value );
                 }
             
             }

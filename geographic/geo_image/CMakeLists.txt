@@ -68,9 +68,17 @@ endif( BUILD_UTILITY_MODULE )
 ####################################################
 option (BUILD_DEM_MODULE  "Build DEM Module" ON )
 
+####################################################
+#           COORDINATE Requirements                #
+####################################################
+option (BUILD_COORDINATE_MODULE  "Build COORDINATE Module" ON )
+
+
+
 #Include the source directory
 include_directories( "${PROJECT_SOURCE_DIR}/src" )
 add_subdirectory( src )
+
 
 
 
@@ -92,9 +100,31 @@ if( BUILD_GEO_META_PARSER )
                     ${PROJECT_SOURCE_DIR}/src/tools/geo_meta_parser/utilities.cpp
                 )
     target_link_libraries( geo_meta_parser   ${LIBS} ${OpenCV_LIBS}  )
-    install (FILES "${PROJECT_BINARY_DIR}/geo_meta_parser"       DESTINATION bin )
+    install (FILES "${PROJECT_BINARY_DIR}/geo_meta_parser"       
+             PERMISSIONS WORLD_EXECUTE
+             DESTINATION bin )
 
 endif( BUILD_GEO_META_PARSER )
+
+
+########################################################
+#                 Geo_Convert Application              #
+########################################################
+option (BUILD_GEO_CONVERT  "Build the geo_convert" ON )
+if( BUILD_GEO_CONVERT )
+
+    # Create the geo_meta_parser binary
+    add_executable( geo_convert
+                    ${GEO_SOURCES} 
+                    ${PROJECT_SOURCE_DIR}/src/tools/geo_convert.cpp
+                )
+    target_link_libraries( geo_convert   ${LIBS} ${OpenCV_LIBS}  )
+    install (FILES "${PROJECT_BINARY_DIR}/geo_convert"   
+             PERMISSIONS WORLD_EXECUTE
+             DESTINATION bin )
+
+endif( BUILD_GEO_CONVERT )
+
 
 
 ########################################

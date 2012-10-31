@@ -1,14 +1,16 @@
-#include "DTEDUtils.h"
+#include "DEM_Utilities.hpp"
 
 #include <cmath>
 #include <iostream>
 #include <sstream>
 
+
+using namespace cv;
 using namespace std;
 
 namespace GEO{
 
-std::string DTEDUtils::coordinate2filename( double const& lat, double const& lon ){
+std::string DTED_coordinate2filename( double const& lat, double const& lon ){
 
     int lowerLat = std::floor(lat);
     int lowerLon = std::floor(lon);
@@ -43,5 +45,18 @@ std::string DTEDUtils::coordinate2filename( double const& lat, double const& lon
     else                     spaceLon = "";
     return (lonH + spaceLon + slon + string("/") + latH + spaceLat+ slat + string(".dt2"));
 }
+
+
+void DTED_adjust_needed_tiles( int& lat_needed, int& lon_needed, const Point2f& _min, const Point2f& _max ){
+    
+    // 
+    double lon_range = _max.x - _min.x;
+    if( fabs( lon_range - lon_needed + 1 ) < 0.0001 && fabs( std::floor(_min.x) - _min.x) < 0.00001 ) lon_needed--;
+    
+    double lat_range = _max.y - _min.y;
+    if( fabs( lat_range - lat_needed + 1 ) < 0.0001 && fabs( std::floor(_min.y) - _min.y) < 0.00001 ) lat_needed--;
+
+}
+
 
 }///end of GEO namespace

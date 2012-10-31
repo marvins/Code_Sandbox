@@ -47,7 +47,16 @@ if( BUILD_IMAGE_MODULE )
 endif( BUILD_IMAGE_MODULE )
 
 
+############################################################
+#   Check whether or not we are using the IO Module
+if( BUILD_COORDINATE_MODULE )
+    add_subdirectory( coordinates )
+    include_directories( "${PROJECT_SOURCE_DIR}/src/coordinates"  )
+endif( BUILD_COORDINATE_MODULE )
 
-set( GEO_SOURCES ${GEO_SOURCES} ${DEM_SOURCES}  ${EXTENSION_SOURCES} ${IMAGE_SOURCES}  ${IO_SOURCES}  ${UTILITY_SOURCES}    PARENT_SCOPE )
+
+
+
+set( GEO_SOURCES ${GEO_SOURCES} ${DEM_SOURCES}  ${COORDINATE_SOURCES} ${EXTENSION_SOURCES} ${IMAGE_SOURCES}  ${IO_SOURCES}  ${UTILITY_SOURCES}    PARENT_SCOPE )
 
 

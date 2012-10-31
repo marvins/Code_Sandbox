@@ -9,6 +9,13 @@
 // version file
 #include <geoimage/core/GeoImage_Version.hpp>
 
+//COORDINATE Libraries
+#include <geoimage/coordinates/Datum.hpp>
+#include <geoimage/coordinates/CoordinateLatLon.hpp>
+#include <geoimage/coordinates/CoordinateUTM.hpp>
+#include <geoimage/coordinates/Conversion_Utilities.hpp>
+#include <geoimage/coordinates/Coordinate_Math.hpp>
+
 //CORE Libraries
 #include <geoimage/core/Enumerations.hpp>
 

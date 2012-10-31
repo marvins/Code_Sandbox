@@ -1,15 +1,24 @@
 #ifndef __SRC_COORDINATES_LATLONCOORD_H__
 #define __SRC_COORDINATES_LATLONCOORD_H__
 
-#include <opencv2/core/core.hpp>
-
 #include <string>
 
-#include "CoordinateBase.h"
+#ifdef DEPLOYED
+#include <geoimage/coordinates/Datum.hpp>
+#include <geoimage/io/IO_Configuration.hpp>
+#else
+#include "Datum.hpp"
+#include "../io/IO_Configuration.hpp"
+#endif
+
+#if USE_OPENCV == 1
+#include <opencv2/core/core.hpp>
+#endif
+
 
 namespace GEO{
 
-class CoordinateLatLon : public CoordinateBase {
+class CoordinateLatLon{
 
     public:
         
@@ -24,14 +33,21 @@ class CoordinateLatLon : public CoordinateBase {
          * @param[in] latDD Latitude  in Decimal Degree Format
          * @param[in] lonDD Longitude in Decimal Degree Format
         */
-        CoordinateLatLon( const double& latDD, const double& lonDD, int const& dat = WGS84 );
+        CoordinateLatLon( const double& latDD, const double& lonDD, const double& _elevation = 0, std::string const& dat = "WGS84" );
         
         /**
          * OpenCV Point Constructor 
          *
          * @param[in] coord OpenCV Coordinate
         */
-        CoordinateLatLon( const cv::Point2f& coord, int const& dat = WGS84 );
+        CoordinateLatLon( const cv::Point2f& coord, const double& _elevation, std::string const& dat = "WGS84" );
+        
+        /**
+         * OpenCV Point Constructor
+         *
+         * @param[in] coord OpenCV Coordinate
+        */
+        CoordinateLatLon( const cv::Point3f& coord, std::string const& dat = "WGS84" );
         
         /**
          * Lat Lon Coordinate in Degree, Minutes Format
@@ -43,7 +59,8 @@ class CoordinateLatLon : public CoordinateBase {
         */
         CoordinateLatLon( const int& latDeg, const double& latMin, 
                           const int& lonDeg, const double& lonMin,
-                          int const& dat = WGS84 );
+                          const double& _elevation = 0,
+                          std::string const& _datum = "WGS84" );
         
         /**
          * Lat Lon Coordinate in Degree, Minutes Format
@@ -57,7 +74,8 @@ class CoordinateLatLon : public CoordinateBase {
         */
         CoordinateLatLon( const int& latDeg, const int&  latMin, const double& latSec,
                           const int& lonDeg, const int&  lonMin, const double& lonSec,
-                          int const& dat = WGS84 );
+                          const double& _elevation = 0,
+                          std::string const& _datum = "WGS84" );
 
         
         
@@ -65,12 +83,25 @@ class CoordinateLatLon : public CoordinateBase {
           * Convert the Coordinate into a readable string 
         */
         std::string toString()const;
+        
+#if USE_OPENCV == 1
 
+        /**
+         * Convert the Coordinate into an OpenCV Point
+        */
+        cv::Point2f toPoint2f( )const;
 
-        double lat; /*< Latitude  */
-        double lon; /*< Longitude */
-        int  datum; /*< Datum     */
+        /**
+         * Convert the Coordinate into an OpenCV Point
+        */
+        cv::Point3f toPoint3f( )const;
+#endif
 
+        double lat;        /*< Latitude               */
+        double lon;        /*< Longitude              */
+        double elevation;  /*< Meters above sea level */
+        
+        std::string datum; /*< Datum     */
 };
 
 }// end of GEO namespace 

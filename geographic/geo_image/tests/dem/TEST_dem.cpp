@@ -21,7 +21,7 @@ using namespace std;
  * - PixelType
 */
 int TEST_dem_constructors( string& note );
-
+int TEST_dem_elevation_accuracy( string& note );
 
 /** DEM Module Unit Test Suite */
 void TEST_dem_module(){
@@ -35,6 +35,10 @@ void TEST_dem_module(){
     /** DEM Constructor     */
     result = TEST_dem_constructors( note );
     print_test_results( "DEM    Constructors", result, note );
+    
+    /** DEM Elevation Accuracy */
+    result = TEST_dem_elevation_accuracy( note );
+    print_test_results( "DEM    Elevation Accuracy", result, note );
 
     /** DEM Footer          */
     print_module_footer("DEM");   
@@ -66,15 +70,17 @@ int TEST_dem_constructors( string& note ){
 
     // create a series of DEM objects
     GEO::DEM dem01;
-    GEO::DEM dem02( Point2f(-500, -500), Point2f(500,500), timg01 );
-    GEO::DEM dem03( Point2f(-500, -500), Point2f(500,500), imread("tests/dem01.png",0));
+    GEO::DEM dem02( Point2f( -500, -500), Point2f( 500, 500), timg01 );
+    GEO::DEM dem03( Point2f( -500, -500), Point2f( 500, 500), imread("tests/dem01.png",0));
+    GEO::DEM dem04( Point2f( -120,   38), Point2f(-119, 39 ), GEO::DEM_Params( GEO::DTED, "data/dted" )); 
 
     // check for the tile size
     note = "Tile not correct size.";
     if( dem01.get_tile().cols != 0    || dem01.get_tile().rows != 0   ) return false;
     if( dem02.get_tile().cols != 100  || dem02.get_tile().rows != 100 ) return false;
     if( dem03.get_tile().cols != 1000 || dem03.get_tile().rows != 1000 ) return false;
-    
+    if( dem04.get_tile().cols != 3601 || dem04.get_tile().rows != 3601 ) return false;
+
     //check corners
     Point2f ne(  500,  500);
     Point2f nw( -500,  500);
@@ -86,15 +92,33 @@ int TEST_dem_constructors( string& note ){
     if( norm(dem02.nw() - nw ) > 0.001 ) return false;
     if( norm(dem02.se() - se ) > 0.001 ) return false;
     if( norm(dem02.sw() - sw ) > 0.001 ) return false;
+    if( norm(dem04.sw() - Point2f(-120,38)) > 0.0001 ) return false;
+    if( norm(dem04.ne() - Point2f(-119,39)) > 0.0001 ) return false;
 
-    //GEO::DEM dem_01( tl_lat, tl_lon, br_lat, br_lon, GEO::DEM_Params( GEO::DTED, "data/dted")); 
-    
-    //Mat tile01 = dem_01.get_raw();
-    
-    //double lat01, lon01;
-    //double elev = dem_01.max_elevation( lat01, lon01 );
-    
     note = "Successful Operation";
     return true;
 }
+
+
+int TEST_dem_elevation_accuracy( string& note ){
+
+    // Create the DEM objects
+    GEO::DEM dem04( Point2f(-119, 36), Point2f(-118, 37), GEO::DEM_Params( GEO::DTED, "data/dted" )); 
+    
+    // make sure the max elevation is expected
+    note = "Max Elevation is incorrect";
+    if( fabs( dem04.max_elevation() - 4412 ) > 0.001 ) return false; 
+    
+    // get the max elevation coordinate
+    Point2f max04;
+    if( fabs( dem04.max_elevation(max04) - 4412 ) > 0.001 ) return false; 
+    
+    // make sure the point gets the same value
+    note = "Query elevation failed to find the high pixel value";
+    if( fabs( dem04.query_elevation( max04 ) - 4412 ) > 0.0001 ) return false;
+
+    note = "Successful Operation";
+    return true;
+}
+
 

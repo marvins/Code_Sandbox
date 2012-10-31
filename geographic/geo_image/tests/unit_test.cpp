@@ -7,6 +7,7 @@
 
 #include <Logger.hpp>
 
+#include "coordinate/TEST_coordinate.hpp"
 #include "dem/TEST_dem.hpp"
 #include "image/TEST_image.hpp"
 
@@ -23,12 +24,15 @@ int main(int argc, char* argv[]) {
         // print header
         print_module_header("GeoImage Unit Test Framework");
         
+        // run the coordinate module
+        TEST_coordinate_module();
+        
         // run the image module
         TEST_image_module();
 
         // run the dem module
         TEST_dem_module();
-        
+
         // print footer
         print_module_footer("GeoImage Unit Test Framework");
     
