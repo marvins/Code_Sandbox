@@ -5,8 +5,6 @@
 #include "../../math/Geometry.hpp"
 #include "../../core/Utilities.hpp"
 
-#include <iostream>
-
 using namespace cv;
 using namespace std;
 
@@ -175,16 +173,16 @@ Variables::Variables( vector<bool> const& genome, Point3f const& earth_point ){
     
 }
 
-void Variables::print( )const{
+void Variables::print( ostream& ostr )const{
 
-    cout << "Variable Container" << endl;
-    cout << "- Focal Length: " << focal_length   << endl;
-    cout << "- Image Plane : " << image_plane    << endl;
-    cout << "- Rotation Ang: " << rotation_angle << endl;
-    cout << "- Rotation_x  : " << rotation_axis[0] << endl;
-    cout << "- Rotation_y  : " << rotation_axis[1] << endl;
-    cout << "- Rotation_z  : " << rotation_axis[2] << endl;
-    cout << "- Cam Position: " << camera_position << endl;
+    ostr << "Variable Container" << endl;
+    ostr << "- Focal Length: " << focal_length   << endl;
+    ostr << "- Image Plane : " << image_plane    << endl;
+    ostr << "- Rotation Ang: " << rotation_angle << endl;
+    ostr << "- Rotation_x  : " << rotation_axis[0] << endl;
+    ostr << "- Rotation_y  : " << rotation_axis[1] << endl;
+    ostr << "- Rotation_z  : " << rotation_axis[2] << endl;
+    ostr << "- Cam Position: " << camera_position << endl;
 
 }
 
@@ -221,8 +219,11 @@ double Fitness_Functor::operator()( std::vector<bool>const& genome )const{
         sum += pixel2world( image_points[i], earth_points[i], image_size, vars );
     
 
-
-
     return -sum;
+}
+
+void Fitness_Functor::print_vars( ostream& ostr, vector<bool>const& str )const{
+
+    Variables( str, earth_points[0] ).print( ostr );
 }
 

@@ -3,6 +3,8 @@
 
 #include <opencv2/core/core.hpp>
 
+#include <fstream>
+#include <iostream>
 #include <utility>
 #include <vector>
 
@@ -29,7 +31,7 @@ class Variables{
         /**
          * 
         */
-        void print( )const;
+        void print( std::ostream& ostr )const;
 
         
         int total_length;
@@ -64,6 +66,8 @@ class Fitness_Functor{
          * @param[in] genome Genome strain to test against.
         */
         double operator()( std::vector<bool>const& genome )const;
+        
+        void print_vars( std::ostream& ostr, std::vector<bool>const& str )const;
 
     private:
         

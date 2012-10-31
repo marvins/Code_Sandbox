@@ -16,8 +16,9 @@ using namespace cv;
 using namespace std;
 
 
-const int POPULATION_SIZE    = 100000;
-const int PRESERVATION_COUNT = 10;
+const int     POPULATION_SIZE    = 100000;
+const int     PRESERVATION_COUNT = 10;
+const double  SELECTION_RATE     = 0.6;
 
 vector<Point> image_values;
 vector<Point3f> earth_values;
@@ -34,55 +35,54 @@ void parse_pointfile( );
 
 int main( int argc, char* argv[] ){
     
-    // initialize the random number generator
-    srand( time( NULL ) );
-    
-    
-    // parse the command line options
-    point_filename = argv[1];
-    //image_filename = argv[2];
-    
-    // load the test image
-    //Mat image = imread( image_filename.c_str(), 0 );
-
-    // load the point file
-    parse_pointfile();
-    
-    // create a fitness functor to store our evaluation methods
-    Fitness_Functor fitness_functor( image_values, earth_values, Size(1000,1000) );
-
-    // initialize the Genetic Algorithm
-    GA::GA genetic_algorithm( fitness_functor, MAX_GENOME_LENGTH, POPULATION_SIZE, PRESERVATION_COUNT );
-    
-    // iterate until you have a solution
-    while( true ){
-
-        // selection
-        genetic_algorithm.selection();
-
-        genetic_algorithm.print();
-        cin.get();
+    try{
         
-        // crossover
-        //genetic_algorithm.crossover();
+        // initialize the random number generator
+        srand( time( NULL ) );
+    
+    
+        // parse the command line options
+        point_filename = argv[1];
+        //image_filename = argv[2];
+    
+        // load the test image
+        //Mat image = imread( image_filename.c_str(), 0 );
 
-        // evolution
-        //genetic_algorithm.evolution();
+        // load the point file
+        parse_pointfile();
+    
+        // create a fitness functor to store our evaluation methods
+        Fitness_Functor fitness_functor( image_values, earth_values, Size(1000,1000) );
+
+        // initialize the Genetic Algorithm
+        GA::GA genetic_algorithm( fitness_functor, MAX_GENOME_LENGTH, POPULATION_SIZE, PRESERVATION_COUNT, SELECTION_RATE );
+    
+        // iterate until you have a solution
+        for( int i=0; i<1000000; i++ ){
+
+            // selection
+            genetic_algorithm.selection();
+
+            // crossover
+            genetic_algorithm.crossover();
+
+            // evolution
+            genetic_algorithm.mutation();
         
-        // sort
-        //genetic_algorithm.sort( );
+            genetic_algorithm.print();
+            // check the fitness function
+            /**
+             * first query each data string
+             * - convert the data string into a variable object
+             * - evaluate the variable container against each input/output pair
+             * - 
+            */
 
-        // check the fitness function
-        /**
-         * first query each data string
-         * - convert the data string into a variable object
-         * - evaluate the variable container against each input/output pair
-         * - 
-        */
+        }
 
+    } catch( string e ){
+        cout << e << endl;
     }
-
-
 
     return 0;
 }
