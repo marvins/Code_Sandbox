@@ -267,8 +267,10 @@ namespace GEO{
         char ** tre_info = NULL;
     
         string tre_output = "";
-        return dataset->GetMetadataItem(TAG.c_str(), "TRE" );
-    
+        if( dataset->GetMetadataItem(TAG.c_str(), "TRE" ) != NULL )
+            return dataset->GetMetadataItem(TAG.c_str(), "TRE" );
+        else
+            return "";
     }
     
     string  GDALLoader::get_raw_tre()const{

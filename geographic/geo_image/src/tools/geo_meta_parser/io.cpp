@@ -38,6 +38,7 @@ void parse_metadata( Options const& options ){
     //print the primary header info
     cout << "Primary Image Header Metadata" << endl;
     print_header(cout, info);
+    info.clear();
     cout << endl;
 
     if( GEO::GS2::TACID::isValidTACID( options.filename ) ){
@@ -46,7 +47,7 @@ void parse_metadata( Options const& options ){
         cout << "GS2 TRE Header Metadata" << endl;
         info = GEO::GS2::parse_GS_header( options.filename, gdalloader );
         print_header( cout, info );
-        
+        info.clear();
         cout << endl;
 
         //extract the TACID
@@ -61,6 +62,7 @@ void parse_metadata( Options const& options ){
             info.push_back(out);
         }
         print_header( cout, info );
+        info.clear();
     }
     
 
