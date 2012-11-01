@@ -23,6 +23,7 @@
 #include <geoimage/dem/DEM.hpp>
 
 //EXTENSION Libraries
+#include <geoimage/extensions/GS_ICD_Reference.hpp>
 #include <geoimage/extensions/GS2_Header.hpp>
 #include <geoimage/extensions/TACID.hpp>
 

@@ -75,6 +75,8 @@ class GDALLoader : public GeoLoader {
          * Get Header TRE Metadata
         */
         std::string  get_header_tre()const;
+        std::string  get_header_tre( const std::string& tag )const;
+        std::string  get_raw_tre( )const;
 
         /**
          * Returns if data is opencv compatible

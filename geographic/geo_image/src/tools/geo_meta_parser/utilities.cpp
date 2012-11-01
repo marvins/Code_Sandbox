@@ -72,10 +72,10 @@ void process_arguments( vector<string>const& args, Options& options ){
 }
 
 
-void print_header( ostream& ostr, std::vector<std::pair<std::string,std::string> >const& data ){
+void print_header( ostream& ostr, std::vector<GEO::GS2::tre_tuple>const& data ){
 
     for( size_t i=0; i<data.size(); i++ )
-        ostr << data[i].first << "=" << data[i].second << endl;
+        ostr << data[i].fst << "=" << data[i].snd << endl;
 
 }
 

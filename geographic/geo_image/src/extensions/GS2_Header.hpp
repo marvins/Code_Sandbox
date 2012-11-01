@@ -3,7 +3,6 @@
 
 #include <string>
 #include <vector>
-#include <utility>
 
 //#include <opencv2/core/core.hpp>
 
@@ -13,32 +12,31 @@
 namespace GEO{
 namespace GS2{
 
-//std::string getAcftTailNumber( GEO::GeoImage const& img );
+template <typename TP1, typename TP2, typename TP3>
+class triple{
 
-//double getFocalLength( GEO::GeoImage const& img );
+    public:
+        
+        triple(){}
+        triple( TP1 const& a, TP2 const& b, TP3 const& c ):fst(a),snd(b),trd(c){}
 
-//cv::Mat getSensorPosition( GEO::GeoImage const& img );
+        TP1 fst;
+        TP2 snd;
+        TP3 trd;
+};
+
+typedef triple<std::string,std::string,std::string>  tre_tuple;
+
+
+/**
+ * Query a specific TRE string and extract all GS information
+*/
+std::vector<tre_tuple> parse_TRE_string( GDALLoader const& gimg, std::string const& TRE );
 
 /**
  * Query the GeoImage for any GS2-related header information
 */
-std::vector<std::pair<std::string,std::string> > query_GS2_metadata( const std::string& fname, GDALLoader const& gimg );
-
-/**
- * Parse the ACFTB Header
-*/
-std::vector<std::pair<std::string,std::string> > parse_ACFTB( const std::string& tre );
-
-/**
- * Parse the AIMIDB header
-*/
-std::vector<std::pair<std::string,std::string> > parse_AIMIDB( const std::string& tre );
-
-
-/**
- * Parse the BANDSB Header
-*/
-std::vector<std::pair<std::string,std::string> > parse_BANDSB( const std::string& tre );
+std::vector<tre_tuple> parse_GS_header( const std::string& fname, GDALLoader const& gimg );
 
 
 } // end of GS2 Namespace 

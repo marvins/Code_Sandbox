@@ -3,10 +3,9 @@
 
 #include <iostream>
 #include <string>
-#include <utility>
 #include <vector>
 
-
+#include "../../extensions/GS2_Header.hpp"
 
 /**
  * @class Options 
@@ -43,7 +42,7 @@ std::vector<std::string> args2vector( const int argc, char * argv[] );
 void process_arguments( std::vector<std::string>const& args, Options& options );
 
 
-void print_header( std::ostream& ostr, const std::vector<std::pair<std::string,std::string> >& data );
+void print_header( std::ostream& ostr, const std::vector<GEO::GS2::tre_tuple>& data );
 
 
 
