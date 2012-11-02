@@ -97,8 +97,8 @@ void usage( ){
     cout << "   Options:" << endl;
     cout << "       -h : help" << endl;
     cout << "       -i : force input as image" << endl;
-    cout << "       -d : Input is DEM  ) - Highly, highly recommended" << endl;
-    cout << "       -s : Scale image to dynamic range" << endl;
+    cout << "       -d : force input is DEM - highly recommended if using a dem" << endl;
+    cout << "       -s : Scale image to datatype range" << endl;
     cout << "       -H : Hillshade, use -min:<val> and -max:<val> to override area min and max for coloring." << endl;
 
 }
