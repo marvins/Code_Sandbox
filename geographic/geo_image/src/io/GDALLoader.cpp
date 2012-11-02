@@ -425,8 +425,10 @@ namespace GEO{
         if( cvtype == CV_16S && gdaltype == GDT_Int16 ) return val;
         if( cvtype == CV_16S && gdaltype == GDT_UInt16 ) return val;
         
+        if( cvtype == CV_64F && gdaltype == GDT_Byte   ) return val;///255.0;
+        if( cvtype == CV_64F && gdaltype == GDT_UInt16 ) return val;///65536.0;
+        if( cvtype == CV_64F && gdaltype == GDT_Int16 ) return val;///65536.0;
         
-        cout << opencvType2string( cvtype ) << endl;
         throw string("UNKNOWN TYPE");
 
     }

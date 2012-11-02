@@ -1,6 +1,7 @@
 
 #include "../image/GeoImage.hpp"
 #include "../utilities/File_Utilities.hpp"
+#include "../utilities/String_Utilities.hpp"
 
 #include <cstdlib>
 #include <iostream> 
@@ -28,6 +29,24 @@ class Options{
             
             for( size_t i=0; i<flags.size(); i++ )
                 if( flags[i] == flag ) return true;
+            return false;
+        }
+
+        bool has_min( double& _min )const{
+            for( size_t i=0; i<flags.size(); i++ )
+                if( flags[i].find("-min") != string::npos){
+                    _min = GEO::STR::str2num<double>(flags[i].substr(5));
+                    return true;
+                }
+            return false;
+        }
+        
+        bool has_max( double& _max )const{
+            for( size_t i=0; i<flags.size(); i++ )
+                if( flags[i].find("-max") != string::npos ){
+                    _max = GEO::STR::str2num<double>(flags[i].substr(5));
+                    return true;
+                }
             return false;
         }
 
@@ -80,7 +99,8 @@ void usage( ){
     cout << "       -i : force input as image" << endl;
     cout << "       -d : Input is DEM  ) - Highly, highly recommended" << endl;
     cout << "       -s : Scale image to dynamic range" << endl;
-    cout << "       -H : Hillshade) [ Use for DEM image ]" << endl;
+    cout << "       -H : Hillshade, use -min:<val> and -max:<val> to override area min and max for coloring." << endl;
+
 }
 
 /**
@@ -93,6 +113,8 @@ void error( string const& message ){
     exit(1);
 }
 
+
+Mat convert_to_hillshade( Mat& image );
 
 
 int main( int argc, char* argv[] ){
@@ -140,33 +162,42 @@ int main( int argc, char* argv[] ){
             // pull out data
             Mat image = geoimage.get_image( CV_64FC1 );
             
-            cout << image.cols << ", " << image.rows << endl;
-
             // query for scale flag
             if( options.has_flag( "-s") == true )
                 normalize( image, image, 0, 255, CV_MINMAX );
+            
+            Mat output;
+            
+            if( options.has_flag( "-H") == true ){
+                
+                // convert to 8UC3
+                output = convert_to_hillshade( image );
+                
+            }
+            else{
 
-            // convert to CV_8UC1
-            Mat output( image.size(), CV_8UC1 );
-            for( int c=0; c<image.cols; c++ )
-                for( int r=0; r<image.rows; r++ ){
-                    if( image.at<double>(r,c) < 0 )
-                        output.at<uchar>(r,c) = 0;
-                    else if( image.at<double>(r,c) > 255 )
-                        output.at<uchar>(r,c) = 255;
-                    else
-                        output.at<uchar>(r,c) = image.at<double>(r,c);
-                }
+                output = Mat( image.size(), CV_8UC1 );
+                // convert to CV_8UC1
+                for( int c=0; c<image.cols; c++ )
+                    for( int r=0; r<image.rows; r++ ){
+                        if( image.at<double>(r,c) < 0 )
+                            output.at<uchar>(r,c) = 0;
+                        else if( image.at<double>(r,c) > 255 )
+                            output.at<uchar>(r,c) = 255;
+                        else
+                            output.at<uchar>(r,c) = image.at<double>(r,c);
+                    }
+            }
 
             // write to file
             imwrite( options.output_filename, output );
 
         }
         else{
-            
+
             // pull out opencv mat
             Mat image = geoimage.get_image(CV_8UC3);
-            
+
             // write to output
             imwrite( options.output_filename, image );
         }
@@ -181,5 +212,61 @@ int main( int argc, char* argv[] ){
     }
 
     return 0;
+}
+
+Vec3b color_relief( double& elevation, double minC, double maxC ){
+
+    double maxR = maxC;
+    double minR = minC;
+
+    double b = (elevation - minR)/(maxR - minR)*255;
+    double y = 255 - b;
+    double z = 0;
+
+    if( b > 255 ) b = 255;
+    if( y > 255 ) y = 255;
+    if( z > 255 ) z = 255;
+    if( b < 0 )   b = 0;
+    if( y < 0 )   y = 0;
+    if( z < 0 )   z = 0;
+    
+    return Vec3b( b, y, z);
+}
+
+
+void compute_range( Mat const& img, double& _Min, double& _Max ){
+    
+    _Min = 100000;
+    _Max = 0;
+
+    for( int i=0; i<img.cols; i++ )
+    for( int j=0; j<img.rows; j++ ){
+        if( _Min > img.at<double>(j,i) )
+            _Min = img.at<double>(j,i);
+        if( _Max < img.at<double>(j,i) )
+            _Max = img.at<double>(j,i);
+    }
+}
+
+Mat convert_to_hillshade( Mat& image ){
+    
+    Mat output( image.size(), CV_8UC3 );
+    
+    double _min, _max, newmin, newmax;
+    compute_range( image, _min, _max );
+    
+    // check for artificial min and max
+    if( options.has_min( newmin ) == true )
+        _min = newmin;
+    if( options.has_max( newmax ) == true )
+        _max = newmax;
+    
+    cout << _min << ", " << _max << endl;
+    cin.get();
+    for( size_t i=0; i<image.cols; i++ )
+    for( size_t j=0; j<image.rows; j++ )
+        output.at<Vec3b>(j,i) = color_relief( image.at<double>(j,i), _min, _max );
+
+    return output;
 }
 

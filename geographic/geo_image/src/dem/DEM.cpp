@@ -256,53 +256,6 @@ namespace GEO{
         return cvGetPixel( tile, Point(realX, realY), 0 );
     }
 
-/*
-Vec3b color_relief( double elevation, double minC, double maxC ){
-
-    double maxR = maxC;
-    double minR = minC;
-
-    double x = ((maxR - minR)-(elevation - minR))/(maxR - minR)*255;
-    double y = 255 - x;
-    double z = 0;
-
-    if( x > 255 ) x = 255;
-    if( y > 255 ) y = 255;
-    if( z > 255 ) z = 255;
-    if( x < 0 )   x = 0;
-    if( y < 0 )   y = 0;
-    if( z < 0 )   z = 0;
-    
-    return Vec3b( x, y, z);
-}
-
-
-
-Mat DEM::relief_map()const{
-
-    //create a 3 channel image
-    Mat output( tile.size(), CV_8UC3);
-
-    //iterate over the image applying the new pixel values
-    for( size_t i=0; i<tile.cols; i++)
-    for( size_t j=0; j<tile.rows; j++)
-        output.at<Vec3b>(j,i) = color_relief( tile.at<short>(j,i), 1000, 4450 );
-
-    return output;
-    
-}
-
-Point DEM::get_pixel_coordinate( Point2f const& coordinate ){
-
-    //find the percentage of the image from the tl to br
-    double pctX = tile.cols*(coordinate.x - tl.x )/(br.x - tl.x);
-    double pctY = tile.rows*(1.0-(coordinate.y - br.y )/(tl.y - br.y));
-
-    return Point( pctX, pctY);
-
-}
-
-*/
     
     Point2f DEM::ne()const{  return Point2f( m_max.x, m_max.y ); }
     Point2f DEM::nw()const{  return Point2f( m_min.x, m_max.y ); }

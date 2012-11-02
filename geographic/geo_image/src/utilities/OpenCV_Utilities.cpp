@@ -88,6 +88,10 @@ std::string opencvType2string( const int& type ){
     if( type == CV_32FC2 ) return "CV_32FC2"; 
     if( type == CV_32FC3 ) return "CV_32FC3";
     
+    if( type == CV_64FC1 ) return "CV_64FC1";
+    if( type == CV_64FC2 ) return "CV_64FC2"; 
+    if( type == CV_64FC3 ) return "CV_64FC3";
+    
     return "UNKNOWN";
 }
 
@@ -99,6 +103,8 @@ std::string opencvDepth2string( const int& depth ){
         return "CV_8U";
     if( depth == CV_16U )
         return "CV_16U";
+    if( depth == CV_16S )
+        return "CV_16S";
     if( depth == CV_32S )
         return "CV_32S";
     if( depth == CV_32F )
