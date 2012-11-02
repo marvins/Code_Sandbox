@@ -1,0 +1,45 @@
+#! /bin/bash
+#
+# This is a script to configure and install a RHEL/Scientific Linux/Centos
+# machine with the required development software. 
+
+packages="
+	     vim
+         kernel-devel
+         kernel-headers
+         subversion
+         gcc-c++
+         cmake
+         cmake-gui
+         gstreamer-plugins-good
+         gstreamer-plugins-bad
+         gstreamer-plugins-bad-nonfree
+         gstreamer-plugins-bad-free-extras
+         gstreamer-plugins-ugly
+         python3-numpy
+         python-matplotlib
+         python-matplotlib-doc
+         texlive-latex
+         "
+
+
+for package in ${packages}
+    do
+        clear
+        echo "Installing: ${package}"
+        sudo yum install ${package}
+        read -p "Press [Enter] key to continue..." 
+    done
+
+######################################
+#         Git configuration          #
+######################################
+git config --global user.name "Marvin Smith"
+git config --global user.email marvin.smith@sncorp.com
+
+####################################
+#     VIM Configuration Settings   #
+####################################
+cp -r ../vim/vim   ~/.vim
+cp    ../vim/vimrc ~/.vimrc
+
