@@ -13,6 +13,10 @@
 using namespace cv;
 using namespace std;
 
+
+/**
+ * Basic container for the configuration parameters.
+*/
 class Options{
 
     public:
@@ -29,6 +33,10 @@ class Options{
 
 } options;
 
+
+/**
+ * Tests if the file is a raster.
+*/
 bool is_valid_raster_ext( const string& ext ){
     
     // check for the image raster flag
@@ -57,6 +65,9 @@ bool is_valid_raster_ext( const string& ext ){
     return false;
 }
 
+/**
+ * Prints instructions on how to use.
+*/
 void usage( ){
 
     cout << "geo_convert" << endl;
@@ -72,12 +83,17 @@ void usage( ){
     cout << "       -H : Hillshade) [ Use for DEM image ]" << endl;
 }
 
+/**
+ * Print error message.
+*/
 void error( string const& message ){
 
     cout << message << endl;
     usage();
     exit(1);
 }
+
+
 
 int main( int argc, char* argv[] ){
 
