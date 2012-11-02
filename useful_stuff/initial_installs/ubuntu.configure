@@ -12,7 +12,9 @@ packages="vim
           python3-scipy
           python-matplotlib
           texlive-latex-extra
-          g++
+          linux-headers-$(uname -r)
+	  g++
+	  build-essential
           xindy
           xfig
           xclip
@@ -62,4 +64,15 @@ for package in ${packages}
 git config --global user.name "${GIT_USER_NAME}"
 git config --global user.email "${GIT_USER_EMAIL}"
 
+####################################
+#   Alpine Configuration Settings  #
+####################################
+cp ../alpine/pine-passfile ~/.pine-passfile
+cp ../alpine/pinerc        ~/.pinerc
+
+####################################
+#     VIM Configuration Settings   #
+####################################
+cp -r ../vim/vim   ~/.vim
+cp    ../vim/vimrc ~/.vimrc
 
