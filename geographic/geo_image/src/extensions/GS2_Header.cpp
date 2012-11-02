@@ -1,7 +1,7 @@
 #include "GS2_Header.hpp"
 
 #include "TACID.hpp"
-#include "GS_ICD_Reference.hpp"
+#include "GS_ICD_Reference.cpp"
 
 #include "../utilities/String_Utilities.hpp"
 

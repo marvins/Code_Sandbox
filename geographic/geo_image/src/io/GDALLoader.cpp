@@ -55,7 +55,10 @@ namespace GEO{
 
     }
     
-    
+    /*-----------------------------------------------------------------------*/ 
+    /**
+     * Initialize the dataset and load the GDAL Drivers
+    */
     void GDALLoader::initialize( const string& fname ){
 
         // make sure that the file exists
@@ -111,6 +114,8 @@ namespace GEO{
 
 
     }
+    
+    /*-----------------------------------------------------------------------*/ 
     /** Write an image to a NITF Format
      *
      *
@@ -203,6 +208,7 @@ namespace GEO{
     }*/
 
 
+    /*-----------------------------------------------------------------------*/ 
     /**
      * Query for the header metadata
     */
@@ -240,6 +246,7 @@ namespace GEO{
         return headerList;
     }
     
+    /*-----------------------------------------------------------------------*/ 
     /**
      * Get header metadata in the TRE module
     */
@@ -349,29 +356,6 @@ namespace GEO{
         }
     }
 
-    
-    bool GDAL_Data::get_status()const{
-        
-        if( dataset == NULL ) return false;
-        if( driver  == NULL ) return false;
-        if( gdalLoadFailed == true ) return false;
-
-        return true;
-    }
-
-    ** 
-     *
-     *
-    void GDAL_Data::clean(){
-
-        if( dataset != NULL )
-            GDALClose( dataset );
-        
-        dataset = NULL;
-        driver  = NULL;
-        gdalLoadFailed = false;
-    }
-
     */
     
     /**
@@ -429,11 +413,21 @@ namespace GEO{
 
     double GDAL2OpenCV( double const& val, const int cvtype, const int gdaltype ){
         
-        if( cvtype == CV_8U && gdaltype == GDT_Byte ) return val;
-        if( cvtype == CV_8U && gdaltype == GDT_Int16 ) return val/16.0;
-        if( cvtype == CV_8U && gdaltype == GDT_UInt16 ) return val/16.0;
+        if( cvtype == CV_8U  && gdaltype == GDT_Byte ) return val;
+        if( cvtype == CV_8U  && gdaltype == GDT_Int16 ) return val/16.0;
+        if( cvtype == CV_8U  && gdaltype == GDT_UInt16 ) return val/16.0;
+
+        if( cvtype == CV_16U && gdaltype == GDT_Byte ) return val*8.0;
+        if( cvtype == CV_16U && gdaltype == GDT_Int16 ) return val;
+        if( cvtype == CV_16U && gdaltype == GDT_UInt16 ) return val;
         
-        else throw string("UNKNOWN TYPE");
+        if( cvtype == CV_16S && gdaltype == GDT_Byte ) return val*8;
+        if( cvtype == CV_16S && gdaltype == GDT_Int16 ) return val;
+        if( cvtype == CV_16S && gdaltype == GDT_UInt16 ) return val;
+        
+        
+        cout << opencvType2string( cvtype ) << endl;
+        throw string("UNKNOWN TYPE");
 
     }
 

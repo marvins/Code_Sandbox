@@ -85,7 +85,7 @@ namespace GEO{
                             );
                     
                     string act_filename = params.dted_root_dir + "/" + exp_filename;
-                    
+
                     //make sure the filename exists
                     if( STR::file_exists(act_filename) == false ){
                         throw string("Error: File does not exist");
@@ -179,13 +179,8 @@ namespace GEO{
      */
     double DEM::max_elevation( )const{
         
-        double _max = 0;
-        for( size_t i=0; i<tile.cols; i++)
-            for( size_t j=0; j<tile.rows; j++ )
-                if( cvGetPixel( tile, Point(i,j), 0 ) > _max ){
-                        _max = cvGetPixel( tile, Point(i, j), 0);
-                    }
-        return _max;
+        Point2f junk;
+        return max_elevation( junk );
     }
 
     /**
@@ -208,7 +203,38 @@ namespace GEO{
 
         return _max;
     }
+    
 
+    /**
+     * Return the value of the lowest elevation
+     * in the tile.
+     */
+    double DEM::min_elevation( )const{
+        
+        Point2f junk;
+        return min_elevation( junk );
+    }
+
+    /**
+     * Return the value and location of the highest elevation
+     * in the tile.
+     */
+    double DEM::min_elevation( cv::Point2f& coord )const{
+
+        double _min = 1E6;
+        int I = 0, J = 0;
+        for( size_t i=0; i<tile.cols; i++)
+            for( size_t j=0; j<tile.rows; j++ )
+                if( cvGetPixel( tile, Point(i,j), 0 ) < _min ){
+                        _min = cvGetPixel( tile, Point(i,j), 0 );
+                        I = i;
+                        J = j;
+                }
+        coord.y = (1 - J/(double)tile.rows) * (m_max.y - m_min.y) + m_min.y;
+        coord.x = (I/(double)tile.cols) * (m_max.x - m_min.x) + m_min.x;
+
+        return _min;
+    }
 
     /** 
      * Return the elevation at the specified coordinate.

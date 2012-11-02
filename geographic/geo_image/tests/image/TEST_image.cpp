@@ -49,7 +49,7 @@ int TEST_GeoImage_constructor( string& note ){
     
     
     // create test geoimage
-    string fname01 = "tests/test.ntf";
+    string fname01 = "data/nitf/24FEB129Z0200707ZXGEO000GS0000004F48200A.ntf";
     string fname02 = "tests/tests.ntf";
     GEO::GeoImage geoimage01( fname01, true);
     GEO::GeoImage geoimage02( fname02, true);
@@ -77,7 +77,7 @@ int TEST_GeoImage_constructor( string& note ){
 int TEST_GeoImage_validate( string& note ){
 
     // create test geoimage
-    string fname01 = "tests/test.ntf";
+    string fname01 = "data/nitf/24FEB129Z0200707ZXGEO000GS0000004F48200A.ntf";
     string fname02 = "tests/tests.ntf";
     GEO::GeoImage geoimage01( fname01, true);
     GEO::GeoImage geoimage02( fname02, true);
@@ -106,7 +106,7 @@ int TEST_GeoImage_validate( string& note ){
 int TEST_GeoImage_get_image( string& note ){
 
     // create test GeoImage
-    string fname01 = "tests/test.ntf";
+    string fname01 = "data/nitf/24FEB129Z0200707ZXGEO000GS0000004F48200A.ntf";
     string fname02 = "tests/tests.ntf";
     GEO::GeoImage geoimage01( fname01, true);
     GEO::GeoImage geoimage02( fname02, true);
@@ -118,7 +118,7 @@ int TEST_GeoImage_get_image( string& note ){
 
     // check the image size
     note = "Image size is not correct.";
-    if( img01.cols != 1024 || img01.rows != 1024 ) return false;
+    if( img01.cols != 4872 || img01.rows != 3248 ) return false;
     if( img02.cols != 0    || img02.rows != 0    ) return false;
 
     // return results

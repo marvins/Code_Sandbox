@@ -72,6 +72,10 @@ class DEM{
         // return the max elevation
         double max_elevation( cv::Point2f& coord )const;
         double max_elevation( )const;
+        
+        // return the minimum elevation
+        double min_elevation( cv::Point2f& coord )const;
+        double min_elevation( )const;
 
         // return the specific elevation
         double query_elevation( const cv::Point2f& location )const;
