@@ -46,7 +46,7 @@ namespace GS2{
     /** TACID Parameterized Constructor */
     TACID::TACID( std::string const& tacinput ){
 
-#if ( BOOST_VERSION / 1000 - 100 ) < 5
+#if ( BOOST_VERSION / 1000 - 100 ) < 4 && ( BOOST_VERSION / 100 % 1000 ) < 6
         extension    = fs::path(tacinput).extension();
 #else
         extension    = fs::path(tacinput).extension().string();
