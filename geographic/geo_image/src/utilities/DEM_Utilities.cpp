@@ -5,7 +5,10 @@
 #include <sstream>
 
 
+#if USE_OPENCV == 1
 using namespace cv;
+#endif
+
 using namespace std;
 
 namespace GEO{
@@ -47,6 +50,7 @@ std::string DTED_coordinate2filename( double const& lat, double const& lon ){
 }
 
 
+#if USE_OPENCV == 1
 void DTED_adjust_needed_tiles( int& lat_needed, int& lon_needed, const Point2f& _min, const Point2f& _max ){
     
     // 
@@ -57,6 +61,6 @@ void DTED_adjust_needed_tiles( int& lat_needed, int& lon_needed, const Point2f& 
     if( fabs( lat_range - lat_needed + 1 ) < 0.0001 && fabs( std::floor(_min.y) - _min.y) < 0.00001 ) lat_needed--;
 
 }
-
+#endif
 
 }///end of GEO namespace

@@ -35,19 +35,21 @@ class CoordinateLatLon{
         */
         CoordinateLatLon( const double& latDD, const double& lonDD, const double& _elevation = 0, std::string const& dat = "WGS84" );
         
+#if USE_OPENCV == 1        
         /**
          * OpenCV Point Constructor 
          *
          * @param[in] coord OpenCV Coordinate
         */
         CoordinateLatLon( const cv::Point2f& coord, const double& _elevation, std::string const& dat = "WGS84" );
-        
+
         /**
          * OpenCV Point Constructor
          *
          * @param[in] coord OpenCV Coordinate
         */
         CoordinateLatLon( const cv::Point3f& coord, std::string const& dat = "WGS84" );
+#endif
         
         /**
          * Lat Lon Coordinate in Degree, Minutes Format

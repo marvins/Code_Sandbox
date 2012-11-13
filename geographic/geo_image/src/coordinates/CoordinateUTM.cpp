@@ -2,7 +2,10 @@
 
 #include "../utilities/String_Utilities.hpp"
 
+#if USE_OPENCV == 1
 using namespace cv;
+#endif
+
 using namespace std;
 
 namespace GEO{
@@ -31,9 +34,11 @@ CoordinateUTM::CoordinateUTM( const int& _zone, const bool& _isNorth, const doub
 }
 
 
+#if USE_OPENCV == 1
 Point3f CoordinateUTM::toPoint3f( )const{
     return Point3f( easting, northing, elevation );
 }
+#endif
 
 string CoordinateUTM::toString()const{
 

@@ -1,7 +1,9 @@
 #ifndef __SRC_STRUCTURES_DEM_H__
 #define __SRC_STRUCTURES_DEM_H__
 
+#if USE_OPENCV == 1
 #include <opencv2/core/core.hpp>
+#endif
 
 #include <string>
 

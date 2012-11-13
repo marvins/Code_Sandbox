@@ -1,5 +1,7 @@
 #include "OpenCV_Utilities.hpp"
 
+#if USE_OPENCV == 1
+
 #include <iostream>
 
 using namespace cv;
@@ -167,3 +169,6 @@ double cvGetPixel( cv::Mat const& image, cv::Point const&  pix, const int& chann
 
 
 } // End of GEO Namespace 
+
+#endif
+

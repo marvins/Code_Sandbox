@@ -3,7 +3,10 @@
 #include <sstream>
 #include <string>
 
+#if USE_OPENCV == 1        
 using namespace cv;
+#endif
+
 using namespace std;
 
 namespace GEO{
@@ -31,6 +34,7 @@ CoordinateLatLon::CoordinateLatLon( const double& latDD, const double& lonDD, co
 }
 
 
+#if USE_OPENCV == 1        
 /**
  * Constructor for Decimal Degrees.  Note that the coord.x is lon and .y is lat.
 */
@@ -54,6 +58,7 @@ CoordinateLatLon::CoordinateLatLon( const cv::Point3f& coord, std::string const&
     
     datum = _datum;
 }
+#endif
 
 
 CoordinateLatLon::CoordinateLatLon( const int& latDeg, const double& latMin, 

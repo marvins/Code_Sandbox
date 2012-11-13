@@ -1,6 +1,14 @@
 #ifndef __SRC_UTILITITES_OPENCV_UTILITIES_HPP__
 #define __SRC_UTILITITES_OPENCV_UTILITIES_HPP__
 
+
+#ifdef DEPLOYED
+#include <geoimage/io/IO_Configuration.hpp>
+#else
+#include "../io/IO_Configuration.hpp"
+#endif
+
+#if USE_OPENCV == 1
 #include <opencv2/core/core.hpp>
 
 namespace GEO{
@@ -36,7 +44,7 @@ void cvSetPixel( cv::Mat& image, cv::Point const& pix, double const& val );
 double cvGetPixel( cv::Mat const& image, cv::Point const&  pix, const int& channel );
 
 } // End of GEO Namespace
-
+#endif
 
 #endif
 
