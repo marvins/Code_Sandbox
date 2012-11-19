@@ -1,6 +1,0 @@
-#ifndef __SRC_IO_IO_CONFIGURATION_HPP__
-#define __SRC_IO_IO_CONFIGURATION_HPP__
-
-#define USE_OPENCV 1
-
-#endif
