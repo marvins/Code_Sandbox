@@ -7,15 +7,15 @@
 #include <string>
 #include <vector>
 
-#include "tools/camera_model_solver/Fitness_Functor.hpp"
-#include "tools/camera_model_solver/Genetic_Algorithm.hpp"
+//#include "tools/camera_model_solver/Fitness_Functor.hpp"
+//#include "tools/camera_model_solver/Genetic_Algorithm.hpp"
 
 #include <GeoImage.hpp>
 
 using namespace cv;
 using namespace std;
 
-
+const double  GA_EXIT_THRESHOLD  = -0.001;
 const int     POPULATION_SIZE    = 10000;
 const int     PRESERVATION_COUNT = 100;
 const double  SELECTION_RATE     = 0.8;
@@ -38,7 +38,6 @@ int main( int argc, char* argv[] ){
     
     try{
         
-        double threshold = -0.01;
 
         // initialize the random number generator
         srand( time( NULL ) );
@@ -54,6 +53,7 @@ int main( int argc, char* argv[] ){
         // load the point file
         parse_pointfile();
     
+        /*
         // create a fitness functor to store our evaluation methods
         Fitness_Functor fitness_functor( image_values, earth_values, global_image_size, camera_origin );
         
@@ -82,12 +82,13 @@ int main( int argc, char* argv[] ){
              * - convert the data string into a variable object
              * - evaluate the variable container against each input/output pair
              * - 
-            */
+            *
 
         }
         
         cout << "Optimized Result" << endl;
         genetic_algorithm.print();
+    */
 
     } catch( string e ){
         cout << e << endl;

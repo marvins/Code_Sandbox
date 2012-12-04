@@ -23,7 +23,7 @@ MO='AUG'
 DY=18
 
 START_TIME=[8,0]
-END_TIME=[9,59]
+END_TIME=[8,30]
 
 N_TOGGLE=False
 R_TOGGLE=False
@@ -211,12 +211,12 @@ def build_layout_04( BASE_PATH, _slice, collect ):
 #-----------------------------------------#
 #-     BUILD THE CAMERA DIRECTORIES      -#
 #-----------------------------------------#
-def build_layout_03( BASE_PATH, _slice, collect ):
-
-	cdir = BASE_PATH + '/camera'
-	create_directory( cdir )
-	
-	build_layout_04( cdir, _slice, collect )
+#def build_layout_03( BASE_PATH, _slice, collect ):
+#
+#	cdir = BASE_PATH + '/camera'
+#	create_directory( cdir )
+#	
+#	build_layout_04( cdir, _slice, collect )
 
 
 #----------------------------------------------#
@@ -230,7 +230,7 @@ def build_layout_02( BASE_PATH ):
 			cdir = BASE_PATH + '/slice'+str(x)+'-collect'+str(y)
 			create_directory( cdir )
 			
-			build_layout_03( cdir, x, y )
+			build_layout_04( cdir, x, y )
 
 
 #-----------------------------------------#

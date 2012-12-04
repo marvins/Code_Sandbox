@@ -70,8 +70,11 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
 
 
     //create an output filename
-    string temp_filename = "/data/file.zip";
-    string temp_directory= "/data/bundles";
+    string temp_filename = options.output_filename;
+    string temp_directory= file_pop_rear( options.output_filename ) + "/bundles";
+    string temp_directory_name="bundles";
+    string temp_directory_path=file_pop_rear( options.output_filename );
+
 
     //check if files exist and delete
     if( file_exists( temp_filename ) == true ) file_delete( temp_filename );
@@ -84,7 +87,7 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
     /**
      * We need to select a subset of the total bundles 
     */
-    if( (int)bundles.size() > options.number_bundles ){
+    if( (int)bundles.size() >= options.number_bundles ){
     
         // find the max and min time
         int stride = bundles.size()/options.number_bundles;
@@ -113,17 +116,41 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
     }
     else if( (int)bundles.size() < options.number_bundles ){
     
-        throw string("NOT IMPLEMENTED YET");
-    
+        // find the max and min time
+        int stride = bundles.size()/options.number_bundles;
+        
+        // pick the required number of bundles from the group
+        for( int i=0; (i<options.number_bundles && (i<bundles.size())); i++ ){
+            
+            //for each bundle, group them into a proposed directory
+            string bundle_name = string("bundle_scene_") + num2str(bundles[i*stride].scene_number);
+            
+            //create the directory in temp
+            directory_create( temp_directory + string("/") + bundle_name );
+           
+            //for each file in the bundle, copy it to the temp directory
+            deque<string>::const_iterator it = bundles[i*stride].data.begin();
+
+            while( it != bundles[i*stride].data.end() ){
+                
+                //copy the file to the temp dir
+                file_copy( *it, temp_directory + string("/") + bundle_name + string("/") + file_basename(*it)  );
+                it++;
+            }
+        }
+
+
     }
     else
         throw string("NOT IMPLEMENTED YET");
 
     //call zip
-    string command = string("zip -r0 ") + temp_filename + string(" ") + temp_directory;// + " >> /dev/null";
+
+    change_directory( temp_directory_path);
+    string command = string("zip -r0 ") + temp_filename + string(" ") + temp_directory_name;// + " >> /dev/null";
     cout << command << endl;
     system( command.c_str());
-
+    
     //check if files exist and delete
     if( file_exists( temp_directory) == true ) 
         system(string(string("rm -rf ") + temp_directory ).c_str());
@@ -219,6 +246,11 @@ deque<string> file_decompose_path( string const& pathname ){
     }
 
     return output;
+}
+
+void change_directory( const string& pathname ){
+
+    fs::current_path( fs::path( pathname ));
 }
 
 string file_merge_path( deque<string> const& pathname ){

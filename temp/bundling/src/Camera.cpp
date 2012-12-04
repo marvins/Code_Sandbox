@@ -442,7 +442,6 @@ bool Camera::decompose_top_directories( ){
     }
     
     // TODO Prune images with a later scene number than the last visited frame
-    
     // sort the list by scene number
     sort_TACID_list( current_image_list, collect_type );
 
@@ -572,6 +571,7 @@ ostream& operator << ( ostream& ostr, Camera const& camera ){
             ostr << "   " << camera.root_directories[i] << endl;
     }
     ostr << endl;
+    ostr << "   time space size: " << camera.time_space.size() << endl;
 
 
     return ostr;
@@ -713,7 +713,6 @@ deque<Camera> find_camera_directories( Options const& options ){
 
     string cdir;
     
-    cout << "Finding Cameras" << endl;
     /**
       start at the base directory and begin building a list of camera directories.  When 
       we discover one, add it to the respective camera.
@@ -747,7 +746,6 @@ deque<Camera> find_camera_directories( Options const& options ){
             break;
     }
 
-    
     /** 
      * sort list by camera number
     */

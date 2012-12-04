@@ -40,10 +40,10 @@ int main( int argc, char * argv[] ){
          * if PROGRAM_EVAL, load context if it exists and compute metrics
         */
         if( options.program_mode == PROGRAM_BUNDLE ){
-
+            
             ///find the camera directories
             deque<Camera> cameras = find_camera_directories( options );
-            
+
             ///build a list of image bundles
             deque<ImageBundle> bundles = compute_image_bundles( cameras, options );
         

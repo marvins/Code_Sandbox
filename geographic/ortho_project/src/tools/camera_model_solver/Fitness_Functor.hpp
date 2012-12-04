@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include <GeoImage.hpp>
 
 const int MAX_GENOME_LENGTH=104;
 

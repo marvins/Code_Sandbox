@@ -98,7 +98,7 @@ class Options{
         int number_bundles;     /*< Number of bundles to collect */
         int max_bundle_limit;   /*< The max number of bundles to search before stopping the search  */
 
-
+        string output_filename;
     
     
     private:

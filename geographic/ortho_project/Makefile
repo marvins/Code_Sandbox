@@ -154,7 +154,7 @@ $(BUILD)/OrthoExceptions.o: $(CORE)/OrthoExceptions.cpp $(HEADERS)
 
 tools: $(TOOL)
 
-SOLVER_SRC=src/math/Quaternion.cpp src/math/Vector.cpp src/core/Utilities.cpp src/math/Geometry.cpp src/tools/camera_model_solver/*.cpp
+#SOLVER_SRC=src/math/Quaternion.cpp src/math/Vector.cpp src/core/Utilities.cpp src/math/Geometry.cpp src/tools/camera_model_solver/*.cpp
 $(TOOL): src/camera_model_solver.cpp $(SOLVER_SRC) $(HEADERS)
 	g++ $< $(SOLVER_SRC) -o $@ $(LIBS) -lboost_filesystem -Wall -O3
 

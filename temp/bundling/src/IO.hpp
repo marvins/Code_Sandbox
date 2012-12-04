@@ -102,7 +102,7 @@ void file_delete( std::string const& filename );
 
 void sort_image_list( std::deque<std::string>& image_list );
 
-
+void change_directory( const std::string& pathname );
 
 /**************************************************************************/
 /*                           String Utilities                             */

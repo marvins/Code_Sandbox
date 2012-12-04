@@ -26,6 +26,11 @@ Options::Options( const int argc, char** argv ){
     input_base = parser.getItem_string("INPUT_BASE", found);
     if( found == false )
         throw string("ERROR: no INPUT_BASE found in configuration");
+    
+    
+    output_filename = parser.getItem_string("OUTPUT_FILENAME", found);
+    if( found == false )
+        throw string("ERROR: no OUTPUT_FILENAME found in configuration");
 
     collect_name = parser.getItem_string("COLLECT_NAME", found);
     if( found == false )
@@ -85,7 +90,6 @@ Options::Options( const int argc, char** argv ){
     }
      else
          throw string("ERROR: PROGRAM_MODE has invalid option");
-
 
 
 }

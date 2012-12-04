@@ -36,6 +36,9 @@ class GA{
         */
         void mutation( );
         
+        /** 
+         * Return the best fitness score
+        */
         double best_fitness()const;
 
         void print()const;

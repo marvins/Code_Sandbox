@@ -24,8 +24,8 @@ HEADERS=$(SRC)/ProgressBar.hpp  $(SRC)/FilePtr.hpp  $(SRC)/Core.hpp  $(SRC)/Cont
 CPP=g++
 
 # Desired compilation flags
-#FLAGS= -Wall -O3
-FLAGS= -Wall -O3 -DBOOST_LEGACY
+FLAGS= -Wall -O3
+#FLAGS= -Wall -O3 -DBOOST_LEGACY
 
 #-----------------------------------------#
 #-              Dependencies             -#
@@ -33,8 +33,8 @@ FLAGS= -Wall -O3 -DBOOST_LEGACY
 #BOOST_DIR=/usr/local
 BOOST_DIR=/usr
 BOOST_INCL=-I$(BOOST_DIR)/include
-#BOOST_LIBS=$(BOOST_DIR)/lib/libboost_system.a $(BOOST_DIR)/lib/libboost_filesystem.a
-BOOST_LIBS=$(BOOST_DIR)/lib64/libboost_system.a $(BOOST_DIR)/lib64/libboost_filesystem.a
+BOOST_LIBS=$(BOOST_DIR)/lib/libboost_system.a $(BOOST_DIR)/lib/libboost_filesystem.a
+#BOOST_LIBS=$(BOOST_DIR)/lib64/libboost_system.a $(BOOST_DIR)/lib64/libboost_filesystem.a
 
 INCL= $(BOOST_INCL)
 LIBS= $(BOOST_LIBS)

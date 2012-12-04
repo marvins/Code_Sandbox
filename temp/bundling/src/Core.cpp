@@ -19,7 +19,7 @@ deque<ImageBundle> compute_image_bundles( deque<Camera>& cameras, Options const&
     for( size_t i=0; i<cameras.size(); i++ ){
         cameras[i].build_scene_space( options.image_depth );
     }
-
+    
     int cnt = 0;
 
     /** Begin comparing directories */
