@@ -25,7 +25,6 @@ CPP=g++
 
 # Desired compilation flags
 FLAGS= -Wall -O3
-#FLAGS= -Wall -O3 -DBOOST_LEGACY
 
 #-----------------------------------------#
 #-              Dependencies             -#
@@ -33,8 +32,13 @@ FLAGS= -Wall -O3
 #BOOST_DIR=/usr/local
 BOOST_DIR=/usr
 BOOST_INCL=-I$(BOOST_DIR)/include
-BOOST_LIBS=$(BOOST_DIR)/lib/libboost_system.a $(BOOST_DIR)/lib/libboost_filesystem.a
-#BOOST_LIBS=$(BOOST_DIR)/lib64/libboost_system.a $(BOOST_DIR)/lib64/libboost_filesystem.a
+
+
+ifeq ($(OS),RHEL)
+	BOOST_LIBS=$(BOOST_DIR)/lib64/libboost_system.a $(BOOST_DIR)/lib64/libboost_filesystem.a
+else
+	BOOST_LIBS=$(BOOST_DIR)/lib/libboost_system.a $(BOOST_DIR)/lib/libboost_filesystem.a
+endif
 
 INCL= $(BOOST_INCL)
 LIBS= $(BOOST_LIBS)
@@ -111,7 +115,7 @@ $(SRC):
 #-          Clean Up Everything          -#
 #-----------------------------------------#
 clean:
-	rm -r $(BIN)/* $(BLD)/*
+	rm -r $(EXEC)  $(BLD)/*
 
 #-----------------------------------------#
 #-         Install to a machinie          #
@@ -121,4 +125,7 @@ install:
 	cp $(EXEC) frame_analyzer
 	cp $(CFG)  frame_analyzer
 	scp -r frame_analyzer root@gsam-server:	
+
+help:
+	echo "make OS=<RHEL>, otherwise leave OS blank"
 

@@ -4,6 +4,7 @@
 #include <algorithm>
 #include <cstdio>
 
+#include <boost/version.hpp>
 #include <boost/algorithm/string.hpp>
 #include <boost/filesystem.hpp>
 
@@ -107,7 +108,9 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
             while( it != bundles[i*stride].data.end() ){
                 
                 //copy the file to the temp dir
-                file_copy( *it, temp_directory + string("/") + bundle_name + string("/") + file_basename(*it)  );
+                string command = string("ln -s ") + (*it) + string(" ") + temp_directory + string("/") + bundle_name + string("/") + file_basename(*it);
+                system(command.c_str());      
+                //file_copy( *it, temp_directory + string("/") + bundle_name + string("/") + file_basename(*it)  );
                 it++;
             }
         }
@@ -134,7 +137,9 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
             while( it != bundles[i*stride].data.end() ){
                 
                 //copy the file to the temp dir
-                file_copy( *it, temp_directory + string("/") + bundle_name + string("/") + file_basename(*it)  );
+                string command = string("ln -s ") + (*it) + string(" ") + temp_directory + string("/") + bundle_name + string("/") + file_basename(*it);
+                system(command.c_str());      
+                //file_copy( *it, temp_directory + string("/") + bundle_name + string("/") + file_basename(*it)  );
                 it++;
             }
         }
@@ -150,7 +155,8 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
     string command = string("zip -r0 ") + temp_filename + string(" ") + temp_directory_name;// + " >> /dev/null";
     cout << command << endl;
     system( command.c_str());
-    
+   
+    return;
     //check if files exist and delete
     if( file_exists( temp_directory) == true ) 
         system(string(string("rm -rf ") + temp_directory ).c_str());
@@ -202,8 +208,8 @@ void directory_create( std::string const& dirname ){
 
 string file_basename( const string& pathname ){
 
-#ifdef BOOST_LEGACY
-    return fs::path(pathname).filename();//.string();
+#if BOOST_VERSION / 100 % 1000 < 45
+    return fs::path(pathname).filename();
 #else
     return fs::path(pathname).filename().string();
 #endif
@@ -221,9 +227,13 @@ std::string file_extension( const std::string& pathname ){
  * given /home/user/files/   -> /home/user
 */
 std::string file_pop_rear( string const& filename ){
-    
+  
+#if BOOST_VERSION / 100 % 1000 < 45
   //strip the first part
   return fs::path( filename ).parent_path( ).string();
+#else  
+  return fs::path( filename ).parent_path( ).string();
+#endif
 
 }
     
@@ -238,7 +248,7 @@ deque<string> file_decompose_path( string const& pathname ){
     //iterate over item
     for (fs::path::iterator it(item.begin()), it_end(item.end()); it != it_end; ++it){
 
-#ifdef BOOST_LEGACY
+#if BOOST_VERSION / 100 % 1000 < 45
     output.push_back((*it));//.string());    
 #else
     output.push_back((*it).string());    
