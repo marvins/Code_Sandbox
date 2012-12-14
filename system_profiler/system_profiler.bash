@@ -22,15 +22,41 @@ for (( i=0; i<${NUM_ITERATIONS}; i++ ))
         
         # Grab the time
         time01=`date +%s`
-
         while kill -0 $pid >/dev/null 2>&1;
             do
+            
+            # Print the time
+            echo `date +%s` >> ${LOGFILE}
+
+            # Run MPSTAT
+            echo "MPSTAT" >> ${LOGFILE}
+            mpstat > temp.txt
+            cat temp.txt | sed '1,2d' | sed 's/ * / /g' >> ${LOGFILE}
+
+            # Run iostat
+            echo "IOSTAT" >> ${LOGFILE}
+            iostat -c > temp.txt
+            cat temp.txt | sed '1,2d' | sed 's/avg-cpu://g' | sed 's/ * / /g' >> ${LOGFILE}
+            
+            # Run vmstat
+            echo "VMSTAT" >> ${LOGFILE}
+            vmstat > temp.txt
+            cat temp.txt | sed '1d' | sed 's/ * / /g' >> ${LOGFILE}
+
             sleep 1
             done
-        time02=`date +%s`
 
-        echo "Start time: $time01"
-        echo "Stop time: $time02"
+        time02=`date +%s`
+        echo ${time02} >> ${LOGFILE}
+        
+        # Remove all blank lines
+        sed -e '/^ *$/d' ${LOGFILE} > temp.txt
+        cat temp.txt > ${LOGFILE}
+        
+        # Remove the temp file
+        if [ -f temp.txt ]; then
+            rm temp.txt
+        fi
 
 
     done
