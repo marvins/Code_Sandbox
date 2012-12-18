@@ -1,13 +1,12 @@
 #! /bin/bash -
 
 
-NUM_ITERATIONS=1
+NUM_ITERATIONS=3
 
-LOGFILE=output.txt
+LOGFILE=example_logfile.txt
 
-EXEC="geo_convert"
-ARGS="-i -I /home/ms6401/Dropbox/24*.ntf -O converted.jpg "
-COMMAND="geo_convert -i -I /home/ms6401/Dropbox/24FEB129Z0200700ZXGEO000GS0000004F482007.ntf -O converted.jpg"
+COMMAND="demo/demo01"
+EXEC="demo01"
 
 if [ -f ${LOGFILE} ]; then
     rm ${LOGFILE}
@@ -22,6 +21,8 @@ for (( i=0; i<${NUM_ITERATIONS}; i++ ))
         
         # Grab the time
         time01=`date +%s`
+        echo "RUN_START ${time01}" >> ${LOGFILE}
+
         while kill -0 $pid >/dev/null 2>&1;
             do
             
@@ -43,22 +44,23 @@ for (( i=0; i<${NUM_ITERATIONS}; i++ ))
             vmstat > temp.txt
             cat temp.txt | sed '1d' | sed 's/ * / /g' >> ${LOGFILE}
 
-            sleep 1
+            sleep .1
             done
 
         time02=`date +%s`
-        echo ${time02} >> ${LOGFILE}
+        echo "RUN_END ${time02}" >> ${LOGFILE}
         
-        # Remove all blank lines
-        sed -e '/^ *$/d' ${LOGFILE} > temp.txt
-        cat temp.txt > ${LOGFILE}
-        
-        # Remove the temp file
-        if [ -f temp.txt ]; then
-            rm temp.txt
-        fi
-
-
     done
 
+# Remove all blank lines
+sed -e '/^ *$/d' ${LOGFILE} > temp.txt
+cat temp.txt > ${LOGFILE}
+
+# Remove the temp file
+if [ -f temp.txt ]; then
+    rm temp.txt
+fi
+
+# Parse the script
+python profile_reader.py ${LOGFILE}
 
