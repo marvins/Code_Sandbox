@@ -3,6 +3,11 @@
 # This is a script to configure and install a RHEL/Scientific Linux/Centos
 # machine with the required development software. 
 
+
+
+#   This reads from the RHEL Package Manager
+function load_packages( ){
+
 packages="gcc-c++
           qt-devel
           ant
@@ -32,12 +37,26 @@ for package in ${packages}
         clear
         echo "Installing: ${package}"
         sudo yum install ${package}
-        read -p "Press [Enter] key to continue..." 
+        read -p "Press [Enter] key to continue..."
     done
+}
+
+
+#######################################
+#           MAIN FUNCTION             #
+#######################################
+echo "Configure Packages"
+read -p "Do you wish to load recommended packages? (y/n - n is default): " ANS
+if [ "$ANS" == "y" -o "$ANS" == "Y" ]; then
+    load_packages
+fi
 
 ######################################
 #         Git configuration          #
 ######################################
+echo "Git Configuration"
+echo "git config --global user.name "Marvin Smith""
 git config --global user.name "Marvin Smith"
+echo "git config --global user.email marvin.smith@sncorp.com"
 git config --global user.email marvin.smith@sncorp.com
 
