@@ -2,4 +2,6 @@
 export LD_LIBRARY_PATH=/usr/lib:/usr/local/lib:/opt/local/lib:${LD_LIBRARY_PATH}
 
 # Package Config
-export PKG_CONFIG_PATH=/usr/local/lib/pkgconfig:$PKG_CONFIG_PATH
+
+
+
