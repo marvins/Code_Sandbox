@@ -7,4 +7,5 @@
 alias rm="~/.scripts/newrm.sh"
 alias unrm="~/.scripts/unrm.sh"
 alias clearrm="~/.scripts/clearrm.sh"
+alias lsd="~/.scripts/formatls.sh"
 
