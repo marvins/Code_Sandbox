@@ -4,6 +4,8 @@
 # colors and formats. Color names that end with 'f' are forground (text)
 # colors and those ending with 'b' are background colors
 
+INITIALIZEANSI_INSTALLED="1"
+
 initializeANSI( ){
 
     esc="\E" # If this doesn't work, enter an ESC directly
@@ -64,4 +66,3 @@ testANSI( ){
 }
 
 initializeANSI
-testANSI

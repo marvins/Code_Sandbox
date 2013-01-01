@@ -4,7 +4,33 @@
 # machine with the required development software. 
 
 
+##########################################################
+#    This install bash utilities
+##########################################################
+function install_bash_utils( ){
+    
+    echo "Installing bash utilitites"
 
+
+    # Copy the directory over
+    mkdir -p ~/.scripts
+    cp -r ../bash/scripts/* ~/.scripts/
+
+    # Test for the entry in the bashrc
+    if [ "$(grep ". ~/.scripts/scripts.sh" ~/.bashrc)" == "" ]; then
+        echo "Adding line to bashrc"
+        echo ". .scripts/scripts.sh" >> ~/.bashrc
+    fi
+
+    # Source the script
+    if [ ! "${INITIALIZEANSI_INSTALLED}" == "1" ]; then
+        source ~/.bashrc
+    fi
+
+}
+
+
+#########################################################
 #   This reads from the RHEL Package Manager
 function load_packages( ){
 
@@ -50,6 +76,17 @@ read -p "Do you wish to load recommended packages? (y/n - n is default): " ANS
 if [ "$ANS" == "y" -o "$ANS" == "Y" ]; then
     load_packages
 fi
+
+
+######################################
+#           Bash Utilities           #
+######################################
+echo "Install Bash Utilities"
+read -p "Do you wish to install Bash utility scripts? (y/n - n is default): " ANS
+if [ "$ANS" == "y" -o "$ANS" == "Y" ]; then
+    install_bash_utils
+fi
+
 
 ######################################
 #         Git configuration          #
