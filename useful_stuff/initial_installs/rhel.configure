@@ -27,7 +27,7 @@ function install_bash_utils( ){
         source ~/.bashrc
     fi
 
-    # Create the cron entry
+    # Create the cron entry for the archive clearing script
     sed -i "s/_NAME_HERE_/$(whoami)/g" ~/.scripts/clearrm.cron
     
     # pull the current crontab for the user
