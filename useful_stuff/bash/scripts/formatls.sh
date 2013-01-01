@@ -1,5 +1,6 @@
 #!/bin/sh
 
+. ~/.scripts/initializeANSI.sh
 
 function gmk()
 {
@@ -34,15 +35,21 @@ done
 
 # Set the max length
 MAXLEN=$(cat MAXLEN)
+if [ -f MAXLEN ]; then
+    rm MAXLEN
+fi
+
 
 # Iterate through files
 for file in *
 do 
     output1=""
     output2=""
+    ISDIR=0
     # Take separate action depending on file or directory
     if [ -d $file ]; then
-
+        
+        ISDIR=1
         size="$(ls "$file" | wc -l | sed 's/[^[:digit:]]//g')"
         
         if [ $size -eq 1 ]; then
@@ -61,7 +68,11 @@ do
     # replace the carrots with spaces
     STRLEN=$(( $MAXLEN - ${#output1} + 4 ))
     
-    echo -n $output1
+    if [ $ISDIR -eq 1 ]; then
+        echo -e -n "${bluef}${boldon}$output1${reset}"
+    else
+        echo -n $output1
+    fi
     for i in `seq 1 $STRLEN`;
     do
         echo -n ' '
@@ -69,10 +80,6 @@ do
     echo $output2
 
 done 
-
-if [ -f MAXLEN ]; then
-    rm MAXLEN
-fi
 
 exit 0
 
