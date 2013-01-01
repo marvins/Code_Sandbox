@@ -1,0 +1,17 @@
+#!/bin/sh
+
+# Create the base directory of the user
+USER="_NAME_HERE_"
+ACCT="/home/$USER"
+
+# Delete the directory contents
+rm -rf $ACCT/.deleted_files/*
+
+# Mail the user to let them know that the archive has been cleared
+message="Your deleted file archived was cleared at $(date)" 
+
+echo $message | mail -s "Deleted File Archive Cleared" $USER@localhost 
+
+# Do any cleanup here
+
+
