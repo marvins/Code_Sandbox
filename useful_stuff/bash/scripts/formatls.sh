@@ -47,21 +47,27 @@ for i in `seq 1 $(($MAXLEN - 4))`;
 do
     echo -n ' '
 done
-echo ' Size    Permissions'
+echo ' Size        Permissions'
 echo -n "----"
 for i in `seq 1 $(($MAXLEN - 4))`;
 do
     echo -n '-'
 done
-echo "----------------------------------"
+echo "------------------------------------"
 
 
 # Iterate through files
 for file in *
-do 
+do
+    if [ "$file" == "*" ]; then
+        exit 0
+    fi
+
     output1=""
     output2=""
     ISDIR=0
+    PERMS=""
+
     # Take separate action depending on file or directory
     if [ -d $file ]; then
         
@@ -75,17 +81,18 @@ do
             output1="$file"
             output2="($size entries)"
         fi
+        PERMS=`ls -ld "$file" | cut -d " " -f 1`
     else
         size="$(ls -sk "$file" | awk '{print $1}')"
         output1="$file"
         output2="($(gmk $size))" 
+        PERMS=`ls -og "$file" | cut -d " " -f 1`
     fi
     
     # replace the carrots with spaces
     STRLEN=$(( $MAXLEN - ${#output1} + 4 ))
     
     # Print the permissions
-    PERMS=`ls -og "$file" | cut -d " " -f 1`
 
     if [ $ISDIR -eq 1 ]; then
         echo -e -n "${bluef}${boldon}$output1${reset}"
@@ -98,7 +105,7 @@ do
     done
     echo -n $output2
 
-    echo "  $PERMS"
+    echo "        $PERMS"
 
 done 
 
