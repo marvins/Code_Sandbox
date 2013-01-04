@@ -1,7 +1,19 @@
-# Paths
+# .bashrc
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+
+# Configure Executable Path
+export PATH=/opt/local/bin:$PATH
+
+# Configure Shared Library Path
 export LD_LIBRARY_PATH=/usr/lib:/usr/local/lib:/opt/local/lib:${LD_LIBRARY_PATH}
 
-# Package Config
+# Configure Manual Path
+export MANPATH=/opt/local/share/man:$MANPATH
 
-
-
+# Import Handmade Scripts
+. /home/ms6401/.scripts/scripts.sh
