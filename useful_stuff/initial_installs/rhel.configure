@@ -5,6 +5,22 @@
 
 
 ##########################################################
+#         Configure VIM
+##########################################################
+function configure_vim( ){
+
+    vimdir="../vim"
+
+    # Check if the .vim directory exists
+    if [ ! -d "~/.vim" ]; then
+        cp -r $vimdir/vim    $HOME/.vim
+	cp    $vimdir/vimrc  $HOME/.vimrc
+    fi
+
+
+}
+
+##########################################################
 #    This install bash utilities
 ##########################################################
 function install_bash_utils( ){
@@ -13,22 +29,22 @@ function install_bash_utils( ){
 
 
     # Copy the directory over
-    mkdir -p ~/.scripts
-    cp -r ../bash/scripts/* ~/.scripts/
+    mkdir -p $HOME/.scripts
+    cp -r ../bash/scripts/* $HOME/.scripts/
 
     # Test for the entry in the bashrc
-    if [ "$(grep ". ~/.scripts/scripts.sh" ~/.bashrc)" == "" ]; then
+    if [ "$(grep ". $HOME/.scripts/scripts.sh" $HOME/.bashrc)" == "" ]; then
         echo "Adding line to bashrc"
-        echo ". .scripts/scripts.sh" >> ~/.bashrc
+        echo ". $HOME/.scripts/scripts.sh" >> $HOME/.bashrc
     fi
 
     # Source the script
     if [ ! "${INITIALIZEANSI_INSTALLED}" == "1" ]; then
-        source ~/.bashrc
+        source $HOME/.bashrc
     fi
 
     # Create the cron entry for the archive clearing script
-    sed -i "s/_NAME_HERE_/$(whoami)/g" ~/.scripts/clearrm.cron
+    sed -i "s/_NAME_HERE_/$(whoami)/g" $HOME/.scripts/clearrm.cron
     
     # pull the current crontab for the user
     sudo cat /var/spool/cron/$(whoami) > CRONDATA
@@ -66,7 +82,8 @@ packages="gcc-c++
           PackageKit-gstreamer-plugin
           gtk2-devel
           zlib-devel
-          libgeotiff-devel
+          jasper-devel
+	  libgeotiff-devel
           libtiff-devel
           ffmpeg-devel
           bzip2-devel
@@ -92,7 +109,7 @@ read -p "Do you wish to load recommended packages? (y/n - n is default): " ANS
 if [ "$ANS" == "y" -o "$ANS" == "Y" ]; then
     load_packages
 fi
-
+echo ""
 
 ######################################
 #           Bash Utilities           #
@@ -102,7 +119,17 @@ read -p "Do you wish to install Bash utility scripts? (y/n - n is default): " AN
 if [ "$ANS" == "y" -o "$ANS" == "Y" ]; then
     install_bash_utils
 fi
+echo ""
 
+###################################
+#       VIM Configuration         #
+###################################
+echo "Configuring VIM"
+read -p "Do you wish to configure VIM? (y/n - n is default): " ANS
+if [ "$ANS" == "y" -o "$ANS" == "Y" ]; then
+	configure_vim
+fi
+echo ""
 
 ######################################
 #         Git configuration          #

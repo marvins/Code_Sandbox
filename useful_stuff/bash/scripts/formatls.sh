@@ -1,5 +1,6 @@
 #!/bin/sh
 
+
 . ~/.scripts/initializeANSI.sh
 
 function gmk()
@@ -40,6 +41,21 @@ if [ -f MAXLEN ]; then
 fi
 
 
+#  Print the header
+echo -n "Name   "
+for i in `seq 1 $(($MAXLEN - 4))`;
+do
+    echo -n ' '
+done
+echo ' Size    Permissions'
+echo -n "----"
+for i in `seq 1 $(($MAXLEN - 4))`;
+do
+    echo -n '-'
+done
+echo "----------------------------------"
+
+
 # Iterate through files
 for file in *
 do 
@@ -68,6 +84,9 @@ do
     # replace the carrots with spaces
     STRLEN=$(( $MAXLEN - ${#output1} + 4 ))
     
+    # Print the permissions
+    PERMS=`ls -og "$file" | cut -d " " -f 1`
+
     if [ $ISDIR -eq 1 ]; then
         echo -e -n "${bluef}${boldon}$output1${reset}"
     else
@@ -77,7 +96,9 @@ do
     do
         echo -n ' '
     done
-    echo $output2
+    echo -n $output2
+
+    echo "  $PERMS"
 
 done 
 
