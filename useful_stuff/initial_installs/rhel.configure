@@ -14,9 +14,10 @@ function configure_vim( ){
     # Check if the .vim directory exists
     if [ ! -d "~/.vim" ]; then
         cp -r $vimdir/vim    $HOME/.vim
-	cp    $vimdir/vimrc  $HOME/.vimrc
     fi
-
+	if [ ! -f "~/.vimrc" ]; then
+        cp    $vimdir/vimrc  $HOME/.vimrc
+    fi
 
 }
 
@@ -66,7 +67,9 @@ function install_bash_utils( ){
 #   This reads from the RHEL Package Manager
 function load_packages( ){
 
-packages="gcc-c++
+packages="libSM.i686
+          libXrender.i686
+          gcc-c++
           qt-devel
           ant
           vim-enhanced
@@ -83,7 +86,7 @@ packages="gcc-c++
           gtk2-devel
           zlib-devel
           jasper-devel
-	  libgeotiff-devel
+	      libgeotiff-devel
           libtiff-devel
           ffmpeg-devel
           bzip2-devel
