@@ -10,3 +10,7 @@ alias clearrm="~/.scripts/clearrm.sh"
 alias lsd="~/.scripts/formatls.sh"
 alias rm-manager="~/.scripts/rm-manager.sh"
 
+
+# GS2-specific alias'
+alias gs2-assets="~/.scripts/gs2-iptool.sh"
+
