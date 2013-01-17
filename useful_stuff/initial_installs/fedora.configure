@@ -78,7 +78,6 @@ packages="
          cmake-gui
          gstreamer-plugins-good
          gstreamer-plugins-bad-free-extras
-         gstreamer-plugins-ugly
          python3-numpy
          python-matplotlib
          python-matplotlib-doc
