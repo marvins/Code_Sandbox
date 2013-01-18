@@ -3,6 +3,20 @@
 # This is a script to configure and install a RHEL/Scientific Linux/Centos
 # machine with the required development software. 
 
+#   Other Software To Install
+# 
+#   Netbeans
+#   Eclipse
+#   Java SDK
+#   Google Chrome
+#   Google Earth
+#   Dropbox
+#   Google Music Manager
+#   NVidia Drivers
+#   Cuda Drivers
+#   Matlab
+#   Intel Toolchain
+
 
 ##########################################################
 #         Configure VIM
@@ -70,7 +84,9 @@ packages="ffmpeg-devel
          "	
 
     #  Enable repo
-    yum-config-manager --enable repoforge-release
+    echo "Enabling RepoForge Packages"
+    sudo yum-config-manager --enable repoforge-release
+    read -p "Press [Enter] key to continue..."
 
     for package in ${packages}
     do
@@ -80,8 +96,11 @@ packages="ffmpeg-devel
         read -p "Press [Enter] key to continue..."
     done
     
-    yum-config-manager --disable repoforge-release
-}
+    echo "Disabling RepoForge Packages"
+    sudo yum-config-manager --disable repoforge-release
+    read -p "Press [Enter] key to continue..."
+
+}	
 
 #########################################################
 #   This reads from the EPEL Package Manager
@@ -109,7 +128,7 @@ packages="gdal-devel
           boost-devel
           boost-static
           libSM.i686
-	      yum-plugin-fastestmirror
+          yum-plugin-fastestmirror
           libXrender.i686
           gcc-c++
           qt-devel
@@ -124,21 +143,30 @@ packages="gdal-devel
           gtk2-devel
           zlib-devel
           jasper-devel
-	      freeglut-devel
+          freeglut-devel
           libtiff-devel
-          ffmpeg-devel
           bzip2-devel
           thunderbird
           cmake-gui"
 
+autorun=0
+
+echo "Configure Packages"
+read -p "Do you wish to automatically install without user input? (y/n - n is default): " ANS
+if [ "$ANS" == "y" -o "$ANS" == "Y" ]; then
+	autorun=1
+fi
 
 for package in ${packages}
     do
-        clear
         echo "Installing: ${package}"
-        sudo yum install ${package}
-        read -p "Press [Enter] key to continue..."
-    done
+	if [ $autorun -eq 0 ]; then
+        	sudo yum install ${package}
+        	read -p "Press [Enter] key to continue..."
+    	else
+		sudo yum install -y ${package}
+	fi
+	done
 }
 
 
