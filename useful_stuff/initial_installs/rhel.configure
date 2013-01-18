@@ -64,29 +64,43 @@ function install_bash_utils( ){
 
 
 #########################################################
+#   This reads from the EPEL Package Manager
+function load_EPEL_packages( ){
+
+packages="ffmpeg-devel
+         "	
+
+
+    for package in ${packages}
+    do
+        clear
+        echo "Installing: ${package}"
+        sudo yum install ${package}
+        read -p "Press [Enter] key to continue..."
+    done
+}
+
+#########################################################
 #   This reads from the RHEL Package Manager
 function load_packages( ){
 
 packages="libSM.i686
+	  yum-plugin-fastestmirror
           libXrender.i686
           gcc-c++
           qt-devel
           ant
           vim-enhanced
-          epel-release
-          yum-conf-epel
-          gtk+-devel
           gstreamer-devel
           texlive-latex
           python-sphinx
-          yasm-devel
           gstreamer-plugins-base-devel
           yum-plugin-priorities
           PackageKit-gstreamer-plugin
           gtk2-devel
           zlib-devel
           jasper-devel
-	      libgeotiff-devel
+	  freeglut-devel
           libtiff-devel
           ffmpeg-devel
           bzip2-devel
@@ -111,6 +125,13 @@ echo "Configure Packages"
 read -p "Do you wish to load recommended packages? (y/n - n is default): " ANS
 if [ "$ANS" == "y" -o "$ANS" == "Y" ]; then
     load_packages
+fi
+echo ""
+
+echo "Configure EPEL Packages"
+read -p "Do you wish to load recommended EPEL packages? (y/n - n is default): " ANS
+if [ "$ANS" == "y" -o "$ANS" == "Y" ]; then
+    load_EPEL_packages
 fi
 echo ""
 
