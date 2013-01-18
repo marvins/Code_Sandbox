@@ -62,12 +62,32 @@ function install_bash_utils( ){
     rm CRONDATA
 }
 
+#########################################################
+#   This reads from the repoforge Package Manager
+function load_RepoForge_packages( ){
+
+packages="ffmpeg-devel
+         "	
+
+    #  Enable repo
+    yum-config-manager --enable repoforge-release
+
+    for package in ${packages}
+    do
+        clear
+        echo "Installing: ${package}"
+        sudo yum install ${package}
+        read -p "Press [Enter] key to continue..."
+    done
+    
+    yum-config-manager --disable repoforge-release
+}
 
 #########################################################
 #   This reads from the EPEL Package Manager
 function load_EPEL_packages( ){
 
-packages="ffmpeg-devel
+packages="libgeotiff-devel
          "	
 
 
@@ -84,8 +104,12 @@ packages="ffmpeg-devel
 #   This reads from the RHEL Package Manager
 function load_packages( ){
 
-packages="libSM.i686
-	  yum-plugin-fastestmirror
+
+packages="gdal-devel
+          boost-devel
+          boost-static
+          libSM.i686
+	      yum-plugin-fastestmirror
           libXrender.i686
           gcc-c++
           qt-devel
@@ -100,7 +124,7 @@ packages="libSM.i686
           gtk2-devel
           zlib-devel
           jasper-devel
-	  freeglut-devel
+	      freeglut-devel
           libtiff-devel
           ffmpeg-devel
           bzip2-devel
@@ -132,6 +156,13 @@ echo "Configure EPEL Packages"
 read -p "Do you wish to load recommended EPEL packages? (y/n - n is default): " ANS
 if [ "$ANS" == "y" -o "$ANS" == "Y" ]; then
     load_EPEL_packages
+fi
+echo ""
+
+echo "Configure RPMForge Packages"
+read -p "Do you wish to load recommended RPMForge packages? (y/n - n is default): " ANS
+if [ "$ANS" == "y" -o "$ANS" == "Y" ]; then
+    load_RepoForge_packages
 fi
 echo ""
 
