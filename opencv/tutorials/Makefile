@@ -1,5 +1,5 @@
-OPENCV = `pkg-config opencv --cflags --libs`
-OPENCV_LIBS = `pkg-config opencv --cflags`
+OPENCV_LIBS = -L/opt/local/lib -lopencv_core -lopencv_highgui -lopencv_imgproc
+OPENCV = -I/opt/local/include $(OPENCV_LIBS)
 
 SOURCES = Frequency_Transforms.cpp
 
@@ -12,7 +12,7 @@ EXECS =  Gaussian_Blur Median_Blur Block_Smoothing\
 			Sobel_Detection Scharr_Detection\
 			FFT_Process Unsharp_Mask High_Boost Flood_Fill\
 			Connected_Components FFT_gaussian Harris_Corner\
-			Corner_Harris_OpenCV ImageStitching
+			Corner_Harris_OpenCV
 
 all: $(EXECS) 
 

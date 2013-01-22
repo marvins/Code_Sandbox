@@ -1,8 +1,8 @@
 #include <ctime>
 
-#include <cv.h>
-#include <cvaux.h>
-#include <highgui.h>
+#include <opencv2/core/core.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
 
 using namespace cv;
 using namespace std;
@@ -25,7 +25,6 @@ int main( int argc, char* argv[] ){
             image.at<uchar>(i,j) = 0;
          else if( value < 50 )
             image.at<uchar>(i,j) = 255;
-         else;
       }
 
     //output image to show before
