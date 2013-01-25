@@ -1,6 +1,6 @@
 #! /usr/bin/env python
 
-import os, sys, re, datetime, numpy as np, matplotlib as mpl, matplotlib.pyplot as plt
+import os, sys, re, datetime
 
 p = re.compile("[\s;]")
 
@@ -67,11 +67,12 @@ def write_csv( data, options ):
 
 	# Open a file for output
 	csvfile = open( options.csv_filename, 'w' )
-
+	
+	
 	# Add each data line to the file
 	for x in xrange(0,len(data)):
 		for y in xrange(0,len(data[x])):
-			csvfile.write(data[x][y] + ", ")
+			csvfile.write(str(data[x][y]) + ", ")
 		csvfile.write("\n")
 
 	# Close the csv file
@@ -86,7 +87,7 @@ def parse_entry( entry, options ):
 	
 	# Split the entry according to the regex provided up top
 	elements = p.split(entry)
-
+	
 	# Parse out the timestamp value
 	time = time2epoch( elements[0], elements[1])
 
@@ -106,6 +107,7 @@ def parse_entry( entry, options ):
 			# If the key is in the element list, add it to the row item
 			if options.keys[k] in element:
 				row_item[k+1] = element.split("=")[1]
+	
 	
 	return row_item
 			
@@ -132,6 +134,7 @@ def open_and_parse_logfile( options ):
 	data = []
 	data.append(top_row)
 	
+
 	# Create the file
 	logfile = open(options.log_filename, 'r')
 
@@ -141,7 +144,7 @@ def open_and_parse_logfile( options ):
 		
 		# Append line to current log entry
 		current_entry += line.strip()
-
+		
 		# If the line has the correct ending 
 		if "@E" in current_entry:
 			
