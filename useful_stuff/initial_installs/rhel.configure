@@ -46,6 +46,7 @@ function install_bash_utils( ){
     # Copy the directory over
     mkdir -p $HOME/.scripts
     cp -r ../bash/scripts/* $HOME/.scripts/
+    cp -r ../../python/task-manager/*.py $HOME/.scripts/
 
     # Test for the entry in the bashrc
     if [ "$(grep ". $HOME/.scripts/scripts.sh" $HOME/.bashrc)" == "" ]; then
