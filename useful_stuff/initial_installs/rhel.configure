@@ -108,6 +108,8 @@ packages="ffmpeg-devel
 function load_EPEL_packages( ){
 
 packages="libgeotiff-devel
+	      gdal-devel
+          python-devel
          "	
 
 
@@ -125,7 +127,8 @@ packages="libgeotiff-devel
 function load_packages( ){
 
 
-packages="gdal-devel
+packages="
+          libv4l-devel
           boost-devel
           boost-static
           libSM.i686
