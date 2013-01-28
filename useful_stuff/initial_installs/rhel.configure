@@ -109,6 +109,7 @@ function load_EPEL_packages( ){
 
 packages="libgeotiff-devel
 	      gdal-devel
+          python-matplotlib
           python-devel
          "	
 
