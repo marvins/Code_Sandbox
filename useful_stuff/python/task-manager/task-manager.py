@@ -121,6 +121,7 @@ def readtask( filename):
 	"""
 	#  Create a task and open the file
 	task = Task()
+	task.filename = os.path.basename(filename)
 	FILE = open( filename, 'r' )
 	
 	#  Read each line
@@ -154,6 +155,7 @@ class Options:
 	argname = ""
 	exit_after_init = False
 	args= []
+	list_task_mode = False
 
 	tasklist=[]
 
@@ -177,12 +179,20 @@ class Options:
 				create_task( TaskManager.NO_GUI, self )
 				self.exit_after_init = True
 
+			#  For deleting tasks
 			elif args[0] == '-d':
 				print 'deleting task'
+
+			#  Importing task files into your program
 			elif args[0] == '-i':
 				print 'importing task'
+
+			#  List all current tasks
 			elif args[0] == '-l':
-				print 'listing tasks'
+				self.list_task_mode = True
+				self.exit_after_init = True
+
+			#  Delete all tasks
 			elif args[0] == '-x':
 				print 'clearing tasks'
 				clear_tasks( )
@@ -194,11 +204,22 @@ class Options:
 		tasklist = pyosutils.ls( program_data.task_directory, ['.task'])
 		for task in tasklist:
 			self.tasklist.append( readtask(task) )
+	
+		#  List the tasks
+		if self.list_task_mode == True:
+			self.list_tasks( )
 
 	
 	def usage( self ):
 		
 		print( "Usage:")
+
+	def list_tasks( self ):
+		
+		print('Current Task List')
+		for task in self.tasklist:
+			sys.stdout.write( 'Name: ' + task.name + '\n')
+
 
 
 def create_task( GUI_MODE, options, screen = None ):
@@ -237,7 +258,7 @@ def create_task( GUI_MODE, options, screen = None ):
 			screen.addstr( 5, 1, 'Groups: ' )
 
 			#  Print the menu
-			screen.refresh()
+			screen.refresh( options )
 
 			# Grab user input
 			selection = screen.getch()
@@ -246,6 +267,15 @@ def create_task( GUI_MODE, options, screen = None ):
 			if selection == 13:
 				return
 			
+
+def refresh_list( options );
+
+	# Get a list list of the files
+	tasklist = pyosutils.ls( program_data.task_directory, ['.task'])
+	for taskfile in tasklist:
+		for task in options.tasklist:
+			if taskfile in task.name:
+				self.tasklist.append( readtask(taskfile) )
 
 
 def view_task( GUI_MODE, options, screen, cursor ):
@@ -307,6 +337,9 @@ def clear_tasks( ):
 		pyosutils.rm( file )
 
 
+####################################################################
+#                    Management Header Screen                      #
+####################################################################
 def management_header( screen, options, cursor ):
 	
 	#  Grab the current window size
@@ -335,7 +368,9 @@ def management_header( screen, options, cursor ):
 	screen.addstr( bot + 4, 1, '          Up/Dn Arrows- Navigate,  Enter-View, R-Refresh List')
 
 
-#   Management Console
+####################################################################
+#                      Management Console UI                       #
+####################################################################
 def management_console( screen, options ):
 
 	#  Set the screen delay
@@ -378,6 +413,10 @@ def management_console( screen, options ):
 		#  View Task
 		elif selection == ord('V') or selection == ord('v') or selection == 13:
 			view_task(  TaskManager.GUI, options, screen, cursor );
+		
+		#  Refresh Task List
+		elif selection == ord('R') or selection == ord('r'):
+			refresh_list( )
 
 		#  Arrow Up Key
 		elif selection == curses.KEY_UP:
@@ -404,6 +443,7 @@ def main( ):
 	global program_data
 	program_data.read_config();
 	
+	#  Exit the program to prevent the GUI
 	if options.exit_after_init == True :
 		return 0;
 
