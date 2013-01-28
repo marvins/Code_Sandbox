@@ -350,7 +350,8 @@ def management_header( screen, options, cursor ):
 	screen.addstr( 1, 1, 'Task Management Console')
 	screen.addstr( 2, 1, '-----------------------')
 	screen.addstr( 3, 1, 'Current Open Tasks')
-	
+	screen.noutrefresh()
+
 	# Print all open tasks
 	for x in xrange( 0, len(options.tasklist)):
 		if x == cursor:
@@ -360,12 +361,18 @@ def management_header( screen, options, cursor ):
 		
 		if x == cursor:
 			screen.attroff( curses.A_BOLD )
+	
+	#  Print a message if no tasks exist
+	if len( options.tasklist ) <= 0:
+		screen.addstr( 5, 1, "No Tasks Available" )
+		bot += 3
 
 	# Print the footer
 	screen.addstr( bot + 1, 1, '-----------------------------')
 	screen.addstr( bot + 2, 1, '  Press any key to continue: ')
 	screen.addstr( bot + 3, 1, ' Options: Q-Exit Program, C-Create Task, D-Delete Task, V-View Tasks')
 	screen.addstr( bot + 4, 1, '          Up/Dn Arrows- Navigate,  Enter-View, R-Refresh List')
+	screen.refresh()
 
 
 ####################################################################
@@ -375,7 +382,7 @@ def management_console( screen, options ):
 
 	#  Set the screen delay
 	screen.nodelay(True)
-	screen.timeout(200)
+	screen.timeout(2000)
 	cursor = 0
 
 	#  Start a loop to show the UI
@@ -389,6 +396,8 @@ def management_console( screen, options ):
 		
 		# Compute the position of the cursor
 		pos = 5+len(options.tasklist)
+		if len(options.tasklist) <= 0:
+			pos += 3
 
 		# Grab user input
 		screen.move(pos,30)
