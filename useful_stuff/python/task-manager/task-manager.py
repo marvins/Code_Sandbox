@@ -268,7 +268,7 @@ def create_task( GUI_MODE, options, screen = None ):
 				return
 			
 
-def refresh_list( options );
+def refresh_list( options ):
 
 	# Get a list list of the files
 	tasklist = pyosutils.ls( program_data.task_directory, ['.task'])
