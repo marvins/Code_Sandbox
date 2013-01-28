@@ -107,23 +107,45 @@ class Task:
 		
 		return output
 	
-	def read(filename):
-		
-		# Create a blank task
-		task = Task()
-
-		FILE = open(self.filename, 'r' )
-		
-		FILE.close()
-
-		return task
-
 
 	def write(self):
 		
 		FILE = open(self.filename, 'w')
 		FILE.write( str(self) + '\n')
 		FILE.close()
+
+
+def readtask( filename):
+	"""
+	Read the current task from a file.
+	"""
+	#  Create a task and open the file
+	task = Task()
+	FILE = open( filename, 'r' )
+	
+	#  Read each line
+	noteOn = False
+	for line in FILE.readlines():
+		line = line.strip()
+		
+		#  Task Name
+		if 'Name:' == line[:5]:
+			task.name = line[5:]
+
+		#  Task Groups
+		elif 'Groups:' == line[:7]:
+			task.groups = line[7:].split(',')
+
+		#  Notes
+		elif 'Notes:' == line[:6]:
+			task.notes += line[6:]
+			noteOn = True
+		elif noteOn == True:
+			task.notes += line
+	
+	FILE.close()
+	
+	return task
 
 
 #   Class to manage arguments and configuration details
@@ -169,11 +191,11 @@ class Options:
 				raise Exception('Unknown command flag: ' + args[0])
 		
 		#  Finally, we need to load our task list
-		tasklist = pyosutils.ls( program_data.task_directory, '.task')
+		tasklist = pyosutils.ls( program_data.task_directory, ['.task'])
 		for task in tasklist:
-			self.tasklist = Task.read(task)
+			self.tasklist.append( readtask(task) )
 
-
+	
 	def usage( self ):
 		
 		print( "Usage:")
@@ -224,10 +246,58 @@ def create_task( GUI_MODE, options, screen = None ):
 			if selection == 13:
 				return
 			
-			# If the user wants to change items
+
+
+def view_task( GUI_MODE, options, screen, cursor ):
+	
+	#  GUI Mode
+	if GUI_MODE == TaskManager.GUI:
+		
+		while True:
+			
+			#  Print the screen
+			screen.clear()
+
+			#  Print the name
+			screen.addstr( 1, 1, 'Task Management Console')
+			screen.addstr( 2, 1, '     View Task')
+			screen.addstr( 3, 1, '-----------------------')
+
+			#  Print the Task Name
+			screen.addstr( 4, 1, 'Name: ' + options.tasklist[cursor].name)
+		
+			#  Print the Groups
+			cpos = 8
+			screen.addstr( 5, 1, 'Groups: ')
+			for group in options.tasklist[cursor].groups:
+				screen.addstr( 5, cpos, group )
+				cpos += len(group)
+			
+			#  Print Notes
+			screen.addstr( 7, 1, 'Notes:')
+			screen.addstr( 8, 1, options.tasklist[cursor].notes )
+
+			#  Get character
+			screen.refresh()
+			selection = screen.getch()
+			
+			#  Exit window
+			if selection == ord('Q') or selection == ord('q'):
+				break
+
+
+	#  Console Mode
+	else:
+
+		sys.stdout.write('Task Name: ' + options.tasklist[cursor])
+
+	
+
 
 def clear_tasks( ):
-
+	"""
+	Clear the task directory
+	"""
 	global program_data
 
 	#  Find the task directory and get a list of contents
@@ -237,10 +307,11 @@ def clear_tasks( ):
 		pyosutils.rm( file )
 
 
-def management_header( screen, options ):
+def management_header( screen, options, cursor ):
 	
 	#  Grab the current window size
 	size = screen.getmaxyx()
+	bot = 3+len(options.tasklist)
 
 	# Print the top window
 	screen.addstr( 1, 1, 'Task Management Console')
@@ -248,13 +319,20 @@ def management_header( screen, options ):
 	screen.addstr( 3, 1, 'Current Open Tasks')
 	
 	# Print all open tasks
-
+	for x in xrange( 0, len(options.tasklist)):
+		if x == cursor:
+			screen.attron( curses.A_BOLD )
+		
+		screen.addstr( 3+x, 1, str(x) + ': ' + str(options.tasklist[x].name) ) 
+		
+		if x == cursor:
+			screen.attroff( curses.A_BOLD )
 
 	# Print the footer
-	screen.addstr( 8, 1, '-----------------------------')
-	screen.addstr( 9, 1, '  Press any key to continue: ')
-	screen.addstr( 10, 1, ' Options: Q-Exit Program, C-Create Task, D-Delete Task, V-View Tasks')
-
+	screen.addstr( bot + 1, 1, '-----------------------------')
+	screen.addstr( bot + 2, 1, '  Press any key to continue: ')
+	screen.addstr( bot + 3, 1, ' Options: Q-Exit Program, C-Create Task, D-Delete Task, V-View Tasks')
+	screen.addstr( bot + 4, 1, '          Up/Dn Arrows- Navigate,  Enter-View, R-Refresh List')
 
 
 #   Management Console
@@ -263,19 +341,22 @@ def management_console( screen, options ):
 	#  Set the screen delay
 	screen.nodelay(True)
 	screen.timeout(200)
-	
+	cursor = 0
+
 	#  Start a loop to show the UI
 	while True:
 
 		#  Clear the console
 		screen.clear()
 
-		management_header( screen, options )
+		management_header( screen, options, cursor )
 
-
+		
+		# Compute the position of the cursor
+		pos = 5+len(options.tasklist)
 
 		# Grab user input
-		screen.move(9,30)
+		screen.move(pos,30)
 		screen.refresh()
 		selection = screen.getch()
 		
@@ -285,13 +366,31 @@ def management_console( screen, options ):
 		###################################
 		#  Exit Console
 		if selection == ord('Q') or selection == ord('q'):
-			screen.addstr(9,30,'Exiting Program')
+			screen.addstr( pos,30,'Exiting Program')
 			screen.refresh()
 			time.sleep(0.5)
 			break
+
+		#  Create Task
 		elif selection == ord('C') or selection == ord('c'):
 			create_task( TaskManager.GUI, options, screen )
-	
+		
+		#  View Task
+		elif selection == ord('V') or selection == ord('v') or selection == 13:
+			view_task(  TaskManager.GUI, options, screen, cursor );
+
+		#  Arrow Up Key
+		elif selection == curses.KEY_UP:
+			cursor -= 1
+			if cursor < 0:
+				cursor = len(options.tasklist) - 1
+
+		#  Arrow Down Key
+		elif selection == curses.KEY_DOWN:
+			cursor += 1
+			if cursor >= len(options.tasklist):
+				cursor = 0
+
 
 
 
@@ -300,11 +399,11 @@ def main( ):
 	
 	#  Process command-line arguments
 	options = Options( sys.argv )
-	
+
 	#  Read System Configuration
 	global program_data
 	program_data.read_config();
-
+	
 	if options.exit_after_init == True :
 		return 0;
 
