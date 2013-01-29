@@ -1,6 +1,7 @@
 #ifndef __SRC_CORE_TASK_HPP__
 #define __SRC_CORE_TASK_HPP__
 
+#include <deque>
 #include <fstream>
 #include <iostream>
 #include <string>
@@ -33,5 +34,7 @@ class Task{
 };
 
 ostream& operator << ( ostream& ostr, const Task& task );
+
+void new_task( deque<string> args, const string& task_directory );
 
 #endif

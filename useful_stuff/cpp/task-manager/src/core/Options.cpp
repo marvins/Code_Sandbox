@@ -29,8 +29,13 @@ void Options::init( int argc, char* argv[] ){
     read_config_file( config_filename );
     
     /// Load all tasks
-    load_tasks( point_directory );
+    load_tasks( task_directory );
     
+    /// Process any non-gui modes
+    if( mode == ADD_TASK ){
+        new_task( args, task_directory );
+        exit(0);
+    }
 
 }
 
@@ -63,8 +68,8 @@ void Options::write_config_file( const string& filename ){
     ofstream fout;
     fout.open( filename.c_str());
 
-    // write the location of the point file
-    fout << "POINT_FILENAME=" << point_directory << endl;
+    // write the location of the task file
+    fout << "TASK_FILENAME=" << task_directory << endl;
 
     fout.close();
 
@@ -76,7 +81,7 @@ void Options::set_defaults( ){
     config_filename = string(getenv("HOME")) + "/.task-manager/options.cfg";
     
     /// set the default configuration filename
-    point_directory = string(getenv("HOME")) + "/.task-manager/tasks";
+    task_directory = string(getenv("HOME")) + "/.task-manager/tasks";
     
     mode = GUI;
 }

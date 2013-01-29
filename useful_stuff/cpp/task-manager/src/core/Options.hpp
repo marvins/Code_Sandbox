@@ -45,7 +45,7 @@ class Options{
         string config_filename;
         
         /// Point Filename
-        string point_directory;
+        string task_directory;
         
         /// Remaining Command Line arguments
         std::deque<string> args;

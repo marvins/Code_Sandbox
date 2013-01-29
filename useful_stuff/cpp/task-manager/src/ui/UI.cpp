@@ -218,47 +218,7 @@ void create_task( const bool& GUI ){
 
         }
     }
-    else{
-
-       // create an empty task
-       Task newTask;
-
-       // load the entries
-       while( (int)options.args.size() > 0 ){
-            if( options.args[0] == "-name" ){
-
-                if( options.args.size() < 1 )
-                    throw string("Error: no filename given after -name");
-                else{
-                    newTask.name = options.args[1];
-                    options.args.pop_front();
-                }
-                options.args.pop_front();
-            } else if( options.args[0] == "-groups" ){
-
-                if( options.args.size() < 1 )
-                    throw string("Error: no groups given after -groups");
-                else{
-                    newTask.groups.push_back(options.args[1]);
-                    options.args.pop_front();
-                }
-                options.args.pop_front();
-            } else if( options.args[0] == "-notes" ){
-                options.args.pop_front();
-
-                if( options.args.size() < 1 )
-                    throw string("Error: no filename given after -name");
-                else{
-                    while( options.args.size() > 0 ){
-                         newTask.notes.push_back(options.args[0]);
-                        options.args.pop_front();
-                    }
-                }
-            }
-       }
-
-
-    }
+    
 
 }
 
