@@ -228,9 +228,11 @@ def create_task( GUI_MODE, options, screen = None ):
 
 	#  Create a new task
 	task = Task()
+	task.name = ""
 	
 	# Create a list of indeces to keep track of cursor progress
 	cursors=[0]
+	text = ['',[''],'']
 
 	#  Create a task based on the input options
 	if GUI_MODE == TaskManager.NO_GUI:
@@ -245,6 +247,19 @@ def create_task( GUI_MODE, options, screen = None ):
 	
 	#  Print a new GUI
 	else:	
+		
+		size = screen.getmaxyx()
+		
+		#  Current cursor position
+		cursor = 0
+
+		#  Current string cursor position
+		cpos = [0,0,[0]]
+		cnote = 0
+
+		maxc   = 2
+		noteheight = 1
+
 		while True:
 		
 			# Clear the console
@@ -254,19 +269,75 @@ def create_task( GUI_MODE, options, screen = None ):
 			screen.addstr( 1, 1, 'Task Management Console')
 			screen.addstr( 2, 1, '     Create Task')
 			screen.addstr( 3, 1, '-----------------------')
-			screen.addstr( 4, 1, 'Name: ' + task.name)
+			
+			#  Name
+			if cursor == 0:
+				screen.attron(curses.A_STANDOUT)
+			
+			screen.addstr( 4, 1, 'Name: ' + text[0])
+			if cursor == 0:	
+				screen.attroff(curses.A_STANDOUT)
+			
+			#  Groups
+			if cursor == 1:
+				screen.attron(curses.A_STANDOUT)
+			
 			screen.addstr( 5, 1, 'Groups: ' )
 
+			if cursor == 1:	
+				screen.attroff(curses.A_STANDOUT)
+			
+			#  Notes
+			if cursor == 2:
+				screen.attron( curses.A_STANDOUT)
+			
+			screen.addstr( 6, 1, 'Notes: ' )
+			if cursor == 2:
+				screen.attroff( curses.A_STANDOUT)
+			for x in xrange(0,len(text[2])):
+				screen.addstr( 7+x, 1, text[2][x] )
+
+			screen.addstr(size[0]-3, 1, '-----------------------------')
+			screen.addstr(size[0]-2, 1, '  Press any key to continue: ')
+			screen.addstr(size[0]-1, 1, ' Options: Type in values, Up/Dn Arrows- Switch, ESC- exit')
+
 			#  Print the menu
-			screen.refresh( options )
+			screen.refresh( )
 
 			# Grab user input
 			selection = screen.getch()
 	
-			#  If the user wants to submit the task
-			if selection == 13:
-				return
+			#  If the user wants to change items
+			if selection == curses.KEY_UP:
+				cursor -= 1
+				if cursor < 0:
+					cursor = maxc
+
+			elif selection == curses.KEY_DOWN:
+				cursor += 1
+				if cursor >= maxc+1:
+					cursor = 0
+
+			# Enter text
+			elif (selection >= ord('a') and selection <= ord('z') or (selection >= ord('A') and selection <= ord('Z'))):
+				text[cursor][cnote] += chr(selection)
+			elif selection == ord(' ') or selection == ord('.') or selection == ord(','):
+				text[cursor][cnote] += chr(selection)
 			
+			elif selection == 10 and cursor == 2:
+				text[cursor] += '\n'
+				noteheight += 1
+			
+			#  Backspace
+			elif selection == curses.KEY_BACKSPACE:
+				text[curses] = text[curses][cpos[curses]-1] + text[curses][cpos[curses]+1]
+
+			#  Save and exit
+			elif selection == 27 and cursor == 2:
+				cnote += 1
+				text[curses].append('')
+				return
+
 
 def refresh_list( options ):
 
@@ -274,7 +345,7 @@ def refresh_list( options ):
 	tasklist = pyosutils.ls( program_data.task_directory, ['.task'])
 	for taskfile in tasklist:
 		for task in options.tasklist:
-			if taskfile in task.name:
+			if not taskfile in task.name:
 				self.tasklist.append( readtask(taskfile) )
 
 
@@ -370,7 +441,7 @@ def management_header( screen, options, cursor ):
 	# Print the footer
 	screen.addstr( bot + 1, 1, '-----------------------------')
 	screen.addstr( bot + 2, 1, '  Press any key to continue: ')
-	screen.addstr( bot + 3, 1, ' Options: Q-Exit Program, C-Create Task, D-Delete Task, V-View Tasks')
+	screen.addstr( bot + 3, 1, ' Options: Q/ECS-Exit Program, C-Create Task, D-Delete Task, V-View Tasks')
 	screen.addstr( bot + 4, 1, '          Up/Dn Arrows- Navigate,  Enter-View, R-Refresh List')
 	screen.refresh()
 
@@ -409,7 +480,7 @@ def management_console( screen, options ):
 		#       Process User Input
 		###################################
 		#  Exit Console
-		if selection == ord('Q') or selection == ord('q'):
+		if selection == 27 or selection == ord('Q') or selection == ord('q'):
 			screen.addstr( pos,30,'Exiting Program')
 			screen.refresh()
 			time.sleep(0.5)
