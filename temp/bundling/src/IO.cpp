@@ -71,7 +71,7 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
 
 
     //create an output filename
-    string temp_filename = options.output_filename;
+    string temp_filename = options.output_filename + ".zip";
     string temp_directory= file_pop_rear( options.output_filename ) + "/bundles";
     string temp_directory_name="bundles";
     string temp_directory_path=file_pop_rear( options.output_filename );
@@ -156,10 +156,11 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
     cout << command << endl;
     system( command.c_str());
    
-    return;
     //check if files exist and delete
-    if( file_exists( temp_directory) == true ) 
+    if( file_exists( temp_directory) == true ){ 
         system(string(string("rm -rf ") + temp_directory ).c_str());
+        cout << string(string("rm -rf ") + temp_directory ).c_str() << endl;
+    }
     
     
     return;

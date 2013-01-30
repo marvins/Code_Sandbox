@@ -15,8 +15,8 @@ Options::Options( const int argc, char** argv ){
     bool found;
 
     //set defaults
-    status_filename = ".frame_analyzer";
-    config_filename = "frame_analyzer.cfg";
+    status_filename = "/opt/gorgonstare/bin/.frame_analyzer";
+    config_filename = "/opt/gorgonstare/bin/frame_analyzer.cfg";
 
     //initialize the parser
     parser.init( argc, argv, config_filename );

@@ -107,7 +107,8 @@ Metrics evaluate_frame_sets( deque<Camera>& cameras, Options& options, FilePtr& 
     */
     bool empty_camera = true;
     vector<SceneID> scene_list;
-    
+    cout << "Current Frame Sets: ";
+
     while( true ){
         
         
@@ -131,7 +132,7 @@ Metrics evaluate_frame_sets( deque<Camera>& cameras, Options& options, FilePtr& 
         //add all new scenes to the metrics tree
         metrics.append_scene_list( scene_list );
         
-        cout << "\r                  \r Found " << metrics.scene_list.size() << " Frame Sets" << flush;
+        cout << metrics.scene_list.size() << flush;
     }
     cout << endl;
 
