@@ -109,6 +109,7 @@ int main( int argc, char * argv[] ){
 
     } catch (string e){
         cout << e << endl;
+        return -1;
     }
 
     return 0;

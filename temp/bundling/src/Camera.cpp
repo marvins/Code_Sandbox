@@ -781,10 +781,9 @@ deque<Camera> find_camera_directories( Options const& options ){
         if( camera_found == false ){
             output.push_front( Camera(CAM_ID, options.collect_type, tname));
         }
-        cout << '\r' << "                            " << '\r' << "Found: " << output.size() << flush;
         
     }
-    cout << endl;
+    cout << "Cameras Found: " << output.size() << endl;
 
     return output;
 

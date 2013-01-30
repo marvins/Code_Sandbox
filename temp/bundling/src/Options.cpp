@@ -18,6 +18,10 @@ Options::Options( const int argc, char** argv ){
     status_filename = "/opt/gorgonstare/bin/.frame_analyzer";
     config_filename = "/opt/gorgonstare/bin/frame_analyzer.cfg";
 
+    // make sure the config files exist
+    if( PSR::Parser::fileExists(config_filename) == false )
+        config_filename = "frame_analyzer.cfg";
+
     //initialize the parser
     parser.init( argc, argv, config_filename );
     
