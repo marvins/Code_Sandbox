@@ -18,6 +18,8 @@ class Task{
         Task( const string& taskname );
 
         void read( const string& filename );
+        
+        static Task load( const string& filename );
 
         /// Name
         string name;
@@ -36,5 +38,7 @@ class Task{
 ostream& operator << ( ostream& ostr, const Task& task );
 
 void new_task( deque<string> args, const string& task_directory );
+
+void list_tasks( deque<string> args, const string& task_directory );
 
 #endif

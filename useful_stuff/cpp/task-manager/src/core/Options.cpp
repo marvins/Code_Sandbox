@@ -35,6 +35,15 @@ void Options::init( int argc, char* argv[] ){
     if( mode == ADD_TASK ){
         new_task( args, task_directory );
         exit(0);
+    } else if( mode == LIST_TASKS ){
+        list_tasks( args, task_directory );
+        exit(0);
+    } else if( mode == VIEW_TASK ){
+        //view_task( args, task_directory );
+        exit(0);
+    } else if( mode == DELETE_TASK ){
+        //delete_task( args, task_directory );
+        exit(0);
     }
 
 }
@@ -89,7 +98,7 @@ void Options::set_defaults( ){
 void Options::load_tasks( const string& task_dir ){
 
     /// get the list of tasks in the directory
-    vector<string> tasklist = list_directory( task_dir ); 
+    vector<string> tasklist = list_directory<vector<string> >( task_dir ); 
 
     /// open each task
     for( size_t i=0; i<tasklist.size(); i++ ){
@@ -107,7 +116,8 @@ void Options::process_args( int argc, char* argv[] ){
             mode = ADD_TASK; 
         else if( string(argv[i]) == "-d" )
             mode = DELETE_TASK;
-        
+        else if( string(argv[i]) == "-l" )
+            mode = LIST_TASKS;
         else
             args.push_back( argv[i]);
     }

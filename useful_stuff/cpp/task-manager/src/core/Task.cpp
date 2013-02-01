@@ -2,6 +2,8 @@
 
 #include "FileUtilities.hpp"
 
+#include <boost/regex.hpp>
+
 Task::Task( ){
 
 }
@@ -35,7 +37,7 @@ void Task::read( const string& filename ){
         }
         // check line
         else if( line.find("Name:") != string::npos ){
-            name = line.substr(5);
+            name = string_trim(line.substr(5));
         }
         else if( line.find("Groups:") != string::npos ){
             vector<string> tgroups = string_split(string_trim(line.substr(7)), ",");
@@ -55,6 +57,13 @@ void Task::read( const string& filename ){
 
     fin.close();
 
+}
+
+Task Task::load( const string& filename ){
+
+    Task newTask;
+    newTask.read( filename );
+    return newTask;
 }
 
 ostream& operator << ( ostream& ostr, const Task& task ){
@@ -129,4 +138,55 @@ void new_task( deque<string> args, const string& task_directory ){
 }
 
 
+void list_tasks( deque<string> args, const string& task_directory ){
+
+    // some variables
+    string name_regex=".*";
+
+    // process command-line arguments
+    while( args.size() > 0 ){
+
+        // grab the argument
+        string arg = args[0];
+        args.pop_front();
+
+        // check if its the name value
+        if( arg == "-name" ){
+            name_regex=args[0];
+            args.pop_front();
+        }
+        else{
+            throw string("Error: Unknown parameter: ") + arg;
+        }
+    }
+    
+    // test our regex object
+    boost::regex e;
+    try{
+        e = boost::regex( name_regex );
+    }catch(...){
+        cout << "Error: Invalid regex string" << endl;
+        exit(1);
+    }
+
+    // Get a list of all files in the task directory
+    deque<string> task_files = list_directory<deque<string> >( task_directory );
+
+    // Open each task file and extract the task data
+    deque<Task> task_list;
+    for( size_t i=0; i<task_files.size(); i++ ){
+
+        // load the task
+        Task tempTask = Task::load( task_files[i] );
+        
+        // make sure it passes the name regex
+        boost::cmatch what;
+        if( boost::regex_match( tempTask.name.c_str(), what, e ) == true ){
+            cout << tempTask.name << " matches " << endl;
+        }
+
+    }
+    
+
+}
 

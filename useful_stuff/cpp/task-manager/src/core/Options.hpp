@@ -10,7 +10,8 @@ using namespace std;
 
 enum TASK_MODE{  GUI,
                  ADD_TASK,
-                 LIST_TASK,
+                 LIST_TASKS,
+                 VIEW_TASK,
                  DELETE_TASK
               };
 
