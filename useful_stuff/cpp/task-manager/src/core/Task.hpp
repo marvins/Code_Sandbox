@@ -41,4 +41,6 @@ void new_task( deque<string> args, const string& task_directory );
 
 void list_tasks( deque<string> args, const string& task_directory );
 
+void clear_tasks( deque<string> args, const string& task_directory );
+
 #endif

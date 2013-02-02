@@ -17,7 +17,7 @@ void user_interface( );
 
 void print_header(string const& title, int const& maxX );
 
-void print_table( const int& maxX, const int& maxY, const int& offY );
+void print_table( const int& maxX, const int& maxY, const int& offY, const int& cursor );
 
 void print_footer( const int& type,  int const& maxX, int const& maxY );
 

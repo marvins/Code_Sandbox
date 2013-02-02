@@ -9,6 +9,15 @@ bool file_exists( string const& filename ){
     return fs::exists( fs::path( filename ) );
 }
 
+/**
+ * Delete a file
+ */
+void file_delete( const string& filename ){
+
+    if( file_exists( filename ) == true )
+        fs::remove( fs::path(filename));
+}
+
 
 vector<string> string_split( string const& line, const string& pattern ){
 

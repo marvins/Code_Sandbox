@@ -10,6 +10,7 @@ alias clearrm="~/.scripts/clearrm.sh"
 alias lsd="~/.scripts/formatls.sh"
 alias rm-manager="~/.scripts/rm-manager.sh"
 
+#  Create task manager utilities
 alias task-manager="${HOME}/.scripts/task-manager"
 alias create-task="~/.scripts/task-manager -c"
 alias delete-task="~/.scripts/task-managery -d"

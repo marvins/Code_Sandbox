@@ -12,7 +12,8 @@ enum TASK_MODE{  GUI,
                  ADD_TASK,
                  LIST_TASKS,
                  VIEW_TASK,
-                 DELETE_TASK
+                 DELETE_TASK,
+                 CLEAR_TASKS
               };
 
 class Options{

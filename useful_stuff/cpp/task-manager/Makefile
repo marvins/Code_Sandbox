@@ -8,6 +8,7 @@ LIBS=-L/opt/local/lib -lboost_system -lboost_filesystem -lboost_regex -lncurses
 
 bin/task-manager: $(SOURCES) $(HEADERS)
 	g++ $(SOURCES) -o $@ $(LIBS) $(CFLAGS)
+	./deploy.sh
 
 clean:
 	rm bin/task-manager

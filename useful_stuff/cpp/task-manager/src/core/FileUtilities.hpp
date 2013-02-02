@@ -41,6 +41,11 @@ std::string num2str( TP const& value ){
 bool file_exists( string const& filename );
 
 /**
+ * Delete a file
+ */
+void file_delete( string const& filename );
+
+/**
  * Split the string
  */
 vector<string> string_split( const string& line, const string& pattern );

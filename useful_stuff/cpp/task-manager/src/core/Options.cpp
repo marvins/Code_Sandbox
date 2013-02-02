@@ -44,6 +44,9 @@ void Options::init( int argc, char* argv[] ){
     } else if( mode == DELETE_TASK ){
         //delete_task( args, task_directory );
         exit(0);
+    } else if( mode == CLEAR_TASKS ){
+        clear_tasks( args, task_directory );
+        exit(0);
     }
 
 }
@@ -118,6 +121,8 @@ void Options::process_args( int argc, char* argv[] ){
             mode = DELETE_TASK;
         else if( string(argv[i]) == "-l" )
             mode = LIST_TASKS;
+        else if( string(argv[i]) == "-x" )
+            mode = CLEAR_TASKS;
         else
             args.push_back( argv[i]);
     }
