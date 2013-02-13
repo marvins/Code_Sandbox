@@ -6,6 +6,7 @@ using namespace std;
  * Check if the file exists
  */
 bool file_exists( string const& filename ){
+    
     return fs::exists( fs::path( filename ) );
 }
 
@@ -38,4 +39,24 @@ std::string string_trim( std::string const& in ){
     return out;
 }
 
+std::string file_basename( const string& pathname ){
     
+#if ( BOOST_VERSION / 100 % 1000 ) < 46
+    return fs::path(pathname).filename();//.string();
+#else
+    return fs::path(pathname).filename().string();
+#endif
+
+}
+
+std::string file_pathname( const string& name ){
+
+#if ( BOOST_VERSION / 100 % 1000 ) < 46 
+    return fs::path( name ).parent_path().string();
+#else 
+    return fs::path( name ).parent_path().string();
+#endif
+
+}
+
+

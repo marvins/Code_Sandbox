@@ -70,5 +70,8 @@ LISTTYPE list_directory( const string& directory ){
 
 std::string string_trim( std::string const& in );
 
+std::string file_basename( const string& name );
+
+std::string file_pathname( const string& name );
 
 #endif

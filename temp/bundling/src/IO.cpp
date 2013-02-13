@@ -149,8 +149,21 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
     else
         throw string("NOT IMPLEMENTED YET");
 
-    //call zip
+    //  Copy the cal file
+    string cal_filename = string("/cal_files/");
+    if( options.sensor_serial_found ){
+        if( options.collect_type == EO )
+            cal_filename += string("eo");
+        else
+            cal_filename += string("ir");
+        cal_filename += string("_cal_file_") + options.pod_serial_number;
+    }
+    else{
+        cal_filename += "*";    
+    }
+    cout << "calling " << cal_filename << endl;
 
+    //call zip
     change_directory( temp_directory_path);
     string command = string("zip -r0 ") + temp_filename + string(" ") + temp_directory_name;// + " >> /dev/null";
     cout << command << endl;

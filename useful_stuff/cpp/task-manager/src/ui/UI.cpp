@@ -55,6 +55,11 @@ void user_interface( ){
         else if( arg == 'c' || arg == 'C' ){
             create_task( );
         }
+        
+        // view the selected task
+        else if( arg == 'V' || arg == 'v' ){
+            view_task( );
+        }
 
         // move the cursor up
         else if( arg == KEY_UP ){

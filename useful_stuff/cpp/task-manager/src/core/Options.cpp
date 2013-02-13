@@ -17,6 +17,9 @@ void Options::init( int argc, char* argv[] ){
     
     /// Process Command-Line Args
     process_args( argc, argv );
+    
+    if( file_exists( task_directory ) == false )
+        system(string(string("mkdir -p ")+task_directory).c_str());
 
     /// Make sure the config file exists
     if( file_exists( config_filename ) == false ){
@@ -30,7 +33,7 @@ void Options::init( int argc, char* argv[] ){
     
     /// Load all tasks
     load_tasks( task_directory );
-    
+
     /// Process any non-gui modes
     if( mode == ADD_TASK ){
         new_task( args, task_directory );
@@ -76,6 +79,7 @@ void Options::read_config_file( const string& filename ){
 
 void Options::write_config_file( const string& filename ){
 
+     
     // open the file
     ofstream fout;
     fout.open( filename.c_str());

@@ -82,6 +82,9 @@ class Options{
         int number_ir_frames;   /*< Number of ir frames per step  */
 
         int image_depth;        /*< Image depth */
+        
+        string sensor_serial;
+        bool   sensor_serial_found;
 
         /**************************************************************/
         /*                      EVAL-ONLY PARAMETERS                  */

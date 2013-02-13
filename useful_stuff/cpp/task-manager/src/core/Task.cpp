@@ -171,7 +171,7 @@ void list_tasks( deque<string> args, const string& task_directory ){
 
     // Get a list of all files in the task directory
     deque<string> task_files = list_directory<deque<string> >( task_directory );
-
+    
     // Open each task file and extract the task data
     deque<Task> task_list;
     for( size_t i=0; i<task_files.size(); i++ ){
