@@ -129,6 +129,10 @@ function load_packages( ){
 
 
 packages="
+          PackageKit-gtk-module.i686
+          PackageKit-glib-devel.i686
+          xulrunner.i686
+          gtk2-engines-devel.i686
           libv4l-devel
           boost-devel
           boost-static
