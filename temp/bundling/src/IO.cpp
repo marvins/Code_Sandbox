@@ -71,7 +71,7 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
 
 
     //create an output filename
-    string temp_filename = options.output_filename;
+    string temp_filename = options.output_filename + ".zip";
     string temp_directory= file_pop_rear( options.output_filename ) + "/bundles";
     string temp_directory_name="bundles";
     string temp_directory_path=file_pop_rear( options.output_filename );
@@ -149,17 +149,37 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
     else
         throw string("NOT IMPLEMENTED YET");
 
-    //call zip
+    //  Copy the cal file
+    string cal_filename = string("/cal_files/");
+    if( options.sensor_serial_found ){
+        if( options.camera_type == "EO" )
+            cal_filename += string("eo");
+        else
+            cal_filename += string("ir");
+        cal_filename += string("_cal_file_") + options.sensor_serial;
 
+        // if file does not exist, then use default all
+        if( file_exists( cal_filename ) == false )
+            cal_filename = "/cal_files/*";
+    }
+    else{
+        cal_filename += "*";    
+    }
+    system(string(string("mkdir -p ")+temp_directory_name + string("/cal_files/")).c_str());
+    system(string(string("cp ")+cal_filename+ string(" ") + temp_directory_name + string("/cal_files/")).c_str());
+    
+
+    //call zip
     change_directory( temp_directory_path);
-    string command = string("zip -r0 ") + temp_filename + string(" ") + temp_directory_name;// + " >> /dev/null";
+    string command = string("zip -r0 ") + temp_filename + string(" ") + temp_directory_name + " >> /dev/null";
     cout << command << endl;
     system( command.c_str());
    
-    return;
     //check if files exist and delete
-    if( file_exists( temp_directory) == true ) 
+    if( file_exists( temp_directory) == true ){ 
         system(string(string("rm -rf ") + temp_directory ).c_str());
+        cout << string(string("rm -rf ") + temp_directory ).c_str() << endl;
+    }
     
     
     return;

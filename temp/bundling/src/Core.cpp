@@ -55,7 +55,7 @@ deque<ImageBundle> compute_image_bundles( deque<Camera>& cameras, Options const&
         
         //add the image bundles to the bundle list
         bundle_output.insert( bundle_output.end(), bundles.begin(), bundles.end() );
-        cout << "SIZE: " << bundle_output.size() << endl;
+        cout << "Bundle Sets: " << bundle_output.size() << endl;
 
         if( bundle_output.size() > options.max_bundle_limit )
         {
@@ -107,7 +107,8 @@ Metrics evaluate_frame_sets( deque<Camera>& cameras, Options& options, FilePtr& 
     */
     bool empty_camera = true;
     vector<SceneID> scene_list;
-    
+    cout << "Current Frame Sets: ";
+
     while( true ){
         
         
@@ -131,7 +132,7 @@ Metrics evaluate_frame_sets( deque<Camera>& cameras, Options& options, FilePtr& 
         //add all new scenes to the metrics tree
         metrics.append_scene_list( scene_list );
         
-        cout << "\r                  \r Found " << metrics.scene_list.size() << " Frame Sets" << flush;
+        cout << metrics.scene_list.size() << flush;
     }
     cout << endl;
 

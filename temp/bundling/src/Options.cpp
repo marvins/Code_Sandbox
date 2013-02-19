@@ -15,8 +15,12 @@ Options::Options( const int argc, char** argv ){
     bool found;
 
     //set defaults
-    status_filename = ".frame_analyzer";
-    config_filename = "frame_analyzer.cfg";
+    status_filename = "/opt/gorgonstare/bin/.frame_analyzer";
+    config_filename = "/opt/gorgonstare/bin/frame_analyzer.cfg";
+
+    // make sure the config files exist
+    if( PSR::Parser::fileExists(config_filename) == false )
+        config_filename = "frame_analyzer.cfg";
 
     //initialize the parser
     parser.init( argc, argv, config_filename );
@@ -35,7 +39,16 @@ Options::Options( const int argc, char** argv ){
     collect_name = parser.getItem_string("COLLECT_NAME", found);
     if( found == false )
         throw string("ERROR: no COLLECT_NAME found in configuration");
-
+    
+    // grab the sensor serial number
+    sensor_serial = parser.getItem_string("SENSOR_SERIAL", found);
+    if( found == false ){
+        cout << "ERROR: no SENSOR_SERIAL in configuration, will collect all cal files" << endl;
+        sensor_serial_found = false;
+    }
+    else{
+        sensor_serial_found = true;
+    }
 
     //load the camera type
     camera_type = parser.getItem_string("CAMERA_TYPE", found);
