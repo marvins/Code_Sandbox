@@ -1,0 +1,126 @@
+#! /bin/bash
+#
+# This is a script to configure and install a RHEL/Scientific Linux/Centos
+# machine with the required development software. 
+
+
+##########################################################
+#         Configure VIM
+##########################################################
+function configure_vim( ){
+
+    vimdir="../vim"
+
+    # Check if the .vim directory exists
+    if [ ! -d "~/.vim" ]; then
+        cp -r $vimdir/vim    $HOME/.vim
+    fi
+	if [ ! -f "~/.vimrc" ]; then
+        cp    $vimdir/vimrc  $HOME/.vimrc
+    fi
+
+}
+
+##########################################################
+#    This install bash utilities
+##########################################################
+function install_bash_utils( ){
+    
+    echo "Installing bash utilitites"
+
+
+    # Copy the directory over
+    mkdir -p $HOME/.scripts
+    cp -r ../bash/scripts/* $HOME/.scripts/
+
+    # Test for the entry in the bashrc
+    if [ "$(grep ". $HOME/.scripts/scripts.sh" $HOME/.bashrc)" == "" ]; then
+        echo "Adding line to bashrc"
+        echo ". $HOME/.scripts/scripts.sh" >> $HOME/.bashrc
+    fi
+
+    # Source the script
+    if [ ! "${INITIALIZEANSI_INSTALLED}" == "1" ]; then
+        source $HOME/.bashrc
+    fi
+
+    # Create the cron entry for the archive clearing script
+    sed -i "s/_NAME_HERE_/$(whoami)/g" $HOME/.scripts/clearrm.cron
+    
+    # pull the current crontab for the user
+    sudo cat /var/spool/cron/$(whoami) > CRONDATA
+    sudo chmod 777 CRONDATA
+    sudo chown ms6401:ms6401 CRONDATA
+
+    # Search for a current entry, and if there isn't one, then add it
+    if [ "$(grep "clearrm.cron" CRONDATA )" == "" ]; then
+        echo "* * * * 0 ./.scripts/clearrm.cron" >> CRONDATA
+        sudo cp CRONDATA /var/spool/cron/$(whoami)
+    fi
+
+    # Clear the temp file created
+    rm CRONDATA
+}
+
+
+#########################################################
+#   This reads from the RHEL Package Manager
+function load_packages( ){
+
+packages="
+     libopencv-dev
+     libboost-all-dev
+     libgdal-dev
+	 build-essential
+     vim 
+	 "
+ 
+for package in ${packages}
+    do
+        clear
+        echo "Installing: ${package}"
+        sudo  apt-get install ${package}
+        read -p "Press [Enter] key to continue..."
+    done
+}
+
+
+#######################################
+#           MAIN FUNCTION             #
+#######################################
+echo "Configure Packages"
+read -p "Do you wish to load recommended packages? (y/n - n is default): " ANS
+if [ "$ANS" == "y" -o "$ANS" == "Y" ]; then
+    load_packages
+fi
+echo ""
+
+######################################
+#           Bash Utilities           #
+######################################
+echo "Install Bash Utilities"
+read -p "Do you wish to install Bash utility scripts? (y/n - n is default): " ANS
+if [ "$ANS" == "y" -o "$ANS" == "Y" ]; then
+    install_bash_utils
+fi
+echo ""
+
+###################################
+#       VIM Configuration         #
+###################################
+echo "Configuring VIM"
+read -p "Do you wish to configure VIM? (y/n - n is default): " ANS
+if [ "$ANS" == "y" -o "$ANS" == "Y" ]; then
+	configure_vim
+fi
+echo ""
+
+######################################
+#         Git configuration          #
+######################################
+echo "Git Configuration"
+echo "git config --global user.name "Marvin Smith""
+git config --global user.name "Marvin Smith"
+echo "git config --global user.email marvin.smith@sncorp.com"
+git config --global user.email marvin.smith@sncorp.com
+
