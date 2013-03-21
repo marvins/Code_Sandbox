@@ -3,20 +3,6 @@
 # This is a script to configure and install a RHEL/Scientific Linux/Centos
 # machine with the required development software. 
 
-#   Other Software To Install
-# 
-#   Netbeans
-#   Eclipse
-#   Java SDK
-#   Google Chrome
-#   Google Earth
-#   Dropbox
-#   Google Music Manager
-#   NVidia Drivers
-#   Cuda Drivers
-#   Matlab
-#   Intel Toolchain
-
 
 ##########################################################
 #         Configure VIM
@@ -46,7 +32,6 @@ function install_bash_utils( ){
     # Copy the directory over
     mkdir -p $HOME/.scripts
     cp -r ../bash/scripts/* $HOME/.scripts/
-    cp -r ../../python/task-manager/*.py $HOME/.scripts/
 
     # Test for the entry in the bashrc
     if [ "$(grep ". $HOME/.scripts/scripts.sh" $HOME/.bashrc)" == "" ]; then
@@ -77,111 +62,26 @@ function install_bash_utils( ){
     rm CRONDATA
 }
 
-#########################################################
-#   This reads from the repoforge Package Manager
-function load_RepoForge_packages( ){
-
-packages="ffmpeg-devel
-         "	
-
-    #  Enable repo
-    echo "Enabling RepoForge Packages"
-    sudo yum-config-manager --enable repoforge-release
-    read -p "Press [Enter] key to continue..."
-
-    for package in ${packages}
-    do
-        clear
-        echo "Installing: ${package}"
-        sudo yum install ${package}
-        read -p "Press [Enter] key to continue..."
-    done
-    
-    echo "Disabling RepoForge Packages"
-    sudo yum-config-manager --disable repoforge-release
-    read -p "Press [Enter] key to continue..."
-
-}	
-
-#########################################################
-#   This reads from the EPEL Package Manager
-function load_EPEL_packages( ){
-
-packages="libgeotiff-devel
-	      gdal-devel
-          python-matplotlib
-          python-devel
-         "	
-
-
-    for package in ${packages}
-    do
-        clear
-        echo "Installing: ${package}"
-        sudo yum install ${package}
-        read -p "Press [Enter] key to continue..."
-    done
-}
 
 #########################################################
 #   This reads from the RHEL Package Manager
 function load_packages( ){
 
-
 packages="
-          nautilus-extensions
-          nautilus-devel
-	      python-docutils
-          PackageKit-gtk-module.i686
-          PackageKit-glib-devel.i686
-          xulrunner.i686
-          gtk2-engines-devel.i686
-          libv4l-devel
-          boost-devel
-          boost-static
-          libGL-devel 
-          libGLU-devel
-          libGLUw-devel
-          libSM.i686
-          yum-plugin-fastestmirror
-          libXrender.i686
-          gcc-c++
-          qt-devel
-          ant
-          vim-enhanced
-          gstreamer-devel
-          texlive-latex
-          python-sphinx
-          gstreamer-plugins-base-devel
-          yum-plugin-priorities
-          PackageKit-gstreamer-plugin
-          gtk2-devel
-          zlib-devel
-          jasper-devel
-          freeglut-devel
-          libtiff-devel
-          bzip2-devel
-          thunderbird
-          cmake-gui"
-
-autorun=0
-
-echo "Configure Packages"
-read -p "Do you wish to automatically install without user input? (y/n - n is default): " ANS
-if [ "$ANS" == "y" -o "$ANS" == "Y" ]; then
-	autorun=1
-fi
-
+     libopencv-dev
+     libboost-all-dev
+     libgdal-dev
+	 build-essential
+     vim 
+	 "
+ 
 for package in ${packages}
     do
+        clear
         echo "Installing: ${package}"
-	if [ $autorun -eq 0 ]; then
-        	sudo yum install ${package}
-        	read -p "Press [Enter] key to continue..."
-    	else
-		sudo yum install -y ${package}
-	fi
-	done
+        sudo  apt-get install ${package}
+        read -p "Press [Enter] key to continue..."
+    done
 }
 
 
@@ -192,20 +92,6 @@ echo "Configure Packages"
 read -p "Do you wish to load recommended packages? (y/n - n is default): " ANS
 if [ "$ANS" == "y" -o "$ANS" == "Y" ]; then
     load_packages
-fi
-echo ""
-
-echo "Configure EPEL Packages"
-read -p "Do you wish to load recommended EPEL packages? (y/n - n is default): " ANS
-if [ "$ANS" == "y" -o "$ANS" == "Y" ]; then
-    load_EPEL_packages
-fi
-echo ""
-
-echo "Configure RPMForge Packages"
-read -p "Do you wish to load recommended RPMForge packages? (y/n - n is default): " ANS
-if [ "$ANS" == "y" -o "$ANS" == "Y" ]; then
-    load_RepoForge_packages
 fi
 echo ""
 
