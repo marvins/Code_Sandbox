@@ -1,0 +1,24 @@
+\documentclass[12pt]{report}
+
+
+
+\begin{document}
+
+\section*{Windows}
+
+\subsection*{MSVC 2012 x64}
+For Microsoft Visual Studios 11 (2012), use the command line x64 cross
+compiler console.
+
+\begin{verbatim}
+#  Create the bjam build tool
+bootstrap.bat
+
+#  Build the entire library
+bjam.exe  --toolset=msvc --build-type=complete --build-dir=C:\opt\local
+\end{verbatim}
+
+
+
+
+\end{document}
