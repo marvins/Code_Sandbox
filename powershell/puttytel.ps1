@@ -1,17 +1,24 @@
 ﻿####################################################
-#     PuTTYTel-GS2
+#     PuTTYTel
 #    Author:    Marvin Smith
-#                     Sierra Nevada Corporation
+#
 #    Date:       3/1/2013
 
 #  Load the vb assembly
 [void] [System.Reflection.Assembly]::LoadWithPartialName("'Microsoft.VisualBasic")
 
 
+#  Path the Putty executable
+$PUTTY='C:\Program Files (x86)\PuTTY\putty.exe'
 
-#  Temp variables for username and password
-${global:UNAME}=""
-${global:PSSWD}=""
+#   Port values for each subsystem
+$port_values=@( 7002, 7003, 7004, 7005, 7008, 7009, 7010, 7011, 7012)
+$port_names=@( "Central", "Slice1", "Slice2", "Slice3", "Slice4","Slice5","Slice6","Slice7","Slice8")
+
+#  Desired IP Address
+$ip='sysmgr'
+
+
 
 #########################################################
 #      A function to check if a PID is still alive      #
@@ -32,7 +39,8 @@ Function check_PID( $pidval ){
 #    Enter username     #
 #########################
 Function enter_username( $PIDNUM, $portnum ){
-
+    
+    Write-Host "INFO: $($PIDNUM)"
     #  Check if the PID is still alive
     $pid_alive = check_PID $PIDNUM.Id
 
@@ -54,16 +62,17 @@ Function enter_username( $PIDNUM, $portnum ){
         $option=Read-Host "Does port $portnum require user login? (y/n - default) "
         if( $option -eq "Y" -or $option -eq "y" ){
 
-            ${global:UNAME}=Read-Host 'Please enter username '
-            ${global:PSSWD}=Read-Host -AsSecureString 'Please enter password '
+            ${UNAME}=Read-Host 'Please enter username '
+            ${PSSWD}=Read-Host -AsSecureString 'Please enter password '
 
             # Get the attention of the current system and enter the username
             [Microsoft.VisualBasic.Interaction]::AppActivate($PIDNUM.ID)
-            [System.Windows.Forms.SendKeys]::SendWait("${global:UNAME}{ENTER}")    
+            [System.Windows.Forms.SendKeys]::SendWait("$UNAME{ENTER}")    
             
             #  Wait a few seconds and send password
             wait 2
-            [System.Windows.Forms.SendKeys]::SendWait("${global:UNAME}{ENTER}")
+            [System.Windows.Forms.SendKeys]::SendWait("$PSSWD{ENTER}")
+            
 
 
         }
@@ -104,62 +113,36 @@ Function wait( $tm ) {
   Start-Sleep -seconds $tm
 }
 
-$PUTTY='C:\Program Files (x86)\PuTTY\putty.exe'
 
-#   Port values for each subsystem
-$central_port=7002
-$slice1_port=7003
-$slice2_port=7004
-$slice3_port=7005
-$slice4_port=7008
-$slice5_port=7009
-$slice6_port=7010
-$slice7_port=7011
-$slice8_port=7012
-
-
-#  Desired IP Address
-$ip='sysmgr-11'
-
-
+###########################################################
+#                 Start of Main Program                   #
+###########################################################
 #  Open the required PuTTY Sessions
-$putty_pid1=Start-Process -FilePath $PUTTY -PassThru -ArgumentList "-telnet ${ip} -P ${central_port}"
-$putty_pid2=Start-Process -FilePath $PUTTY -PassThru -ArgumentList "-telnet ${ip} -P ${slice1_port}"
-$putty_pid3=Start-Process -FilePath $PUTTY -PassThru -ArgumentList "-telnet ${ip} -P ${slice2_port}"
-$putty_pid4=Start-Process -FilePath $PUTTY -PassThru -ArgumentList "-telnet ${ip} -P ${slice3_port}"
-$putty_pid5=Start-Process -FilePath $PUTTY -PassThru -ArgumentList "-telnet ${ip} -P ${slice4_port}"
-$putty_pid6=Start-Process -FilePath $PUTTY -PassThru -ArgumentList "-telnet ${ip} -P ${slice5_port}"
-$putty_pid7=Start-Process -FilePath $PUTTY -PassThru -ArgumentList "-telnet ${ip} -P ${slice6_port}"
-$putty_pid8=Start-Process -FilePath $PUTTY -PassThru -ArgumentList "-telnet ${ip} -P ${slice7_port}"
-$putty_pid9=Start-Process -FilePath $PUTTY -PassThru -ArgumentList "-telnet ${ip} -P ${slice8_port}"
+$pid_list=@()
+for( $x=0; $x -lt $port_values.Length; $x++ ){
+    $pid_list+=(Start-Process -FilePath $PUTTY -PassThru -ArgumentList "-telnet $ip -P  $($port_values[$x])")
+}
 
+#########################
 #  Print PIDs
-echo "Central has PID $(($putty_pid1).Id)"
-echo "Slice 1 has PID $(($putty_pid2).Id)"
-echo "Slice 2 has PID $(($putty_pid2).Id)"
-echo "Slice 3 has PID $(($putty_pid2).Id)"
-echo "Slice 4 has PID $(($putty_pid2).Id)"
-echo "Slice 5 has PID $(($putty_pid2).Id)"
-echo "Slice 6 has PID $(($putty_pid2).Id)"
-echo "Slice 7 has PID $(($putty_pid2).Id)"
-echo "Slice 8 has PID $(($putty_pid2).Id)"
+for( $x=0; $x -lt $port_values.Length; $x++ ){
+    Write-Host "$($port_names[$x]) has PID $(($pid_list[$x]).Id)"
 
-#   Start loop
+}
+
+
+#################################################
+#      Prompt Initial Instructions to User      #
 $option=Read-Host 'Please wait for all slices to load. Now is a good time to position your windows. press Enter to continue'
 
 
-#  Enter username
-wait 2
+#################################################
+#             Log into each system              #
 echo "Starting Log-In Process"
-enter_username $putty_pid1 $central_port
-enter_username $putty_pid2 $slice1_port
-enter_username $putty_pid3 $slice2_port
-enter_username $putty_pid4 $slice3_port
-enter_username $putty_pid5 $slice4_port
-enter_username $putty_pid6 $slice5_port
-enter_username $putty_pid7 $slice6_port
-enter_username $putty_pid8 $slice7_port
-enter_username $putty_pid9 $slice8_port
+for( $x=0; $x -lt $port_values.Length; $x++ ){
+    enter_username $($pid_list[$x])  $($port_values[$x])
+}
+
 
 #  Start infinite loop
 $breakloop=$false
@@ -181,15 +164,9 @@ while ($breakloop -eq $false){
 
     #   Otherwise we have a command and need to enter it into each PuTTY Session
     else{
-        enter_command $putty_pid1 $central_port $input
-        enter_command $putty_pid2 $slice1_port  $input
-        enter_command $putty_pid3 $slice2_port  $input
-        enter_command $putty_pid4 $slice3_port  $input
-        enter_command $putty_pid5 $slice4_port  $input
-        enter_command $putty_pid6 $slice5_port  $input
-        enter_command $putty_pid7 $slice6_port  $input
-        enter_command $putty_pid8 $slice7_port  $input
-        enter_command $putty_pid9 $slice8_port  $input
+        for( $x=0; $x -lt $port_values.Length; $x++ ){
+            enter_command $($pid_list[$x])  $($port_names[$x]) $input
+        }
     }
 
 
@@ -203,40 +180,11 @@ if( $option -eq 'Y' -or $option -eq 'y' ){
 
     #####################################
     #  Check if the PID is still alive, and kill if necessary
-    
-    #  Central
-    $pid_alive = check_PID $((putty_pid1).Id)
-    if( $pid_alive -eq $true ){ Stop-Process $putty_pid1 }
-
-    #  Slice 1
-    $pid_alive = check_PID $((putty_pid2).Id)
-    if( $pid_alive -eq $true ){ Stop-Process $putty_pid2 }
-    
-    #  Slice 2
-    $pid_alive = check_PID $((putty_pid3).Id)
-    if( $pid_alive -eq $true ){ Stop-Process $putty_pid3 }
-    
-    #  Slice 3
-    $pid_alive = check_PID $((putty_pid4).Id)
-    if( $pid_alive -eq $true ){ Stop-Process $putty_pid4 }
-    
-    #  Slice 4
-    $pid_alive = check_PID $((putty_pid5).Id)
-    if( $pid_alive -eq $true ){ Stop-Process $putty_pid5 }
-    
-    #  Slice 5
-    $pid_alive = check_PID $((putty_pid6).Id)
-    if( $pid_alive -eq $true ){ Stop-Process $putty_pid6 }
-    
-    #  Slice 6
-    $pid_alive = check_PID $((putty_pid7).Id)
-    if( $pid_alive -eq $true ){ Stop-Process $putty_pid7 }
-    
-    #  Slice 7
-    $pid_alive = check_PID $((putty_pid8).Id)
-    if( $pid_alive -eq $true ){ Stop-Process $putty_pid8 }
-    
-    #  Slice 8
-    $pid_alive = check_PID $((putty_pid9).Id)
-    if( $pid_alive -eq $true ){ Stop-Process $putty_pid9 }
+    for( $x=0; $x -lt $port_values.Length; $x++ ){
+        if( $(check_PID $(($pid_list[$x]).Id)) -eq $true ){
+            Stop-Process $pid_list[$x]
+        } 
+    }
+   
 }
+
