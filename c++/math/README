@@ -10,5 +10,6 @@ GEOMETRY
     - Quaternion: A quaternion library for managing rotations
 
 CALCULUS
-
+    - Runge Kutta: A basic integration tool.  I am eventually going to implement this, as
+    I never saved my initial classroom example.
 
