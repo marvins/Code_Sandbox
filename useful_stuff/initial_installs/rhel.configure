@@ -139,7 +139,8 @@ packages="
           libv4l-devel
           boost-devel
           boost-static
-          libGL-devel 
+          libGL-devel
+          qtwebkit-devel
           libGLU-devel
           libGLUw-devel
           libSM.i686

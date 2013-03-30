@@ -1,5 +1,0 @@
-test_images/outdoor01.jpg
-test_images/outdoor02.jpg
-test_images/outdoor03.jpg
-test_images/outdoor04.jpg
-test_images/outdoor05.jpg
