@@ -1,0 +1,420 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%% Simple LaTeX CV Template %%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% NOTE: If you find that it says                                     %%
+%%                                                                    %%
+%%                           1 of ??                                  %%
+%%                                                                    %%
+%% at the bottom of your first page, this means that the AUX file     %%
+%% was not available when you ran LaTeX on this source. Simply RERUN  %%
+%% LaTeX to get the ``??'' replaced with the number of the last page  %%
+%% of the document. The AUX file will be generated on the first run   %%
+%% of LaTeX and used on the second run to fill in all of the          %%
+%% references.                                                        %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%% Document Setup %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% Don't like 10pt? Try 11pt or 12pt
+\documentclass[10pt]{article}
+
+% This is a helpful package that puts math inside length specifications
+\usepackage{calc}
+\usepackage{url}
+
+% Simpler bibsection for CV sections
+% (thanks to natbib for inspiration)
+\makeatletter
+\newlength{\bibhang}
+\setlength{\bibhang}{1em}
+\newlength{\bibsep}
+ {\@listi \global\bibsep\itemsep \global\advance\bibsep by\parsep}
+\newenvironment{bibsection}
+    {\minipage[t]{\linewidth}\list{}{%
+        \setlength{\leftmargin}{\bibhang}%
+        \setlength{\itemindent}{-\leftmargin}%
+        \setlength{\itemsep}{\bibsep}%
+        \setlength{\parsep}{\z@}%
+        }}
+    {\endlist\endminipage}
+\makeatother
+
+% Layout: Puts the section titles on left side of page
+\reversemarginpar
+
+%
+%         PAPER SIZE, PAGE NUMBER, AND DOCUMENT LAYOUT NOTES:
+%
+% The next \usepackage line changes the layout for CV style section
+% headings as marginal notes. It also sets up the paper size as either
+% letter or A4. By default, letter was used. If A4 paper is desired,
+% comment out the letterpaper lines and uncomment the a4paper lines.
+%
+% As you can see, the margin widths and section title widths can be
+% easily adjusted.
+%
+% ALSO: Notice that the includefoot option can be commented OUT in order
+% to put the PAGE NUMBER *IN* the bottom margin. This will make the
+% effective text area larger.
+%
+% IF YOU WISH TO REMOVE THE ``of LASTPAGE'' next to each page number,
+% see the note about the +LP and -LP lines below. Comment out the +LP
+% and uncomment the -LP.
+%
+% IF YOU WISH TO REMOVE PAGE NUMBERS, be sure that the includefoot line
+% is uncommented and ALSO uncomment the \pagestyle{empty} a few lines
+% below.
+%
+
+%% Use these lines for letter-sized paper
+\usepackage[paper=letterpaper,
+            %includefoot, % Uncomment to put page number above margin
+            marginparwidth=1.2in,     % Length of section titles
+            marginparsep=.05in,       % Space between titles and text
+            margin=1in,               % 1 inch margins
+            includemp]{geometry}
+
+%% Use these lines for A4-sized paper
+%\usepackage[paper=a4paper,
+%            %includefoot, % Uncomment to put page number above margin
+%            marginparwidth=30.5mm,    % Length of section titles
+%            marginparsep=1.5mm,       % Space between titles and text
+%            margin=25mm,              % 25mm margins
+%            includemp]{geometry}
+
+%% More layout: Get rid of indenting throughout entire document
+\setlength{\parindent}{0in}
+
+%% This gives us fun enumeration environments. compactitem will be nice.
+\usepackage{paralist}
+
+%% Reference the last page in the page number
+%
+% NOTE: comment the +LP line and uncomment the -LP line to have page
+%       numbers without the ``of ##'' last page reference)
+%
+% NOTE: uncomment the \pagestyle{empty} line to get rid of all page
+%       numbers (make sure includefoot is commented out above)
+%
+\usepackage{fancyhdr,lastpage}
+\pagestyle{fancy}
+%\pagestyle{empty}      % Uncomment this to get rid of page numbers
+\fancyhf{}\renewcommand{\headrulewidth}{0pt}
+\fancyfootoffset{\marginparsep+\marginparwidth}
+\newlength{\footpageshift}
+\setlength{\footpageshift}
+          {0.5\textwidth+0.5\marginparsep+0.5\marginparwidth-2in}
+\lfoot{\hspace{\footpageshift}%
+       \parbox{4in}{\, \hfill %
+                    \arabic{page} of \protect\pageref*{LastPage} % +LP
+%                    \arabic{page}                               % -LP
+                    \hfill \,}}
+
+% Finally, give us PDF bookmarks
+\usepackage{color,hyperref}
+\definecolor{darkblue}{rgb}{0.0,0.0,0.3}
+\hypersetup{colorlinks,breaklinks,
+            linkcolor=darkblue,urlcolor=darkblue,
+            anchorcolor=darkblue,citecolor=darkblue}
+
+%%%%%%%%%%%%%%%%%%%%%%%% End Document Setup %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%% Helper Commands %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% The title (name) with a horizontal rule under it
+%
+% Usage: \makeheading{name}
+%
+% Place at top of document. It should be the first thing.
+\newcommand{\makeheading}[1]%
+        {\hspace*{-\marginparsep minus \marginparwidth}%
+         \begin{minipage}[t]{\textwidth+\marginparwidth+\marginparsep}%
+                {\large \bfseries #1}\\[-0.15\baselineskip]%
+                 \rule{\columnwidth}{1pt}%
+         \end{minipage}}
+
+% The section headings
+%
+% Usage: \section{section name}
+%
+% Follow this section IMMEDIATELY with the first line of the section
+% text. Do not put whitespace in between. That is, do this:
+%
+%       \section{My Information}
+%       Here is my information.
+%
+% and NOT this:
+%
+%       \section{My Information}
+%
+%       Here is my information.
+%
+% Otherwise the top of the section header will not line up with the top
+% of the section. Of course, using a single comment character (%) on
+% empty lines allows for the function of the first example with the
+% readability of the second example.
+\renewcommand{\section}[2]%
+        {\pagebreak[2]\vspace{1.3\baselineskip}%
+         \phantomsection\addcontentsline{toc}{section}{#1}%
+         \hspace{0in}%
+         \marginpar{
+         \raggedright \scshape #1}#2}
+
+% An itemize-style list with lots of space between items
+\newenvironment{outerlist}[1][\enskip\textbullet]%
+        {\begin{itemize}[#1]}{\end{itemize}%
+         \vspace{-.6\baselineskip}}
+
+% An environment IDENTICAL to outerlist that has better pre-list spacing
+% when used as the first thing in a \section
+\newenvironment{lonelist}[1][\enskip\textbullet]%
+        {\vspace{-\baselineskip}\begin{list}{#1}{%
+        \setlength{\partopsep}{0pt}%
+        \setlength{\topsep}{0pt}}}
+        {\end{list}\vspace{-.6\baselineskip}}
+
+% An itemize-style list with little space between items
+\newenvironment{innerlist}[1][\enskip\textbullet]%
+        {\begin{compactitem}[#1]}{\end{compactitem}}
+
+% An environment IDENTICAL to innerlist that has better pre-list spacing
+% when used as the first thing in a \section
+\newenvironment{loneinnerlist}[1][\enskip\textbullet]%
+        {\vspace{-\baselineskip}\begin{compactitem}[#1]}
+        {\end{compactitem}\vspace{-.6\baselineskip}}
+
+% To add some paragraph space between lines.
+% This also tells LaTeX to preferably break a page on one of these gaps
+% if there is a needed pagebreak nearby.
+\newcommand{\blankline}{\quad\pagebreak[2]}
+
+% Uses hyperref to link DOI
+\newcommand\doilink[1]{\href{http://dx.doi.org/#1}{#1}}
+\newcommand\doi[1]{doi:\doilink{#1}}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%% End Helper Commands %%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+%%%%%%%%%%%%%%%%%%%%%%%%% Begin CV Document %%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\begin{document}
+\makeheading{Marvin L.~Smith}
+
+\section{Contact Information}
+%
+% NOTE: Mind where the & separators and \\ breaks are in the following
+%       table.
+%
+% ALSO: \rcollength is the width of the right column of the table
+%       (adjust it to your liking; default is 1.85in).
+%
+\newlength{\rcollength}\setlength{\rcollength}{2.95in}%
+%
+\begin{tabular}[t]{@{}p{\textwidth-\rcollength}p{\rcollength}}
+207 Imperial Blvd, 
+& \textsl{E-mail:} 
+\href{mailto:marvin\_smith1@me.com}{marvin\_smith1@me.com}\\
+Reno, NV 89503
+& \textsl{Cell:} (775) 997-4261 \\          
+& \textsl{Fax:} (775) 784-1877 \\
+& \textsl{www: marvins.github.com}\\
+& \textsl{Github: http://github.com/marvins}\\
+\end{tabular}
+
+%**************************************************************
+%                      WORK EXPERIENCE
+%**************************************************************
+\section{Work Experience}
+%SNC
+\href{http://www.sncorp.com}{
+     \textbf{Software Engineer, ISR Group}}\\
+     Sierra Nevada Corporation, Sparks, NV\\
+     January 2012 - Present
+     \begin{outerlist}
+     \item Assisting on the software development and hardware 
+           integration teams for the Gorgon Stare Wide Area 
+           Surveillance Program.
+     \item Particular tasks involve image processing, OS security compliance, some networking\\
+     \end{outerlist}
+
+%NASA
+\href{http://ti.arc.nasa.gov/tech/asr/intelligent-robotics/}
+     {\textbf{Intern, Intelligent Robotics Group, NASA Ames Research Center}},\\
+      Mountain View, CA \hspace{48mm}
+      
+      \begin{outerlist}
+      \item June 2011 - August 2011
+         \begin{innerlist}
+         \item[] Developed a crater detection algorithm for use in planetary
+               surface characterization and terrain reconstruction. Primary use
+               is for the alignment of LIDAR data from the LRO Satellite
+               to images taken from the Apollo 15 and 17 missions.
+         \end{innerlist}
+      
+      \item June 2010 - August 2010
+      \begin{innerlist}
+      \item[] Developed algorithms for the open-source NASA Vision Workbench library
+            which removes outliers from stereo reconstructions of the lunar surface.\\
+      \end{innerlist}
+      \end{outerlist}
+%USAF
+\href{http://www.nv.ngb.army.mil/air/index.cfm}
+     {\textbf{Staff Sergeant, Nevada Air National Guard}},\\
+     Guidance and Control Shop, Avionics Flight, 152 MXS, Nevada Air National Guard\\
+     August 2006 - Present
+     \begin{outerlist}
+     \item Instrumentation and Flight Controls Journeyman (2A553B).
+     \item Maintenance and repair of USAF C-130 Guidance and Control Systems. Systems
+           include Engine Instrumentation, Autopilot, Fuel Quantity,
+           Digital Flight Data Recorder, and Flight Director.
+     \item Operation Enduring Freedom Deployment, Bagram AB, Afghanistan\\     
+           August 2009 - December 2009
+     \item Operation Iraqi Freedom Deployment, Talil AB, Iraq\\               
+           October 2007 - January 2008
+     \item Active Security Clearance\\
+     \end{outerlist}
+%CVL
+\href{http://www.cse.unr.edu/CVL/}
+     {\textbf{Undergraduate Assistant, Computer Vision Lab}},\\
+     Department of Computer Science and Engineering, University of Nevada, Reno\\
+     August 2010 - May 2011, August 2011 - January 2012
+     \begin{outerlist}
+     \item Teaching Assistant
+        \begin{innerlist}
+        \item CS 302, Data Structures: CS 474, Image Processing: CS 485, Computer Vision
+        \item Instructor: Dr. George Bebis\\
+        \end{innerlist}
+     \end{outerlist}
+%NATC
+\href{http://www.natc-ht.com}
+     {\textbf{Co-Op, Special Programs Division}},\\
+     Nevada Automotive Test Center, Silver Springs, NV \\
+     May 2009 - January 2009
+     \begin{outerlist}
+     \item Primary task was to aid in the testing and implementation of electronic systems for
+           the USMC Marine Personnel Carrier Technology Demonstrator vechicle.
+     \item Wrote feasibility reports on electrical systems used, researched and compared
+           COTS electronic solutions with Mil-Std and SAE requirements, 
+           as well as bench-tested electronic systems prior to installation.
+     \end{outerlist}
+%**************************************************************
+%                      EDUCATION
+%**************************************************************
+\section{Education}
+\href{http://www.unr.edu/}{\textbf{University of Nevada, Reno}},
+Reno, NV 
+\begin{outerlist}
+\item[] Bachelors of Science, 
+        \href{http://www.cse.unr.edu/}
+             {Computer Science}
+             (Graduated: May 2012)
+        \begin{innerlist}
+        \item UNR GPA: \emph{3.65}, CS GPA: \emph{3.6}
+        \item Adviser:
+              \href{http://www.cse.unr.edu/~bebis/}
+                   {Dr. George Bebis}
+        \item Area of Interest: Computer Vision, Artificial Intelligence, Image Processing
+        \item Specialized Undergraduate Courses: Computer Vision, Advanced Computer Vision, 
+              Artificial Intelligence, Simulation Physics, and Image Processing.\\
+        \end{innerlist}
+\item[] Masters of Science, 
+        \href{http://www.cse.unr.edu/}{Computer Science (Accelerated M.S./B.S. Program)}\\
+             (expected graduation date: May 2014)
+        \begin{innerlist}
+        \item Adviser:
+              \href{http://www.unr.edu/~bebis/}
+                   {Dr. George Bebis}
+        \item Research Topic: Human Face Sketch Recognition using Wavelets.
+        \item Courses Completed: Machine Learning, Computer Graphics\\
+        \end{innerlist}
+\end{outerlist}
+%UNITED STATES AIR FORCE
+\href{http://www.af.mil/}{\textbf{Nevada Air National Guard}}
+152 Maintenance Squadron, 152 Air Wing, Reno, NV
+\begin{outerlist}
+\item[] 2A553B, {Instrumentation and Flight Controls Journeyman}
+        \begin{innerlist}
+        \item Instrumentation and Flight Controls Craftsman Course, (Currently Taking)
+        \item Airman Leadership School, Correspondance, May 2011
+        \item Instrumentation and Flight Controls Apprentice School,\\
+        \href{http://www.sheppard.af.mil/}
+             {Sheppard Air Force Base, TX}, June 2007
+        \item Electronic Principles School,\\
+        \href{http://www.keesler.af.mil/}
+             {Keesler Air Force Base, MS}, January 2007
+        \item Basic Military Training,\\
+        \href{http://www.lackland.af.mil/}
+             {Lackland Air Force Base, TX}, November 2006\\
+        \end{innerlist}
+\end{outerlist}
+%**************************************************************
+%                     TECHNICAL SKILLS
+%*************************************************************
+\section{Technical Skills}
+\begin{outerlist}
+
+\item{\textbf{Programming Languages/Tools}:} C++, Java, Python, C\#, Matlab, \LaTeX{}, Windows/Linux Scripting, some Haskell
+
+\item{\textbf{Software Experience}:} 
+   \begin{outerlist}
+   \item Computer Vision and Image Processing : OpenCV, Matlab, NASA Vision Workbench
+   \item Numerical Computation : Numerical Python, Matlab, FLANN, LibSVM
+   \item Geographic Information Systems and Satellite Imagery : GDAL
+   \end{outerlist}
+
+\item{\textbf{Mechanical}:} Electronics repair, Soldering, Hand/Power Tools, use of 
+                     Military/Civilian technical manuals and wiring diagrams.
+
+\item{\textbf{Math}:} Multivariable Calculus, Linear Algebra, Signal Processing
+
+\end{outerlist}
+
+%**************************************************************
+%                     PUBLICATIONS
+%*************************************************************
+\section{Publications}
+\begin{outerlist}
+\item Marvin Smith, Ara Nefian, 
+``Outlier removal in stereo reconstructions of orbital images", 
+International Symposium on Visual Computing, 2010.
+\end{outerlist}
+
+%**************************************************************
+%                      GROUPS
+%**************************************************************
+\section{Groups}
+\begin{outerlist}
+\item[] \href{http://www.cse.unr.edu/~acm/}{President, Association for Computing Machinery}, UNR  (Jan 2010 - May 2011)
+\item[] Member, Enlisted Association for the National Guard (EANGUS)
+\item[] Member, Resource Protection Team, 152 Security Forces Squadron, NVANG 
+\end{outerlist}
+%**************************************************************
+%                     ETC
+%**************************************************************
+\section{Hobbies}
+Yoga, swimming, collecting antique instruments
+
+%**************************************************************
+%                   REFERENCES 
+%**************************************************************
+\section{References}
+\begin{itemize}
+\item Samuel Hancock\\
+      Technical Director, Sierra Nevada Corporation\\
+      Phone: 775-849-6244
+\item Master Sergeant Jon Wolland\\
+      Guidance and Control Shop Supervisor, 152 MXS, NVANG\\
+      Phone: 775-788-4565
+\item Dr. George Bebis\\
+      Professor of Computer Science and UNR Computer Vision Lab Director\\
+      Phone: 775-784-6463
+\item Dr. Ara Nefian\\
+      Senior Research Scientist, NASA Ames Research Center\\
+      Phone: 650-604-0845
+\end{itemize}
+\end{document}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%% End CV Document %%%%%%%%%%%%%%%%%%%%%%%%%%%%%

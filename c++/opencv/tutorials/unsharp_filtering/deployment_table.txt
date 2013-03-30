@@ -1,0 +1,5 @@
+Unsharp_Tutorial_Cover.jpg     doc/tutorials/imgproc/table_of_content_imgproc/images/imgtrans/Unsharp_Tutorial_Cover.jpg
+UnsharpMask_Demo.cpp           samples/cpp/tutorial_code/ImgProc/UnsharpMask_Demo.cpp
+unsharp/                       doc/tutorials/imgproc/imgtrans/unsharp
+table_of_content_imgproc.rst   doc/tutorials/imgproc/table_of_content_imgproc/table_of_content_imgproc.rst
+tocDefinitions.rst             doc/tutorials/definitions/tocDefinitions.rst
