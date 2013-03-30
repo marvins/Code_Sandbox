@@ -1,0 +1,63 @@
+\documentclass[12pt]{report}
+
+
+%  Title and cover info
+\title{GDAL Notes}
+\author{Marvin Smith}
+\date{\today}
+
+\begin{document}
+
+\section*{Building GDAL}
+
+\subsection*{Windows}
+For Windows, in order to use the OGR module, you need to build and install
+the PROJ.4 library.  
+
+Once this has been completed, configure  
+
+
+\subsection*{Linux}
+GDAL has an enormous number of dependencies. Here are some notes on building required
+dependencies.
+
+\subsubsection*{Dependencies}
+
+\noindent\textbf{Ubuntu 12.10 - apt}
+\begin{itemize}
+\item swig2.0
+\item grass-dev
+\item libpoppler-dev
+\item libkml-dev
+\item libgeotiff-dev
+\item python-all-dev
+\item python-matplotlib
+\item python-numpy
+\item python-scipy
+\item python-kml
+\end{itemize}
+
+
+\subsubsection*{Configuration and Building}
+\addcontentsline{toc}{Configuration and Building}
+
+First, create the configuration file.
+\begin{verbatim}
+./autogen.sh
+\end{verbatim}
+
+Next, run the configure script.  This repo has \verb+configure_script.sh+
+\begin{verbatim}
+./configure [options]
+\end{verbatim}
+
+Finally, use
+\begin{verbatim}
+make
+sudo make install
+\end{verbatim}
+
+
+
+
+\end{document}
