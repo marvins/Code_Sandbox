@@ -32,6 +32,17 @@ Building OpenCV is painful on RHEL systems and slightly less painful on Ubuntu.
 \item python-sphinx
 \end{itemize}
 
+\subsection*{RHEL 6.4 Dependencies}
+All testing was done on Scientific Linux 6.4
+
+\begin{itemize}
+\item Download and install the newest CMake RPM from ATRPMS repo site. You do not need the entire
+      repo, just the two RPMs for CMake and CMake-GUI
+\item \texttt{texlive-latex} RPM from the base distribution.  Helps build the documentation.
+\item \texttt{ant} RPM for building Java.
+\item \texttt{python-devel, python-sphinx} RPMs for building Python bindings.
+\item \texttt{qt-devel} RPM for building Qt highgui bindings.
+\end{itemize}
 
 \end{document}
 
