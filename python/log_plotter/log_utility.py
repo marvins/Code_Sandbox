@@ -227,19 +227,25 @@ def parse_command_line_options( args ):
 ############################################
 #                 MAIN                     #              
 ############################################
-def main( ):
-	""" 
-	Main driver for the log parsing tool
-	"""
+def main( inargs = [] ):    
+    """ 
+    Main driver for the log parsing tool
+    """
+ 
+    args=[]
+    if len(sys.argv) > 0 :
+        args=sys.argv
+    else:
+        args=inargs
 
-	# Parse command-line options
-	options = parse_command_line_options( sys.argv )
+    # Parse command-line options
+    options = parse_command_line_options( args )
 	
-	# Parse logfile
-	data = open_and_parse_logfile( options )
+    # Parse logfile
+    data = open_and_parse_logfile( options )
 	
-	# write to csv
-	write_csv( data, options )
+    # write to csv
+    write_csv( data, options )
 
 if __name__ == "__main__":
-	main()
+	main(inargs = [])

@@ -13,7 +13,8 @@ $PUTTY='C:\Program Files (x86)\PuTTY\putty.exe'
 
 #   Port values for each subsystem
 $port_values=@( 7002, 7003, 7004, 7005, 7008, 7009, 7010, 7011, 7012)
-$port_names=@( "Central", "Slice1", "Slice2", "Slice3", "Slice4","Slice5","Slice6","Slice7","Slice8")
+$port_names=@( "System A", "System B", "System C", "System D", "System E","System F","System G","System H","System I")
+$ip_addresses=$( 'sysmgr', 'sysmgr', 'sysmgr', 'sysmgr', 'sysmgr', 'sysmgr', 'sysmgr', 'sysmgr', 'sysmgr')
 
 #  Desired IP Address
 $ip='sysmgr'
@@ -40,17 +41,17 @@ Function check_PID( $pidval ){
 #########################
 Function enter_username( $PIDNUM, $portnum ){
     
-    Write-Host "INFO: $($PIDNUM)"
     #  Check if the PID is still alive
     $pid_alive = check_PID $PIDNUM.Id
 
     #  If is is not alive, then ignore
     if( $pid_alive -ne $null ){
+        
         echo "Found Port $portnum"
 
         #  Get the attention of the current window
         [Microsoft.VisualBasic.Interaction]::AppActivate($PIDNUM.ID)
-        [void] [System.Reflection.Assembly]::LoadWithPartialName("'System.Windows.Forms")
+        [void] [System.Reflection.Assembly]::LoadWithPartialName("System.Windows.Forms")
         
         #  Send two Enter Keystrokes to check for user input
         [System.Windows.Forms.SendKeys]::SendWait("{ENTER}")
@@ -120,7 +121,7 @@ Function wait( $tm ) {
 #  Open the required PuTTY Sessions
 $pid_list=@()
 for( $x=0; $x -lt $port_values.Length; $x++ ){
-    $pid_list+=(Start-Process -FilePath $PUTTY -PassThru -ArgumentList "-telnet $ip -P  $($port_values[$x])")
+    $pid_list+=(Start-Process -FilePath $PUTTY -PassThru -ArgumentList "-telnet $($ip_addresses[$x]) -P  $($port_values[$x])")
 }
 
 #########################
@@ -133,7 +134,7 @@ for( $x=0; $x -lt $port_values.Length; $x++ ){
 
 #################################################
 #      Prompt Initial Instructions to User      #
-$option=Read-Host 'Please wait for all slices to load. Now is a good time to position your windows. press Enter to continue'
+$option=Read-Host 'Please wait for all systems to load. Now is a good time to position your windows. press Enter to continue'
 
 
 #################################################
