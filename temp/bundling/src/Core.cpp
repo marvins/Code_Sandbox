@@ -132,7 +132,7 @@ Metrics evaluate_frame_sets( deque<Camera>& cameras, Options& options, FilePtr& 
         //add all new scenes to the metrics tree
         metrics.append_scene_list( scene_list );
         
-        cout << metrics.scene_list.size() << flush;
+        cout << metrics.scene_list.size() << endl;//flush;
     }
     cout << endl;
 
