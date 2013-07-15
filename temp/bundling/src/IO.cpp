@@ -167,7 +167,8 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
     }
     system(string(string("mkdir -p ")+temp_directory_name + string("/cal_files/")).c_str());
     system(string(string("cp ")+cal_filename+ string(" ") + temp_directory_name + string("/cal_files/")).c_str());
-   
+  
+
     //  copy the telmetry data
     string telem_filename = string("/dsu/central-data/collect/telemetry/");
     {
