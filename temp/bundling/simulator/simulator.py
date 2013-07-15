@@ -23,7 +23,7 @@ MO='AUG'
 DY=18
 
 START_TIME=[8,0]
-END_TIME=[8,30]
+END_TIME=[8,10]
 
 N_TOGGLE=False
 R_TOGGLE=False
@@ -243,6 +243,27 @@ def build_layout_01( ):
 
 	build_layout_02( BASE_PATH )
 
+
+#----------------------------------------------#
+#         Build Some Example Cal Files         #
+#----------------------------------------------#
+def build_cal_files( ):
+	"""
+	Create the file structure for cal files
+	"""
+
+	# create the directory for housing cal files
+	CAL_FILE_BASE="/central-data/cal_files";
+	create_directory( CAL_FILE_BASE )
+
+	# create some dummy files
+	create_file( CAL_FILE_BASE + "/eo_cal_file_1001.xml");
+	create_file( CAL_FILE_BASE + "/eo_cal_file_1002.xml");
+	create_file( CAL_FILE_BASE + "/ir_cal_file_1001.xml");
+	create_file( CAL_FILE_BASE + "/ir_cal_file_1002.xml");
+
+
+
 #----------------------------------------------#
 #                   Main Driver				   #
 #----------------------------------------------#
@@ -255,6 +276,10 @@ def main():
 
 	# recusively enter the nodes for layout and start building the tree
 	build_layout_01( )
+
+
+	#  Create the file structure for the cal files
+	build_cal_files( )
 
 
 if __name__ == "__main__":

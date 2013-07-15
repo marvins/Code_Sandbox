@@ -123,7 +123,7 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
         int stride = bundles.size()/options.number_bundles;
         
         // pick the required number of bundles from the group
-        for( int i=0; (i<options.number_bundles && (i<bundles.size())); i++ ){
+        for( int i=0; (i<options.number_bundles && (i<(int)bundles.size())); i++ ){
             
             //for each bundle, group them into a proposed directory
             string bundle_name = string("bundle_scene_") + num2str(bundles[i*stride].scene_number);
@@ -150,7 +150,7 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
         throw string("NOT IMPLEMENTED YET");
 
     //  Copy the cal file
-    string cal_filename = string("/cal_files/");
+    string cal_filename = string("/dsu/central-data/cal_files/");
     if( options.sensor_serial_found ){
         if( options.camera_type == "EO" )
             cal_filename += string("eo");
@@ -160,14 +160,28 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
 
         // if file does not exist, then use default all
         if( file_exists( cal_filename ) == false )
-            cal_filename = "/cal_files/*";
+            cal_filename = "/dsu/central-data/cal_files/*";
     }
     else{
         cal_filename += "*";    
     }
     system(string(string("mkdir -p ")+temp_directory_name + string("/cal_files/")).c_str());
     system(string(string("cp ")+cal_filename+ string(" ") + temp_directory_name + string("/cal_files/")).c_str());
-    
+   
+    //  copy the telmetry data
+    string telem_filename = string("/dsu/central-data/collect/telemetry/");
+    {
+        // find the name of the telemetry file
+        
+        // look for it to see if it exists
+
+        // copy the file over
+        
+        // otherwise copy everything
+
+
+    }
+
 
     //call zip
     change_directory( temp_directory_path);
