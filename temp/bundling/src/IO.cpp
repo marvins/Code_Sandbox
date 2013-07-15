@@ -150,7 +150,7 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
         throw string("NOT IMPLEMENTED YET");
 
     //  Copy the cal file
-    string cal_filename = string("/dsu/central-data/cal_files/");
+    string cal_filename = string("/cal_files/");
     if( options.sensor_serial_found ){
         if( options.camera_type == "EO" )
             cal_filename += string("eo");
@@ -160,7 +160,7 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
 
         // if file does not exist, then use default all
         if( file_exists( cal_filename ) == false )
-            cal_filename = "/dsu/central-data/cal_files/*";
+            cal_filename = "/cal_files/*";
     }
     else{
         cal_filename += "*";    

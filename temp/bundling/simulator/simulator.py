@@ -253,7 +253,7 @@ def build_cal_files( ):
 	"""
 
 	# create the directory for housing cal files
-	CAL_FILE_BASE="/central-data/cal_files";
+	CAL_FILE_BASE=BASE_PATH+"/central-data/cal_files";
 	create_directory( CAL_FILE_BASE )
 
 	# create some dummy files
