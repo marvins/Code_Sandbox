@@ -1,3 +1,4 @@
+*.context
 output.txt
 scripts
 bundles.zip

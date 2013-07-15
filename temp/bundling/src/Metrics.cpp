@@ -137,7 +137,7 @@ vector<pair<string,int> > Metrics::query_failures_by_camera()const{
     
     //make sure we have camera names to add
     if( camera_names.size() <= 0 ){
-        cout << "ERROR: No camera names" << endl;
+        cout << "ERROR: No frames to analyze" << endl;
         return vector<pair<string,int> >();
     }
 
@@ -159,7 +159,7 @@ vector<pair<string,int> > Metrics::query_failures_by_camera()const{
             failure_list[it->camera_idx_list[i]].second++;
         }
     }
-
+    
     //negate this list to find the failures
     for( size_t i=0; i<failure_list.size(); i++ )
         failure_list[i].second = scene_list.size() - failure_list[i].second;
@@ -195,10 +195,11 @@ vector<pair<int,vector<string> > > Metrics::query_failures_by_scene( )const{
 
             //iterate through the complete range of camera indeces, compare this to the index list
             for( size_t i=0; i<(size_t)camera_cnt; i++ ){
-
+                
                 //check if the index is in the list, skip, else add it to the results
-                if( find(it->camera_idx_list.begin(), it->camera_idx_list.end(), i) != it->camera_idx_list.end() )
+                if( find(it->camera_idx_list.begin(), it->camera_idx_list.end(), i) == it->camera_idx_list.end() ){
                     temp_item.second.push_back(camera_names[i]);
+                }
             }
         }
         results.push_back( temp_item );

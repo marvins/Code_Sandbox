@@ -232,7 +232,13 @@ void Options::usage( const string& arg0 ){
     cout << "      options" << endl;
     cout << "         help, -help, --help:  Display usage instructions" << endl;
     cout << "         -c <config file>   : choose a different config file" << endl;
-
+    cout << "         --KEY=VALUE  or -KEY VALUE:  Set a Key/Value pair setting." << endl;
+    cout << "             For a full list of key/value pairs, see the configuration file." << endl;
+    cout << "             These can all be overwritten by command-line settings." << endl;
+    cout << " " << endl;
+    cout << "      examples:" << endl;
+    cout << "          --PROGRAM_MODE=<EVAL|BUNDLE> : Run the program to bundle images or do analysis on existing frames." << endl;
+    cout << "          --CAMERA_TYPE=<EO|IR> : Choose the camera type to bundle or analyze" << endl;
     cout << endl;
     exit(0);
 }
