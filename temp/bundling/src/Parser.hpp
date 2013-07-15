@@ -70,6 +70,14 @@ class Parser{
         */
         static bool fileExists( const std::string& filename );
 
+        /**
+         * Get the current configuration filename
+         *
+         * @return Configuration Filename
+         */
+        std::string get_configuration_filename()const;
+
+
     private:
         
         /** 

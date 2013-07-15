@@ -26,7 +26,18 @@ using namespace std;
 int main( int argc, char * argv[] ){
 
     try{
-
+        
+        /// check for help flags
+        for( size_t i=1; i<argc; i++ ){
+            if( string(argv[i]) == "help" ||
+                string(argv[i]) == "-h" ||
+                string(argv[i]) == "-help" ||
+                string(argv[i]) == "--help" ){
+                
+                Options::usage( argv[0] );
+            }
+        }
+        
         ///load the configuration here
         Options options( argc, argv );
     

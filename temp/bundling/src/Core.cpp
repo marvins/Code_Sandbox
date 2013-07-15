@@ -57,7 +57,7 @@ deque<ImageBundle> compute_image_bundles( deque<Camera>& cameras, Options const&
         bundle_output.insert( bundle_output.end(), bundles.begin(), bundles.end() );
         cout << "Bundle Sets: " << bundle_output.size() << endl;
 
-        if( bundle_output.size() > options.max_bundle_limit )
+        if( (int)bundle_output.size() > options.max_bundle_limit )
         {
             break;
         }

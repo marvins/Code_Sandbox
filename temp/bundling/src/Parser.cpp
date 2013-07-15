@@ -570,3 +570,10 @@ bool PSR::Parser::fileExists( const string& filename ){
     return fs::exists( fs::path( filename ));
 }
 
+/**
+ * Return the configuration filename
+ */
+string PSR::Parser::get_configuration_filename()const{
+    return config_filename;
+}
+

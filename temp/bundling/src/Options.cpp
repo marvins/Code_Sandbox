@@ -13,7 +13,7 @@
 Options::Options( const int argc, char** argv ){
 
     bool found;
-
+    
     //set defaults
     status_filename = "/opt/gorgonstare/bin/.frame_analyzer";
     config_filename = "/opt/gorgonstare/bin/frame_analyzer.cfg";
@@ -24,7 +24,11 @@ Options::Options( const int argc, char** argv ){
 
     //initialize the parser
     parser.init( argc, argv, config_filename );
-    
+   
+    // check if there is a different config filename
+    if( config_filename != parser.get_configuration_filename() ){
+        config_filename = parser.get_configuration_filename();
+    }
 
     //query path information
     input_base = parser.getItem_string("INPUT_BASE", found);
@@ -222,10 +226,15 @@ void Options::print()const{
 /**
  * Print the help menu
  */
-void Options::usage(){
+void Options::usage( const string& arg0 ){
 
-    cout << "Usage" << endl;
+    cout << "Usage:  " << arg0 << "[options]" << endl;
+    cout << "      options" << endl;
+    cout << "         help, -help, --help:  Display usage instructions" << endl;
+    cout << "         -c <config file>   : choose a different config file" << endl;
+
     cout << endl;
+    exit(0);
 }
 
 

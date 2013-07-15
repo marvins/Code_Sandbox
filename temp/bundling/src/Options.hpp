@@ -49,7 +49,7 @@ class Options{
         /**
          * Print the help menu
         */
-        void usage();
+        static void usage( const std::string& arg0 );
         
         /**************************************************************/
         /*                        CORE PARAMETERS                     */
