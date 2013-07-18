@@ -150,6 +150,7 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
         throw string("NOT IMPLEMENTED YET");
 
     //  Copy the cal file
+    cout << "Copying Cal Files" << endl;
     string cal_filename = string("/cal_files/");
     if( options.sensor_serial_found ){
         if( options.camera_type == "EO" )
@@ -170,17 +171,18 @@ void compress_bundles( deque<ImageBundle> const& bundles, Options const& options
   
 
     //  copy the telmetry data
+    cout << "Copying Telemetry Files" << endl;
     string telem_filename = string("/dsu/central-data/collect/telemetry/");
     {
         // find the name of the telemetry file
         
         // look for it to see if it exists
+        telem_filename += "*.bin";
 
         // copy the file over
+        system(string(string("mkdir -p ")+temp_directory_name + string("/telemetry/")).c_str());
+        system(string(string("cp ")+telem_filename+ string(" ") + temp_directory_name + string("/telemetry/")).c_str());
         
-        // otherwise copy everything
-
-
     }
 
 

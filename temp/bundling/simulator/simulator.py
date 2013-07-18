@@ -263,6 +263,16 @@ def build_cal_files( ):
 	create_file( CAL_FILE_BASE + "/ir_cal_file_1002.xml");
 
 
+def build_telemetry_files( ):
+	
+	TELEM_FILE_BASE=BASE_PATH+"/central-data/collect/telemetry"
+	create_directory( TELEM_FILE_BASE )
+
+	# create some dummy files
+	create_file( TELEM_FILE_BASE + "/telem_60HZ01.bin" );
+	create_file( TELEM_FILE_BASE + "/telem_60HZ02.bin" );
+	create_file( TELEM_FILE_BASE + "/telem_60HZ03.bin" );
+
 
 #----------------------------------------------#
 #                   Main Driver				   #
@@ -281,6 +291,9 @@ def main():
 	#  Create the file structure for the cal files
 	build_cal_files( )
 
+
+	#  Create the file structore for the telemetry files
+	build_telemetry_files()
 
 if __name__ == "__main__":
 	main()
