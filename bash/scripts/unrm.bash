@@ -1,11 +1,11 @@
-#!/bin/sh
+#!/bin/bash
 
 # unrm - Searches the deleted file archive for the specified file or directory.
 #    If there is more than one matching result, then it will show a list of results,
 #    ordered by timestamp.  The user will then specify which file to restore.
 
 # import the ANSI Color Codes
-. ~/.scripts/initializeANSI.sh
+. ~/.scripts/initializeANSI.bash
 
 # Set up some variables/alias'
 mydir="$HOME/.deleted_files"

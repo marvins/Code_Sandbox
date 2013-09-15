@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # Parse all command-line options
 flags=""
