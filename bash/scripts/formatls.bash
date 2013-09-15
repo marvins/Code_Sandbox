@@ -69,7 +69,7 @@ do
     PERMS=""
 
     # Take separate action depending on file or directory
-    if [ -d $file ]; then
+    if [ -d "$file" ]; then
         
         ISDIR=1
         size="$(ls "$file" | wc -l | sed 's/[^[:digit:]]//g')"
