@@ -1,4 +1,4 @@
-#! /bin/sh
+#! /bin/bash
 
 # newrm, a replacement for the existing rm command, provides a 
 # rudimentary unremove capability by creating and utilizing a 

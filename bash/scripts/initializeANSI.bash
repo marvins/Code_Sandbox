@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 
 # ANSI Color -- Use these variables to make output in different
 # colors and formats. Color names that end with 'f' are forground (text)

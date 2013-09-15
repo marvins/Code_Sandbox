@@ -1,7 +1,7 @@
-#!/bin/sh
+#!/bin/bash
 
 
-. ~/.scripts/initializeANSI.sh
+. ~/.scripts/initializeANSI.bash
 
 function gmk()
 {

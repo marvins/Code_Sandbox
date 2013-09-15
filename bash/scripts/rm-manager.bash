@@ -1,6 +1,6 @@
 #!/bin/bash -
 
-. ~/.scripts/initializeANSI.sh
+. ~/.scripts/initializeANSI.bash
 
 NAME_WIDTH=36
 COLUMN_WIDTH=42
