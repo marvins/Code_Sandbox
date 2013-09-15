@@ -9,7 +9,7 @@
 # NOTE: Use cron to periodically delete the directory.
 
 # Import our color ANSI codes
-. ~/.scripts/initializeANSI.sh
+. ~/.scripts/initializeANSI.bash
 
 mydir="$HOME/.deleted_files"
 realrm="/bin/rm"
