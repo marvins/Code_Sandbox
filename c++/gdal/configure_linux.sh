@@ -5,9 +5,8 @@
 PREFIX=/opt/local
 
 ./configure --prefix=${PREFIX} \
-            --with-grass=yes \
+	        --with-grass=yes \
             --with-poppler=yes \
             --with-python \
-            --with-java \
-            --with-libkml
+            --with-java
 
