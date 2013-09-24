@@ -1,5 +1,10 @@
 #include "BigIntegerAlgorithms.hh"
 
+#include <BigIntegerUtils.hh>
+#include <iostream>
+
+using namespace std;
+
 BigUnsigned gcd(BigUnsigned a, BigUnsigned b) {
 	BigUnsigned trash;
 	// Neat in-place alternating technique.
@@ -68,3 +73,25 @@ BigUnsigned modexp(const BigInteger &base, const BigUnsigned &exponent,
 	}
 	return ans;
 }
+
+BigInteger factorial( const BigInteger &x ){
+
+    // given zero, return 1
+    if( x.isZero() == true ){
+        return BigUnsigned(1);
+    }
+
+    // if the number is negative, then ignore
+    if( x < 0 ){
+        throw "ERROR: Factorials cannot be negative. Input=";
+    }
+
+    // otherwise, start iterating
+    BigInteger solution(1);
+    for( BigInteger i=x; i > 0; i-- ){
+        solution *= i;
+    }
+
+    return solution;
+}
+

@@ -22,4 +22,7 @@ BigUnsigned modinv(const BigInteger &x, const BigUnsigned &n);
 BigUnsigned modexp(const BigInteger &base, const BigUnsigned &exponent,
 		const BigUnsigned &modulus);
 
+// returns the factorial of the input number
+BigInteger factorial( const BigInteger &x );
+
 #endif
