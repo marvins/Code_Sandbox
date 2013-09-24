@@ -4,6 +4,9 @@
 #ifndef __UTILS_STRING_UTILITIES_HPP__
 #define __UTILS_STRING_UTILITIES_HPP__
 
+#include <sstream>
+#include <string>
+
 /**
  *  Convert a string to a number
  */
