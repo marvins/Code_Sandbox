@@ -1,0 +1,22 @@
+\documentclass[12pt]{report}
+
+\usepackage{fullpage}
+
+
+\begin{document}
+
+\section*{Building Qt from Source}
+
+\subsection*{Qt5 from Git}
+\subsubsection*{RHEL 6.4}
+
+\emph{Note: This was done using the devtoolset-1.1, so gcc version was 4.7}.
+
+\begin{itemize}
+\item Use the \texttt{rhel-configure.sh} script included in the repo to configure Qt. 
+\item Run make -j4 to build.  Note that building may take several hours. 
+\end{itemize}
+
+
+\end{document}
+

@@ -3,5 +3,7 @@
 ./configure \
     --prefix=/opt/local \
     -opensource \
-    -developer-build
+    -release \
+    -nomake examples \
+    -nomake tests
 
