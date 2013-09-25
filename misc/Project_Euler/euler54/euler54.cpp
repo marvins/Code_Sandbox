@@ -336,7 +336,7 @@ class Hand{
             sort( temp.begin(), temp.end());
             
             // if we just want the highest, then return the highest
-            if( absolute == true ){ return temp[cards.size()-1]; }
+            if( absolute == true ){ return temp[cards.size()-1].value; }
 
             // if we have a royal flush, just return the highest
             if( isRoyalFlush() == true ){ return temp[cards.size()-1].value; }
@@ -351,12 +351,40 @@ class Hand{
             }
             
             // if we have a full house, then return the set of three highs
-            if( ifFullHouse() == true ){ 
+            if( isFullHouse() == true ){ 
                 if( temp[0].value == temp[2].value ){ return temp[2].value; }
                 else{ return temp[4].value; }
             }
             // if we have a flush
-            //
+            if( isFlush() == true ){
+                return temp[cards.size()-1].value;
+            }
+
+            // if we have a straight
+            if( isStraight() == true ){
+                return temp[cards.size()-1].value;
+            }
+
+            // if we have a three of a kind
+            if( isThreeKind() == true ){
+                if( temp[0].value == temp[2].value ){ return temp[2].value; }
+                else{ return temp[4].value; }
+            }
+
+            // if we have a two pair
+            if( isTwoPair() == true ){
+                if( temp[4].value == temp[5].value ) return temp[5].value;
+                return temp[4].value;
+            }
+
+            // if we have one pair
+            if( isOnePair() == true ){
+                if( temp[3].value == temp[4].value ) return temp[4].value;
+                if( temp[2].value == temp[3].value ) return temp[3].value;
+                if( temp[1].value == temp[2].value ) return temp[2].value;
+                if( temp[0].value == temp[1].value ) return temp[1].value;
+                return temp[0].value;
+            }
 
             return temp[cards.size()-1].value;
         }
@@ -376,7 +404,7 @@ bool operator > ( const Hand& handA, const Hand& handB ){
 
     // if both hands have the same rank
     if( rankA == rankB ){
-        return (handA.high_card() > handB.high_card());
+        return (handA.high_card(false) > handB.high_card(false));
     }
 
     // otherwise
@@ -448,13 +476,13 @@ int main( int argc, char* argv[] ){
 
             cout << "Player 1 Hand: ";
             for( size_t j=0; j<5; j++ ){ cout << p1_hands[i].cards[j] << ", "; }
-            cout << " Hand: " << p1_hands[i].handString() << ", High: " << p1_hands[i].high_card() <<  endl;
+            cout << " Hand: " << p1_hands[i].handString() << ", High: " << p1_hands[i].high_card(false) <<  endl;
             cout << "Player 2 Hand: ";
             for( size_t j=0; j<5; j++ ){ cout << p2_hands[i].cards[j] << ", "; }
-            cout << " Hand: " << p2_hands[i].handString() << ", High: " << p2_hands[i].high_card() << endl;
+            cout << " Hand: " << p2_hands[i].handString() << ", High: " << p2_hands[i].high_card(false) << endl;
             if( p1_hands[i] > p2_hands[i] ) cout << "P1 Wins" << endl;
             else                            cout << "P2 Wins" << endl;
-            cin.get();
+            //cin.get();
         }
 
         cout << "Player 1 won " << p1_wins << " times" << endl;
