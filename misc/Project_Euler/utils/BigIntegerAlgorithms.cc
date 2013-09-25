@@ -95,3 +95,26 @@ BigInteger factorial( const BigInteger &x ){
     return solution;
 }
 
+BigInteger  power( const BigInteger& a, const BigInteger& b ){
+    
+    // check if power is zero
+    if( b.isZero() == true ){
+        return 1;
+    }
+
+    // check if power is negative
+    if( b < 0 ){
+        throw "ERROR:  negative powers not yet supported";
+    }
+
+    if( b == 1 ){ return b; }
+
+    // begin iterating
+    BigInteger output = a;
+    for( BigInteger i=1; i<b; i++ ){
+        output *= a;
+    }
+    
+    return a;
+}
+
