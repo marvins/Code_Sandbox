@@ -25,4 +25,7 @@ BigUnsigned modexp(const BigInteger &base, const BigUnsigned &exponent,
 // returns the factorial of the input number
 BigInteger factorial( const BigInteger &x );
 
+// returns the power of a number
+BigInteger power( const BigInteger& a, const BigInteger& b );
+
 #endif
