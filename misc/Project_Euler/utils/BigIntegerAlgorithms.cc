@@ -107,7 +107,9 @@ BigInteger  power( const BigInteger& a, const BigInteger& b ){
         throw "ERROR:  negative powers not yet supported";
     }
 
-    if( b == 1 ){ return b; }
+    if( b == 1 ){ 
+        return b; 
+    }
 
     // begin iterating
     BigInteger output = a;
@@ -115,6 +117,6 @@ BigInteger  power( const BigInteger& a, const BigInteger& b ){
         output *= a;
     }
     
-    return a;
+    return output;
 }
 
