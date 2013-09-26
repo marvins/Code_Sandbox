@@ -1,98 +1,79 @@
+#include <algorithm>
 #include <cmath>
+#include <deque>
 #include <iostream>
 #include <vector>
 
-#include "Primesieve.hpp"
+#include <Primesieve.hpp>
+#include <StringUtilities.hpp>
 
 using namespace std;
 
 const int MIN_DIGITS=5;
-const int MAX_DIGITS=8;
-
-/// List of solutions
-vector<int> prime_list;
+const int MAX_DIGITS=7;
 
 /// Number of primes to look for
-const int PRIME_FAMILY_SIZE=7;
+const int PRIME_FAMILY_SIZE=8;
 
-template <typename TP>
-TP str2num( std::string const& value ){
+vector<int> create_family( const int& prime, const vector<bool>& binarray ){
     
-    std::stringstream sin;
-    TP result;
-    sin << value;
-    sin >> result;
-    return result;
-}
-
-template <typename TP>
-std::string num2str( TP const& value ){
-
-    std::stringstream sin;
-    sin << value;
-    return sin.str();
-}
-
-
-bool is_family( vector<int> temp_list, const int& num_primes ){
+    // convert the prime to a string
+    string pstring = num2str(prime);
     
-    if( temp_list.size() != num_primes ){
-        throw string("ERROR: bad input");
-    }
+    // create output object
+    vector<int> output;
 
-    // number list converted to strings
-    vector<string>  str_list;
-    for( size_t i=0; i<temp_list.size(); i++ )
-        str_list.push_back( num2str(temp_list[i]));
-    
-    
-    // list of indeces matching between sets
-    vector<bool> idx_match_list(temp_list[0].size());
-
-    // check each pair for a set of matching characters
-    // - first, iterate over each character
-    for( size_t i=0; i<str_list[0].size(); i++ ){
+    // for each number from 0 to 9
+    for( size_t i=0; i<10; i++ ){
         
-        // - next, iterate over each string
-        bool matching = true;
-        for( size_t j=1; j<str_list.size(); j++ ){
-            if( str_list[0][i] != str_list[j][i] ){
-                matching = false;
-                break;
+        // we dont want the first bit to be zero ever
+        if( binarray[0] == true && i == 0 ) continue; 
+
+        // create a temporary entry
+        string tempString = pstring;
+
+        // for each digit which is true, overwrite the char
+        for( size_t j=0; j<binarray.size(); j++ ){
+            if( binarray[j] == true){
+                tempString[j] = (char)(i+48);
             }
         }
-        // if they are not matching, then skip
-        if( matching == true ){
-            idx_match_list[i] = true;
-        } else{
-            idx_match_list[i] = false;
-        }
+
+        // add to string list
+        output.push_back( str2num<int>(tempString));
 
     }
-
-    // for the indeces of non matching characters, make sure they are all the same in each number
-
-    
-    return false;
+    return output;
 }
 
+
+/**
+ *  Main Function
+ */
 int main( int argc, char* argv[] ){
     
+    try{
+
     // create prime sieve
-    Primes primesieve( 99999999, true );
+    Primes primesieve( 9999999, true );
     cout << "Prime sieve built" << endl;
 
+    /// List of primes for each power of 10
+    deque<int> prime_list;
+
+
     // start iterating from min to max
-    for( int i=MIN_DIGITS; i<=MAX_DIGITS; i++ ){
+    for( int x=MIN_DIGITS; x<=MAX_DIGITS; x++ ){
         
         // for each digit range, find the min and max value
-        int min_value = pow(10, i-1);
-        int max_value = pow(10, i) - 1;
+        int min_value = pow(10, x-1);
+        int max_value = pow(10, x) - 1;
         
         // clear our list of primes
         prime_list.clear();
 
-        // iterate from min value to max value
+        
+        // iterate from min value to max value, adding all primes found
         for( int j=min_value; j<=max_value; j++ ){
 
             // check if the number is prime
@@ -101,62 +82,73 @@ int main( int argc, char* argv[] ){
             }
 
         }
-
         
-        // create a container which stores indeces of items we are looking at
-        vector<int> idxs(PRIME_FAMILY_SIZE);
-        for( int j=0; j<PRIME_FAMILY_SIZE; j++ )
-            idxs[j] = j;
-        
-        // current index with the max idx
-        int cmax = PRIME_FAMILY_SIZE - 1;
 
-        int idxx=0;
-
-        // iterate through our list and look for members with matching digits
-        bool break_loop = false;
-        while( break_loop == false ){
+        /**
+         * Now that we have a list of primes to search, begin tearing apart primes
+         */
+        int prime;
+        while( prime_list.size() > 0 ){
             
-            // compare the primes in the group
-            vector<int> temp_prime_list;
-            for( int j=0; j<idxs.size(); j++ ){
-                temp_prime_list.push_back( prime_list[idxs[j]] );
-            }
-
-            // test if this is a valid family
-            if( is_family( temp_prime_list, PRIME_FAMILY_SIZE ) == true ){
-                break;
-            }
-                
-            // increment the indeces
-            if( idxs[idxs.size()-1] >= (prime_list.size()-1) ){
-                 
-                // if we max the furthest right index, then we need to increment the previous idxs
-                int cmaxx = idxs.size()-2;
-                while(true){
-                    if( idxs[cmaxx] >= idxs[cmaxx+1]-1){
-                        cmaxx--;
-                        if( cmaxx < 0 ){ break_loop = true; break; }
-                    }
-                    else{
-                        idxs[cmaxx]++;
-                        for( size_t k=cmaxx+1; k<idxs.size(); k++ ){
-                            idxs[k] = idxs[k-1]+1;
-                        }
-                        break;
-                    }
+            // grab the next prime
+            prime = prime_list.front();
+         
+            // create a large list of patterns to match against
+            // for the number of digits, find the max value in binary
+            unsigned int maxVal = pow(2,x)-1;
+        
+            for( size_t a=2; a<maxVal; a++ ){
+            
+                // find the indeces this number gives as binary 1
+                // convert number to bool binary array
+                vector<bool> binarray(x, false);
+                for( size_t b=0; b<binarray.size(); b++ ){
+                    binarray[b] = ( ((unsigned int)a & (unsigned int)pow(2,b)) == (unsigned int)pow(2,b)) ? true : false;
                 }
                 
-            }
-            else{
-                idxs[idxs.size()-1]++;
+                // prune even numbers
+                if( binarray[0] == true ){ continue; }
+               
+                // swap bits to match with strings
+                std::reverse( binarray.begin(), binarray.end());
+                
+                /**
+                 * Now we have a prime as well as a list of indeces to test against
+                 */
+                // for each binary 1, add to array
+                // create a list of 10 numbers
+                vector<int> test_family = create_family( prime, binarray );
+                
+                // count how many in the family are primes
+                int numPrimes = 0;
+                for( size_t b=0; b<test_family.size(); b++ )
+                    if( primesieve.is_prime(test_family[b]) )
+                        numPrimes++;
+
+                if( numPrimes >= PRIME_FAMILY_SIZE ){
+                    
+                    cout << "NumPrimes: " << numPrimes << endl;
+                    cout << "Permutations" << endl;
+                    for( size_t b=0; b<test_family.size(); b++ )
+                        if( primesieve.is_prime( test_family[b] ) == true )
+                            cout << test_family[b] << endl;
+                    cin.get();
+                }
+
+
             }
 
+
+            // pop off the next prime
+            prime_list.pop_front();
         }
+
 
     }
 
-
+    } catch ( string e ){
+        cout << e << endl;
+    }
 
     return 0;
 }

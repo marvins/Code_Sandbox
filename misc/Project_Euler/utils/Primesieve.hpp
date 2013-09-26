@@ -40,16 +40,21 @@ Primes::Primes(long int m,bool flag) : MAX(m)
       if(flag)cout << "Starting Library Construction" << endl;
 
       data.begin();
-      for(long int i=0;i<MAX;i++)
-        data.push_back(true);
+      for(long int i=0;i<MAX;i++){
+          if( i%2 == 0 )
+            data.push_back(true);
+          else
+            data.push_back(false);
+      }
       
       data[0]=false;
       for(long int i=1;i<=root;i++)
       {
-        if(data[i-1])
+        if(data[i-1]){
           for( long int j = i*2; j <= MAX; j+= i)
             data[j-1] = false;
-          if(flag) cout << status(i,root);
+        }
+        if(flag) cout << status(i,root) << flush;
       }
       if(flag) cout << endl;
 }
