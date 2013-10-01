@@ -10,12 +10,15 @@
 
 #include <string>
 
+#include <src/core/DataContainer.hpp>
+DataContainer settings;
+
 using namespace std;
 
 int main( int argc, char* argv[] ){
 
     // parse command line options
-    
+        
         
 	///   Create the Qt Application
     QApplication app(argc, argv);
