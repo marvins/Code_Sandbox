@@ -44,3 +44,19 @@ unix:!macx{
 
 }
 
+unix:macx{
+
+	message("using mac osx")
+
+    TARGET = ImageBrowser
+    
+    #  GDAL Library
+    #INCLUDEPATH += /opt/local/include/gdal
+    LIBS += -lgdal
+
+    # Boost Library
+    LIBS += -lboost_system -lboost_filesystem
+
+
+}
+

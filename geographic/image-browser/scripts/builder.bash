@@ -25,6 +25,14 @@ usage(){
 ######################################
 make_project(){
 
+    #  Clean Data
+    if [ "$OS" == "Darwin" ]; then
+        if [ -d "release/ImageBrowser.app" ]; then
+            echo 'cleaning application'
+            rm -rf release/ImageBrowser.app
+        fi
+    fi
+
     #  Running qmake
     echo 'Running qmake'
     $QMAKE_EXE
@@ -39,10 +47,18 @@ make_project(){
     fi
     
     #  Copying Data
-    echo "Copying support files"
-    cp -r src/html release/
-    cp scripts/ImageBrowser.bash release/ImageBrowser
-    cp -r src/icons release/
+    if [ "$OS" == "Linux" ]; then
+        echo "Copying support files"
+        cp -r src/html release/
+        cp scripts/ImageBrowser.bash release/ImageBrowser
+        cp -r src/icons release/
+    elif [ "$OS" == "Darwin" ]; then
+        echo 'Copying Mac Support Files'
+        cp -r src/html  release/ImageBrowser.app/Contents/MacOS/
+        cp -r src/icons release/ImageBrowser.app/Contents/MacOS/
+        cp release/ImageBrowser.app/Contents/MacOS/ImageBrowser release/ImageBrowser.app/Contents/MacOS/ImageBrowser.bin
+        cp scripts/ImageBrowser.bash release/ImageBrowser.app/Contents/MacOS/ImageBrowser
+    fi
 
 
 }
@@ -56,7 +72,11 @@ clean_project(){
     echo "running make clean"
     make clean
 
+    # Removing release
+    rm -rf release debug
+
 }
+
 
 #------------------------------------#
 #-          Main Function           -#
@@ -66,6 +86,20 @@ clean_project(){
 HELP_FLAG_SET=0
 MAKE_FLAG_SET=0
 CLEAN_FLAG_SET=0
+
+#  Load default Environment
+. scripts/systems/default.bash
+
+#  Determine our operating system
+OS='Linux'
+if [ "`uname`" == "Darwin" ]; then
+    OS='Darwin'
+    . scripts/systems/darwin.bash 
+fi
+
+if [ "$OS" == "Linux" ]; then
+    load_environment
+fi
 
 
 #-----------------------------------------#

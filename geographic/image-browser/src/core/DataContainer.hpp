@@ -8,6 +8,8 @@
 
 #include <string>
 
+#include <src/core/ImageDatabase.hpp>
+
 /**
  * @class DataContainer
  */
@@ -20,7 +22,8 @@ class DataContainer{
         /// Base Directory
         std::string base_directory;
 
-
+        /// Image Database
+        ImageDatabase database;
 
 
 };

@@ -6,7 +6,9 @@
 #ifndef __SRC_CORE_FILESYSTEMUTILITIES_HPP__
 #define __SRC_CORE_FILESYSTEMUTILITIES_HPP__
 
+#include <iostream>
 #include <string>
+#include <vector>
 
 /**
  * Check if a given filename is a real file
@@ -42,6 +44,11 @@ std::string file_canonical( const std::string& filename );
  * Return the current working directory
 */
 std::string current_working_directory( );
+
+/**
+ * List all files in the filesystem
+*/
+std::vector<std::string> file_list( const std::string& dirname, const bool& isRecursive );
 
 
 #endif

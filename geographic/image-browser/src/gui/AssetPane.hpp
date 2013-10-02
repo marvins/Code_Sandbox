@@ -6,12 +6,17 @@
 #ifndef  __SRC_GUI_ASSETPANE_HPP__
 #define  __SRC_GUI_ASSETPANE_HPP__
 
+#include <QHBoxLayout>
 #include <QLabel>
+#include <QLineEdit>
+#include <QToolButton>
 #include <QTreeWidget>
 #include <QVBoxLayout>
 #include <QWidget>
 
 #include <src/core/DataContainer.hpp>
+#include <src/core/GDALLoader.hpp>
+
 extern DataContainer settings;
 
 /**
@@ -32,6 +37,8 @@ class AssetPane : public QWidget{
 
         void filesystemClicked();
 
+        void indexFilesystem();
+
     private:
         
         //-------------------------------//
@@ -48,7 +55,20 @@ class AssetPane : public QWidget{
          */
         void build_asset_widget();
 
+        /**
+         * Create the list of directories to search
+        */
         void build_directory_tree();
+        
+        /**
+         * Create the list of assets to search
+        */
+        void build_asset_tree();
+        
+        /**
+         * Build the button bar on the asset widget
+        */
+        void build_asset_button_bar();
 
         //-------------------------------//
         //-      Private Variables      -//
@@ -65,7 +85,7 @@ class AssetPane : public QWidget{
         
         /// Filesystem Label
         QLabel*       filesystemLabel;
-        QLabel*       filesystemPath;
+        QLineEdit*       filesystemPath;
         
         /// Filesystem Tree Widget
         QTreeWidget*      filesystemTree;
@@ -84,6 +104,12 @@ class AssetPane : public QWidget{
         /// QTreeView
         QTreeWidget*      assetTree;
         QTreeWidgetItem*  assetHeaderItem;
+
+        // asset button bar
+        QWidget*      assetButtonBarWidget;
+        QHBoxLayout*  assetButtonBarLayout;
+        QToolButton*  assetSearchButton;
+
 
 }; 
 
