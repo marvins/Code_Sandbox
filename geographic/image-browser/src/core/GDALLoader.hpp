@@ -27,6 +27,11 @@ class GDALLoader{
         GDALLoader( const std::string& filename );
         
         /**
+         * Destructor
+        */
+        ~GDALLoader();
+
+        /**
          Recover the bounding box
         */
         Rect  get_bbox()const;

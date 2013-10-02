@@ -61,6 +61,15 @@ class DataContainer{
         /// Using Config File
         std::string config_filename;
 
+        /// Indexing Progress Dialog Status
+        std::string indexingProgressDialogStatus;
+        
+        /// Indexing Progress Dialog Value
+        int  indexingProgressDialogValue;
+
+        /// Indexing Progress Dialog Close Status
+        bool indexingProgressDialogClose;
+
 };
 
 

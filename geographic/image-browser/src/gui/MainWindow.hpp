@@ -16,6 +16,7 @@
 #include <src/gui/AssetPane.hpp>
 #include <src/gui/BrowserPane.hpp>
 #include <src/gui/PreferenceDialog.hpp>
+#include <src/gui/IndexingProgressDialog.hpp>
 
 #include <string>
 
@@ -36,6 +37,11 @@ class MainWindow : public QMainWindow{
     public slots:
         
         void loadPreferencePane();
+
+        void showIndexingProgressDialog();
+        void closeIndexingProgressDialog();
+        
+        void updateIndexingProgressDialog();
 
     private:
         
@@ -62,6 +68,9 @@ class MainWindow : public QMainWindow{
         
         /// Preference Pane Action
         QAction*  prefAction;
+    
+        /// Indexing Progress Dialog
+        IndexingProgressDialog*  indexingProgressDialog;
 
 };
 

@@ -11,8 +11,6 @@ using namespace std;
 
 IndexingProgressDialog::IndexingProgressDialog( QWidget* parent ) : QDialog(parent){
     
-    cancelIndexFlag = false;
-
     // create the main layout
     mainLayout = new QVBoxLayout;
     mainLayout->setAlignment( Qt::AlignTop );
@@ -46,7 +44,6 @@ IndexingProgressDialog::IndexingProgressDialog( QWidget* parent ) : QDialog(pare
     buttonBarCancelButton->setText("Cancel");
     buttonBarCancelButton->setFixedWidth(80);
     buttonBarCancelButton->setFixedHeight(40);
-    buttonBarCancelButton->installEventFilter( this );
     buttonBarLayout->addWidget( buttonBarCancelButton );
 
 
@@ -65,39 +62,24 @@ IndexingProgressDialog::IndexingProgressDialog( QWidget* parent ) : QDialog(pare
 
     // set resize policy
     setSizePolicy( QSizePolicy::MinimumExpanding, QSizePolicy::MinimumExpanding );
+    
+    // set window modality so it sits on top
+    setWindowModality( Qt::WindowModal );
 
 }
 
 
 void IndexingProgressDialog::updateValue( const int& value ){
-
+    
+    cout << "Update Value" << endl;
     progressBar->setValue(value);
 }
 
 void IndexingProgressDialog::updateStatus( const string& value ){
 
+    cout << "Update Status" << endl;
     statusLabel->setText(value.c_str());
     adjustSize();
-    statusLabel->updateGeometry();
-    updateGeometry();
 }
 
-bool IndexingProgressDialog::eventFilter( QObject* object, QEvent* event){
-    
-    // check if the button was used
-    if( object == buttonBarCancelButton ){
-
-        // check for a button press
-        if( event->type() == QEvent::MouseButtonPress ){    
-            cancelIndexFlag = true;
-        }
-
-    }
-
-    return false;
-}
-
-bool IndexingProgressDialog::cancelIndexStatus()const{
-    return cancelIndexFlag;
-}
 

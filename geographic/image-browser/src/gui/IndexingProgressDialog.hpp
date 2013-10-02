@@ -38,11 +38,6 @@ class IndexingProgressDialog : public QDialog{
         */
         IndexingProgressDialog( QWidget* parent = NULL );
        
-        /**
-         * Return true if the cancel button was hit
-        */
-        bool cancelIndexStatus()const;
-
     public slots:
 
         /**
@@ -57,11 +52,6 @@ class IndexingProgressDialog : public QDialog{
 
     private:
         
-        bool eventFilter( QObject* object, QEvent* event );
-        
-        /// Cancel Flag
-        bool cancelIndexFlag;
-
         /// Main Layout
         QVBoxLayout* mainLayout;
         

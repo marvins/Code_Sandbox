@@ -19,52 +19,60 @@ using namespace std;
 */
 void IndexingWorker::startIndexing(){
 
-    // create a progress bar
-    IndexingProgressDialog*  dialog = new IndexingProgressDialog;
-    dialog->setWindowModality( Qt::ApplicationModal );
-    dialog->show();
-
-    // take the current base directory and get a list of images
-    dialog->updateStatus("Loading File List");
-    vector<string> results = file_list( settings.base_directory, true );
-    dialog->updateValue(5);
+    // create the progress bar
+    emit message_service.showIndexingProgressDialogSignal();
     
-    if( dialog->cancelIndexStatus() == true ){
-        settings.database.clear();
-        dialog->close();
-        return;
-    }
+    // take the current base directory and get a list of images
+    vector<string> results = file_list( settings.base_directory, true );
+    
+    settings.indexingProgressDialogStatus = "Loading File List";
+    settings.indexingProgressDialogValue  = 5;
+    emit message_service.updateIndexingProgressDialogStatusSignal();
+
+    
+    //if( settings.indexingProgressDialogClose == true ){
+    //    settings.database.clear();
+    //    emit message_service.closeIndexingProgressDialogSignal();
+    //    return;
+    //}
 
     // clear the current database
-    dialog->updateStatus("Clearing Database");
+    settings.indexingProgressDialogStatus = "Clearing Database";
+    emit message_service.updateIndexingProgressDialogStatusSignal();
     settings.database.clear();
-    dialog->updateStatus("Loading Bounding Boxes");
+    
+    
+    settings.indexingProgressDialogStatus = "Building Bounding Boxes";
+    emit message_service.updateIndexingProgressDialogStatusSignal();
 
     for( size_t i=0; i<results.size(); i++ ){
         
         
-        if( dialog->cancelIndexStatus() == true ){
-            settings.database.clear();
-            dialog->close();
-            return;
-        }
+        //if( settings.indexingProgressDialogClose == true ){
+        //    settings.database.clear();
+        //    emit message_service.closeIndexingProgressDialogSignal();
+        //    return;
+        //}
         
         // filter the results to only gdal-compatible files
         if( GDALLoader::isValid( results[i] ) == true ){
 
-            dialog->updateStatus(string("Loading: ")+results[i]);        
+            settings.indexingProgressDialogStatus = string("Loading: ")+results[i];        
+            emit message_service.updateIndexingProgressDialogStatusSignal();
+            
             settings.database.addItem( results[i] );
-            dialog->updateValue(5 + (95*((double)i/(double)results.size())));
+            
+            settings.indexingProgressDialogValue = (5 + (95*((double)i/(double)results.size())));
+            emit message_service.updateIndexingProgressDialogStatusSignal();
+        
         }
 
     }
-    dialog->close();
-    
-    
 
+    
     // rebuild the image database
     emit message_service.reloadAssetTreeSignal();
-
-
+    
+    emit message_service.closeIndexingProgressDialogSignal();
 }
 

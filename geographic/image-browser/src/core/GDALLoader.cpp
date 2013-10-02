@@ -14,8 +14,20 @@ GDALLoader::GDALLoader( const string& filename ){
     // set filename
     this->filename = filename;
     
+    // set null values
+    driver = NULL;
+    dataset = NULL;
+
     // load the gdal object
     load();
+}
+
+GDALLoader::~GDALLoader(){
+    
+    cout << "GDAL Destructor Start" << endl;
+    if( dataset != NULL )
+        GDALClose(dataset);
+    cout << "GDAL Destructor End" << endl;
 }
 
 void GDALLoader::load(){
@@ -39,16 +51,15 @@ void GDALLoader::load(){
 	
 	//extract the driver infomation
     driver = dataset->GetDriver();
-
-
+    
 }
 
 Rect GDALLoader::get_bbox()const{
     
     double  xform[6];
-    double width  = dataset->GetRasterXSize();
-    double height = dataset->GetRasterYSize();
-
+    double width  = GDALGetRasterXSize(dataset);
+    double height = GDALGetRasterYSize(dataset);
+    
     /// Grab the projection transformation
     if( dataset->GetGeoTransform( xform ) == CE_None ){
 
@@ -60,7 +71,7 @@ Rect GDALLoader::get_bbox()const{
                                xform[3] + width*xform[4] + height*xform[5])
                     );
     }
-
+    
     return Rect(Point(0,0),Point(0,0));
 }
 

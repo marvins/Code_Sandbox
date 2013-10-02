@@ -21,7 +21,8 @@ DataContainer::DataContainer(){
 
     // set default configuration file
     config_filename = string(getenv("HOME"))+string("/.imagebrowser.cfg");
-    
+
+    indexingProgressDialogClose = false;
 }
 
 /**

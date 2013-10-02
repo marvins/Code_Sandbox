@@ -287,20 +287,21 @@ void AssetPane::assetSelected(){
     for( int i=0; i<assetTree->topLevelItemCount(); i++ ){
         
         // make sure item has been checked
-        if( assetTree->topLevelItem(i)->checkState(0) != Qt::Checked ){ continue; }
-
-        // find the bounding box of the top level item
-        int idx = settings.database.findImage( assetTree->topLevelItem(i)->text(3).toLocal8Bit().constData() );
-        if( idx <= 0 ){
+        if( assetTree->topLevelItem(i)->checkState(0) == Qt::Checked ){ 
             
-            // bounding box
-            Rect bbox = settings.database[idx].getBBox();
+            // find the bounding box of the top level item
+            int idx = settings.database.findImage( assetTree->topLevelItem(i)->text(3).toLocal8Bit().constData() );
+            if( idx >= 0 ){
             
-            // add to overlay list
-            settings.overlay_list.push_back(Overlay(bbox,Qt::green));
+                // bounding box
+                Rect bbox = settings.database[idx].getBBox();
+                
+                // add to overlay list
+                settings.overlay_list.push_back(Overlay(bbox,Qt::green));
+            }
         }
     }
-
+    
     // emit the signal
     emit message_service.reloadBrowserOverlaySignal();
 }
