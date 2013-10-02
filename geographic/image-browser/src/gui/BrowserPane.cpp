@@ -6,6 +6,8 @@
 #include "BrowserPane.hpp"
 
 #include <src/core/FilesystemUtilities.hpp>
+#include <src/core/Rect.hpp>
+#include <src/core/Point.hpp>
 
 #include <string>
 
@@ -28,6 +30,9 @@ BrowserPane::BrowserPane( QWidget* parent ) : QWidget(parent){
 
     // set the layout
     setLayout( mainLayout );
+    
+    // listen for messages to reload the selected overlays
+    connect( &message_service, SIGNAL(reloadBrowserOverlaySignal()), this, SLOT(reloadBrowserOverlays()));
 
 }
 
@@ -65,6 +70,16 @@ void BrowserPane::build_toolbar_widget(){
 
     // add to layout
     mainLayout->addWidget( toolbarWidget, 0, 1 );
+
+}
+
+void BrowserPane::reloadBrowserOverlays(){
+
+    cout << "Reloading Overlays" << endl;
+    cout << "Size: " << settings.overlay_list.size() << endl;
+    for( size_t i=0; i<settings.overlay_list.size(); i++ ){
+        cout << i << " : " << settings.overlay_list[i].shape << endl;
+    }
 
 }
 

@@ -64,7 +64,7 @@ Rect GDALLoader::get_bbox()const{
     return Rect(Point(0,0),Point(0,0));
 }
 
-std::vector<std::string> GDALLoader::filter( const std::vector<std::string> const& input ){
+std::vector<std::string> GDALLoader::filter( std::vector<std::string> const& input ){
     
     // create output 
     vector<string> output;
@@ -82,6 +82,7 @@ std::vector<std::string> GDALLoader::filter( const std::vector<std::string> cons
         else{
             output.push_back(input[i]);
         }
+        GDALClose(temp);
     }
     return output;
 }
@@ -93,4 +94,27 @@ std::string GDALLoader::getShortName()const{
 std::string GDALLoader::getLongName()const{
     return GDALGetDriverLongName(driver);
 }
+
+bool GDALLoader::isValid( std::string const& input ){
+    
+    // set default output
+    bool output = false;
+
+    // iterate through each file and compare filenames
+    GDALAllRegister();
+    
+    // create a temporary dataset
+    GDALDataset* temp = (GDALDataset*) GDALOpen( input.c_str(), GA_ReadOnly );
+    if( temp == NULL ){
+        output = false;
+    }
+    else{
+        output = true;
+    }
+    
+    GDALClose(temp);
+    
+    return output;
+}
+
 

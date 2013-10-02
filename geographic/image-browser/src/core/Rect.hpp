@@ -6,6 +6,9 @@
 #ifndef __SRC_CORE_RECT_HPP__
 #define __SRC_CORE_RECT_HPP__
 
+#include <iostream>
+#include <fstream>
+
 #include <src/core/Point.hpp>
 
 /**
@@ -33,5 +36,7 @@ class Rect{
         Point br;
 
 };
+
+std::ostream& operator << ( std::ostream& ostr, Rect const& rect );
 
 #endif

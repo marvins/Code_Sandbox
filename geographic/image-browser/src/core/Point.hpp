@@ -6,6 +6,9 @@
 #ifndef __SRC_CORE_POINT_HPP__
 #define __SRC_CORE_POINT_HPP__
 
+#include <iostream>
+#include <fstream>
+
 /**
  * @class Point
 */
@@ -24,5 +27,7 @@ class Point{
         /// Y Coordinate
         double y;
 };
+
+std::ostream& operator << ( std::ostream& ostr, Point const& pt );
 
 #endif

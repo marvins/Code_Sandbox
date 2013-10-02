@@ -16,8 +16,12 @@
 
 #include <src/core/DataContainer.hpp>
 #include <src/core/GDALLoader.hpp>
+#include <src/core/MessagingService.hpp>
+
+#include <src/gui/IndexingWorker.hpp>
 
 extern DataContainer settings;
+extern MessagingService message_service;
 
 /**
  * @class AssetPane
@@ -38,6 +42,12 @@ class AssetPane : public QWidget{
         void filesystemClicked();
 
         void indexFilesystem();
+        
+        void showOverlayClicked();
+
+        void assetSelected();
+        
+        void reloadAssetTree();
 
     private:
         
@@ -60,10 +70,6 @@ class AssetPane : public QWidget{
         */
         void build_directory_tree();
         
-        /**
-         * Create the list of assets to search
-        */
-        void build_asset_tree();
         
         /**
          * Build the button bar on the asset widget
@@ -106,9 +112,11 @@ class AssetPane : public QWidget{
         QTreeWidgetItem*  assetHeaderItem;
 
         // asset button bar
+        bool showOverlay;
         QWidget*      assetButtonBarWidget;
         QHBoxLayout*  assetButtonBarLayout;
         QToolButton*  assetSearchButton;
+        QToolButton*  assetShowOverlayButton;
 
 
 }; 

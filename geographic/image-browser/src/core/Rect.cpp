@@ -6,6 +6,8 @@
 
 #include "Rect.hpp"
 
+using namespace std;
+
 Rect::Rect(){
     
     tl = Point(0,0);
@@ -21,3 +23,7 @@ Rect::Rect( Point const& topLeft, Point const& bottomRight ){
 }
 
 
+std::ostream& operator << ( std::ostream& ostr, Rect const& rect ){
+    ostr << "Rect( TL:" << rect.tl << ", BR: " << rect.br << ")";
+    return ostr;
+}

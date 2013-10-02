@@ -11,17 +11,20 @@
 #include <string>
 
 #include <src/core/DataContainer.hpp>
-DataContainer settings;
+#include <src/core/MessagingService.hpp>
+
+DataContainer    settings;
+MessagingService message_service;
 
 using namespace std;
 
 int main( int argc, char* argv[] ){
 
-    // parse command line options
-        
-        
 	///   Create the Qt Application
     QApplication app(argc, argv);
+    
+    // parse command line options
+    settings.load( argc, argv );        
         
 	///   Create main window
 	MainWindow*  mainWindow = new MainWindow( );

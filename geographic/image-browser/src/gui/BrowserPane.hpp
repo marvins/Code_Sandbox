@@ -12,6 +12,15 @@
 #include <QWebView>
 #include <QWidget>
 
+#include <src/core/DataContainer.hpp>
+#include <src/core/MessagingService.hpp>
+
+extern DataContainer    settings;
+extern MessagingService message_service;
+
+/**
+ * @class BrowserPane
+*/
 class BrowserPane : public QWidget{
 
     Q_OBJECT
@@ -27,6 +36,10 @@ class BrowserPane : public QWidget{
          *  Set the url of the browser pane
          */
         void setUrl( std::string const& url );
+    
+    public slots:
+        
+        void reloadBrowserOverlays();
 
     private:
         

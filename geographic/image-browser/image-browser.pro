@@ -35,8 +35,8 @@ unix:!macx{
     ICON = ImageBrowser.icns
 
     #  GDAL Library
-    #INCLUDEPATH += /usr/include/gdal
-    #LIBS += -lgdal
+    INCLUDEPATH += /usr/include/gdal
+    LIBS += -lgdal
 
     # Boost Library
     LIBS += -lboost_system -lboost_filesystem

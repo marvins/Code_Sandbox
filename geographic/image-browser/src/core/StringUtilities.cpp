@@ -1,4 +1,9 @@
-#include "string_utilities.hpp"
+/**
+ * @file   StringUtilities.hpp
+ * @author Marvin Smith
+ * @date   10/2/2013
+*/
+#include <src/core/StringUtilities.hpp>
 
 #include <boost/algorithm/string.hpp>
 

@@ -28,4 +28,10 @@ std::string num2str( TP const& value ){
 */
 std::string string_trim( const std::string& str );
 
+/**
+ * Split a string using a pattern
+*/
+std::vector<std::string> string_split( const std::string& str, const std::string& pattern );
+
+
 #endif

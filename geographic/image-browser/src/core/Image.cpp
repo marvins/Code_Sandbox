@@ -16,7 +16,13 @@ Image::Image( const string& filename ){
     this->filename = filename;
 
     // open up gdal and pull bounding box
-    driver = new GDALLoader( filename );
+    GDALLoader driver( filename );
+    bbox = driver.get_bbox();
+
+    // get the short and long names
+    short_name = driver.getShortName();
+
+    long_name  = driver.getLongName();
 
 }
 
@@ -26,11 +32,19 @@ string Image::basename()const{
 
 string Image::formatShortString()const{
 
-    return driver->getShortName();
+    return short_name;
 }
 
 string Image::formatLongString()const{
 
-    return driver->getLongName();
+    return long_name;
+}
+
+string Image::canonical()const{
+    return file_canonical(filename);
+}
+
+Rect Image::getBBox()const{
+    return bbox;
 }
 

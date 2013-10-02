@@ -39,8 +39,13 @@ class GDALLoader{
         /**
          * Filter all non-supported file types
         */
-        static std::vector<std::string> filter( const std::vector<std::string> const& input );
+        static std::vector<std::string> filter( const std::vector<std::string>& input );
         
+        /**
+         * Check if file is supported
+        */
+        static bool isValid( const std::string& input );
+
         /**
          * Return the short name
         */

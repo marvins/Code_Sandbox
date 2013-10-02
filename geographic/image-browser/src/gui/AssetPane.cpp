@@ -6,6 +6,7 @@
 #include "AssetPane.hpp"
 
 #include <src/core/FilesystemUtilities.hpp>
+#include <src/core/Overlay.hpp>
 
 #include <QFileSystemModel>
 
@@ -32,6 +33,7 @@ AssetPane::AssetPane( QWidget* parent ) : QWidget( parent ){
     // set the main layout
     setLayout( mainLayout );
 
+    showOverlay = false;
 
 }
 
@@ -45,7 +47,8 @@ void AssetPane::build_filesystem_widget(){
     filesystemLayout = new QVBoxLayout;
 
     // add label
-    filesystemLabel = new QLabel("Base Directory");
+    filesystemLabel = new QLabel("Base Image Directory");
+    filesystemLabel->setFont(QFont(filesystemLabel->font().family(), 14));
     filesystemLayout->addWidget( filesystemLabel);
     
     // add path label
@@ -71,6 +74,9 @@ void AssetPane::build_filesystem_widget(){
 
     // assign to layout
     mainLayout->addWidget( filesystemWidget );
+    
+    // connect the reloadAssetTree signal to the slot
+    connect( &message_service, SIGNAL(reloadAssetTreeSignal()), this, SLOT(reloadAssetTree()));
 
 
 }
@@ -85,6 +91,7 @@ void AssetPane::build_asset_widget(){
 
     // create main label
     assetLabel = new QLabel("Discovered Assets");
+    assetLabel->setFont(QFont(assetLabel->font().family(), 14));
     assetLayout->addWidget( assetLabel );
     
 
@@ -93,7 +100,7 @@ void AssetPane::build_asset_widget(){
     assetHeaderItem->setText(0, QString("Select"));
     assetHeaderItem->setText(1, QString("File Name"));
     assetHeaderItem->setText(2, QString("Format"));
-    assetHeaderItem->setText(3, QString("Description"));
+    assetHeaderItem->setText(3, QString("Full Path"));
     
     // create list
     assetTree = new QTreeWidget( assetWidget );
@@ -101,7 +108,8 @@ void AssetPane::build_asset_widget(){
 
     assetTree->setColumnWidth(0,50);
     assetLayout->addWidget( assetTree );
-    
+    connect( assetTree, SIGNAL(itemClicked( QTreeWidgetItem*, int)), this, SLOT(assetSelected()));
+
     // create button bar
     build_asset_button_bar();
 
@@ -182,6 +190,16 @@ void AssetPane::build_asset_button_bar(){
     assetButtonBarLayout->addWidget( assetSearchButton );
     connect( assetSearchButton, SIGNAL(clicked()), this, SLOT(indexFilesystem()));
 
+    // create show overlay button
+    assetShowOverlayButton = new QToolButton;
+    assetShowOverlayButton->setIcon(QIcon("icons/overlay.png"));
+    assetShowOverlayButton->setIconSize(QSize(40,40));
+    assetShowOverlayButton->setFixedWidth(42);
+    assetShowOverlayButton->setFixedHeight(42);
+    assetShowOverlayButton->setToolTip("Show Overlay on Google Maps");
+    assetButtonBarLayout->addWidget( assetShowOverlayButton );
+    connect( assetShowOverlayButton, SIGNAL(clicked()), this, SLOT(showOverlayClicked()));
+
     // set layout
     assetButtonBarWidget->setLayout( assetButtonBarLayout );
 
@@ -191,28 +209,28 @@ void AssetPane::build_asset_button_bar(){
 
 }
 
+/**
+ * Start the thread which will run indexing operations
+*/
 void AssetPane::indexFilesystem(){
-    
-    // take the current base directory and get a list of images
-    vector<string> results = file_list( settings.base_directory, true );
-    
-    // filter the results to only gdal-compatible files
-    results = GDALLoader::filter( results );
+  
+    // Create the worker and the thread
+    IndexingWorker* worker = new IndexingWorker;
+    QThread* workerThread = new QThread(this);
 
-    // clear the current database
-    settings.database.clear();
+    // connect the signals together
+    connect(workerThread, SIGNAL(started()), worker, SLOT(startIndexing()));
+    connect(workerThread, SIGNAL(finished()), worker, SLOT(deleteLater()));
+
+    worker->moveToThread(workerThread);
     
-    // add the results to the database
-    for( size_t i=0; i<results.size(); i++ ){
-        settings.database.addItem( results[i] );
-    }
+    // start running
+    workerThread->start();
     
-    // rebuild the image database
-    build_asset_tree();
-    
+        
 }
 
-void AssetPane::build_asset_tree(){
+void AssetPane::reloadAssetTree(){
     
     // clear the current list of items
     assetTree->clear();
@@ -227,7 +245,7 @@ void AssetPane::build_asset_tree(){
         item->setCheckState(0, Qt::Unchecked );
         item->setText( 1, settings.database[i].basename().c_str() );
         item->setText( 2, settings.database[i].formatShortString().c_str() );
-        item->setText( 3, settings.database[i].formatLongString().c_str() );
+        item->setText( 3, settings.database[i].canonical().c_str() );
         
         // set an icon
         item->setIcon( 1,*(new QIcon("icons/image.png")));
@@ -240,3 +258,50 @@ void AssetPane::build_asset_tree(){
     assetTree->resizeColumnToContents(2);
 
 }
+
+void AssetPane::showOverlayClicked(){
+    
+    /// hold overlay button down
+    if( showOverlay == false ){
+        showOverlay = true;
+        assetShowOverlayButton->setDown(true);
+
+        // reload browser overlays
+        assetSelected();
+    }
+    /// release hold overlay button
+    else{
+        showOverlay = false;
+        assetShowOverlayButton->setDown(false);
+    }
+}
+
+void AssetPane::assetSelected(){
+    
+    settings.overlay_list.clear();
+
+    // if we are not showing the overlay, then do nothing
+    if( showOverlay == false ) return;
+
+    // create a list of everything that is activated
+    for( int i=0; i<assetTree->topLevelItemCount(); i++ ){
+        
+        // make sure item has been checked
+        if( assetTree->topLevelItem(i)->checkState(0) != Qt::Checked ){ continue; }
+
+        // find the bounding box of the top level item
+        int idx = settings.database.findImage( assetTree->topLevelItem(i)->text(3).toLocal8Bit().constData() );
+        if( idx <= 0 ){
+            
+            // bounding box
+            Rect bbox = settings.database[idx].getBBox();
+            
+            // add to overlay list
+            settings.overlay_list.push_back(Overlay(bbox,Qt::green));
+        }
+    }
+
+    // emit the signal
+    emit message_service.reloadBrowserOverlaySignal();
+}
+

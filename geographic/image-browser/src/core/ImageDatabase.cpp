@@ -51,3 +51,15 @@ Image ImageDatabase::operator[]( const int& idx )const{
     return data[idx];
 }
 
+/**
+ * Return the image found
+*/
+int ImageDatabase::findImage( const string& canonical_name ){
+    
+    for( size_t i=0; i<data.size(); i++ ){
+        if( data[i].canonical() == canonical_name ){
+            return i;
+        }
+    }
+    return -1;
+}

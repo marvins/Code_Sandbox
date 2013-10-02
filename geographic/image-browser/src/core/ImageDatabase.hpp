@@ -48,6 +48,11 @@ class ImageDatabase{
         */
         Image operator[]( const int& idx )const;
 
+        /**
+         * Return the index of the image found
+        */
+        int findImage( const std::string& canonical_name );
+
     private:
         
         /// Image List
