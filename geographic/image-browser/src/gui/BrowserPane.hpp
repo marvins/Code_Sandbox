@@ -7,6 +7,8 @@
 #define __SRC_GUI_BROWSERPANE_HPP__
 
 #include <QGridLayout>
+#include <QToolButton>
+#include <QVBoxLayout>
 #include <QWebView>
 #include <QWidget>
 
@@ -31,7 +33,8 @@ class BrowserPane : public QWidget{
         //-----------------------------//
         //-     Private Functions     -//
         //-----------------------------//
-        
+        void build_toolbar_widget();
+
         //-----------------------------//
         //-     Private Variables     -//
         //-----------------------------//
@@ -41,7 +44,18 @@ class BrowserPane : public QWidget{
 
         ///  Web View
         QWebView*  webView;
+        
+        /// Toolbar Widget
+        QWidget*      toolbarWidget;
+        
+        /// Toolbar Layout
+        QVBoxLayout*  toolbarLayout;
 
+        /// Toolbar Look At Button
+        QToolButton*  toolbarLookAtButton;
+
+        /// Toolbar Export Button
+        QToolButton*  toolbarExportButton;
 
 };
 

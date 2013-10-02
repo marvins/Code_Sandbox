@@ -90,13 +90,16 @@ void AssetPane::build_asset_widget(){
 
     // create asset headers
     assetHeaderItem = new QTreeWidgetItem();
-    assetHeaderItem->setText(0, QString("File Name"));
-    assetHeaderItem->setText(1, QString("Format"));
-    assetHeaderItem->setText(2, QString("Description"));
+    assetHeaderItem->setText(0, QString("Select"));
+    assetHeaderItem->setText(1, QString("File Name"));
+    assetHeaderItem->setText(2, QString("Format"));
+    assetHeaderItem->setText(3, QString("Description"));
     
     // create list
     assetTree = new QTreeWidget( assetWidget );
     assetTree->setHeaderItem( assetHeaderItem );
+
+    assetTree->setColumnWidth(0,50);
     assetLayout->addWidget( assetTree );
     
     // create button bar
@@ -219,14 +222,21 @@ void AssetPane::build_asset_tree(){
 
         // create a widget item
         QTreeWidgetItem* item = new QTreeWidgetItem();
-        item->setText( 0, settings.database[i].basename().c_str() );
-        item->setText( 1, settings.database[i].formatShortString().c_str() );
-        item->setText( 2, settings.database[i].formatLongString().c_str() );
+        item->setFlags( item->flags() | Qt::ItemIsUserCheckable | Qt::ItemIsEnabled);
+        
+        item->setCheckState(0, Qt::Unchecked );
+        item->setText( 1, settings.database[i].basename().c_str() );
+        item->setText( 2, settings.database[i].formatShortString().c_str() );
+        item->setText( 3, settings.database[i].formatLongString().c_str() );
         
         // set an icon
-        item->setIcon(0,*(new QIcon("icons/image.png")));
+        item->setIcon( 1,*(new QIcon("icons/image.png")));
 
         assetTree->addTopLevelItem(item);    
     }
+
+    /// resize column
+    assetTree->resizeColumnToContents(1);
+    assetTree->resizeColumnToContents(2);
 
 }
