@@ -28,7 +28,7 @@ void IndexingWorker::startIndexing(){
     settings.indexingProgressDialogStatus = "Loading File List";
     settings.indexingProgressDialogValue  = 5;
     emit message_service.updateIndexingProgressDialogStatusSlot();
-
+    
     // clear the current database
     settings.indexingProgressDialogStatus = "Clearing Database";
     emit message_service.updateIndexingProgressDialogStatusSlot();
@@ -40,10 +40,9 @@ void IndexingWorker::startIndexing(){
 
     for( size_t i=0; i<results.size(); i++ ){
         
-        
         // filter the results to only gdal-compatible files
         if( GDALLoader::isValid( results[i] ) == true ){
-
+            
             settings.indexingProgressDialogStatus = string("Loading: ")+results[i];        
             emit message_service.updateIndexingProgressDialogStatusSlot();
             

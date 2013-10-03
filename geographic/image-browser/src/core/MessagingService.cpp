@@ -27,6 +27,6 @@ void MessagingService::closeIndexingProgressDialogSlot(){
 }
 
 void MessagingService::updateIndexingProgressDialogStatusSlot(){
-    emit updateIndexingProgressDialogStatusSlot();
+    emit updateIndexingProgressDialogStatusSignal();
 }
 
