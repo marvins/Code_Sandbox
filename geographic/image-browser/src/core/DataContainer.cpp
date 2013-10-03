@@ -34,7 +34,7 @@ void DataContainer::load( int argc, char* argv[] ){
 
 
     // load the configuration file
-#ifdef __unix
+#if defined(__unix) || defined(__APPLE__)
     load_unix_configuration();
 #endif
 
