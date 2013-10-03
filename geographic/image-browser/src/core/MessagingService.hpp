@@ -16,6 +16,27 @@ class MessagingService : public QObject{
 
     Q_OBJECT
 
+    public slots:
+
+        /**
+         * Slot to reload all browser overlays
+        */
+        void reloadBrowserOverlaySlot();
+
+        /**
+         * Slot telling the asset pane to refresh the asset tree
+        */
+        void reloadAssetTreeSlot();
+
+        /**
+         * Slot telling the indexing progress dialog to show
+        */
+        void showIndexingProgressDialogSlot();
+
+        void closeIndexingProgressDialogSlot();
+        
+        void updateIndexingProgressDialogStatusSlot();
+
     signals:
         
         /**

@@ -20,14 +20,14 @@ using namespace std;
 void IndexingWorker::startIndexing(){
 
     // create the progress bar
-    emit message_service.showIndexingProgressDialogSignal();
+    emit message_service.showIndexingProgressDialogSlot();
     
     // take the current base directory and get a list of images
     vector<string> results = file_list( settings.base_directory, true );
     
     settings.indexingProgressDialogStatus = "Loading File List";
     settings.indexingProgressDialogValue  = 5;
-    emit message_service.updateIndexingProgressDialogStatusSignal();
+    emit message_service.updateIndexingProgressDialogStatusSlot();
 
     
     //if( settings.indexingProgressDialogClose == true ){
@@ -38,12 +38,12 @@ void IndexingWorker::startIndexing(){
 
     // clear the current database
     settings.indexingProgressDialogStatus = "Clearing Database";
-    emit message_service.updateIndexingProgressDialogStatusSignal();
+    emit message_service.updateIndexingProgressDialogStatusSlot();
     settings.database.clear();
     
     
     settings.indexingProgressDialogStatus = "Building Bounding Boxes";
-    emit message_service.updateIndexingProgressDialogStatusSignal();
+    emit message_service.updateIndexingProgressDialogStatusSlot();
 
     for( size_t i=0; i<results.size(); i++ ){
         
@@ -58,12 +58,12 @@ void IndexingWorker::startIndexing(){
         if( GDALLoader::isValid( results[i] ) == true ){
 
             settings.indexingProgressDialogStatus = string("Loading: ")+results[i];        
-            emit message_service.updateIndexingProgressDialogStatusSignal();
+            emit message_service.updateIndexingProgressDialogStatusSlot();
             
             settings.database.addItem( results[i] );
             
             settings.indexingProgressDialogValue = (5 + (95*((double)i/(double)results.size())));
-            emit message_service.updateIndexingProgressDialogStatusSignal();
+            emit message_service.updateIndexingProgressDialogStatusSlot();
         
         }
 
@@ -71,8 +71,8 @@ void IndexingWorker::startIndexing(){
 
     
     // rebuild the image database
-    emit message_service.reloadAssetTreeSignal();
+    emit message_service.reloadAssetTreeSlot();
     
-    emit message_service.closeIndexingProgressDialogSignal();
+    emit message_service.closeIndexingProgressDialogSlot();
 }
 

@@ -20,8 +20,8 @@
 
 #include <src/gui/IndexingWorker.hpp>
 
-extern DataContainer settings;
-extern MessagingService message_service;
+extern DataContainer     settings;
+extern MessagingService  message_service;
 
 /**
  * @class AssetPane

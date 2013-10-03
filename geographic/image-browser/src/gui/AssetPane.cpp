@@ -303,6 +303,7 @@ void AssetPane::assetSelected(){
     }
     
     // emit the signal
-    emit message_service.reloadBrowserOverlaySignal();
+    emit message_service.reloadBrowserOverlaySlot();
+
 }
 
