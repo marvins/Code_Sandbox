@@ -29,13 +29,6 @@ void IndexingWorker::startIndexing(){
     settings.indexingProgressDialogValue  = 5;
     emit message_service.updateIndexingProgressDialogStatusSlot();
 
-    
-    //if( settings.indexingProgressDialogClose == true ){
-    //    settings.database.clear();
-    //    emit message_service.closeIndexingProgressDialogSignal();
-    //    return;
-    //}
-
     // clear the current database
     settings.indexingProgressDialogStatus = "Clearing Database";
     emit message_service.updateIndexingProgressDialogStatusSlot();
@@ -47,12 +40,6 @@ void IndexingWorker::startIndexing(){
 
     for( size_t i=0; i<results.size(); i++ ){
         
-        
-        //if( settings.indexingProgressDialogClose == true ){
-        //    settings.database.clear();
-        //    emit message_service.closeIndexingProgressDialogSignal();
-        //    return;
-        //}
         
         // filter the results to only gdal-compatible files
         if( GDALLoader::isValid( results[i] ) == true ){

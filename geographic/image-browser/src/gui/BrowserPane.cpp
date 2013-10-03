@@ -74,12 +74,26 @@ void BrowserPane::build_toolbar_widget(){
 }
 
 void BrowserPane::reloadBrowserOverlays(){
-
-    cout << "Reloading Overlays" << endl;
-    cout << "Size: " << settings.overlay_list.size() << endl;
-    for( size_t i=0; i<settings.overlay_list.size(); i++ ){
-        cout << i << " : " << settings.overlay_list[i].shape << endl;
+    
+    /// Clear all overlays
+    for( size_t i=0; i<settings.variables.size(); i++ ){
+        string cc = settings.variables[i] + string(".setMap(null);");
+        webView->page()->mainFrame()->evaluateJavaScript( cc.c_str() );
     }
+    settings.variables.clear();
 
+    /// Iterate over the overlay list, adding them to the map
+    for( size_t i=0; i<settings.overlay_list.size(); i++ ){
+        
+        // create the javascript variable
+        string varname;
+        string command = settings.overlay_list[i].toGoogleMapsString( varname, i);
+        QVariant res = webView->page()->mainFrame()->evaluateJavaScript( command.c_str());
+    
+        // add the variable to the list
+        settings.variables.push_back(varname);
+    }
+    
 }
+
 

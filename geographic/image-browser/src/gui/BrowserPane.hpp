@@ -9,6 +9,7 @@
 #include <QGridLayout>
 #include <QToolButton>
 #include <QVBoxLayout>
+#include <QWebFrame>
 #include <QWebView>
 #include <QWidget>
 

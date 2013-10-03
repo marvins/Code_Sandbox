@@ -57,6 +57,9 @@ class DataContainer{
         
         /// List of overlays
         std::vector<Overlay> overlay_list;
+        
+        /// List of strings
+        std::vector<std::string>  variables;
 
         /// Using Config File
         std::string config_filename;
