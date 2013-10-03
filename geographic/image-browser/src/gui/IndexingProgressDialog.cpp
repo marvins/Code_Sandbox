@@ -31,14 +31,14 @@ IndexingProgressDialog::IndexingProgressDialog( QWidget* parent ) : QDialog(pare
     statusLabel->setSizePolicy( QSizePolicy::Minimum, QSizePolicy::Minimum );
     mainLayout->addWidget( statusLabel );
 
-
+/*
     /// Create the button bar
     buttonBar = new QWidget;
 
     // create the layout
     buttonBarLayout = new QHBoxLayout;
     buttonBarLayout->setAlignment( Qt::AlignLeft );
-
+    
     // create the button
     buttonBarCancelButton = new QToolButton;
     buttonBarCancelButton->setText("Cancel");
@@ -46,12 +46,12 @@ IndexingProgressDialog::IndexingProgressDialog( QWidget* parent ) : QDialog(pare
     buttonBarCancelButton->setFixedHeight(40);
     buttonBarLayout->addWidget( buttonBarCancelButton );
 
-
     // set the layout
     buttonBar->setLayout( buttonBarLayout );
 
     // add to main widget
     mainLayout->addWidget( buttonBar );
+*/
 
     // set the main layout
     setLayout( mainLayout );
@@ -71,13 +71,11 @@ IndexingProgressDialog::IndexingProgressDialog( QWidget* parent ) : QDialog(pare
 
 void IndexingProgressDialog::updateValue( const int& value ){
     
-    cout << "Update Value" << endl;
     progressBar->setValue(value);
 }
 
 void IndexingProgressDialog::updateStatus( const string& value ){
 
-    cout << "Update Status" << endl;
     statusLabel->setText(value.c_str());
     adjustSize();
 }
