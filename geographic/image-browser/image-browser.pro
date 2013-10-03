@@ -60,3 +60,17 @@ unix:macx{
 
 }
 
+win32{
+
+	message("using win32")
+	TARGET = ImageBrowser
+	
+	#  Link GDAL
+	INCLUDEPATH += C:/opt/local/include/gdal
+	LIBS += -LC:/opt/local/lib -lgdal_i
+	
+	#  Link Boost
+	LIBS += -LC:/opt/local/lib
+	LIBS += -lboost_system-vc110-mt-1_55 -lboost_filesystem-vc110-mt-1_55
+	
+}
