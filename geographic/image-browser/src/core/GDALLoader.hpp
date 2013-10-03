@@ -10,6 +10,7 @@
 
 #include <cpl_conv.h>
 #include <gdal_priv.h>
+#include <ogr_spatialref.h>
 
 #include <src/core/Point.hpp>
 #include <src/core/Rect.hpp>

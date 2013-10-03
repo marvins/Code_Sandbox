@@ -62,27 +62,52 @@ Rect GDALLoader::get_bbox()const{
     
     /// Grab the projection transformation
     if( dataset->GetGeoTransform( xform ) == CE_None ){
-
-        return Rect(    // Top Left Corner (Low X, High Y)
-                        Point( xform[0], xform[3]),
-
-                        // Bottom Right Corner (High X, Low Y)
-                        Point( xform[0] + width*xform[1] + height*xform[2],
-                               xform[3] + width*xform[4] + height*xform[5])
-                    );
-    }
+   
+        // need to grab the current projection
+        string proj = dataset->GetProjectionRef();
     
+        // compute the spatial reference object
+        OGRSpatialReference* currentProjection = new OGRSpatialReference(proj.c_str());
+    
+        // compute the desired projection
+        OGRSpatialReference* desiredProjection = currentProjection->CloneGeogCS();  
+    
+        // create the transformation
+        OGRCoordinateTransformation* ogrXform = OGRCreateCoordinateTransformation( 
+                                                currentProjection,
+                                                desiredProjection);
+
+        
+        /// Get input points
+        Point tl( xform[0], xform[3]);
+        Point br( xform[0] + width*xform[1] + height*xform[2],
+                xform[3] + width*xform[4] + height*xform[5]);
+
+
+        if( ogrXform == NULL || !ogrXform->Transform( 1, &tl.x, &tl.y ) ){
+            tl.x = 0;
+            tl.y = 0;
+        }
+        if( ogrXform == NULL || !ogrXform->Transform( 1, &br.x, &br.y ) ){
+            br.x = 0;
+            br.y = 0;
+        }
+
+
+        return Rect( tl, br);
+    }
+
     return Rect(Point(0,0),Point(0,0));
 }
 
 std::vector<std::string> GDALLoader::filter( std::vector<std::string> const& input ){
-    
+
     // create output 
     vector<string> output;
 
     // iterate through each file and compare filenames
     GDALAllRegister();
-    
+
     for( size_t i=0; i<input.size(); i++ ){
 
         // create a temporary dataset
@@ -107,13 +132,13 @@ std::string GDALLoader::getLongName()const{
 }
 
 bool GDALLoader::isValid( std::string const& input ){
-    
+
     // set default output
     bool output = false;
 
     // iterate through each file and compare filenames
     GDALAllRegister();
-    
+
     // create a temporary dataset
     GDALDataset* temp = (GDALDataset*) GDALOpen( input.c_str(), GA_ReadOnly );
     if( temp == NULL ){
@@ -122,9 +147,9 @@ bool GDALLoader::isValid( std::string const& input ){
     else{
         output = true;
     }
-    
+
     GDALClose(temp);
-    
+
     return output;
 }
 
