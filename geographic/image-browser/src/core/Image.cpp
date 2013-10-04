@@ -12,21 +12,18 @@ using namespace std;
 
 Image::Image( const string& filename ){
 
-    cout << "CONSTRUCTOR START" << endl;
     // set filename 
     this->filename = filename;
 
     // open up gdal and pull bounding box
     GDALLoader driver( filename );
     bbox = driver.get_bbox();
-    cout << "BBox: " << bbox << endl;
 
     // get the short and long names
     short_name = driver.getShortName();
 
     long_name  = driver.getLongName();
     
-    cout << "CONSTRUCTOR END" << endl;
 
 }
 
