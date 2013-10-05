@@ -13,12 +13,16 @@
 #include <QWebView>
 #include <QWidget>
 
+#include <src/core/DataContainer.hpp>
+
 #include <src/gui/AssetPane.hpp>
 #include <src/gui/BrowserPane.hpp>
 #include <src/gui/PreferenceDialog.hpp>
 #include <src/gui/IndexingProgressDialog.hpp>
 
 #include <string>
+
+extern DataContainer settings;
 
 /**
  * @class MainWindow

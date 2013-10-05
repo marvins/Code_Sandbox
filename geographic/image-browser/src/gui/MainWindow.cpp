@@ -7,6 +7,8 @@
 
 #include <src/core/FilesystemUtilities.hpp>
 
+#include <iostream>
+
 using namespace std;
 
 MainWindow::MainWindow( ){
