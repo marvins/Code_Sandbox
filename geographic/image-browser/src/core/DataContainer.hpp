@@ -34,6 +34,8 @@ class DataContainer{
         */
         void load_unix_configuration();
         
+		void load_windows_configuration();
+		
         /**
          * Create Config File
         */

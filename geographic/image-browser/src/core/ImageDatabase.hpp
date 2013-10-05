@@ -10,6 +10,7 @@
 #include <src/core/Rect.hpp>
 
 #include <string>
+#include <vector>
 
 /**
  * @class ImageDatabase
