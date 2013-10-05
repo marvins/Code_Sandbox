@@ -8,6 +8,7 @@
 
 #include <src/gui/MainWindow.hpp>
 
+#include <iostream>
 #include <string>
 
 #include <src/core/DataContainer.hpp>
