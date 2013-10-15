@@ -20,7 +20,11 @@ DataContainer::DataContainer(){
     base_directory = current_working_directory();
 
     // set default configuration file
-    config_filename = string(getenv("HOME"))+string("/.imagebrowser.cfg");
+#if defined(__unix) || defined(__APPLE__)
+	config_filename = string(getenv("HOME"))+string("/.imagebrowser.cfg");
+#else
+	config_filename = string(getenv("HOMEPATH"))+string("/.imagebrowser.cfg");
+#endif
 
     indexingProgressDialogClose = false;
 }
@@ -30,12 +34,11 @@ DataContainer::DataContainer(){
 */
 void DataContainer::load( int argc, char* argv[] ){
 
-    // iterate through the input options
-
-
     // load the configuration file
 #if defined(__unix) || defined(__APPLE__)
     load_unix_configuration();
+#else
+	load_windows_configuration();
 #endif
 
 
@@ -64,6 +67,32 @@ void DataContainer::write( const string& configurationFilename )const{
 }
 
 
+void DataContainer::load_windows_configuration(){
+
+	// if the base directory does not exist, we need to ask if it should
+    if( file_exists(config_filename) == false ){
+        
+        // create dialog to check if we want to create the configuration structure
+        QMessageBox msgBox;
+        msgBox.setText(string(config_filename+string(" was not found.")).c_str());
+        msgBox.setInformativeText("Would you like to create a configuration file?");
+        msgBox.setStandardButtons(QMessageBox::Yes | QMessageBox::No );
+        msgBox.setDefaultButton( QMessageBox::Yes );
+        int ret = msgBox.exec();
+
+        if( ret == QMessageBox::Yes ){
+            write( );
+            
+        }
+    }
+	
+    // otherwise, we should load the configuration file
+    else{
+        read_file( );
+    }
+	
+}
+
 void DataContainer::load_unix_configuration(){
     
     // if the base directory does not exist, we need to ask if it should
@@ -82,7 +111,7 @@ void DataContainer::load_unix_configuration(){
             
         }
     }
-
+	
     // otherwise, we should load the configuration file
     else{
         read_file( );

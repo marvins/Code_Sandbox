@@ -8,6 +8,8 @@
 
 #include <QColor>
 
+#include <string>
+
 #include <src/core/Rect.hpp>
 
 /**

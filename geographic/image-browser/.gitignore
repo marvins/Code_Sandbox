@@ -1,3 +1,5 @@
 Makefile
 release
 debug
+Makefile.Release
+Makefile.Debug

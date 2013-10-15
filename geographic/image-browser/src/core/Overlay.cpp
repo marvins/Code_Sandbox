@@ -6,7 +6,6 @@
 #include <src/core/Overlay.hpp>
 
 #include <src/core/StringUtilities.hpp>
-#include <string>
 
 using namespace std;
 

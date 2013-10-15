@@ -26,7 +26,7 @@ BrowserPane::BrowserPane( QWidget* parent ) : QWidget(parent){
     build_toolbar_widget();
 
     // set the page
-    setUrl( string("file://localhost/") + current_working_directory() + string("/html/google_maps.html"));
+	setUrl( string("file://localhost/") + current_working_directory() + string("/html/google_maps.html"));
 
     // set the layout
     setLayout( mainLayout );
@@ -38,7 +38,14 @@ BrowserPane::BrowserPane( QWidget* parent ) : QWidget(parent){
 
 void BrowserPane::setUrl( const string& url ){
     
-    webView->setUrl(QUrl(url.c_str()));
+	string turl = url;
+	for( size_t i=0; i<turl.size(); i++ ){
+		if( turl[i] == '\\' ){
+			turl[i] = '/';
+		}
+	}
+	cout << "url: " << turl << endl;
+    webView->setUrl(QUrl(turl.c_str()));
 
 }
 
@@ -46,7 +53,8 @@ void BrowserPane::build_toolbar_widget(){
     
     // create toolbar widget
     toolbarWidget = new QWidget;
-    
+    toolbarWidget->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Minimum );
+	
     // create layout
     toolbarLayout = new QVBoxLayout;
     toolbarLayout->setAlignment( Qt::AlignTop );
