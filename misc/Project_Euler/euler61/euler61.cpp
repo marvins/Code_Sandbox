@@ -129,13 +129,6 @@ int main( int argc, char* argv[] ){
                 // test permutations
                 do{
 
-                    // make sure none of the values are the same
-                    for( size_t v=0; v<tempList.size()-1; v++ ){
-                        if( tempList[v] == tempList[v+1] ){
-                            break;
-                        }
-                    }
-
                     // check front and back
                     if( is_cyclic( tempList ) == true ){
                         cout << "Output" << endl;
