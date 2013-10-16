@@ -117,7 +117,8 @@ int main( int argc, char* argv[] ){
 
         // remove all duplicates
         std::unique( currentList.begin(), currentList.end() );
-
+        std::cout.precision(6);
+        
         // begin iterating over permutations of the list
         vector<string> tempList(6);
         int x = 0;
@@ -147,7 +148,6 @@ int main( int argc, char* argv[] ){
             _c++;
 
             if( _c % 10000 == 0 ){
-                std::cout.precision(9);
                 cout << std::fixed  << ((double)_c.toLong()/_max.toLong())*100 << endl;
             }
 
