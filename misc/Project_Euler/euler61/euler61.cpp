@@ -5,11 +5,13 @@
  */
 #include <algorithm>
 #include <cmath>
+#include <iomanip>
 #include <iostream>
 #include <set>
 #include <utility>
 #include <vector>
 
+#include <BigIntegerLibrary.hh>
 #include <StringUtilities.hpp>
 
 using namespace std;
@@ -76,7 +78,7 @@ int Pjn( int const& j, int const& n ){
 int main( int argc, char* argv[] ){
 
     try{
-
+            
         // iterate through the list, building the sets
         for( size_t i=3; i<=8; i++ ){
 
@@ -105,6 +107,10 @@ int main( int argc, char* argv[] ){
             }
 
         }
+
+        // compute permutations
+        BigInteger _c = 0;
+        BigInteger _max = (factorial( currentList.size() )/(factorial( currentList.size() - 6 )*factorial(6)));
 
         // sort all values
         std::sort(   currentList.begin(), currentList.end() );
@@ -137,6 +143,14 @@ int main( int argc, char* argv[] ){
 
             } while( std::next_permutation( tempList.begin(), tempList.end() ));
             
+            // increment
+            _c++;
+
+            if( _c % 10000 == 0 ){
+                std::cout.precision(9);
+                cout << std::fixed  << ((double)_c.toLong()/_max.toLong())*100 << endl;
+            }
+
         } while ( std::next_permutation( currentList.begin(), currentList.end() ));
 
 
