@@ -139,13 +139,12 @@ int main( int argc, char* argv[] ){
 
                 } while( std::next_permutation( tempList.begin(), tempList.end() ));
 
-            }
-            cout << "idx: " << b << "/" << values[4].size() << ", " 
-                            << c << "/" << values[5].size() << ", " 
+            }}
+            cout << "idx: " << c << "/" << values[5].size() << ", " 
                             << d << "/" << values[6].size() << ", " 
                             << e << "/" << values[7].size() << ", " 
                             << f << "/" << values[8].size() << endl;
-            }}}}
+            }}}
 
             }
         }
