@@ -147,7 +147,7 @@ int main( int argc, char* argv[] ){
             // increment
             _c++;
 
-            if( _c % 10000 == 0 ){
+            if( _c % 50000 == 0 ){
                 cout << std::fixed  << ((double)_c.toLong()/_max.toLong())*100 << endl;
             }
 
