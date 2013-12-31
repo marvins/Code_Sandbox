@@ -1,0 +1,5 @@
+[user]
+	name = Marvin Smith
+	email = marvin_smith1@me.com\n
+[alias]    
+    lg = log --graph --all --pretty=format:'%Cred%h%Creset -%C(yellow)%d%Creset %s %Cgreen(%cr)%Creset' --abbrev-commit --date=relative
