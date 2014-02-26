@@ -6,6 +6,8 @@
 #include <iostream>
 #include <string>
 
+#include <boost/filesystem.hpp>
+
 /**
  * Keywords for the Log
  * - MAJOR:   Program-ending failures
@@ -19,18 +21,26 @@ const unsigned int LOG_MAJOR=1;
 const unsigned int LOG_MINOR=2;
 const unsigned int LOG_WARNING=4;
 const unsigned int LOG_INFO=8;
+const unsigned int LOG_DEBUG=16;
+
+/**
+ * Logging Modes
+ */
+const unsigned int LOG_MODE_NONE     = 0;
+const unsigned int LOG_MODE_CONSOLE  = 1;
+const unsigned int LOG_MODE_LOGFILE  = 2;
 
 /************************************************************************/
 enum COLORS  { RED = 31, YELLOW = 33, GREEN = 32, BLUE = 34, CYAN = 36, WHITE = 37 };
 
 #define color_end "\033[0m"
 
-class Color
+class LogColor
 {
 public:
-    Color(int v);
+    LogColor(int v);
     
-    friend std::ostream& operator<<( std::ostream& os, const Color& mp);
+    friend std::ostream& operator<<( std::ostream& os, const LogColor& mp);
 
 private:
     int val;
@@ -97,76 +107,8 @@ class Logger{
          * @param[in] log_file Name of file to output logging to
          *
         */
-        Logger( std::string const& log_file );
+        Logger( const int& log_mode, const int& log_level, std::string const& log_file = "" );
         
-        /**
-         * Parameterized Constructor 
-         * 
-         * @param[in] log_file Name of file to output logging to
-         * @param[in] general_run_state State to manage both file and console printing
-         *
-        */
-        Logger( std::string const& log_file, const unsigned int& general_run_state );
-        
-        /**
-         * Parameterized Constructor 
-         * 
-         * @param[in] log_file Name of file to output logging to
-         * @param[in] file_run_state Which types of errors to print to file
-         * @param[in] print_run_state Which types of errors to print to console
-         *
-        */
-        Logger( std::string const& log_file, const unsigned int& file_run_state, const unsigned int& print_run_state );
-        
-        /** 
-         * Destructor
-         * 
-         * If the log file has not been written or out of date, and it is desired, then it 
-         * will be called here. 
-        */
-        ~Logger();
-
-        /**
-         * Retrieve the run condition for the console logging
-         *
-         * @return console_run_state value
-        */
-        unsigned int get_console_run_state() const;
-        
-        /** 
-         * Set the run condition for the console logging
-         * 
-         * @param[in] _console_run_state Desired console run state
-        */
-        void set_console_run_state( const unsigned int& _console_run_state );
-
-        /**
-         * Retrieve the run condition for the file logging
-         *
-         * @return logfile_run_state value
-        */
-        unsigned int get_logfile_run_state() const;
-    
-        /** 
-         * Set the run condition for the file logging
-         * 
-         * @param[in] _logfile_run_state Desired logfile run state
-        */
-        void set_logfile_run_state( const unsigned int& _logfile_run_state );
-
-        /**
-         * Set the logfile name
-         * 
-         * @param[in] filename 
-        */
-        void set_logfile_name( std::string const& filename );
-
-        /**
-         * Get the logfile name
-         *
-         * @return logfile name
-        */
-        std::string get_logfile_name()const;
         
         /** 
          * Add a message to the log
@@ -190,22 +132,38 @@ class Logger{
          * @param[in] Message  message
         */
         void add_message( std::string const& message, const unsigned int& level );
+        
+        /**
+         * Set the logging level
+         *
+         * @param[in] logLevel Logging level
+         */
+        void setLoggingLevel( const int& logLevel );
+
+        /**
+         * Set the logging mode
+         *
+         * @param[in] logMode Logging mode
+         */
+        void setLoggingMode( const int& logMode );
     
+        /**
+         * Set the log filename
+         */
+        void setLogFilename( const std::string& logPathname );
+
     private:
 
         /**
-         * Logger Writer
-        */
-        void write_log();
+         * Set the default configuration for the logger
+         */
+        void setDefaults();
 
-        std::string log_filename; /*< Name of log file */
-        
-        unsigned int logfile_run_state;   /*< Which type of errors to report to file */
-        unsigned int console_run_state;   /*< Which type of errors to report to cout */
-        
-        std::deque<LogMessage> log_messages;  /*< List of log messages */
 
-        bool write_current; /*< True if written data, and data is still currrent */
+        boost::filesystem::path m_logPathname; /*< Name of log file */
+        
+        unsigned int m_logLevel; /*< Logging Level */
+        unsigned int m_logMode;  /*< Logging Mode  */
 
 };
 

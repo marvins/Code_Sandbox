@@ -7,9 +7,9 @@ using namespace std;
 /**************************************************/
 /*               Color Output Class               */
 /**************************************************/
-Color::Color( int v ): val(v){ }
+LogColor::LogColor( int v ): val(v){ }
 
-ostream& operator<<( ostream& os, const Color& mp) 
+ostream& operator<<( ostream& os, const LogColor& mp) 
 {
    if(mp.val >= 0){
       os << "\033[0;" << mp.val << "m";
@@ -51,13 +51,13 @@ std::ostream& operator << ( std::ostream& ostr, LogMessage const& log_message ){
    
    //print the log header
    if( log_message.level == LOG_MAJOR )
-       ostr << Color(RED) << "[  MAJOR  ]" << color_end;
+       ostr << LogColor(RED) << "[  MAJOR  ]" << color_end;
    else if( log_message.level == LOG_MINOR )
-       ostr << Color(RED) << "[  MINOR  ]" << color_end; 
+       ostr << LogColor(RED) << "[  MINOR  ]" << color_end; 
    else if( log_message.level == LOG_WARNING )
-       ostr << Color(YELLOW) << "[ WARNING ]" << color_end;
+       ostr << LogColor(YELLOW) << "[ WARNING ]" << color_end;
    else if( log_message.level == LOG_INFO )
-       ostr << Color(WHITE) << "[  INFO   ]" << color_end;
+       ostr << LogColor(WHITE) << "[  INFO   ]" << color_end;
    else 
        throw LogMessage( LOG_MAJOR, "ERROR: Unknown log message level in operator << ");
 
@@ -72,84 +72,40 @@ std::ostream& operator << ( std::ostream& ostr, LogMessage const& log_message ){
 /*              Logger Implementation                */
 /*****************************************************/
 /**
- * Default constructor.  
-*/
-Logger::Logger( ){
+ * Set logger defaults
+ */
+void Logger::setDefaults(){
+    
+    m_logPathname = "log.log";
 
-    log_filename = "log.log";
-    console_run_state = LOG_MAJOR;
-    logfile_run_state = LOG_MAJOR;
-    write_current = false;
-}
+    m_logLevel = LOG_INFO;
+    m_logMode  = LOG_MODE_CONSOLE;
 
-Logger::Logger( const string& log_name ){
-
-    log_filename = log_name;
-    console_run_state = LOG_MAJOR;
-    logfile_run_state = LOG_MAJOR;
-    write_current = false;
-}
-
-Logger::Logger( string const& log_file, const unsigned int& general_run_state ){
-
-    log_filename = log_file;
-    console_run_state = general_run_state;
-    logfile_run_state = general_run_state;
-    write_current = false;
-}
-
-/** 
- * Full Parameterized Constructor
-*/
-Logger::Logger( string const& log_file, const unsigned int& file_run_state, const unsigned int& print_run_state ){
-
-    log_filename = log_file;
-    console_run_state = print_run_state;
-    logfile_run_state = file_run_state;
-    write_current = false;
 }
 
 /**
- * Destructor 
- *
- * Makes sure that the log file has been written if required
+ * Default constructor.  
 */
-Logger::~Logger(){
-    
-    //check if current
-    if( write_current == true )return;
+Logger::Logger( ){
+    setDefaults();
+}
 
-    //make sure we can even write log messages
-    if( logfile_run_state == LOG_NONE ) return;
+/**
+ * Default Constructor
+ */
+Logger::Logger( const int& log_mode, const int& log_level, const string& log_name ){
 
-    //otherwise write log messages we are allowed to write
-    write_log();
+    // set filename
+    m_logPathname = log_name;
+
+    // set log level
+    m_logLevel = log_level;
+
+    // set log mode
+    m_logMode = log_mode;
 
 }
 
-unsigned int Logger::get_logfile_run_state() const{
-    return logfile_run_state;
-}
-
-void Logger::set_logfile_run_state( const unsigned int& _logfile_run_state ){
-    logfile_run_state = _logfile_run_state;
-}
-
-unsigned int Logger::get_console_run_state() const{
-    return console_run_state;
-}
-
-void Logger::set_console_run_state( const unsigned int& _console_run_state ){
-    console_run_state = _console_run_state;
-}
-       
-void Logger::set_logfile_name( std::string const& filename ){
-    log_filename = filename;
-}
-
-string Logger::get_logfile_name()const{
-    return log_filename;
-}
 
 
 /**
@@ -172,39 +128,50 @@ void Logger::add_message( string const& message, const unsigned int& level ){
  * This is the primary interface by which to add messages to the log
 */
 void Logger::add_message( LogMessage const& log_message ){
-    
-    //add message to log output
-    if(  ( log_message.level & logfile_run_state ) == log_message.level )
-        log_messages.push_back(log_message);
 
-    //if the console priority is high enough, then print to screen
-    if(  ( log_message.level & console_run_state ) == log_message.level )
-        cout << log_message << endl;
+    // make sure the level is high
+    if(log_message.level <= m_logLevel ){
     
-    //make sure the write_current flag is false
-    write_current = false;
+        //add message to log output
+        if(m_logMode  & LOG_MODE_LOGFILE  == LOG_MODE_LOGFILE  ){
 
-}
+            // open file and append
+            ofstream fout;
+            fout.open( m_logPathname.native().c_str(), std::fstream::app );
+            fout << log_message << endl;
+            fout.close();
+        }
 
-void Logger::write_log(){
-    
-    //don't write if the log is current
-    if( write_current == true )
-        return;
+        //if the console priority is high enough, then print to screen
+        if(m_logMode  & LOG_MODE_CONSOLE  == LOG_MODE_CONSOLE  ){
 
-    //create an output file
-    ofstream fout;
-    fout.open( log_filename.c_str());
-    
-    //output each log file
-    deque<LogMessage>::iterator  it;
-    for( it=log_messages.begin(); it != log_messages.end(); it++)
-        fout << *it << endl;
-    
-    //close up shop
-    fout.close();
-    
-    //make sure to mark the write_current flag as true
-    write_current = true;
+            // open file and append
+            cout << log_message << endl;
+        }
+    }
 
 }
+
+/**
+ * Set log level
+ */
+void Logger::setLoggingLevel( const int& logLevel ){
+    m_logLevel = logLevel;
+}
+
+/**
+ * Set log mode
+ */
+void Logger::setLoggingMode( const int& logMode ){
+    m_logMode = logMode;
+}
+
+/**
+ * Set log filename
+ */
+void Logger::setLogFilename( const std::string& logPathname ){
+
+    m_logPathname = logPathname;
+}
+
+
