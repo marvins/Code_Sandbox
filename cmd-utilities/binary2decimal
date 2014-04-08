@@ -1,0 +1,43 @@
+#!/usr/bin/env python
+
+import sys
+
+#------------------------------#
+#-     Usage Instructions     -#
+#------------------------------#
+def usage():
+	
+	print('usage: ' + sys.argv[0] + ' [options] [binary string]');
+	print('   Convert a binary number into a decimal equivalent');
+	print('')
+	print('   options:');
+	print('   -h : Print help instructions');
+	print('');
+
+#---------------------------#
+#-      Main Function      -#
+#---------------------------#
+def main():
+	
+	#  parse command line option
+	if len(sys.argv) <= 1:
+		print('No input arguments. Please provide a proper argument.\n');
+		usage();
+		exit();
+	
+	#  Parse all input arguments 
+	for arg in sys.argv[1:]:
+
+		if arg == '-h' or arg == '--help':
+			usage();
+			exit();
+
+		else:
+			print(int(arg,2));
+
+#-----------------------------#
+#-      Program Start        -#
+#-----------------------------#
+if __name__ == "__main__":
+	main();
+
