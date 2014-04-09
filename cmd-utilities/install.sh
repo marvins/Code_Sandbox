@@ -10,5 +10,5 @@ PREFIX=/opt/local/bin
 
 cp binary2decimal "$PREFIX/"
 cp decimal2binary "$PREFIX/"
-
+cp time-convert   "$PREFIX/"
 
