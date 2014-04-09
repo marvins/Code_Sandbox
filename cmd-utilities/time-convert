@@ -14,7 +14,7 @@ import sys, time, math, datetime, pytz, calendar
 
 from dateutil import tz
 
-defaultTimestampFormat = '%d/%m/%y %H:%M:%S  tz=%z';
+defaultTimestampFormat = '%d/%m/%y %H:%M:%S tz=%z';
 
 #-----------------------------------#
 #-     Print Usage Instructions    -#
