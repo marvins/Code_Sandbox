@@ -14,7 +14,7 @@ import sys, time, math, datetime, pytz, calendar
 
 from dateutil import tz
 
-defaultTimestampFormat = '%d/%m/%y %H:%M:%S tz=%z';
+defaultTimestampFormat = '%d/%m/%y %H:%M:%S';
 
 #-----------------------------------#
 #-     Print Usage Instructions    -#
@@ -32,6 +32,7 @@ def usage():
 	print('    -f <timestamp>     :  For Gregorian dates, pass the format (ex. %d-%m-%y).')
 	print('       default: ' + defaultTimestampFormat);
 	print('    -v, --verbose:  Print output in descriptive format.');
+	print('    -z <utc offset> : UTC Offset, 0 = default.');
 	print('');
 	print('    input/output formats:')
 	print('      G : GPS');
@@ -77,12 +78,12 @@ def Julian2Unix( julianTime ):
 #--------------------------------------------------------#
 #-     Convert a Unix Timestamp to Gregorian Time       -#
 #--------------------------------------------------------#
-def Unix2Gregorian( unixTime, formatStr ):
+def Unix2Gregorian( unixTime, formatStr, utcOffset ):
 	
 	d = datetime.datetime.fromtimestamp(unixTime);
 	a = d.replace(tzinfo=tz.tzlocal());
 	
-	return a.astimezone(pytz.timezone('UTC')).strftime(formatStr);
+	return a.astimezone(pytz.timezone('UTC')).strftime(formatStr) + ' TZ: ' + '0';
 
 #--------------------------------------------------------#
 #-     Convert a Gregorian Date to a Unix Timestamp     -#
@@ -171,6 +172,9 @@ def main():
 
 	#  Converted Unix Time
 	unixTimestamp = 0;
+	
+	#  UTC offset
+	utcOffset = 0;
 
 	#  Get command-line args
 	args = sys.argv[1:];
@@ -223,6 +227,12 @@ def main():
 
 			#  Set the flag to tell us to not use local time
 			inputProvided = True;
+
+		#  Look for the UTC Offset
+		elif arg == '-z':
+			
+			utcOffset = args[0];
+			args = args[1:];
 
 		#  Look for the output format
 		elif arg == '-o':
@@ -284,7 +294,7 @@ def main():
 
 	#  Gregorian Date Format
 	if outputFormat == 'C' or outputFormat == 'A':
-		gregTime = Unix2Gregorian(unixTimestamp, timestampFormat);
+		gregTime = Unix2Gregorian(unixTimestamp, timestampFormat, utcOffset);
 		
 		if outputFormat == 'A' and isVerbose == True:
 			print('Gregorian:' + gregTime);

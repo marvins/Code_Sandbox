@@ -1,31 +1,8 @@
-This is a repo containing useful libraries and utilities I have created.
+This is a collection of junk that I find useful in my day-to-day activities.  Feel free
+to borrow, steal, improve or gripe about anything here.  I probably got it from someone
+else while creating it. 
 
-This is in an effort to annotate and document projects which are good enough to 
-use and deploy in a general sense.
-
-Feel free to use any code which you find in this repo.  I ask that you send me any
-improvements or modifications so that I can potentially add them permanently. 
-
-Project Structure
-- Code_Sandbox
-   
-   -  Math : A collection of useful C++ math libraries
-      
-      - Core : A useful Vector class
-      
-      - Geometry : A useful Quaternion, and other Geometry tools
-            - Vector : A ND vector class for math operations
-            - Quaternion : Quaternion class for rotation operations
-            
-      - Calculus : A library of calculus operations
-   
-   - Geographic : A collection of geographic utilities
-     
-      - GeoImage - a Geographic image utility
-      - OrthoProject - an Orthorectification library
-
-    - Useful stuff - some general code
-
-   - OpenCV : A collection of OpenCV utilities
-
-   - Unit Test : A collection of useful Unit Testing Utilities
+I have my Project Euler solutions, example code snippits for different libraries, 
+vim configuration files, alpine configuration files, and more.  If there is anything that I 
+should add, just let me know. 
+    
