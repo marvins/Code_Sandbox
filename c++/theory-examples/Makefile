@@ -9,9 +9,13 @@ CXXFLAGS=-Wall --std=c++0x
 
 BINARIES=bin/mergesort \
 		 bin/quicksort \
+		 bin/move-zeros \
 		 bin/missionary-and-cannabals
 
 all:$(BINARIES)
+
+bin/move-zeros: misc/move-zeros.cpp
+	$(CXX) $< -o $@ $(CXXFLAGS)
 
 bin/quicksort: sorting/quicksort.cpp bin
 	$(CXX) $< -o $@ $(CXXFLAGS)
