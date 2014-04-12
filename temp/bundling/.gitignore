@@ -1,9 +1,0 @@
-*.context
-output.txt
-scripts
-bundles.zip
-*.log
-*.pyc
-bin
-build
-
