@@ -1,6 +1,6 @@
 #!/bin/bash
 
-QMAKE_EXE=qmake-qt4
+QMAKE_EXE='qmake-qt4'
 
 #################################
 #             Usage             #
@@ -43,7 +43,7 @@ make_project(){
 
     #  Running qmake
     echo 'Running qmake'
-    $QMAKE_EXE
+    qmake-qt5
 
     #  Running make
     echo 'Running make'

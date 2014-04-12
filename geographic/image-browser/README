@@ -1,0 +1,8 @@
+from this directory, run
+
+./scripts/builder.bash -make
+
+This project uses QtWebKit, Google Maps, and some Boost.
+
+Don't use this for anything other than lifting code from.  I have used this as a simple example on how to use Google Maps with QtWebKit and have since moved onto bigger things. 
+
