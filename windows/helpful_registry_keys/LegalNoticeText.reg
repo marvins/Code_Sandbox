@@ -1,8 +1,5 @@
 Windows Registry Editor Version 5.00
 
-;
-; WASSP 5.o Warning Text Setting
-;
 
 [HKEY_LOCAL_MACHINE\SOFTWARE\Microsoft\Windows\CurrentVersion\Policies\System]
 "LegalNoticeText"="This is company property"
