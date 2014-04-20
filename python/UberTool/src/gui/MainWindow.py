@@ -80,8 +80,12 @@ class MainWindow(QtGui.QMainWindow):
 		#  Create the quit button
 		self.quitButton = QtGui.QToolButton(self.mainWidget);
 		self.quitButton.setText('Quit');
+		self.quitButton.setFixedWidth(int(self.preferences.get('core.MainWindowButtonWidth')));
+		self.quitButton.setFixedHeight(int(self.preferences.get('core.MainWindowButtonHeight')));
+		self.quitButton.setIcon(QtGui.QIcon(self.preferences.get('core.IconHome')+'/close.png'));
+		self.quitButton.setToolButtonStyle(Qt.ToolButtonTextUnderIcon);
+		self.quitButton.clicked.connect(self.close)
 		self.mainLayout.addWidget(self.quitButton, 0, 0);
-
 
 	#  Load each plugin
 	def loadPlugins(self):
