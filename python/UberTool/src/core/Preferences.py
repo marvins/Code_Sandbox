@@ -37,9 +37,13 @@ class Preferences:
 		self.preferences['core.MainWindowButtonWidth']='100';
 		self.preferences['core.MainWindowButtonHeight']='100';
 
+		#  Set default button icon sizes
+		self.preferences['core.MainWindowButtonIconWidth']='70'
+		self.preferences['core.MainWindowButtonIconHeight']='70'
+
 		#  Set the default place for Main Window Icons
 		self.preferences['core.IconHome']='src/icons';
-
+		
 	#  Open the config file
 	def openConfigFile(self):
 		
@@ -53,4 +57,19 @@ class Preferences:
 	#  Retrieve a setting
 	def get(self, key):
 		return self.preferences[key];
+
+	#  Set a particular setting
+	def set(self, key, value, DoNotClobber=True):
+		
+		#  Check if key is in dictionary
+		if key in self.preferences and DoNotClobber == True:
+			return False;
+
+		#  If the key is not in the dictionary or if we don't care about clobbering, 
+		#  then just write
+		else:
+			self.preferences[key]=value;
+
+		return True;
+
 

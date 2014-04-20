@@ -16,6 +16,8 @@ import sys
 sys.path.insert(0,'src/core')
 import Preferences
 
+#  Add GUI Modules
+from ConfigurationPane import *
 
 #  Main GUI Window
 class MainWindow(QtGui.QMainWindow):
@@ -31,10 +33,13 @@ class MainWindow(QtGui.QMainWindow):
 
 		#  Create parent
 		super( MainWindow, self).__init__()
-		
+
 		#  Set preferences 
 		if not preferences == None:
 			self.preferences = preferences;
+		
+		#  Create the configuration pane
+		self.configurationPane = ConfigurationPane();
 
 		#  Load Plugins
 		self.loadPlugins();
@@ -76,6 +81,17 @@ class MainWindow(QtGui.QMainWindow):
 
 	#  Initialize the toolbar
 	def initToolbar(self):
+	
+		#  Create the config button
+		self.configButton = QtGui.QToolButton(self.mainWidget);
+		self.configButton.setText('Configure');
+		self.configButton.setFixedWidth(int(self.preferences.get('core.MainWindowButtonWidth')));
+		self.configButton.setFixedHeight(int(self.preferences.get('core.MainWindowButtonHeight')));
+		self.configButton.setIcon(QtGui.QIcon(self.preferences.get('core.IconHome')+'/gear.png'));
+		self.configButton.setIconSize(QSize(int(self.preferences.get('core.MainWindowButtonIconWidth')), int(self.preferences.get('core.MainWindowButtonIconHeight'))));
+		self.configButton.setToolButtonStyle(Qt.ToolButtonTextUnderIcon);
+		self.configButton.clicked.connect(self.openConfigurePane)
+		self.mainLayout.addWidget(self.configButton, 0, 0);
 		
 		#  Create the quit button
 		self.quitButton = QtGui.QToolButton(self.mainWidget);
@@ -83,12 +99,20 @@ class MainWindow(QtGui.QMainWindow):
 		self.quitButton.setFixedWidth(int(self.preferences.get('core.MainWindowButtonWidth')));
 		self.quitButton.setFixedHeight(int(self.preferences.get('core.MainWindowButtonHeight')));
 		self.quitButton.setIcon(QtGui.QIcon(self.preferences.get('core.IconHome')+'/close.png'));
+		self.quitButton.setIconSize(QSize(int(self.preferences.get('core.MainWindowButtonIconWidth')), int(self.preferences.get('core.MainWindowButtonIconHeight'))));
 		self.quitButton.setToolButtonStyle(Qt.ToolButtonTextUnderIcon);
 		self.quitButton.clicked.connect(self.close)
-		self.mainLayout.addWidget(self.quitButton, 0, 0);
+		self.mainLayout.addWidget(self.quitButton, 0, 1);
 
 	#  Load each plugin
 	def loadPlugins(self):
 		
 		pass
+
+
+	#  Open the configuration pane
+	def openConfigurePane(self):
+	
+		#  Open the configuration widget
+		self.configurationPane.show();
 
