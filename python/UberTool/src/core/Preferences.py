@@ -33,6 +33,8 @@ class Preferences:
 	#  Initialize Settings
 	def initializeSettings(self):
 		
+		#  Add the module list
+		self.preferences['AddOns.ModuleList']='module-list.txt'
 		#  Add the button sizes
 		self.preferences['core.MainWindowButtonWidth']='100';
 		self.preferences['core.MainWindowButtonHeight']='100';

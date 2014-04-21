@@ -15,6 +15,8 @@ import sys
 #  Add Core Modules
 sys.path.insert(0,'src/core')
 import Preferences
+import AddOnLoader
+
 
 #  Add GUI Modules
 from ConfigurationPane import *
@@ -107,7 +109,13 @@ class MainWindow(QtGui.QMainWindow):
 	#  Load each plugin
 	def loadPlugins(self):
 		
-		pass
+		# open the add-on loader
+		addOnLoader = AddOnLoader.AddOnLoader( self.preferences.get('AddOns.ModuleList'));
+
+		# Get a list of plugins
+		self.plugins = addOnLoader.plugins;
+		
+		#  Load each plugin
 
 
 	#  Open the configuration pane
