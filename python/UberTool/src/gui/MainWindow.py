@@ -138,8 +138,10 @@ class MainWindow(QtGui.QMainWindow):
 			#  Create the button
 			pluginButton = QtGui.QToolButton();
 			pluginButton.setText(self.plugins[x].getButtonText());
+			pluginButton.setIcon(QtGui.QIcon(self.preferences.get('core.IconHome') + '/' + self.plugins[x].getButtonIconPath()));
 			pluginButton.setFixedWidth(int(self.preferences.get('core.MainWindowButtonWidth')));
 			pluginButton.setFixedHeight(int(self.preferences.get('core.MainWindowButtonHeight')));
+			pluginButton.setIconSize(self.plugins[x].getButtonIconSize());
 			pluginButton.setToolButtonStyle(Qt.ToolButtonTextUnderIcon);
 			pluginButton.clicked.connect(self.plugins[x].openDialog);
 			self.pluginButtons.append(pluginButton);

@@ -31,8 +31,6 @@ class Calculator(PluginBase.PluginBase):
 		#  Set the main layout
 		self.setLayout( self.mainLayout );
 
-		#  Set the title
-		self.setWindowTitle('Calculator');
 
 	def openDialog(self):
 		
@@ -42,7 +40,24 @@ class Calculator(PluginBase.PluginBase):
 		
 		#  set the title
 		self.setWindowTitle('Calculator');
+		
+		#  Create the main layout
+		self.mainLayout = QtGui.QVBoxLayout();
+
+		#  Create the main editor
+
+
+		#  Set the layout
+		self.setLayout(self.mainLayout);
+
+
+
+	def getButtonIconSize(self):
+		return QSize(70,70);
 
 	def getButtonText(self):
 		return 'Calculator'
+	
+	def getButtonIconPath(self):
+		return 'calculator.png';
 
