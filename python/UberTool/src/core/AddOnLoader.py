@@ -33,5 +33,5 @@ class AddOnLoader:
 				py_mod = imp.load_source(components[1],'src/add-ons/' + components[0])
 
 				class_inst = getattr(py_mod, components[1])
-				plugins += [class_inst]
+				self.plugins += [class_inst()]
 

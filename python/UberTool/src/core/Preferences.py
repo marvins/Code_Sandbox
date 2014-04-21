@@ -35,6 +35,7 @@ class Preferences:
 		
 		#  Add the module list
 		self.preferences['AddOns.ModuleList']='module-list.txt'
+		
 		#  Add the button sizes
 		self.preferences['core.MainWindowButtonWidth']='100';
 		self.preferences['core.MainWindowButtonHeight']='100';
@@ -46,6 +47,10 @@ class Preferences:
 		#  Set the default place for Main Window Icons
 		self.preferences['core.IconHome']='src/icons';
 		
+		#  Set the default number of buttons horizontally
+		self.preferences['core.ButtonsPerRow']='3'
+
+
 	#  Open the config file
 	def openConfigFile(self):
 		

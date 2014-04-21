@@ -84,6 +84,21 @@ class MainWindow(QtGui.QMainWindow):
 	#  Initialize the toolbar
 	def initToolbar(self):
 	
+		crow = 0;
+		ccol = 0;
+
+		#  Add each button to the toolbar
+		for x in xrange(0, len(self.pluginButtons)):
+			self.mainLayout.addWidget( self.pluginButtons[x], crow, ccol);
+			ccol += 1
+			if ccol >= int(self.preferences.get('core.ButtonsPerRow')):
+				ccol = 0;
+				crow += 1;
+
+		if not ccol == 0:
+			ccol = 0
+			crow += 1;
+
 		#  Create the config button
 		self.configButton = QtGui.QToolButton(self.mainWidget);
 		self.configButton.setText('Configure');
@@ -93,9 +108,10 @@ class MainWindow(QtGui.QMainWindow):
 		self.configButton.setIconSize(QSize(int(self.preferences.get('core.MainWindowButtonIconWidth')), int(self.preferences.get('core.MainWindowButtonIconHeight'))));
 		self.configButton.setToolButtonStyle(Qt.ToolButtonTextUnderIcon);
 		self.configButton.clicked.connect(self.openConfigurePane)
-		self.mainLayout.addWidget(self.configButton, 0, 0);
+		self.mainLayout.addWidget(self.configButton, crow, ccol);
 		
 		#  Create the quit button
+		ccol += 1
 		self.quitButton = QtGui.QToolButton(self.mainWidget);
 		self.quitButton.setText('Quit');
 		self.quitButton.setFixedWidth(int(self.preferences.get('core.MainWindowButtonWidth')));
@@ -104,7 +120,7 @@ class MainWindow(QtGui.QMainWindow):
 		self.quitButton.setIconSize(QSize(int(self.preferences.get('core.MainWindowButtonIconWidth')), int(self.preferences.get('core.MainWindowButtonIconHeight'))));
 		self.quitButton.setToolButtonStyle(Qt.ToolButtonTextUnderIcon);
 		self.quitButton.clicked.connect(self.close)
-		self.mainLayout.addWidget(self.quitButton, 0, 1);
+		self.mainLayout.addWidget(self.quitButton, crow, ccol);
 
 	#  Load each plugin
 	def loadPlugins(self):
@@ -114,8 +130,19 @@ class MainWindow(QtGui.QMainWindow):
 
 		# Get a list of plugins
 		self.plugins = addOnLoader.plugins;
-		
-		#  Load each plugin
+		self.pluginButtons = [];
+
+		#  Add each plugin to the plugin-list
+		for x in xrange( 0, len(self.plugins)):
+
+			#  Create the button
+			pluginButton = QtGui.QToolButton();
+			pluginButton.setText(self.plugins[x].getButtonText());
+			pluginButton.setFixedWidth(int(self.preferences.get('core.MainWindowButtonWidth')));
+			pluginButton.setFixedHeight(int(self.preferences.get('core.MainWindowButtonHeight')));
+			pluginButton.setToolButtonStyle(Qt.ToolButtonTextUnderIcon);
+			pluginButton.clicked.connect(self.plugins[x].openDialog);
+			self.pluginButtons.append(pluginButton);
 
 
 	#  Open the configuration pane

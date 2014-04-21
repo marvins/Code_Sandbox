@@ -31,9 +31,18 @@ class Calculator(PluginBase.PluginBase):
 		#  Set the main layout
 		self.setLayout( self.mainLayout );
 
+		#  Set the title
+		self.setWindowTitle('Calculator');
+
+	def openDialog(self):
+		
+		self.show();
 		 
 	def initUI(self):
 		
 		#  set the title
 		self.setWindowTitle('Calculator');
+
+	def getButtonText(self):
+		return 'Calculator'
 
