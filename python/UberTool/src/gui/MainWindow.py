@@ -67,6 +67,8 @@ class MainWindow(QtGui.QMainWindow):
 
 		#  Create the main layout
 		self.mainLayout = QtGui.QGridLayout();
+		self.mainLayout.setSpacing(0);
+		self.mainLayout.setContentsMargins(0,0,0,0);
 
 		#  Initialize the toolbar
 		self.initToolbar();

@@ -86,11 +86,11 @@ class Calculator(PluginBase.PluginBase):
 		self.buttonPanelWidget = QtGui.QWidget();
 		self.buttonPanelLayout = QtGui.QGridLayout();
 
-		#  Create number buttons
-
 		# process
 		self.buttonPanelEnterButton = QtGui.QToolButton();
 		self.buttonPanelEnterButton.setText("Enter");
+		self.buttonPanelEnterButton.setFixedWidth(150);
+		self.buttonPanelEnterButton.setFixedHeight(40);
 		self.buttonPanelEnterButton.clicked.connect(self.calculate);
 		self.buttonPanelLayout.addWidget(self.buttonPanelEnterButton );
 
@@ -131,7 +131,13 @@ class Calculator(PluginBase.PluginBase):
 			#  Process Data
 			elif event.key() == Qt.Key_Enter or event.key() == 13:
 				self.calculate();
-
+			
+			#  Process a spacebar
+			elif event.key() == ord(' '):
+				self.displayCursor.insertText(chr(event.key()));
+				self.infixStack.append(chr(event.key()));
+				self.infixCursor += 1
+				
 			#  Remove a key
 			elif event.key() == Qt.Key_Backspace:
 				if self.infixCursor > 0:
