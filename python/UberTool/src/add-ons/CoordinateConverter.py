@@ -12,22 +12,86 @@ from PyQt4.QtCore import *
 #  Plugin Base
 import PluginBase
 
-def createCoordinatePanel( labelName ):
+#  Python Libraries
+import sys
 
-	#  Create a WIdget
-	widget = QtGui.QWidget();
+#  Add our conversion utilities
+sys.path.insert(0,'src/add-ons/CoordinateConverter')
+import CoordinateConverterUtils
 
-	#  Create the layout
-	layout = QtGui.QVBoxLayout();
+#  This is the Coordinate Conversion Widget which stores our local info
+class CoordinatePanel(QtGui.QWidget):
+	
+	def __init__(self, labelName, parent = None):
+		
+		#  Create parent
+		QtGui.QWidget.__init__(self,parent);
 
-	#  Set the label
-	mainLabel = QtGui.QLabel(labelName);
-	layout.addWidget(mainLabel);
+		#  Create the layout
+		self.layout = QtGui.QVBoxLayout();
 
-	#  Set the layout
-	widget.setLayout(layout);
+		#  Set the label
+		self.mainLabel = QtGui.QLabel(labelName);
+		self.layout.addWidget(self.mainLabel);
 
-	return widget;
+		#  Create the coordinate type combo
+		self.initCoordinateTypeWidget();
+		
+		#  Create the conversion stacked panel
+		self.initCoordinateStackedWidget();
+
+		#  Set the layout
+		self.setLayout(self.layout);
+
+
+	def initCoordinateTypeWidget(self):
+
+		#  Create the Coordinate type
+		self.coordinateTypeWidget = QtGui.QWidget();
+		self.coordinateTypeLayout = QtGui.QHBoxLayout();
+		
+		#  Create the label
+		self.coordinateTypeLabel = QtGui.QLabel('Coordinate Type:');
+		self.coordinateTypeLayout.addWidget(self.coordinateTypeLabel);
+	
+		#  Create the combo box
+		self.coordinateTypeCombo = QtGui.QComboBox();
+		for ctype in CoordinateConverterUtils.CoordinateTypes:
+			self.coordinateTypeCombo.addItem(ctype[0] + ' - ' + ctype[1]);
+		self.coordinateTypeLayout.addWidget(self.coordinateTypeCombo);
+		
+		#  Connect the changed slot
+		self.coordinateTypeCombo.currentIndexChanged.connect(self.changeCoordinateWindow);
+
+
+		#  Set the layout
+		self.coordinateTypeWidget.setLayout(self.coordinateTypeLayout);
+
+		#  Add the widget
+		self.layout.addWidget(self.coordinateTypeWidget);
+	
+
+	#  Create the stacked widget which will hold the conversion type window output.
+	def initCoordinateStackedWidget(self):
+		
+		#  Create the stacked widget
+		self.stackedWidget = QtGui.QStackedWidget();
+		
+		#  Create the coordinate dd widget
+		self.stackedWidget.addWidget(CoordinateConverterUtils.GeodeticWindow());
+		self.stackedWidget.addWidget(CoordinateConverterUtils.UTMWindow());
+
+
+		#  Add widget
+		self.layout.addWidget(self.stackedWidget);
+
+
+	#  Change the coordinate window
+	def changeCoordinateWindow(self):
+		
+		#  Get the current index
+		cidx = self.coordinateTypeCombo.currentIndex();
+		self.stackedWidget.setCurrentIndex(cidx);
 
 
 #  Calculator Plug-In
@@ -66,11 +130,11 @@ class CoordinateConverter(PluginBase.PluginBase):
 		self.mainLayout = QtGui.QVBoxLayout();
 
 		#  Create the from widget
-		self.fromCoordinateWidget = createCoordinatePanel('From');
+		self.fromCoordinateWidget = CoordinatePanel('From');
 		self.mainLayout.addWidget(self.fromCoordinateWidget);
 
 		#  Create the to widget
-		self.toCoordinateWidget = createCoordinatePanel('To');
+		self.toCoordinateWidget = CoordinatePanel('To');
 		self.mainLayout.addWidget(self.toCoordinateWidget);
 
 		#  Set the layout
