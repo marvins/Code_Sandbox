@@ -17,8 +17,11 @@ class Calculator(PluginBase.PluginBase):
 	
 	#  Infix stack
 	infixStack  = []
+
+	#  Cursor to where in the dialog we are.  
 	infixCursor = 0;
 
+	#  This maps operators to their matching priority
 	operatorDictionary = { '+':2, '-':2, '*':4, '/':4, '^':5 };
 
 	
@@ -38,10 +41,13 @@ class Calculator(PluginBase.PluginBase):
 		self.setLayout( self.mainLayout );
 
 
+	#  Open the dialog box
 	def openDialog(self):
 		
 		self.show();
 		 
+	
+	#  Initialize the User Interface
 	def initUI(self):
 		
 		#  set the title
@@ -58,7 +64,10 @@ class Calculator(PluginBase.PluginBase):
 
 		#  Set the layout
 		self.setLayout(self.mainLayout);
+	
 
+
+	#  Create the main display
 	def buildCalculatorDisplay(self):
 
 		#  Create main widget
@@ -80,6 +89,7 @@ class Calculator(PluginBase.PluginBase):
 		self.mainLayout.addWidget(self.displayWidget);
 
 	
+	#  Create the button panel
 	def buildButtonPanel(self):
 		
 		# create main widget
@@ -89,11 +99,20 @@ class Calculator(PluginBase.PluginBase):
 		# process
 		self.buttonPanelEnterButton = QtGui.QToolButton();
 		self.buttonPanelEnterButton.setText("Enter");
-		self.buttonPanelEnterButton.setFixedWidth(150);
-		self.buttonPanelEnterButton.setFixedHeight(40);
+		self.buttonPanelEnterButton.setFixedWidth(100);
+		self.buttonPanelEnterButton.setFixedHeight(60);
 		self.buttonPanelEnterButton.clicked.connect(self.calculate);
-		self.buttonPanelLayout.addWidget(self.buttonPanelEnterButton );
+		self.buttonPanelLayout.addWidget(self.buttonPanelEnterButton, 0, 0 );
 
+
+		#  clear
+		self.buttonPanelClearButton = QtGui.QToolButton();
+		self.buttonPanelClearButton.setText('Clear');
+		self.buttonPanelClearButton.setFixedWidth(100);
+		self.buttonPanelClearButton.setFixedHeight(60);
+		self.buttonPanelClearButton.clicked.connect(self.clearDisplay);
+		self.buttonPanelLayout.addWidget(self.buttonPanelClearButton, 0, 1);
+		
 		#  set widget
 		self.buttonPanelWidget.setLayout(self.buttonPanelLayout);
 		self.mainLayout.addWidget(self.buttonPanelWidget);
@@ -314,4 +333,12 @@ class Calculator(PluginBase.PluginBase):
 	
 	def getButtonIconPath(self):
 		return 'calculator.png';
+	
+
+	#  Clear all contents on the display
+	def clearDisplay(self):
+		
+		#  Wipe out the display
+		self.displayEdit.clear();
+		self.displayCursor = self.displayEdit.textCursor();
 
