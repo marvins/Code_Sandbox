@@ -325,12 +325,15 @@ class Calculator(PluginBase.PluginBase):
 		return self.isValidOperatorCharacter(data);
 
 
+	#  Get the icon size to show on the toolbar
 	def getButtonIconSize(self):
 		return QSize(70,70);
 
+	#   Get the text to display on the tool button
 	def getButtonText(self):
 		return 'Calculator'
 	
+	#  Get the filepath to the calculator image
 	def getButtonIconPath(self):
 		return 'calculator.png';
 	
@@ -341,4 +344,5 @@ class Calculator(PluginBase.PluginBase):
 		#  Wipe out the display
 		self.displayEdit.clear();
 		self.displayCursor = self.displayEdit.textCursor();
+		self.displayCursor.insertText("Command > ");
 

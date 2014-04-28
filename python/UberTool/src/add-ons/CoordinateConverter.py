@@ -22,10 +22,13 @@ import CoordinateConverterUtils
 #  This is the Coordinate Conversion Widget which stores our local info
 class CoordinatePanel(QtGui.QWidget):
 	
-	def __init__(self, labelName, parent = None):
+	def __init__(self, labelName, ReadOnly = False, parent = None):
 		
 		#  Create parent
 		QtGui.QWidget.__init__(self,parent);
+		
+		#  Set the read/modify flag
+		self.isReadOnly = ReadOnly
 
 		#  Create the layout
 		self.layout = QtGui.QVBoxLayout();
@@ -78,8 +81,8 @@ class CoordinatePanel(QtGui.QWidget):
 		self.stackedWidget = QtGui.QStackedWidget();
 		
 		#  Create the coordinate dd widget
-		self.stackedWidget.addWidget(CoordinateConverterUtils.GeodeticWindow());
-		self.stackedWidget.addWidget(CoordinateConverterUtils.UTMWindow());
+		self.stackedWidget.addWidget(CoordinateConverterUtils.GeodeticWindow(ReadOnly = self.isReadOnly ));
+		self.stackedWidget.addWidget(CoordinateConverterUtils.UTMWindow( ReadOnly = self.isReadOnly ));
 
 
 		#  Add widget
@@ -130,23 +133,28 @@ class CoordinateConverter(PluginBase.PluginBase):
 		self.mainLayout = QtGui.QVBoxLayout();
 
 		#  Create the from widget
-		self.fromCoordinateWidget = CoordinatePanel('From');
+		self.fromCoordinateWidget = CoordinatePanel('From', ReadOnly = False);
 		self.mainLayout.addWidget(self.fromCoordinateWidget);
 
 		#  Create the to widget
-		self.toCoordinateWidget = CoordinatePanel('To');
+		self.toCoordinateWidget = CoordinatePanel('To', ReadOnly = True);
 		self.mainLayout.addWidget(self.toCoordinateWidget);
+
+		#  Create the toolbar
 
 		#  Set the layout
 		self.setLayout(self.mainLayout);
 
 
+	#  Get the icon size for the buttons
 	def getButtonIconSize(self):
 		return QSize(70,50);
 
+	#  Get the text to put on the button
 	def getButtonText(self):
 		return 'Coordinate\nConverter'
 	
+	#  Get the file path to the button icon
 	def getButtonIconPath(self):
 		return 'coordinate.png';
 
