@@ -1,3 +1,8 @@
+/**
+ * @file    Parser.hpp
+ * @author  Marvin Smith
+ * @date    2/21/2014
+ */
 #ifndef __SRC_CORE_PARSER_HPP__
 #define __SRC_CORE_PARSER_HPP__
 
@@ -64,6 +69,16 @@ class Parser{
         void                     setItem_vec_string( const std::string& tag_name, const std::vector<std::string>& value, const bool& create );
         
         /**
+         * Add common flag
+         */
+        void addFlag( const std::string& flag );
+
+        /**
+         * Get flag
+         */
+        bool checkFlag( const std::string& flag )const;
+
+        /**
          * Check to see if a file exists
          * 
          * @param[in] filename Name of the file
@@ -83,6 +98,7 @@ class Parser{
         void load_file();
 
 
+        std::vector<std::pair<std::string,bool> > m_commonFlags; /*< Common Flags */
         std::string config_filename;                             /*< Configuration Filename */
         std::vector<std::pair<std::string,std::string> > items;  /*< List of contents. */
         bool valid;                                              /*< Validity Flag */

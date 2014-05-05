@@ -9,6 +9,7 @@
  * such as command-line arguments and config file parsing. 
 */
 #include "Parser.hpp"
+#include <src/core/Version.hpp>
 
 ///Boost Libraries
 #include <boost/filesystem.hpp>
@@ -86,68 +87,7 @@ PSR::Parser::Parser( const string& filename ){
 /** Read the configuration file and command-line options */
 PSR::Parser::Parser( const int argc, char ** argv, std::string const& filename ){
     
-    vector<pair<string,string> > tlist;
-
-    //set to false just in case
-    valid = false;
-    
-    //set the program name
-    command_name = argv[0];
-
-    // set the config filename
-    config_filename = filename;
-
-    //read the command-line options
-    size_t idx;
-    string line, tag, val;
-    for( int i=1; i<argc; i++){
-
-        //load the string
-        line = string(argv[i]);
-        
-        //split the line by the = sign
-        idx = line.find_first_of("=");
-        
-        //if the index is past the length of the string, its a tag value not tag=value
-        if( idx == string::npos ){
-
-            //set the tag and val strings
-            tag = line;
-            
-            if( argc <= i+1 ){ throw string("ERROR: Invalid number of arguments"); }
-            val = argv[i+1];
-            i++;
-        }
-
-        else{
-            //set the tag and val strings
-            tag = line.substr(0,idx);
-            val = line.substr(idx+1);
-        }
-
-        // check all config options
-        if( tag == "-c" || tag == "--config_file" ){
-            config_filename = val;
-        }
-        
-        //get rid of the starting dashes
-        while( tag[0] == '-')
-            tag = tag.substr(1);
-
-        //add all remaining items to the temporary list
-        tlist.push_back( pair<string,string>(tag, val));
-    }
-    
-    //validate that the file we have is usable
-    validate_file();
-
-    //read all of the file contents
-    load_file();
-    
-    //add all remaining items in the list to the item list
-    for( size_t i=0; i<tlist.size(); i++)
-        setItem_string( tlist[i].first, tlist[i].second, true);
-
+    init( argc, argv, filename );
 
 }
 
@@ -176,6 +116,18 @@ void PSR::Parser::init( const int argc, char ** argv, std::string const& filenam
         //load the string
         line = string(argv[i]);
         
+        // first check if it is a common flag
+        bool isCommonFlag = false;
+        for( size_t j=0; j<m_commonFlags.size(); j++ ){
+            if( line == m_commonFlags[j].first ){
+                m_commonFlags[j].second = true;
+                isCommonFlag = true;
+                break;
+            }
+        }
+        if( isCommonFlag == true ){
+            continue;
+        }  
         //split the line by the = sign
         idx = line.find_first_of("=");
         
@@ -568,5 +520,25 @@ void  PSR::Parser::setItem_bool( const string& tag_name, const bool& value, cons
 */
 bool PSR::Parser::fileExists( const string& filename ){
     return fs::exists( fs::path( filename ));
+}
+
+/**
+ * Add a flag to the list
+ */
+void PSR::Parser::addFlag( const std::string& tag ){
+    m_commonFlags.push_back( std::pair<std::string,bool>(tag,false));
+}
+
+/**
+ * Check if a flag is present
+ */
+bool PSR::Parser::checkFlag( const std::string& tag )const{
+
+    for( size_t i=0; i<m_commonFlags.size(); i++ ){
+        if( tag == m_commonFlags[i].first ){
+            return m_commonFlags[i].second;
+        }
+    }
+    return false;
 }
 
