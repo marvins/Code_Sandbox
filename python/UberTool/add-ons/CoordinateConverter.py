@@ -16,7 +16,7 @@ import PluginBase
 import sys
 
 #  Add our conversion utilities
-sys.path.insert(0,'src/add-ons/CoordinateConverter')
+sys.path.insert(0,'add-ons/CoordinateConverter')
 import CoordinateConverterUtils
 
 #  This is the Coordinate Conversion Widget which stores our local info

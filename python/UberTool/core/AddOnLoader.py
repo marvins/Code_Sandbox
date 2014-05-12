@@ -9,7 +9,7 @@
 import imp, sys
 
 #  Load Plugin Base
-sys.path.insert(0,'src/add-ons')
+sys.path.insert(0,'add-ons')
 import PluginBase
 
 #   Add-On Loader
@@ -30,7 +30,7 @@ class AddOnLoader:
 				#  Split up the module name and the class name
 				components = line.strip().split(':');
 
-				py_mod = imp.load_source(components[1],'src/add-ons/' + components[0])
+				py_mod = imp.load_source(components[1],'add-ons/' + components[0])
 
 				class_inst = getattr(py_mod, components[1])
 				self.plugins += [class_inst()]

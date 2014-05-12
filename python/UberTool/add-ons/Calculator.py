@@ -22,7 +22,7 @@ class Calculator(PluginBase.PluginBase):
 	infixCursor = 0;
 
 	#  This maps operators to their matching priority
-	operatorDictionary = { '+':2, '-':2, '*':4, '/':4, '^':5 };
+	operatorDictionary = { '+':2, '-':2, '%':2, '*':4, '/':4, '^':5 };
 
 	
 	#  Constructor
@@ -130,7 +130,7 @@ class Calculator(PluginBase.PluginBase):
 				self.infixCursor += 1
 			
 			#  Add main operators
-			elif event.key() == ord('*') or event.key() == ord('/') or event.key() == ord('+') or event.key() ==  ord('-'):
+			elif self.isOperatorCharacter( event.key() ):
 				self.displayCursor.insertText(chr(event.key()));
 				self.infixStack.append(chr(event.key()));
 				self.infixCursor += 1
@@ -211,9 +211,12 @@ class Calculator(PluginBase.PluginBase):
 			return True;
 		return False;
 	
-
+	
+	#---------------------------------------------------------#
+	#-    Test if the input character is a valid operator    -#
+	#---------------------------------------------------------#
 	def isValidOperatorCharacter(self, data):
-		if data == '+' or data == '-' or data == '*' or data == '/':
+		if data == '+' or data == '-' or data == '*' or data == '/' or data == '%':
 			return True;
 		return False;
 
@@ -300,18 +303,33 @@ class Calculator(PluginBase.PluginBase):
 
 
 
-
+	#-------------------------------------------------------#
+	#-    Apply the operator against the input operands    -#
+	#-------------------------------------------------------#
 	def applyOperation(self, op1, op2, value):
 		
+		#  Multiplication
 		if value == '*':
 			return op1*op2;
+
+		#  Division
 		if value == '/':
 			return op1/op2;
+
+		#  Modulo
+		if value == '%':
+			return op1%op2;
+
+		#  Addition
 		if value == '+':
 			return op1+op2;
+
+		#  Subtraction
 		if value == '-':
 			return op1-op2;
+
 		raise Exception('Unknown operator: ' + value );
+
 
 	def isOperand(self, data):
 		

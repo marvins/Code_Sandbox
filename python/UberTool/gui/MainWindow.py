@@ -13,7 +13,7 @@ from PyQt4.QtCore import *
 import sys
 
 #  Add Core Modules
-sys.path.insert(0,'src/core')
+sys.path.insert(0,'core')
 import Preferences
 import AddOnLoader
 

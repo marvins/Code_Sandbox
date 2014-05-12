@@ -45,7 +45,7 @@ class Preferences:
 		self.preferences['core.MainWindowButtonIconHeight']='70'
 
 		#  Set the default place for Main Window Icons
-		self.preferences['core.IconHome']='src/icons';
+		self.preferences['core.IconHome']='icons';
 		
 		#  Set the default number of buttons horizontally
 		self.preferences['core.ButtonsPerRow']='3'
