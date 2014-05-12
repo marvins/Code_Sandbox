@@ -8,7 +8,9 @@
 #
 
 
-PREFIX=$HOME/local
+PREFIX="$HOME/local"
+
+PREFIX_CLEAN=`echo $PREFIX | sed 's/\//\\\\\//g'`
 
 #   Test if the bin directory exists
 if [ ! -d "$PREFIX/bin" ]; then
@@ -23,6 +25,9 @@ fi
 #  Copy the UberTool materials to the share path
 if [ ! -d "$PREFIX/share/UberTool" ]; then
     mkdir -p "$PREFIX/share/UberTool"
+else
+    rm -rf "$PREFIX/share/UberTool"
+    mkdir -p "$PREFIX/share/UberTool"
 fi
 
 # copy the main script
@@ -36,4 +41,8 @@ cp -r icons   $PREFIX/share/UberTool/
 
 #  Create the symbolic link
 ln -s $HOME/local/share/UberTool/UberTool.py $HOME/local/bin/UberTool
+
+#  Copy the desktop link
+sed "s/__PREFIX__/$PREFIX_CLEAN/g" misc/UberTool.desktop.template > misc/UberTool.desktop
+chmod +x misc/UberTool.desktop
 

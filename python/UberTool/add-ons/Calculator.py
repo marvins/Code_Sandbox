@@ -130,7 +130,7 @@ class Calculator(PluginBase.PluginBase):
 				self.infixCursor += 1
 			
 			#  Add main operators
-			elif self.isOperatorCharacter( event.key() ):
+			elif event.key() < 255 and self.isValidOperatorCharacter(chr(event.key())):
 				self.displayCursor.insertText(chr(event.key()));
 				self.infixStack.append(chr(event.key()));
 				self.infixCursor += 1
