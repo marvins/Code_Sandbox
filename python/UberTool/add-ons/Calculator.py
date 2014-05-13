@@ -123,8 +123,12 @@ class Calculator(PluginBase.PluginBase):
 
 		if event.type() == QEvent.KeyPress:
 			
+			#  Process Data
+			if event.key() == Qt.Key_Enter or event.key() == 13 or event.key() == Qt.Key_Return:
+				self.calculate();
+			
 			# Add number keys
-			if event.key() >= ord('0') and event.key() <= ord('9'):
+			elif event.key() < 255 and self.isValidOperandCharacter(chr(event.key())):
 				self.displayCursor.insertText(chr(event.key()));
 				self.infixStack.append(chr(event.key()));
 				self.infixCursor += 1
@@ -147,10 +151,6 @@ class Calculator(PluginBase.PluginBase):
 				self.infixStack.append(chr(event.key()));
 				self.infixCursor += 1
 		
-			#  Process Data
-			elif event.key() == Qt.Key_Enter or event.key() == 13:
-				self.calculate();
-			
 			#  Process a spacebar
 			elif event.key() == ord(' '):
 				self.displayCursor.insertText(chr(event.key()));
@@ -206,6 +206,9 @@ class Calculator(PluginBase.PluginBase):
 			return False;
 	
 
+	#------------------------------------------------------------#
+	#-     Test if the input character is a valid operand       -#
+	#------------------------------------------------------------#
 	def isValidOperandCharacter(self, data):
 		if data >= '0' and data <= '9':
 			return True;
@@ -220,7 +223,10 @@ class Calculator(PluginBase.PluginBase):
 			return True;
 		return False;
 
-
+	
+	#------------------------------------------------------#
+	#-    Convert the infix notation array to postfix     -#
+	#------------------------------------------------------#
 	def convertInfixToPostfix( self, infixData ):
 		
 		#  Create output
@@ -229,23 +235,36 @@ class Calculator(PluginBase.PluginBase):
 		#  List of operators
 		operatorStack = [];
 		tempOperand = ''
-
+		
+		#  Iterate over the infix notation elements
 		for i in xrange(0, len(infixData)):
 			
+			print 'starting loop ', i
+			print '  infix  : ', infixData
+			print '  postfix: ', postfixData
+			print '  opstack: ', operatorStack
+			print '  temp op: ', tempOperand
+			print ''
+
 			# if we have an integer, add it to the temporary value
 			if self.isValidOperandCharacter(infixData[i]):	
 				tempOperand += infixData[i];
 
 			#  Otherwise, annotate the end of the operator and add to the stack
 			else:
+				#  Make sure the operand is of valid length
+				if len(tempOperand) <= 0:
+					raise Exception('error here')
+				
 				postfixData.append(tempOperand);
 				tempOperand = ''
 
 				# If the item is an operator, then add it to the operator stack
+				print '-> ii: (',infixData[i],")"
 				if len(operatorStack) == 0 or self.operatorALessThanB(operatorStack[-1], infixData[i]) == True:
 					operatorStack.append(infixData[i]);
 				else:
-					while self.operatorALessThanB(operatorStack[-1], infixData[i]) == False and len(operatorStack) > 0:
+					while len(operatorStack) > 0 and self.operatorALessThanB(operatorStack[-1], infixData[i]) == False:
 						postfixData.append(operatorStack[-1]);
 						operatorStack = operatorStack[0:len(operatorStack)-1];
 
@@ -265,7 +284,10 @@ class Calculator(PluginBase.PluginBase):
 		print('PostfixData: ', postfixData)
 		return postfixData
 
-
+	
+	#--------------------------------------------------------------------#
+	#-   Test if the precedence of Operator A is less than operator B   -#
+	#--------------------------------------------------------------------#
 	def operatorALessThanB( self, a, b):
 		if self.operatorDictionary[a] < self.operatorDictionary[b]:
 			return True;
