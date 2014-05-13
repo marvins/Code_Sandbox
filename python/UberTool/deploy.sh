@@ -32,15 +32,20 @@ fi
 
 # copy the main script
 cp UberTool.py $PREFIX/share/UberTool/UberTool.py
+cp misc/UberTool.sh $PREFIX/share/UberTool/UberTool.sh
 
 # Copy other utilities
 cp -r add-ons $PREFIX/share/UberTool/
 cp -r core    $PREFIX/share/UberTool/
 cp -r gui     $PREFIX/share/UberTool/
 cp -r icons   $PREFIX/share/UberTool/
+cp module-list.txt $PREFIX/share/UberTool/
 
 #  Create the symbolic link
-ln -s $HOME/local/share/UberTool/UberTool.py $HOME/local/bin/UberTool
+if [ -f "$PREFIX/bin/UberTool" ]; then
+    rm $PREFIX/bin/UberTool
+fi
+ln -s $PREFIX/share/UberTool/UberTool.sh $PREFIX/bin/UberTool
 
 #  Copy the desktop link
 sed "s/__PREFIX__/$PREFIX_CLEAN/g" misc/UberTool.desktop.template > misc/UberTool.desktop

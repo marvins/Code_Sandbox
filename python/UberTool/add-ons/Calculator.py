@@ -219,7 +219,7 @@ class Calculator(PluginBase.PluginBase):
 	#-    Test if the input character is a valid operator    -#
 	#---------------------------------------------------------#
 	def isValidOperatorCharacter(self, data):
-		if data == '+' or data == '-' or data == '*' or data == '/' or data == '%':
+		if data == '+' or data == '-' or data == '*' or data == '/' or data == '%' or data == '^':
 			return True;
 		return False;
 
@@ -239,36 +239,48 @@ class Calculator(PluginBase.PluginBase):
 		#  Iterate over the infix notation elements
 		for i in xrange(0, len(infixData)):
 			
-			print 'starting loop ', i
-			print '  infix  : ', infixData
-			print '  postfix: ', postfixData
-			print '  opstack: ', operatorStack
-			print '  temp op: ', tempOperand
-			print ''
-
 			# if we have an integer, add it to the temporary value
 			if self.isValidOperandCharacter(infixData[i]):	
 				tempOperand += infixData[i];
 
 			#  Otherwise, annotate the end of the operator and add to the stack
 			else:
+				
 				#  Make sure the operand is of valid length
 				if len(tempOperand) <= 0:
 					raise Exception('error here')
 				
+				#  This fulfills the condition if operand is read, then output it
 				postfixData.append(tempOperand);
 				tempOperand = ''
 
-				# If the item is an operator, then add it to the operator stack
-				print '-> ii: (',infixData[i],")"
-				if len(operatorStack) == 0 or self.operatorALessThanB(operatorStack[-1], infixData[i]) == True:
+				# If the item is an operator, then pop the stack until either empty or an operator is found with less precedence
+				
+				#  If we have a (, then that is the highest priority and will get pushed
+				if infixData[i] == '(':
 					operatorStack.append(infixData[i]);
+
+				#  If we have a ), then we must pop the stack until we find the (.
+				elif infixData[i] == ')':
+					while not operatorStack[-1] == '(':
+						value = operatorStack[-1];
+						postfixData.append(value);
+						operatorStack = operatorStack[0:len(operatorStack)-1];
+					
+					operatorStack = operatorStack[0:len(operatorStack)-1];
+				
+				#  Test if we have an operator with the current highest precedence
+				elif len(operatorStack) == 0 or self.operatorALessThanB(operatorStack[-1], infixData[i]) == True:
+					operatorStack.append(infixData[i]);
+				
+				#  This means the operator has a lower value, so we need to pop the top elements
 				else:
 					while len(operatorStack) > 0 and self.operatorALessThanB(operatorStack[-1], infixData[i]) == False:
 						postfixData.append(operatorStack[-1]);
 						operatorStack = operatorStack[0:len(operatorStack)-1];
-
-					postfixData.append(infixData[i]);
+					
+					#  Now we can push the operator on the stack
+					operatorStack.append(infixData[i]);
 
 		#  Add any remaining operands
 		if not tempOperand == '':
@@ -350,9 +362,16 @@ class Calculator(PluginBase.PluginBase):
 		if value == '-':
 			return op1-op2;
 
+		#  Power
+		if value == '^':
+			return op1**op2
+
 		raise Exception('Unknown operator: ' + value );
 
 
+	#------------------------------------------------#
+	#-    Check if the string input is an operand   -#
+	#------------------------------------------------#
 	def isOperand(self, data):
 		
 		try:
@@ -385,4 +404,5 @@ class Calculator(PluginBase.PluginBase):
 		self.displayEdit.clear();
 		self.displayCursor = self.displayEdit.textCursor();
 		self.displayCursor.insertText("Command > ");
+		self.infixStack = [] 
 
