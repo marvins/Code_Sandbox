@@ -6,5 +6,5 @@ open:
 	open resume.pdf
 
 clean:
-	rm *.aux *.log *.out
+	rm *.aux *.log *.out *.pdf
 
