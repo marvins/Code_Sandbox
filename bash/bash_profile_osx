@@ -1,0 +1,10 @@
+
+
+#  If the global bashrc exists, start there
+if [ -f /etc/bashrc ]; then
+    . /etc/bashrc # --> Read /etc/bashrc if it exists
+fi
+
+#  define colors for mac osx ls
+alias ls='ls -G'
+
