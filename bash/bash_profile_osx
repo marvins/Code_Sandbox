@@ -8,3 +8,7 @@ fi
 #  define colors for mac osx ls
 alias ls='ls -G'
 
+#  Add /opt/local to paths
+export PATH=/opt/local/bin:$PATH
+export LD_LIBRARY_PATH=/opt/local/lib:$LD_LIBRARY_PATH
+

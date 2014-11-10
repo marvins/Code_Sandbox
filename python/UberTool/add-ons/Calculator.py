@@ -9,6 +9,9 @@
 from PyQt4 import QtGui
 from PyQt4.QtCore import *
 
+#  Sympy
+import sympy
+
 #  Plugin Base
 import PluginBase
 
@@ -16,7 +19,7 @@ import PluginBase
 class Calculator(PluginBase.PluginBase):
 	
 	#  Infix stack
-	infixStack  = []
+	infixStack  = ''
 
 	#  Cursor to where in the dialog we are.  
 	infixCursor = 0;
@@ -58,7 +61,7 @@ class Calculator(PluginBase.PluginBase):
 
 		#  Create the main editor
 		self.buildCalculatorDisplay();
-	
+
 		#  Create button panel
 		self.buildButtonPanel();
 
@@ -88,7 +91,7 @@ class Calculator(PluginBase.PluginBase):
 		self.displayWidget.setLayout( self.displayLayout );
 		self.mainLayout.addWidget(self.displayWidget);
 
-	
+
 	#  Create the button panel
 	def buildButtonPanel(self):
 		
@@ -130,31 +133,31 @@ class Calculator(PluginBase.PluginBase):
 			# Add number keys
 			elif event.key() < 255 and self.isValidOperandCharacter(chr(event.key())):
 				self.displayCursor.insertText(chr(event.key()));
-				self.infixStack.append(chr(event.key()));
+				self.infixStack += chr(event.key());
 				self.infixCursor += 1
 			
 			#  Add main operators
 			elif event.key() < 255 and self.isValidOperatorCharacter(chr(event.key())):
 				self.displayCursor.insertText(chr(event.key()));
-				self.infixStack.append(chr(event.key()));
+				self.infixStack += chr(event.key());
 				self.infixCursor += 1
 
 			#  Add Parenthesis
 			elif event.key() == ord('(') or event.key() == ord(')'):
 				self.displayCursor.insertText(chr(event.key()));
-				self.infixStack.append(chr(event.key()));
+				self.infixStack += chr(event.key());
 				self.infixCursor += 1
 			
 			#  Add exponent
 			elif event.key() == ord('^'):
 				self.displayCursor.insertText(chr(event.key()));
-				self.infixStack.append(chr(event.key()));
+				self.infixStack += chr(event.key());
 				self.infixCursor += 1
 		
 			#  Process a spacebar
 			elif event.key() == ord(' '):
 				self.displayCursor.insertText(chr(event.key()));
-				self.infixStack.append(chr(event.key()));
+				self.infixStack += chr(event.key());
 				self.infixCursor += 1
 				
 			#  Remove a key
@@ -170,14 +173,11 @@ class Calculator(PluginBase.PluginBase):
 
 	def calculate(self):
 
-		#  Convert the infix notation to postfix notation
-		postfixStack = self.convertInfixToPostfix(self.cleanInfix(self.infixStack));
-		
-		#  Compute a solution
-		solution = self.solvePostfix(postfixStack);
+		#  Push the solution through sympy
+		solution = sympy.sympify(self.infixStack)
 
 		#  Set the console to the solution
-		self.displayCursor.insertText("\nSolution: " + solution + "\n");
+		self.displayCursor.insertText("\nSolution: " + str(solution) + "\n");
 		self.displayCursor.insertText("\nCommand > ");
 		self.displayEdit.ensureCursorVisible();
 
@@ -186,17 +186,9 @@ class Calculator(PluginBase.PluginBase):
 		self.infixCursor = 0;
 
 		
-
-	def cleanInfix(self, data):
-		
-		output = []
-		for x in data:
-			if self.isValidCharacter(x):
-				output.append(x);
-
-		return output;
-
-	
+	#--------------------------------------------------------#
+	#-      Test if the input character is a valid char     -#
+	#--------------------------------------------------------#
 	def isValidCharacter(self, data):
 		if self.isValidOperandCharacter(data):
 			return True;
@@ -307,83 +299,11 @@ class Calculator(PluginBase.PluginBase):
 			return False;
 
 
-	def solvePostfix(self, postfixStack):
-		
-		#  Start popping values until we hit an operator
-		operandStack = []
-		
-		postfixData = postfixStack;
-		while len(postfixData) > 0:
-			
-			#  Pop next value
-			value = postfixData[0];
-			postfixData = postfixData[1:];
-			
-			#  If the value is an operand, add it to the stack
-			if self.isOperand(value):
-				operandStack.append(float(value));
-
-			#  Otherwise, apply the operator
-			else:
-				op1 = operandStack[-2];
-				op2 = operandStack[-1];
-				operandStack = operandStack[:len(operandStack)-2]
 
 
-				result = self.applyOperation( op1, op2, value);
-				operandStack.append(result);
-		
-		return str(operandStack[0]);
-
-
-
-	#-------------------------------------------------------#
-	#-    Apply the operator against the input operands    -#
-	#-------------------------------------------------------#
-	def applyOperation(self, op1, op2, value):
-		
-		#  Multiplication
-		if value == '*':
-			return op1*op2;
-
-		#  Division
-		if value == '/':
-			return op1/op2;
-
-		#  Modulo
-		if value == '%':
-			return op1%op2;
-
-		#  Addition
-		if value == '+':
-			return op1+op2;
-
-		#  Subtraction
-		if value == '-':
-			return op1-op2;
-
-		#  Power
-		if value == '^':
-			return op1**op2
-
-		raise Exception('Unknown operator: ' + value );
-
-
-	#------------------------------------------------#
-	#-    Check if the string input is an operand   -#
-	#------------------------------------------------#
-	def isOperand(self, data):
-		
-		try:
-			value = float(data);
-		except:
-			return False;
-		return True;
 	
-	def isOperator(self,data):
-		return self.isValidOperatorCharacter(data);
 
-
+	
 	#  Get the icon size to show on the toolbar
 	def getButtonIconSize(self):
 		return QSize(70,70);
