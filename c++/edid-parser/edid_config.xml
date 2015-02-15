@@ -1,0 +1,11 @@
+<edid_parameters>
+    <field start="0"  length="8"  description="Fixed Header Pattern" expected="00ffffffffffff00" />
+    <field start="8"  length="2"  description="Manufacturer ID"  />
+    <field start="10" length="2"  description="Manufacturer Product Code" />
+    <field start="12" length="4"  description="Serial Number" />
+    <field start="16" length="1"  description="Week of Manufacture" />
+    <field start="17" length="1"  description="Year of manufacture." />
+    <field start="18" length="1"  description="EDID Version Major" />
+    <field start="19" length="1"  description="EDID Version Minor" />
+</edid_parameters>
+
