@@ -26,6 +26,9 @@ int main( int argc, char* argv[] ){
     // Define the grid size
     cv::Size grid_size(5000, 5000);
 
+    // FLag if we want to use the grid bounds
+    bool use_point_bounds = true;
+
     // Define the grid bounds
     cv::Rect_<double> grid_bounds(0, 0, 100, 100);
 
@@ -33,7 +36,7 @@ int main( int argc, char* argv[] ){
     PointExtractor point_extractor((boost::filesystem::path(argv[1])));
 
     // Pass to the grid builder
-    GridBuilder grid_builder( point_extractor, grid_size, grid_bounds );
+    GridBuilder grid_builder( point_extractor, grid_size, grid_bounds, use_point_bounds );
 
     return 0;
 }

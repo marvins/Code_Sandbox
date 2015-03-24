@@ -50,7 +50,23 @@ class PointExtractor{
         inline cv::Point2d Get_Max_Point()const{
             return m_max_point;
         }
+        
 
+        /**
+         * @brief Get Remaining Points
+         */
+       int Get_Number_Remaining_Points()const{
+           return m_point_list.size();
+       }
+
+       /**
+        * @Pop off next point
+       */
+       cv::Point3d Pop_Next(){
+            cv::Point3d new_point = m_point_list.front();
+            m_point_list.pop_front();
+            return new_point;
+        }
 
     private:
 

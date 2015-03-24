@@ -28,3 +28,35 @@ void GridMarker::Add( const double& z_value )
     m_z_values.push_back(z_value);
 }
 
+void GridMarker::Set_Z(){
+
+    // If the value is zero, skip
+    if( m_z_values.size() <= 0 ){ return; }
+
+    // Otherwise, compute the mean
+    double sum = 0;
+    for( int z=0; z<m_z_values.size(); z++ ){
+        sum += m_z_values[z];
+    }
+
+    m_mean_z = sum / (m_z_values.size());
+
+}
+
+/**
+ * To String
+*/
+std::string GridMarker::ToString()const{
+
+    // Create stream
+    std::stringstream sin;
+
+    // Create output
+    sin << "GridMarker:" << std::endl;
+    sin << "   Min Z: " << m_min_z << std::endl;
+    sin << "   Max Z: " << m_max_z << std::endl;
+    sin << "   Count: " << m_z_values.size() << std::endl;
+   
+    return sin.str();
+}
+

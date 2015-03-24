@@ -3,6 +3,8 @@
 
 // C++ Standard Libraries
 #include <deque>
+#include <sstream>
+#include <string>
 
 /**
  * @class GridMarker
@@ -20,6 +22,34 @@ class GridMarker{
          * @brief Add to marker
         */
         void Add( const double& z_value );
+        
+        /**
+         * @brief print to string
+        */
+        std::string ToString()const;
+        
+        /**
+         * Get the number of markers
+        */
+        inline int Get_Z_Count()const{
+            return m_z_values.size();
+        }
+
+        /**
+         * Set Z Post Adding
+        */
+        void Set_Z();
+
+        inline double Get_Z(bool& set)const{
+            if( m_z_values.size() > 0 ){
+                set = true;
+            }else{
+                set = false;
+            }
+           
+            return m_mean_z;
+        }
+
 
     private:
         
@@ -32,6 +62,8 @@ class GridMarker{
         /// List of z's
         std::deque<double> m_z_values;
 
+        /// Computed Z Value
+        double  m_mean_z;
 
 }; // End of GridMarker Class
 

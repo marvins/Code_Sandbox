@@ -20,7 +20,8 @@ class GridBuilder{
         */
         GridBuilder( PointExtractor& point_extractor,
                      cv::Size const& grid_size,
-                     cv::Rect_<double> const& grid_bounds );
+                     cv::Rect_<double> const& grid_bounds,
+                     bool use_point_bounds = true );
 
 
     private:
