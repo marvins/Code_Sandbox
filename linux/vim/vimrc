@@ -109,3 +109,7 @@ nnoremap <silent> <Space> :nohlsearch<Bar>:echo<CR>
 
 "let OmniCpp_GlobalScopeSearch = 1
 "let OmniCpp_NamespaceSearch = 1
+
+"  Set some Fortran Items
+let fortran_free_source=1
+
