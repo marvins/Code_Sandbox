@@ -5,10 +5,10 @@ IMG_DIR=images
 IMAGES=''
 
 for IMG in `ls $IMG_DIR`; do
-    IMAGES="$IMAGES -i $IMG"
+    IMAGES="$IMAGES -i $IMG_DIR/$IMG"
 done
 
-FEATURE_NAME='orb'
+FEATURE_NAME='surf'
 
 #  Build the Command
 CMD="./stitcher $IMAGES $OUTPUT -f $FEATURE_NAME"

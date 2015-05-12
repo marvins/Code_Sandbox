@@ -179,6 +179,16 @@ int main( int argc, char* argv[] )
     }
 
 
+    // Do Pair-Wise Matching
+    double match_conf = 0.3;
+    std::vector<cv::detail::MatchesInfo> pairwise_matches;
+    cv::detail::BestOf2NearestMatcher matcher( false, match_conf );
+    matcher( features, pairwise_matches );
+
+    
+    // Select matches for panorama
+    double conf_threash = 1.0;
+    std::vector<int> indices = leaveBiggestComponent( features, pairwise_matches, conf_threash );
     // Exit Program
     return 0;
 }
