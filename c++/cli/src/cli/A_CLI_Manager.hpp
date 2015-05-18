@@ -13,6 +13,7 @@
 
 // C++ Standard Libraries
 #include <memory>
+#include <thread>
 
 namespace CLI{
 
@@ -63,6 +64,9 @@ class A_CLI_Manager{
 
         /// Connection Thread
         std::thread m_connection_thread;
+
+        /// CLI Connection Handler
+        A_CLI_Connection_Handler_Base::ptr_t m_connection_handler;
 
 
 }; // End of A_CLI_Manager Class

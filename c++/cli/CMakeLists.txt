@@ -6,7 +6,7 @@ cmake_minimum_required( VERSION 2.8 FATAL_ERROR )
 project(libcli-cpp)
 
 #   Configure C++11
-set( CMAKE_CXX_FLAGS "-std=c++11" )
+set( CMAKE_CXX_FLAGS "-std=c++11 -Wall" )
 
 
 #--------------------------------------#
@@ -32,8 +32,11 @@ include_directories(${CURSES_INCLUDE_DIR})
 set( CLI_SOURCES
      src/cli/A_CLI_Configuration_File_Parser.cpp
      src/cli/A_CLI_Connection_Handler_Base.cpp
+     src/cli/A_CLI_Connection_Handler_Base_Config.cpp
      src/cli/A_CLI_Connection_Handler_Local.cpp
+     src/cli/A_CLI_Connection_Handler_Local_Config.cpp
      src/cli/A_CLI_Connection_Handler_Socket.cpp
+     src/cli/A_CLI_Connection_Handler_Socket_Config.cpp
      src/cli/A_CLI_Manager.cpp
      src/cli/A_CLI_Manager_Configuration.cpp
      src/cli/A_CLI_Manager_Factory.cpp
@@ -47,8 +50,11 @@ set( CLI_SOURCES
 set( CLI_HEADERS
      src/cli/A_CLI_Configuration_File_Parser.hpp
      src/cli/A_CLI_Connection_Handler_Base.hpp
+     src/cli/A_CLI_Connection_Handler_Base_Config.hpp
      src/cli/A_CLI_Connection_Handler_Local.hpp
+     src/cli/A_CLI_Connection_Handler_Local_Config.hpp
      src/cli/A_CLI_Connection_Handler_Socket.hpp
+     src/cli/A_CLI_Connection_Handler_Socket_Config.hpp
      src/cli/A_CLI_Manager.hpp
      src/cli/A_CLI_Manager_Configuration.hpp
      src/cli/A_CLI_Manager_Factory.hpp

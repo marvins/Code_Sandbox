@@ -34,11 +34,35 @@ class A_CLI_Connection_Handler_Base{
         */
         virtual ~A_CLI_Connection_Handler_Base();
 
+        
+        /**
+         * @brief Start the handler
+         */
+        virtual void Start_Handler();
+
+
+        /**
+         * @brief Stop the handler
+         */
+        virtual void Signal_Shutdown();
+
+
+    protected:
+        
+        /**
+         * @brief Run the handler
+         */
+        virtual void Run_Handler() = 0;
+
+
+        /// Running Flag
+        bool m_is_running;
 
     private:
         
         /// Class Name
         std::string m_class_name;
+
 
 }; // End of A_CLI_Connection_Handler_Base Class
 

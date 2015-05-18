@@ -30,13 +30,22 @@ class A_CLI_Connection_Handler_Local : public A_CLI_Connection_Handler_Base
         /**
          * @brief Constructor
         */
-        A_CLI_Connection_Handler_Local( A_CLI_Connection_Handler_Local_Config::ptr_t configuration );
+        A_CLI_Connection_Handler_Local( A_CLI_Connection_Handler_Base_Config::ptr_t configuration );
 
 
         /**
          * @brief Destructor
          */
         ~A_CLI_Connection_Handler_Local();
+    
+
+    protected:
+        
+        /**
+         * @brief Run the message handler
+         */
+        virtual void Run_Handler();
+
 
 
     private:
@@ -45,7 +54,7 @@ class A_CLI_Connection_Handler_Local : public A_CLI_Connection_Handler_Base
         std::string m_class_name;
 
         /// Configuration
-        A_CLI_Connection_Handler_Config::ptr_t  m_configuration;
+        A_CLI_Connection_Handler_Local_Config::ptr_t  m_configuration;
 
 }; // End of A_CLI_Connection_Handler_Local Class
 

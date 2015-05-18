@@ -10,6 +10,8 @@
 #include <string>
 
 // CLI Libraries
+#include "A_CLI_Connection_Handler_Base.hpp"
+#include "A_CLI_Connection_Handler_Base_Config.hpp"
 #include "CLIConnectionType.hpp"
 #include "../thirdparty/ncurses/NCurses_Utilities.hpp"
 
@@ -51,6 +53,25 @@ class A_CLI_Manager_Configuration{
 
 
         /**
+         * @brief Get the CLI Connection Handler Configuration
+         *
+         * @return Connection Handler Configuration.
+         */
+        A_CLI_Connection_Handler_Base::ptr_t  Get_Connection_Handler()const;
+
+        
+        /**
+         * @brief Set the CLI Connection Handler Configuration
+         *
+         * @param[in] configuration Configuration object to set.
+         */
+        inline void Set_CLI_Connection_Handler_Config( A_CLI_Connection_Handler_Base_Config::ptr_t configuration )
+        {
+            m_connection_handler_configuration = configuration;
+        }
+
+
+        /**
          * @brief Create NCurses Context.
          *
          * @return NCurses Context.
@@ -66,6 +87,8 @@ class A_CLI_Manager_Configuration{
         /// CLI Communication Type
         CLIConnectionType m_cli_conn_type;
 
+        /// Connection Handler Configuration
+        A_CLI_Connection_Handler_Base_Config::ptr_t m_connection_handler_configuration;
 
 }; // End of A_CLI_Manager_Configuration Class
 

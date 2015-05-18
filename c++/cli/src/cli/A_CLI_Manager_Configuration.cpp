@@ -5,6 +5,10 @@
  */
 #include "A_CLI_Manager_Configuration.hpp"
 
+// CLI Libraries
+#include "A_CLI_Connection_Handler_Local.hpp"
+#include "A_CLI_Connection_Handler_Socket.hpp"
+
 namespace CLI{
 
 
@@ -15,6 +19,35 @@ A_CLI_Manager_Configuration::A_CLI_Manager_Configuration( CLIConnectionType cons
   : m_class_name("A_CLI_Manager_Configuration"),
     m_cli_conn_type(cli_conn_type)
 {
+}
+
+
+
+/***************************************************/
+/*          Get the Connection Handler             */
+/***************************************************/
+A_CLI_Connection_Handler_Base::ptr_t  A_CLI_Manager_Configuration::Get_Connection_Handler()const{
+
+    // Make sure the configuration is not null
+    if( m_connection_handler_configuration == nullptr ){
+        return nullptr;
+    }
+
+    // If we are Local, create the handelr
+    if( m_cli_conn_type == CLIConnectionType::LOCAL )
+    {
+        return std::make_shared<A_CLI_Connection_Handler_Local>( m_connection_handler_configuration );
+    }
+
+    // If we are socket, create the handler
+    else if( m_cli_conn_type == CLIConnectionType::SOCKET )
+    {
+        return std::make_shared<A_CLI_Connection_Handler_Socket>( m_connection_handler_configuration );
+    }
+
+    // otherwise, return null
+    return nullptr;
+
 }
 
 

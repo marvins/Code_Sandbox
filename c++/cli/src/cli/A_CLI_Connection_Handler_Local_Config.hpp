@@ -12,12 +12,14 @@
 // CLI Libraries
 #include "A_CLI_Connection_Handler_Base_Config.hpp"
 
+
 namespace CLI{
 
 /**
  * @class A_CLI_Connection_Handler_Local_Config
 */
-class A_CLI_Connection_Handler_Local_Config : public A_CLI_Connection_Handler_Base_Config{
+class A_CLI_Connection_Handler_Local_Config : public A_CLI_Connection_Handler_Base_Config
+{
 
     public:
         

@@ -12,10 +12,10 @@ namespace NCURSES{
 /*          Constructor           */
 /**********************************/
 An_NCurses_Context::An_NCurses_Context()
-  : m_class_name("An_NCurses_Context"),
-    screen(NULL),
+  : screen(NULL),
     tty_in(NULL),
-    tty_out(NULL)
+    tty_out(NULL),
+    m_class_name("An_NCurses_Context")
 {
 }
 
