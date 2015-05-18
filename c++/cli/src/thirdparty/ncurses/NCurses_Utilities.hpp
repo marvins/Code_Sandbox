@@ -6,6 +6,12 @@
 #ifndef __THRIRDPARTY_NCURSES_NCURSES_UTILITIES_HPP__
 #define __THRIRDPARTY_NCURSES_NCURSES_UTILITIES_HPP__
 
+// NCurses Libraries
+#include <ncurses.h>
+
+// C++ Standard Libraries
+#include <string>
+
 namespace NCURSES{
 
 
@@ -26,6 +32,10 @@ class An_NCurses_Context{
 
         /// Screen Object
         SCREEN* screen;
+
+        /// TTY Input
+        FILE* tty_in;
+        FILE* tty_out;
 
     private:
         

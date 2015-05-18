@@ -8,6 +8,8 @@
 
 // CLI Libraries
 #include "A_CLI_Manager_Configuration.hpp"
+#include "../thirdparty/ncurses/NCurses_Utilities.hpp"
+
 
 // C++ Standard Libraries
 #include <memory>
@@ -44,6 +46,7 @@ class A_CLI_Manager{
          */
         void Disconnect();
 
+
     private:
         
         /// Class Name
@@ -52,6 +55,8 @@ class A_CLI_Manager{
         /// Configuration
         A_CLI_Manager_Configuration m_configuration;
 
+        /// NCurses Context
+        NCURSES::An_NCurses_Context* m_ncurses_context;
 
 
 }; // End of A_CLI_Manager Class

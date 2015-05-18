@@ -21,12 +21,21 @@ find_package( Boost REQUIRED
 include_directories(${Boost_INCLUDE_DIRS})
 
 
+#--------------------------------------#
+#-       Find NCurses Libraries       -#
+#--------------------------------------#
+find_package( Curses REQUIRED )
+
+include_directories(${CURSES_INCLUDE_DIR})
+
 #   Define our sources
 set( CLI_SOURCES
      src/cli/A_CLI_Configuration_File_Parser.cpp
      src/cli/A_CLI_Manager.cpp
      src/cli/A_CLI_Manager_Configuration.cpp
      src/cli/A_CLI_Manager_Factory.cpp
+     src/cli/CLIConnectionType.cpp
+     src/thirdparty/ncurses/NCurses_Utilities.cpp
 )
 
 
@@ -36,6 +45,8 @@ set( CLI_HEADERS
      src/cli/A_CLI_Manager.hpp
      src/cli/A_CLI_Manager_Configuration.hpp
      src/cli/A_CLI_Manager_Factory.hpp
+     src/cli/CLIConnectionType.hpp
+     src/thirdparty/ncurses/NCurses_Utilities.hpp
 )
 
      
@@ -51,7 +62,8 @@ add_library( cli_cpp
 )
 
 target_link_libraries( cli_cpp 
-                       ${Boost_LIBRARIES} )
+                       ${Boost_LIBRARIES}
+                       ${CURSES_LIBRARIES} )
 
 
 #   Create the demo application

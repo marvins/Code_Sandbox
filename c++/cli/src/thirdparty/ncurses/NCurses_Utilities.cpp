@@ -13,13 +13,35 @@ namespace NCURSES{
 /**********************************/
 An_NCurses_Context::An_NCurses_Context()
   : m_class_name("An_NCurses_Context"),
-    screen(NULL)
+    screen(NULL),
+    tty_in(NULL),
+    tty_out(NULL)
 {
 }
 
 
 
-/*      Create NC
+/*************************************/
+/*      Create NCurses Context       */
+/*************************************/
+void Initialize( An_NCurses_Context*&  context )
+{
+
+    // Create the window
+
+
+
+}
+
+
+/****************************************/
+/*      Finalize NCurses Context        */
+/****************************************/
+void Finalize( An_NCurses_Context*&   context )
+{
+
+
+}
 
 
 } // End of NCURSES Namespace

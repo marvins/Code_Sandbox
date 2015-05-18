@@ -36,6 +36,13 @@ int main( int argc, char* argv[] )
         return 1;
     }
 
+    // Initialize the CLI Manager
+    manager->Connect();
+
+
+    // Disconnect the CLI Manager
+    manager->Disconnect();
+
 
     // Exit Program
     return 0;

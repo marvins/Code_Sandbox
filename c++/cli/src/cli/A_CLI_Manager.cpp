@@ -5,7 +5,11 @@
  */
 #include "A_CLI_Manager.hpp"
 
+
 // CLI Libraries
+
+
+// C++ Standard Libraries
 
 
 
@@ -17,7 +21,8 @@ namespace CLI{
 /********************************/
 A_CLI_Manager::A_CLI_Manager( A_CLI_Manager_Configuration const& configuration )
   : m_class_name("A_CLI_Manager"),
-    m_configuration(configuration)
+    m_configuration(configuration),
+    m_ncurses_context(NULL)
 {
 
 
@@ -29,8 +34,8 @@ A_CLI_Manager::A_CLI_Manager( A_CLI_Manager_Configuration const& configuration )
 /**********************************************/
 void A_CLI_Manager::Connect()
 {
-
-
+    // Initialize NCurses
+    NCURSES::Initialize( m_ncurses_context );
 
 }
 
@@ -41,6 +46,8 @@ void A_CLI_Manager::Connect()
 /**********************************************/
 void A_CLI_Manager::Disconnect()
 {
+    // Finalize NCurses
+    NCURSES::Finalize( m_ncurses_context );
 
 }
 
