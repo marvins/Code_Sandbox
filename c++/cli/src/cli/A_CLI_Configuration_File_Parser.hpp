@@ -35,10 +35,29 @@ class A_CLI_Configuration_File_Parser{
          *
          * @return CLI Manager Configuration Object.
          */
-        A_CLI_Manager_Configuration Get_CLI_Manager_Configuration()const;
+        inline A_CLI_Manager_Configuration Get_CLI_Manager_Configuration()const
+        {
+            return m_current_configuration;
+        }
+
+
+        /**
+         * @brief Valid Status
+         *
+         * @return valid status
+         */
+        inline bool Is_Valid()const{
+            return m_is_valid;
+        }
 
 
     private:
+
+        /**
+         * @brief Parse the configuration file.
+         */
+        void Parse_Configuration_File();
+
     
         /// Class Name
         std::string m_class_name;
@@ -46,6 +65,11 @@ class A_CLI_Configuration_File_Parser{
         /// Configuration File Path
         std::string m_config_pathname;
 
+        /// Current Configuration
+        A_CLI_Manager_Configuration m_current_configuration;
+
+        /// Parsing Status
+        bool m_is_valid;
 
 }; // End of A_CLI_Configuration_File_Parser Class
 

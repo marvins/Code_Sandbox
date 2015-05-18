@@ -56,7 +56,13 @@ class A_CLI_Manager{
         A_CLI_Manager_Configuration m_configuration;
 
         /// NCurses Context
-        NCURSES::An_NCurses_Context* m_ncurses_context;
+        NCURSES::An_NCurses_Context::ptr_t m_ncurses_context;
+
+        /// Management Thread
+        std::thread m_console_thread;
+
+        /// Connection Thread
+        std::thread m_connection_thread;
 
 
 }; // End of A_CLI_Manager Class

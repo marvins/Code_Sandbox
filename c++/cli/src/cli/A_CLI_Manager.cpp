@@ -38,7 +38,9 @@ void A_CLI_Manager::Connect()
 {
     // Initialize NCurses
     NCURSES::Initialize( m_ncurses_context );
-
+    
+    // Kick off the console thread
+    m_console_thread = std::thread( &A_CLI_Console_Manager, 
 }
 
 

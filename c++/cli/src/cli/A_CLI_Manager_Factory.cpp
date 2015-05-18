@@ -33,6 +33,10 @@ A_CLI_Manager::ptr_t A_CLI_Manager_Factory::Initialize( const std::string& confi
     //  Parse the configuration file
     A_CLI_Configuration_File_Parser   parser( config_pathname );
 
+    // Check parser status
+    if( parser.Is_Valid() != true ){
+        return nullptr;
+    }
     
     // Fetch the configuration
     A_CLI_Manager_Configuration manager_config = parser.Get_CLI_Manager_Configuration();

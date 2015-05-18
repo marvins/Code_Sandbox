@@ -6,8 +6,10 @@
 #ifndef __CLI_CLICONNECTIONTYPE_HPP__
 #define __CLI_CLICONNECTIONTYPE_HPP__
 
-namespace CLI{
+// C++ Standard Libraries
+#include <string>
 
+namespace CLI{
 
 /**
  * @enum CLIConnectionType

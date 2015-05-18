@@ -26,9 +26,15 @@ An_NCurses_Context::An_NCurses_Context()
 /*************************************/
 void Initialize( An_NCurses_Context::ptr_t  context )
 {
+    // Make sure the context is not null
+    if( context == nullptr ){
+        return;
+    }
 
     // Create the window
-
+    context->screen  = newterm( 0, 
+                                context->tty_in,
+                                context->tty_out );
 
 
 }
@@ -40,6 +46,16 @@ void Initialize( An_NCurses_Context::ptr_t  context )
 void Finalize( An_NCurses_Context::ptr_t   context )
 {
 
+    // Make sure the context is not null
+    if( context == nullptr ){
+        return;
+    }
+    
+    // Delete the screen
+    if( context->screen != NULL || context->screen != nullptr )
+    {
+        delscreen( context->screen );
+    }
 
 }
 

@@ -31,22 +31,32 @@ include_directories(${CURSES_INCLUDE_DIR})
 #   Define our sources
 set( CLI_SOURCES
      src/cli/A_CLI_Configuration_File_Parser.cpp
+     src/cli/A_CLI_Connection_Handler_Base.cpp
+     src/cli/A_CLI_Connection_Handler_Local.cpp
+     src/cli/A_CLI_Connection_Handler_Socket.cpp
      src/cli/A_CLI_Manager.cpp
      src/cli/A_CLI_Manager_Configuration.cpp
      src/cli/A_CLI_Manager_Factory.cpp
      src/cli/CLIConnectionType.cpp
      src/thirdparty/ncurses/NCurses_Utilities.cpp
+     src/thirdparty/pugixml/src/pugixml.cpp
 )
 
 
 #   Define our headers
 set( CLI_HEADERS
      src/cli/A_CLI_Configuration_File_Parser.hpp
+     src/cli/A_CLI_Connection_Handler_Base.hpp
+     src/cli/A_CLI_Connection_Handler_Local.hpp
+     src/cli/A_CLI_Connection_Handler_Socket.hpp
      src/cli/A_CLI_Manager.hpp
      src/cli/A_CLI_Manager_Configuration.hpp
      src/cli/A_CLI_Manager_Factory.hpp
      src/cli/CLIConnectionType.hpp
      src/thirdparty/ncurses/NCurses_Utilities.hpp
+     src/thirdparty/pugixml.hpp
+     src/thirdparty/pugixml/src/pugixml.hpp
+     src/thirdparty/pugixml/src/pugiconfig.hpp
 )
 
      

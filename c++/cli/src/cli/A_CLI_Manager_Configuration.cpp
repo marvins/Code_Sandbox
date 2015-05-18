@@ -11,9 +11,9 @@ namespace CLI{
 /***************************/
 /*      Constructor        */
 /***************************/
-A_CLI_Manager_Configuration::A_CLI_Manager_Configuration( CLIConnectionType const& cli_comm_type )
+A_CLI_Manager_Configuration::A_CLI_Manager_Configuration( CLIConnectionType const& cli_conn_type )
   : m_class_name("A_CLI_Manager_Configuration"),
-    m_cli_comm_type(cli_comm_type)
+    m_cli_conn_type(cli_conn_type)
 {
 }
 
@@ -29,7 +29,7 @@ NCURSES::An_NCurses_Context::ptr_t  A_CLI_Manager_Configuration::Create_NCurses_
 
 
     // Attach communication file pointers
-    if( m_cli_comm_type == CLIConnectionType::LOCAL ){
+    if( m_cli_conn_type == CLIConnectionType::LOCAL ){
         context->tty_in  = stdin;
         context->tty_out = stdout;
     }
@@ -40,5 +40,8 @@ NCURSES::An_NCurses_Context::ptr_t  A_CLI_Manager_Configuration::Create_NCurses_
 
     // return the new context
     return context;
+}
+
+
 
 } // End of CLI Namespace

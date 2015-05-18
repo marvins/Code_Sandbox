@@ -26,7 +26,7 @@ class A_CLI_Manager_Configuration{
         /**
          * @brief Constructor
          */
-        A_CLI_Manager_Configuration( CLIConnectionType const& cli_comm_type );
+        A_CLI_Manager_Configuration( CLIConnectionType const& cli_conn_type );
 
     
         /**
@@ -34,10 +34,21 @@ class A_CLI_Manager_Configuration{
          *
          * @return CLI Communication Type
         */
-        inline CLIConnectionType Get_CLI_Communication_Type()const{
-            return m_cli_comm_type;
+        inline CLIConnectionType Get_CLI_Connection_Type()const{
+            return m_cli_conn_type;
         }
-        
+
+
+        /**
+         * @brief Set the CLI Connection Type.
+         *
+         * @param[in] cli_conn_type CLI Connection Type.
+         */
+        inline void Set_CLI_Connection_Type( CLIConnectionType const& cli_conn_type )
+        {
+            m_cli_conn_type = cli_conn_type;
+        }
+
 
         /**
          * @brief Create NCurses Context.
@@ -53,7 +64,7 @@ class A_CLI_Manager_Configuration{
         std::string m_class_name;
 
         /// CLI Communication Type
-        CLIConnectionType m_cli_comm_type;
+        CLIConnectionType m_cli_conn_type;
 
 
 }; // End of A_CLI_Manager_Configuration Class
