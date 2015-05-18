@@ -5,3 +5,22 @@
  */
 #include "NCurses_Utilities.hpp"
 
+namespace NCURSES{
+
+
+/**********************************/
+/*          Constructor           */
+/**********************************/
+An_NCurses_Context::An_NCurses_Context()
+  : m_class_name("An_NCurses_Context"),
+    screen(NULL)
+{
+}
+
+
+
+/*      Create NC
+
+
+} // End of NCURSES Namespace
+

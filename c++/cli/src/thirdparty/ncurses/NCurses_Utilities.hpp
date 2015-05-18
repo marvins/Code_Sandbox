@@ -10,15 +10,42 @@ namespace NCURSES{
 
 
 /**
+ * @class An_NCurses_Context
+ *
+ * @brief Single NCurses context object.
+ */
+class An_NCurses_Context{
+
+    public:
+        
+        /**
+         * @brief Constructor
+         */
+        An_NCurses_Context();
+
+
+        /// Screen Object
+        SCREEN* screen;
+
+    private:
+        
+        /// Class name
+        std::string m_class_name;
+
+
+}; // End of An_NCurses_Context Class
+
+
+/**
  * @brief Create NCurses Window
  */
-void Initialize( );
+void Initialize( An_NCurses_Context*& context );
 
 
 /**
  * @brief Finalize NCurses Windows
  */
-void Finalize();
+void Finalize( An_NCurses_Context*& context );
 
 
 
