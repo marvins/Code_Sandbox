@@ -25,6 +25,8 @@ A_CLI_Manager::A_CLI_Manager( A_CLI_Manager_Configuration const& configuration )
     m_ncurses_context(NULL)
 {
 
+    // Create CLI Communication Type
+    m_ncurses_context = m_configuration.Create_NCurses_Context();
 
 }
 

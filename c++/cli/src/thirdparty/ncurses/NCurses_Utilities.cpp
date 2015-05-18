@@ -24,7 +24,7 @@ An_NCurses_Context::An_NCurses_Context()
 /*************************************/
 /*      Create NCurses Context       */
 /*************************************/
-void Initialize( An_NCurses_Context*&  context )
+void Initialize( An_NCurses_Context::ptr_t  context )
 {
 
     // Create the window
@@ -37,7 +37,7 @@ void Initialize( An_NCurses_Context*&  context )
 /****************************************/
 /*      Finalize NCurses Context        */
 /****************************************/
-void Finalize( An_NCurses_Context*&   context )
+void Finalize( An_NCurses_Context::ptr_t   context )
 {
 
 

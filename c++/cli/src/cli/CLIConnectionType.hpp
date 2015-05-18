@@ -12,7 +12,7 @@ namespace CLI{
 /**
  * @enum CLIConnectionType
  */
-enum class CLIConnectionType : public uint8_t {
+enum class CLIConnectionType : uint8_t {
     UNKNOWN = 0,
     LOCAL   = 1,
     SOCKET  = 2,

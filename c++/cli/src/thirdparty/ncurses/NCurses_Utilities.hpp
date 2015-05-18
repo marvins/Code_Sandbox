@@ -10,6 +10,7 @@
 #include <ncurses.h>
 
 // C++ Standard Libraries
+#include <memory>
 #include <string>
 
 namespace NCURSES{
@@ -23,6 +24,10 @@ namespace NCURSES{
 class An_NCurses_Context{
 
     public:
+
+        /// Pointer Type
+        typedef std::shared_ptr<An_NCurses_Context> ptr_t;
+
         
         /**
          * @brief Constructor
@@ -49,13 +54,13 @@ class An_NCurses_Context{
 /**
  * @brief Create NCurses Window
  */
-void Initialize( An_NCurses_Context*& context );
+void Initialize( An_NCurses_Context::ptr_t context );
 
 
 /**
  * @brief Finalize NCurses Windows
  */
-void Finalize( An_NCurses_Context*& context );
+void Finalize( An_NCurses_Context::ptr_t context );
 
 
 
