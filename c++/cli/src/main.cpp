@@ -36,6 +36,7 @@ int main( int argc, char* argv[] )
         return 1;
     }
 
+
     // Initialize the CLI Manager
     manager->Connect();
 

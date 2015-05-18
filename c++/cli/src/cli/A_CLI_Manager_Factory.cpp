@@ -40,6 +40,12 @@ A_CLI_Manager::ptr_t A_CLI_Manager_Factory::Initialize( const std::string& confi
     
     // Fetch the configuration
     A_CLI_Manager_Configuration manager_config = parser.Get_CLI_Manager_Configuration();
+    
+    
+    // Check if the configuration is valid
+    if( manager_config.Is_Valid() == false ){
+        return nullptr;
+    }
 
     
     // Create the manager

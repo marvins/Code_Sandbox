@@ -79,6 +79,14 @@ class A_CLI_Manager_Configuration{
          NCURSES::An_NCurses_Context::ptr_t Create_NCurses_Context()const;
          
 
+         /**
+          * @brief Check if the configuration is valid.
+          *
+          * @return True if valid, false otherwise.
+          */
+         bool Is_Valid()const;
+
+
     private:
         
         /// Class Name
@@ -89,6 +97,9 @@ class A_CLI_Manager_Configuration{
 
         /// Connection Handler Configuration
         A_CLI_Connection_Handler_Base_Config::ptr_t m_connection_handler_configuration;
+
+        /// Validity Flag
+        bool m_is_valid;
 
 }; // End of A_CLI_Manager_Configuration Class
 

@@ -76,5 +76,20 @@ NCURSES::An_NCurses_Context::ptr_t  A_CLI_Manager_Configuration::Create_NCurses_
 }
 
 
+/************************************************************/
+/*          Check if the configuration is valid             */
+/************************************************************/
+bool A_CLI_Manager_Configuration::Is_Valid()const
+{
+    // Check if the configuration is null
+    if( m_connection_handler_configuration == nullptr ){
+        return false;
+    }
+
+
+    // If no failures, yet, then success
+    return true;
+}
+
 
 } // End of CLI Namespace
