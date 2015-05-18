@@ -14,7 +14,7 @@ namespace CLI{
 /**
  * @class A_CLI_Manager_Factory
  */
-A_CLI_Manager_Factory{
+class A_CLI_Manager_Factory{
 
 
     public:

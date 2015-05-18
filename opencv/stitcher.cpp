@@ -10,7 +10,9 @@
 #include <opencv2/features2d.hpp>
 #include <opencv2/imgcodecs.hpp>
 #include <opencv2/imgproc.hpp>
+#include <opencv2/stitching/detail/camera.hpp>
 #include <opencv2/stitching/detail/matchers.hpp>
+#include <opencv2/stitching/detail/motion_estimators.hpp>
 
 // C++ Standard Libraries
 #include <deque>
@@ -189,6 +191,32 @@ int main( int argc, char* argv[] )
     // Select matches for panorama
     double conf_threash = 1.0;
     std::vector<int> indices = leaveBiggestComponent( features, pairwise_matches, conf_threash );
+    
+    
+    // Iterate over indices to get the image names
+    std::vector<cv::Mat>  img_subset;
+    std::vector<string>   img_names_subset;
+    std::vector<cv::Size> full_img_sizes_subset;
+    
+    for( int i=0; i<indices.size(); i++ )
+    {
+        // Push the names
+        img_names_subset.push_back( image_path_list[indices[i]] );
+        img_subset.push_back(image_list[indices[i]]);
+        full_img_sizes_subset.push_back(image_list[indices[i]].size());
+    }
+
+
+    // Start Estimating Camera Parameters
+    cv::detail::HomographyBasedEstimator estimator;
+    std::vector<cv::detail::CameraParams> cameras;
+    if( !estimator( features, pairwise_matches, cameras) )
+    {
+        std::cout << "Homography Estimation Failed." << std::endl;
+        return -1;
+    }
+
+
     // Exit Program
     return 0;
 }

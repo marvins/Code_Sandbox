@@ -35,7 +35,7 @@ class A_CLI_Configuration_File_Parser{
          *
          * @return CLI Manager Configuration Object.
          */
-        A_CLI_Manager_Configuration  Get_CLI_Manager_Configuration()const;
+        A_CLI_Manager_Configuration Get_CLI_Manager_Configuration()const;
 
 
     private:
@@ -48,5 +48,7 @@ class A_CLI_Configuration_File_Parser{
 
 
 }; // End of A_CLI_Configuration_File_Parser Class
+
+} // End of CLI Namespace
 
 #endif

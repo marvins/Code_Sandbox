@@ -1,0 +1,13 @@
+<cli-manager-configuration>
+
+    <!-- Type of Connection 
+          
+          Supported Options:
+          - LOCAL  : Connect via stdin
+          - SOCKET : Connect via network
+    -->
+    <connection-type value="LOCAL" />
+
+
+
+</cli-manager-configuration>
