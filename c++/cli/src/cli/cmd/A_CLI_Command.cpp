@@ -11,8 +11,10 @@ namespace CMD{
 /**********************************/
 /*          Constructor           */
 /**********************************/
-A_CLI_Command::A_CLI_Command( const std::string& command_name )
-  : m_command_name(command_name)
+A_CLI_Command::A_CLI_Command( const std::string& command_name,
+                              const std::string& command_description )
+  : m_command_name(command_name),
+    m_command_description(command_description)
 {
 }
 

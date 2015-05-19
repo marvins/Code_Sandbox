@@ -108,7 +108,7 @@ void A_CLI_Configuration_File_Parser::Parse_Configuration_File()
     }
 
     // Set the parser
-    m_current_configuration.Set_Command_Parser( CMD::A_CLI_Command_Parser_Factory::Initialize( temp_str ));
+    m_current_configuration.Set_CLI_Command_Parser( CMD::A_CLI_Command_Parser_Factory::Initialize( temp_str ));
 
     // Set valid
     m_is_valid = true;

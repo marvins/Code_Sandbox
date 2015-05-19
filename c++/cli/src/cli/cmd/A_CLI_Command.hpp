@@ -22,14 +22,34 @@ class A_CLI_Command{
         /**
          * @brief Constructor
         */
-        A_CLI_Command( const std::string& command_name );
+        A_CLI_Command( const std::string& command_name,
+                       const std::string& command_description );
 
+        /**
+         * @brief Get the Command Name.
+         * 
+         * @return Command name.
+         */
+        inline std::string Get_Name()const{
+            return m_command_name;
+        }
+
+
+        /**
+         * @brief Get the command description.
+         */
+        inline std::string Get_Description()const{
+            return m_command_description;
+        }
 
 
     private:
 
         /// Command Name
         std::string m_command_name;
+
+        /// Command Description
+        std::string m_command_description;
 
 }; // End of A_CLI_Command 
 

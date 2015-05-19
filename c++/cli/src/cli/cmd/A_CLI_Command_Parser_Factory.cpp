@@ -42,9 +42,30 @@ A_CLI_Command_Parser::ptr_t  A_CLI_Command_Parser_Factory::Initialize( const std
 
     // Get the Commands Node
     pugi::xml_node commands_node = root_node.child("commands");
+    
+    // Command List
+    std::vector<A_CLI_Command> command_list;
+
+    // Parse the Commands Node
+    for( pugi::xml_node_iterator it = commands_node.begin(); it != commands_node.end(); it++ )
+    {
+
+        // Convert to node
+        pugi::xml_node command_node = (*it);
+        
+        // Get the command name
+        std::string command_name  = command_node.child("name").attribute("value").as_string();
+        
+        // Get the command description
+        std::string command_description = command_node.child("description").attribute("value").as_string();
+
+        // Add the command
+        command_list.push_back(A_CLI_Command( command_name, command_description ));
+
+    }
 
     // Create the parser
-    A_CLI_Command_Parser::ptr_t parser = std::make_shared<A_CLI_Command_Parser>();
+    A_CLI_Command_Parser::ptr_t parser = std::make_shared<A_CLI_Command_Parser>( command_list );
 
     // Return new parser
     return parser;

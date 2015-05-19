@@ -9,6 +9,11 @@
 // C++ Standard Libraries
 #include <memory>
 #include <string>
+#include <vector>
+
+// CLI Libraries
+#include "A_CLI_Command.hpp"
+
 
 namespace CLI{
 namespace CMD{
@@ -27,7 +32,7 @@ class A_CLI_Command_Parser {
         /**
          * @brief Constructor
         */
-        A_CLI_Command_Parser();
+        A_CLI_Command_Parser( std::vector<A_CLI_Command> const& command_list );
 
 
     private:
@@ -35,6 +40,8 @@ class A_CLI_Command_Parser {
         /// Class Name
         std::string m_class_name;
 
+        /// Command List
+        std::vector<A_CLI_Command> m_command_list;
 
 }; // End of A_CLI_Command_Parser Class
 

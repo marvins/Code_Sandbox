@@ -23,6 +23,6 @@
     </socket-configuration>
 
     <!-- Command Configuration -->
-    <command-configuration path="data/Command-Configuration.xml" />
+    <command-configuration path="../data/Command_Configuration.xml" />
 
 </cli-manager-configuration>

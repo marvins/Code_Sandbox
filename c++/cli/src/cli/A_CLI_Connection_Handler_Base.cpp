@@ -14,6 +14,8 @@ namespace CLI{
 A_CLI_Connection_Handler_Base::A_CLI_Connection_Handler_Base()
   : m_is_running(false),
     m_console_render_manager(nullptr),
+    m_current_command_string(""),
+    m_cli_command_parser(nullptr),
     m_class_name("A_CLI_Connection_Handler_Base")
 {
 }

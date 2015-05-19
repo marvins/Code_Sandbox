@@ -1,7 +1,12 @@
 <command-configuration>
 
     <commands>
-        <command name="shutdownSystem" />
-    </command>
+
+        <!-- System Shutdown Command -->
+        <command>
+            <name value="shutdownSystem" />
+            <description value="Shut down the complete system." />
+        </command>
+    </commands>
 
 </command-configuration>

@@ -13,7 +13,7 @@
 
 // CLI Libraries
 #include "A_Console_Render_Manager.hpp"
-
+#include "cmd/A_CLI_Command_Parser.hpp"
 
 namespace CLI{
 
@@ -67,6 +67,15 @@ class A_CLI_Connection_Handler_Base{
         }
 
 
+        /**
+         * @brief Update the Registered Command Parser.
+         */
+        inline virtual void Update_CLI_Command_Parser( CMD::A_CLI_Command_Parser::ptr_t cli_command_parser )
+        {
+            m_cli_command_parser = cli_command_parser;
+        }
+
+
     protected:
         
         /**
@@ -81,6 +90,14 @@ class A_CLI_Connection_Handler_Base{
 
         /// Console Render Manager
         A_Console_Render_Manager::ptr_t m_console_render_manager;
+
+
+        /// Current Command
+        std::string m_current_command_string;
+
+
+        /// CLI Command Parser
+        CMD::A_CLI_Command_Parser::ptr_t m_cli_command_parser;
 
     private:
         

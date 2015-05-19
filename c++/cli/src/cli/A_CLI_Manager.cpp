@@ -35,6 +35,7 @@ A_CLI_Manager::A_CLI_Manager( A_CLI_Manager_Configuration const& configuration )
     // Grab the connection handler
     m_connection_handler = m_configuration.Get_Connection_Handler();
     m_connection_handler->Update_Render_Manager( m_console_render_manager );
+    m_connection_handler->Update_CLI_Command_Parser( m_configuration.Get_CLI_Command_Parser());
 
 }
 

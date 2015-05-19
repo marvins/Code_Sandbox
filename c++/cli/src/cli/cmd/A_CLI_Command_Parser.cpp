@@ -11,8 +11,9 @@ namespace CMD{
 /*****************************/
 /*       Constructor         */
 /*****************************/
-A_CLI_Command_Parser::A_CLI_Command_Parser()
-  : m_class_name("A_CLI_Command_Parser")
+A_CLI_Command_Parser::A_CLI_Command_Parser( const std::vector<A_CLI_Command>& command_list )
+  : m_class_name("A_CLI_Command_Parser"),
+    m_command_list(command_list)
 {
 }
 

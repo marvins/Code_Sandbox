@@ -63,8 +63,14 @@ void A_CLI_Connection_Handler_Local::Run_Handler()
         // Check keyboard value
         key = this->m_console_render_manager->Wait_Keyboard_Input();
 
-        if( key == 27 || key == KEY_ENTER || key == 10 ){
+        if( key == 27 || key == KEY_ENTER || key == 10 )
+        {
+            // Check the current command
             m_is_running = false;
+        }
+        // Otherwise, add the character
+        else{
+            this->m_current_command_string += (char)key;
         }
 
         // Check if time to exit

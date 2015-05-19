@@ -77,7 +77,7 @@ class A_CLI_Manager_Configuration{
          * 
          * @return Command Parser.
          */
-        inline CMD::A_CLI_Command_Parser::ptr_t Get_Command_Parser()const{
+        inline CMD::A_CLI_Command_Parser::ptr_t Get_CLI_Command_Parser()const{
             return m_command_parser;
         }
 
@@ -85,7 +85,7 @@ class A_CLI_Manager_Configuration{
         /**
          * @brief Set the Command Parser
         */
-        inline void Set_Command_Parser( CMD::A_CLI_Command_Parser::ptr_t command_parser ){
+        inline void Set_CLI_Command_Parser( CMD::A_CLI_Command_Parser::ptr_t command_parser ){
             m_command_parser = command_parser;
         }
 
