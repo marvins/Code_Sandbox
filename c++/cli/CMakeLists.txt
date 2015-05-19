@@ -40,6 +40,7 @@ set( CLI_SOURCES
      src/cli/A_CLI_Manager.cpp
      src/cli/A_CLI_Manager_Configuration.cpp
      src/cli/A_CLI_Manager_Factory.cpp
+     src/cli/A_Console_Render_Manager.cpp
      src/cli/CLIConnectionType.cpp
      src/thirdparty/ncurses/NCurses_Utilities.cpp
      src/thirdparty/pugixml/src/pugixml.cpp
@@ -58,6 +59,7 @@ set( CLI_HEADERS
      src/cli/A_CLI_Manager.hpp
      src/cli/A_CLI_Manager_Configuration.hpp
      src/cli/A_CLI_Manager_Factory.hpp
+     src/cli/A_Console_Render_Manager.hpp
      src/cli/CLIConnectionType.hpp
      src/thirdparty/ncurses/NCurses_Utilities.hpp
      src/thirdparty/pugixml.hpp

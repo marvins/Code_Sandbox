@@ -5,6 +5,11 @@
  */
 #include "A_CLI_Connection_Handler_Local.hpp"
 
+// C++ Standard Libraries
+#include <iostream>
+#include <unistd.h>
+
+
 namespace CLI{
 
 
@@ -35,10 +40,38 @@ A_CLI_Connection_Handler_Local::~A_CLI_Connection_Handler_Local()
 /***********************************************/
 void A_CLI_Connection_Handler_Local::Run_Handler()
 {
+    // Keyboard input value
+    int key;
+
+    // Loop until time to quit
+    while( true ){
+
+        // Check the manager
+        if( this->m_console_render_manager == nullptr ){
+            break;
+        }
 
 
+        // Render the screen
+        this->m_console_render_manager->Refresh();
+        
+        // Check keyboard value
+        key = this->m_console_render_manager->Wait_Keyboard_Input();
 
+        if( key == 'q' ){
+            m_is_running = false;
+        }
 
+        // Check if time to exit
+        if( m_is_running == false ){
+            break;
+        }
+
+    }
+
+    // Set the running flag
+    m_is_running = false;
+    
 }
 
 

@@ -11,7 +11,7 @@
 
 // CLI Libraries
 #include "A_CLI_Manager_Configuration.hpp"
-
+#include "A_CLI_Connection_Handler_Base_Config.hpp"
 
 namespace CLI{
 
@@ -67,6 +67,9 @@ class A_CLI_Configuration_File_Parser{
 
         /// Current Configuration
         A_CLI_Manager_Configuration m_current_configuration;
+
+        /// Connection Handler Configuration
+        A_CLI_Connection_Handler_Base_Config::ptr_t m_connection_handler_config;
 
         /// Parsing Status
         bool m_is_valid;

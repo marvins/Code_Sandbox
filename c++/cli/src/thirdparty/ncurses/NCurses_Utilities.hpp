@@ -38,6 +38,12 @@ class An_NCurses_Context{
         /// Screen Object
         SCREEN* screen;
 
+        /// Window
+        WINDOW* main_window;
+
+        /// TTY Terminal Name
+        std::string tty_terminal_name;
+
         /// TTY Input
         FILE* tty_in;
         FILE* tty_out;
@@ -62,6 +68,11 @@ void Initialize( An_NCurses_Context::ptr_t context );
  */
 void Finalize( An_NCurses_Context::ptr_t context );
 
+
+/**
+ * @brief Abort
+ */
+void Abort();
 
 
 } // End of NCURSES Namspace

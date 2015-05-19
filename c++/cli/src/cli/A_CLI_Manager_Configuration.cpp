@@ -9,6 +9,12 @@
 #include "A_CLI_Connection_Handler_Local.hpp"
 #include "A_CLI_Connection_Handler_Socket.hpp"
 
+
+// C++ Standard Libraries
+#include <iostream>
+#include <unistd.h>
+
+
 namespace CLI{
 
 
@@ -63,8 +69,14 @@ NCURSES::An_NCurses_Context::ptr_t  A_CLI_Manager_Configuration::Create_NCurses_
 
     // Attach communication file pointers
     if( m_cli_conn_type == CLIConnectionType::LOCAL ){
+
+        // find the terminal name
+        std::string terminal_name = getenv("TERM");
+
+        // Create the context elements
         context->tty_in  = stdin;
         context->tty_out = stdout;
+        context->tty_terminal_name = terminal_name;
     }
     else{
         return nullptr;

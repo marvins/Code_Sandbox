@@ -10,7 +10,7 @@
 #include "A_CLI_Connection_Handler_Base.hpp"
 
 // C++ Standard Libraries
-
+#include <iostream>
 
 
 namespace CLI{
@@ -24,12 +24,18 @@ A_CLI_Manager::A_CLI_Manager( A_CLI_Manager_Configuration const& configuration )
     m_configuration(configuration),
     m_ncurses_context(NULL)
 {
+    // Grab the console render manager
+    m_console_render_manager = std::make_shared<A_Console_Render_Manager>();
 
+    
     // Create CLI Communication Type
     m_ncurses_context = m_configuration.Create_NCurses_Context();
 
+    
     // Grab the connection handler
     m_connection_handler = m_configuration.Get_Connection_Handler();
+    m_connection_handler->Update_Render_Manager( m_console_render_manager );
+
 }
 
 
@@ -40,14 +46,16 @@ void A_CLI_Manager::Connect()
 {
     // Initialize NCurses
     NCURSES::Initialize( m_ncurses_context );
+
     
+    // Configure the ncurses context
+    m_console_render_manager->Update_NCurses_Context( m_ncurses_context );
+
     // Kick off the console thread
 
     
     // Kick off the communication thread
-    A_CLI_Connection_Handler_Base* handler_ptr = m_connection_handler.get();
-    m_connection_thread = std::thread( &A_CLI_Connection_Handler_Base::Start_Handler,
-                                       std::ref(handler_ptr));
+    m_connection_handler->Start_Handler();
 
 }
 
@@ -58,9 +66,25 @@ void A_CLI_Manager::Connect()
 /**********************************************/
 void A_CLI_Manager::Disconnect()
 {
+    
+    // Stop the thread
+    m_connection_handler->Signal_Shutdown();
+
+    // Join the thread
+    m_connection_handler->Wait_Shutdown();
+
     // Finalize NCurses
     NCURSES::Finalize( m_ncurses_context );
 
+}
+
+
+/************************************************/
+/*      Wait for CLI Connection Shutdown        */
+/************************************************/
+void A_CLI_Manager::Wait_Shutdown()
+{
+    m_connection_handler->Wait_Shutdown();
 }
 
 

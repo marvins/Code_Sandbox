@@ -13,6 +13,7 @@ namespace CLI{
 /************************/
 A_CLI_Connection_Handler_Base::A_CLI_Connection_Handler_Base()
   : m_is_running(false),
+    m_console_render_manager(nullptr),
     m_class_name("A_CLI_Connection_Handler_Base")
 {
 }
@@ -37,9 +38,21 @@ void A_CLI_Connection_Handler_Base::Start_Handler()
     // Signal that we are running
     m_is_running = true;
 
-    // Run the handler
-    this->Run_Handler();
+    // Start the thread
+    m_connection_thread = std::thread( &A_CLI_Connection_Handler_Base::Run_Handler,
+                                       this);
+}
 
+
+/****************************************/
+/*          Wait for shutdown           */
+/****************************************/
+void A_CLI_Connection_Handler_Base::Wait_Shutdown()
+{
+    // Only join if we are running
+    if( m_is_running == true ){
+        m_connection_thread.join();
+    }
 }
 
 

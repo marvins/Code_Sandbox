@@ -8,6 +8,17 @@
     -->
     <connection-type value="LOCAL" />
 
+    <!-- Local CLI Configuration -->
+    <local-configuration>
+
+
+    </local-configuration>
+
+
+    <!-- Socket CLI Configuration -->
+    <socket-configuration>
+
+    </socket-configuration>
 
 
 </cli-manager-configuration>

@@ -9,6 +9,11 @@
 // C++ Standard Libraries
 #include <memory>
 #include <string>
+#include <thread>
+
+// CLI Libraries
+#include "A_Console_Render_Manager.hpp"
+
 
 namespace CLI{
 
@@ -46,6 +51,21 @@ class A_CLI_Connection_Handler_Base{
          */
         virtual void Signal_Shutdown();
 
+        
+        /**
+         * @brief Wait for shutdown
+         */
+        virtual void Wait_Shutdown();
+
+        
+        /**
+         * @brief Update the Registered Rendering Manager
+         */
+        inline virtual void Update_Render_Manager( A_Console_Render_Manager::ptr_t render_manager )
+        {
+            m_console_render_manager = render_manager;
+        }
+
 
     protected:
         
@@ -58,11 +78,17 @@ class A_CLI_Connection_Handler_Base{
         /// Running Flag
         bool m_is_running;
 
+
+        /// Console Render Manager
+        A_Console_Render_Manager::ptr_t m_console_render_manager;
+
     private:
         
         /// Class Name
         std::string m_class_name;
 
+        /// Thread
+        std::thread m_connection_thread;
 
 }; // End of A_CLI_Connection_Handler_Base Class
 

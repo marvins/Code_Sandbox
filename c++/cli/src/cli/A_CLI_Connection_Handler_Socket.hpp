@@ -13,6 +13,9 @@
 
 // C++ Standard Libraries
 #include <memory>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <netdb.h>
 
 namespace CLI{
 
@@ -56,6 +59,11 @@ class A_CLI_Connection_Handler_Socket : public A_CLI_Connection_Handler_Base
 
         /// Configuration
         A_CLI_Connection_Handler_Socket_Config::ptr_t m_configuration;
+
+
+        /// Socket File Descriptor
+        int m_sock_fd;
+
 
 }; // End of A_CLI_Connection_Handler_Socket Class
 

@@ -8,6 +8,7 @@
 
 // CLI Libraries
 #include "A_CLI_Manager_Configuration.hpp"
+#include "A_Console_Render_Manager.hpp"
 #include "../thirdparty/ncurses/NCurses_Utilities.hpp"
 
 
@@ -43,9 +44,25 @@ class A_CLI_Manager{
 
 
         /**
+         * @brief Wait for shutdown.
+         */
+        void Wait_Shutdown();
+
+
+        /**
          * @brief Disconnect the CLI Manager
          */
         void Disconnect();
+
+
+        /**
+         * @brief Get the CLI Connection Type
+         *
+         * @return CLI Connection Type.
+         */
+        inline CLIConnectionType Get_CLI_Connection_Type()const{
+            return m_configuration.Get_CLI_Connection_Type();
+        }
 
 
     private:
@@ -62,12 +79,11 @@ class A_CLI_Manager{
         /// Management Thread
         std::thread m_console_thread;
 
-        /// Connection Thread
-        std::thread m_connection_thread;
-
         /// CLI Connection Handler
         A_CLI_Connection_Handler_Base::ptr_t m_connection_handler;
 
+        /// Console Render Manager
+        A_Console_Render_Manager::ptr_t m_console_render_manager;
 
 }; // End of A_CLI_Manager Class
 

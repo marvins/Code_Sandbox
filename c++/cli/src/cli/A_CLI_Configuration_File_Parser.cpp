@@ -7,6 +7,8 @@
 
 // CLI Libraries
 #include "../thirdparty/pugixml.hpp"
+#include "A_CLI_Connection_Handler_Local_Config.hpp"
+#include "A_CLI_Connection_Handler_Socket_Config.hpp"
 
 // C++ Standard Libraries
 #include <iostream>
@@ -69,6 +71,20 @@ void A_CLI_Configuration_File_Parser::Parse_Configuration_File()
         return;
     }
     m_current_configuration.Set_CLI_Connection_Type( cli_conn_type );
+
+    
+    // If we are Local, then load the local configuration
+    if( cli_conn_type == CLIConnectionType::LOCAL ){
+
+        m_connection_handler_config = std::make_shared<A_CLI_Connection_Handler_Local_Config>();
+        m_current_configuration.Set_CLI_Connection_Handler_Config( m_connection_handler_config );
+    }
+    else if( cli_conn_type == CLIConnectionType::SOCKET ){
+
+        m_connection_handler_config = std::make_shared<A_CLI_Connection_Handler_Socket_Config>();
+        m_current_configuration.Set_CLI_Connection_Handler_Config( m_connection_handler_config );
+    }
+
 
     // Set valid
     m_is_valid = true;

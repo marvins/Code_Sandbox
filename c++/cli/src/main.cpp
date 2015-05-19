@@ -7,6 +7,8 @@
 // C++ Standard Libraries
 #include <iostream>
 #include <string>
+#include <unistd.h>
+
 
 // CLI Libraries
 #include "cli/A_CLI_Manager_Factory.hpp"
@@ -18,6 +20,8 @@ using namespace std;
  */
 int main( int argc, char* argv[] )
 {
+    try{
+
     // Check args
     if( argc < 2 ){
         std::cerr << "usage: " << argv[0] << " <config-path>" << std::endl;
@@ -40,9 +44,21 @@ int main( int argc, char* argv[] )
     // Initialize the CLI Manager
     manager->Connect();
 
+    // Check the type of run and wait if necessary
+    if( manager->Get_CLI_Connection_Type() == CLI::CLIConnectionType::LOCAL ){
+        manager->Wait_Shutdown();
+    }
 
     // Disconnect the CLI Manager
     manager->Disconnect();
+
+    } catch ( exception& e ){
+        NCURSES::Abort();  
+        std::cerr << "exception caught What: " << e.what() << std::endl;
+    } catch (...){
+        NCURSES::Abort();  
+        std::cerr << "unknown exception detected." << std::endl;
+    }
 
 
     // Exit Program
