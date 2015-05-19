@@ -44,9 +44,6 @@ A_CLI_Manager::A_CLI_Manager( A_CLI_Manager_Configuration const& configuration )
 /**********************************************/
 void A_CLI_Manager::Connect()
 {
-    // Initialize NCurses
-    NCURSES::Initialize( m_ncurses_context );
-
     
     // Configure the ncurses context
     m_console_render_manager->Update_NCurses_Context( m_ncurses_context );
@@ -72,9 +69,6 @@ void A_CLI_Manager::Disconnect()
 
     // Join the thread
     m_connection_handler->Wait_Shutdown();
-
-    // Finalize NCurses
-    NCURSES::Finalize( m_ncurses_context );
 
 }
 

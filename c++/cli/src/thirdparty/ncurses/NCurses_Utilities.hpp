@@ -33,6 +33,12 @@ class An_NCurses_Context{
          * @brief Constructor
          */
         An_NCurses_Context();
+        
+        
+        /**
+         * @brief Destructor
+        */
+        ~An_NCurses_Context();
 
 
         /// Screen Object
@@ -45,6 +51,7 @@ class An_NCurses_Context{
         std::string tty_terminal_name;
 
         /// TTY Input
+        char*  tty_fd;
         FILE* tty_in;
         FILE* tty_out;
 

@@ -1,0 +1,7 @@
+<command-configuration>
+
+    <commands>
+        <command name="shutdownSystem" />
+    </command>
+
+</command-configuration>

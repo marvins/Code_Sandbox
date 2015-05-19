@@ -52,6 +52,18 @@ class A_CLI_Connection_Handler_Socket : public A_CLI_Connection_Handler_Base
 
 
     private:
+
+        /**
+         * @brief Setup the socket.
+         */
+        void Setup_Socket();
+
+
+        /**
+         * @brief Close the socket.
+         */
+        void Close_Socket();
+
         
         /// Class Name
         std::string m_class_name;
@@ -64,6 +76,9 @@ class A_CLI_Connection_Handler_Socket : public A_CLI_Connection_Handler_Base
         /// Socket File Descriptor
         int m_sock_fd;
 
+
+        /// Client File Description
+        int m_client_fd;
 
 }; // End of A_CLI_Connection_Handler_Socket Class
 

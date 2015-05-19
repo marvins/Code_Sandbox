@@ -11,9 +11,10 @@ namespace CLI{
 /**************************/
 /*      Constructor       */
 /**************************/
-A_CLI_Connection_Handler_Socket_Config::A_CLI_Connection_Handler_Socket_Config()
+A_CLI_Connection_Handler_Socket_Config::A_CLI_Connection_Handler_Socket_Config( const int& port )
   : A_CLI_Connection_Handler_Base_Config(),
-    m_class_name("A_CLI_Connection_Handler_Socket_Config")
+    m_class_name("A_CLI_Connection_Handler_Socket_Config"),
+    m_port(port)
 {
 
 

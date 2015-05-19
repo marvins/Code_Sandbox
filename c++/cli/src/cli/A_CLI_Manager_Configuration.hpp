@@ -13,6 +13,7 @@
 #include "A_CLI_Connection_Handler_Base.hpp"
 #include "A_CLI_Connection_Handler_Base_Config.hpp"
 #include "CLIConnectionType.hpp"
+#include "cmd/A_CLI_Command_Parser.hpp"
 #include "../thirdparty/ncurses/NCurses_Utilities.hpp"
 
 namespace CLI{
@@ -72,6 +73,24 @@ class A_CLI_Manager_Configuration{
 
 
         /**
+         * @brief Get the Command Parser
+         * 
+         * @return Command Parser.
+         */
+        inline CMD::A_CLI_Command_Parser::ptr_t Get_Command_Parser()const{
+            return m_command_parser;
+        }
+
+
+        /**
+         * @brief Set the Command Parser
+        */
+        inline void Set_Command_Parser( CMD::A_CLI_Command_Parser::ptr_t command_parser ){
+            m_command_parser = command_parser;
+        }
+
+
+        /**
          * @brief Create NCurses Context.
          *
          * @return NCurses Context.
@@ -98,9 +117,9 @@ class A_CLI_Manager_Configuration{
         /// Connection Handler Configuration
         A_CLI_Connection_Handler_Base_Config::ptr_t m_connection_handler_configuration;
 
-        /// Validity Flag
-        bool m_is_valid;
-
+        /// Command Parser
+        CMD::A_CLI_Command_Parser::ptr_t m_command_parser;
+        
 }; // End of A_CLI_Manager_Configuration Class
 
 

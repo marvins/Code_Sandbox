@@ -63,6 +63,9 @@ void A_CLI_Connection_Handler_Base::Signal_Shutdown()
 {
     // set the flag
     m_is_running = false;
+    
+    // Finalize
+    m_console_render_manager->Finalize();
 }
 
 

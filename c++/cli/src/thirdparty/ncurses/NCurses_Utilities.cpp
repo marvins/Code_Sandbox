@@ -5,6 +5,9 @@
  */
 #include "NCurses_Utilities.hpp"
 
+// C++ Standard Libraries
+#include <iostream>
+
 namespace NCURSES{
 
 
@@ -15,12 +18,27 @@ An_NCurses_Context::An_NCurses_Context()
   : screen(NULL),
     main_window(NULL),
     tty_terminal_name(""),
+    tty_fd(NULL),
     tty_in(NULL),
     tty_out(NULL),
     m_class_name("An_NCurses_Context")
 {
 }
 
+
+/*****************************/
+/*        Destructor         */
+/*****************************/
+An_NCurses_Context::~An_NCurses_Context()
+{
+    // Delete
+    if( tty_fd != nullptr &&
+        tty_fd != NULL )
+    {
+        delete [] tty_fd;
+        tty_fd = nullptr;
+    }
+}
 
 
 /*************************************/
@@ -30,18 +48,18 @@ void Initialize( An_NCurses_Context::ptr_t  context )
 {
     // Make sure the context is not null
     if( context == nullptr ){
+        std::cout << "warning: context is null" << std::endl;
         return;
     }
 
     // Create the screen
-    context->screen  = newterm( 0, 
+    context->screen  = newterm( context->tty_fd, 
                                 context->tty_in,
                                 context->tty_out );
 
-    // Do not do nl->cr/nl
-
-    // CBreak
-    cbreak();
+    // Clear the window
+    wclear( context->main_window );
+    noecho();
 
     // Setup colors
     
@@ -64,6 +82,7 @@ void Finalize( An_NCurses_Context::ptr_t   context )
     if( context == nullptr ){
         return;
     }
+
     
     // End the window
     endwin();

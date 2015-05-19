@@ -8,7 +8,11 @@
 // CLI Libraries
 #include "A_CLI_Connection_Handler_Socket_Config.hpp"
 
-// Reference: http://www.linuxhowtos.org/C_C++/socket.htm
+// C++ Standard Libraries
+#include <iostream>
+#include <unistd.h>
+#include <sys/socket.h>
+#include <netinet/in.h>
 
 namespace CLI{
 
@@ -44,56 +48,43 @@ void A_CLI_Connection_Handler_Socket::Setup_Socket()
 {
 
     // Setup the socket
-    m_socket_fd = socket( AF_INET, SOCK_STREAM, 0 );
-    if( m_socket_fd < 0 ){
+    m_sock_fd = socket( AF_INET, SOCK_STREAM, 0 );
+    if( m_sock_fd < 0 ){
         std::cerr << "error opening socket" << std::endl;
         return;
     }
 
     // configure the endpoint
-    struct sockaddr_in serv_addr, cli_addr;
+    struct sockaddr_in serv_addr;
     bzero((char *) &serv_addr, sizeof(serv_addr));
     
     // Get the port number
     serv_addr.sin_family = AF_INET;
     serv_addr.sin_addr.s_addr = INADDR_ANY;
-    serv_addr.sin_port = m_configuration->Get_Port();
+    serv_addr.sin_port = htons(m_configuration->Get_Port());
 
     // Bind the socket
-    if( bind( m_socket_fd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0 ){
+    if( bind( m_sock_fd, (struct sockaddr*)&serv_addr, sizeof(serv_addr)) < 0 ){
         std::cerr << "error binding socket" << std::endl;
         return;
     }
 
     // Listen
+    if( listen( m_sock_fd, 5 ) < 0 ){
+        std::cerr << "error listening on socket." << std::endl;
+        return;
+    }
+
+}
 
 
-
-    int sockfd, newsockfd, portno;
-    socklen_t clilen;
-    char buffer[256];
-    int n;
-    
-    
-    if (bind(sockfd, (struct sockaddr *) &serv_addr,
-                sizeof(serv_addr)) < 0) 
-        error("ERROR on binding");
-    listen(sockfd,5);
-    clilen = sizeof(cli_addr);
-    newsockfd = accept(sockfd, 
-            (struct sockaddr *) &cli_addr, 
-            &clilen);
-    if (newsockfd < 0) 
-        error("ERROR on accept");
-    bzero(buffer,256);
-    n = read(newsockfd,buffer,255);
-    if (n < 0) error("ERROR reading from socket");
-    printf("Here is the message: %s\n",buffer);
-    n = write(newsockfd,"I got your message",18);
-    if (n < 0) error("ERROR writing to socket");
-    close(newsockfd);
-    close(sockfd);
-
+/********************************/
+/*       Close the socket       */
+/********************************/
+void A_CLI_Connection_Handler_Socket::Close_Socket()
+{
+    close( m_sock_fd );
+    close( m_client_fd );
 }
 
 
@@ -103,7 +94,69 @@ void A_CLI_Connection_Handler_Socket::Setup_Socket()
 void A_CLI_Connection_Handler_Socket::Run_Handler()
 {
 
+    // Read the socket
+    char buffer[256];
+    int n;
+    std::string input;
+    
+    if( this->m_console_render_manager != nullptr ){
+        this->m_console_render_manager->Initialize();
+    }
+    
+    // Get the length
+    socklen_t clilen;
+    struct sockaddr_in cli_addr;
+    clilen = sizeof(cli_addr);
 
+    // Accept the socket
+    m_client_fd = accept( m_sock_fd, 
+                          (struct sockaddr*)&cli_addr,
+                          &clilen);
+
+    if( m_client_fd < 0 ){
+        std::cerr << "error accepting socket" << std::endl;
+        return;
+    }
+
+    // Write back
+    write( m_client_fd,"\377\375\042\377\373\001",6);
+    write( m_client_fd,"Welcome\n\0", 9);
+
+    // run until time to quit
+    while( true ){
+    
+        // Check the manager
+        if( this->m_console_render_manager == nullptr ){
+            break;
+        }
+
+
+        // Render the screen
+        this->m_console_render_manager->Refresh();
+        
+        // Check keyboard value
+        n = read( m_client_fd, buffer, 255 );
+        if (n < 0){
+            std::cerr << "error reading the socket" << std::endl;
+        }
+        
+        // Check the buffer
+        input = std::string(buffer).substr(0,n);
+        std::cout << "Input: <" << input << ">" << std::endl;
+        if( input == "q" ){
+            m_is_running = false;
+        }
+
+        // Check if time to exit
+        if( m_is_running == false ){
+            break;
+        }
+
+    }
+
+    // Set the running flag
+    m_is_running = false;
+    
 
 
 }

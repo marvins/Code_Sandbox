@@ -23,11 +23,10 @@ namespace CLI{
 /***************************/
 A_CLI_Manager_Configuration::A_CLI_Manager_Configuration( CLIConnectionType const& cli_conn_type )
   : m_class_name("A_CLI_Manager_Configuration"),
-    m_cli_conn_type(cli_conn_type)
+    m_cli_conn_type(cli_conn_type),
+    m_command_parser(nullptr)
 {
 }
-
-
 
 /***************************************************/
 /*          Get the Connection Handler             */
@@ -74,10 +73,28 @@ NCURSES::An_NCurses_Context::ptr_t  A_CLI_Manager_Configuration::Create_NCurses_
         std::string terminal_name = getenv("TERM");
 
         // Create the context elements
+        context->tty_fd  = NULL;
         context->tty_in  = stdin;
         context->tty_out = stdout;
         context->tty_terminal_name = terminal_name;
     }
+
+    // Attach communication file pointers
+    else if( m_cli_conn_type == CLIConnectionType::SOCKET ){
+        
+        // find the terminal name
+        std::string terminal_name = getenv("TERM");
+
+        // Create the context elements
+        context->tty_fd  = NULL;
+        context->tty_in  = stdin;
+        context->tty_out = stdout;
+        context->tty_terminal_name = terminal_name;
+
+
+    }
+
+    // Otherwise, there is a problem
     else{
         return nullptr;
     }

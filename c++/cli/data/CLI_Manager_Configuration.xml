@@ -11,14 +11,18 @@
     <!-- Local CLI Configuration -->
     <local-configuration>
 
-
     </local-configuration>
 
 
     <!-- Socket CLI Configuration -->
     <socket-configuration>
 
+        <!-- Listening Port Number -->
+        <listening-port value="12345" />
+
     </socket-configuration>
 
+    <!-- Command Configuration -->
+    <command-configuration path="data/Command-Configuration.xml" />
 
 </cli-manager-configuration>

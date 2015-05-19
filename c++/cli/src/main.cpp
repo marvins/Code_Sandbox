@@ -45,9 +45,9 @@ int main( int argc, char* argv[] )
     manager->Connect();
 
     // Check the type of run and wait if necessary
-    if( manager->Get_CLI_Connection_Type() == CLI::CLIConnectionType::LOCAL ){
+    //if( manager->Get_CLI_Connection_Type() == CLI::CLIConnectionType::LOCAL ){
         manager->Wait_Shutdown();
-    }
+    //}
 
     // Disconnect the CLI Manager
     manager->Disconnect();

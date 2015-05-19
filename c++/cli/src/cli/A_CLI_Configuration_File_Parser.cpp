@@ -7,6 +7,7 @@
 
 // CLI Libraries
 #include "../thirdparty/pugixml.hpp"
+#include "cmd/A_CLI_Command_Parser_Factory.hpp"
 #include "A_CLI_Connection_Handler_Local_Config.hpp"
 #include "A_CLI_Connection_Handler_Socket_Config.hpp"
 
@@ -14,6 +15,8 @@
 #include <iostream>
 #include <sstream>
 
+// Boost Libraries
+#include <boost/filesystem.hpp>
 
 namespace CLI{
 
@@ -40,7 +43,10 @@ void A_CLI_Configuration_File_Parser::Parse_Configuration_File()
 
     /// List of queries
     const std::string CONNECTION_TYPE_QUERY = "connection-type";
+    const std::string COMMAND_CONFIG_NODE   = "command-configuration";
 
+    // Temp Variables
+    std::string temp_str;
 
     // Create XML Document
     pugi::xml_document xmldoc;
@@ -81,10 +87,28 @@ void A_CLI_Configuration_File_Parser::Parse_Configuration_File()
     }
     else if( cli_conn_type == CLIConnectionType::SOCKET ){
 
-        m_connection_handler_config = std::make_shared<A_CLI_Connection_Handler_Socket_Config>();
+        // Socket Config
+        pugi::xml_node socket_config_node = root_node.child("socket-configuration");
+
+        // Get the port number
+        int portno = socket_config_node.child("listening-port").attribute("value").as_int();
+
+        // Create the configuration
+        m_connection_handler_config = std::make_shared<A_CLI_Connection_Handler_Socket_Config>( portno );
         m_current_configuration.Set_CLI_Connection_Handler_Config( m_connection_handler_config );
     }
 
+    // Get the Command Parser config file
+    temp_str = root_node.child(COMMAND_CONFIG_NODE.c_str()).attribute("path").as_string();
+    
+    // make sure it exists
+    if( boost::filesystem::exists( temp_str ) == false ){
+        std::cerr << "error:  " << temp_str << " does not exist." << std::endl;
+        return;
+    }
+
+    // Set the parser
+    m_current_configuration.Set_Command_Parser( CMD::A_CLI_Command_Parser_Factory::Initialize( temp_str ));
 
     // Set valid
     m_is_valid = true;

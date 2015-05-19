@@ -32,6 +32,18 @@ class A_Console_Render_Manager{
          */
         A_Console_Render_Manager();
         
+        
+        /**
+         * @brief Initialize
+        */
+        void Initialize();
+
+
+        /** 
+         * @brief Finalize
+        */
+        void Finalize();
+
 
         /**
          * @brief Refresh the Screen.

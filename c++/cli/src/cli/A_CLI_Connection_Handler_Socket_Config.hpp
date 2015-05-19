@@ -27,7 +27,7 @@ class A_CLI_Connection_Handler_Socket_Config : public A_CLI_Connection_Handler_B
         /**
          * @brief Constructor
         */
-        A_CLI_Connection_Handler_Socket_Config();
+        A_CLI_Connection_Handler_Socket_Config( const int& port );
 
 
         /**
@@ -35,12 +35,26 @@ class A_CLI_Connection_Handler_Socket_Config : public A_CLI_Connection_Handler_B
         */
         ~A_CLI_Connection_Handler_Socket_Config();
 
+        
+        /**
+         * @brief Get the port number.
+         *
+         * @return Port number.
+         */
+        inline int Get_Port()const
+        {
+            return m_port;
+        }
+
 
     private:
         
         /// Class Name
         std::string m_class_name;
 
+        
+        /// Port Number
+        int m_port;
 
 }; // End of A_CLI_Connection_Handler_Socket_Config Class
 

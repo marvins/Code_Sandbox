@@ -5,6 +5,8 @@
  */
 #include "A_Console_Render_Manager.hpp"
 
+// C++ Standard Libraries
+#include <iostream>
 
 namespace CLI{
 
@@ -27,6 +29,24 @@ void A_Console_Render_Manager::Update_NCurses_Context( NCURSES::An_NCurses_Conte
     m_context = context;
 }
 
+/********************************/
+/*      Initialize Curses       */
+/********************************/
+void A_Console_Render_Manager::Initialize()
+{
+    // Initialize NCurses
+    NCURSES::Initialize( m_context );
+}
+
+/********************************/
+/*        Finalize Curses       */
+/********************************/
+void A_Console_Render_Manager::Finalize()
+{
+    // Finalize NCurses
+    NCURSES::Finalize( m_context );
+}
+
 
 /********************************/
 /*      Refresh the screen      */
@@ -35,6 +55,12 @@ void A_Console_Render_Manager::Refresh()
 {
 
     // Clear the window
+    if( m_context->main_window == NULL || 
+        m_context->main_window == nullptr ){
+        std::cerr << "warning: Main Window is still null." << std::endl;
+        return;
+    }
+
     wrefresh( m_context->main_window );
 
     // Draw everthing
