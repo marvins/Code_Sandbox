@@ -48,6 +48,7 @@ set( CLI_SOURCES
      src/cli/cmd/A_CLI_Command_Parser.cpp
      src/cli/cmd/A_CLI_Command_Parser_Factory.cpp
      src/cli/cmd/CLICommandArgumentType.cpp
+     src/cli/cmd/CLICommandParseStatus.cpp
      src/thirdparty/ncurses/NCurses_Utilities.cpp
      src/thirdparty/pugixml/src/pugixml.cpp
 )
@@ -73,6 +74,7 @@ set( CLI_HEADERS
      src/cli/cmd/A_CLI_Command_Parser.hpp
      src/cli/cmd/A_CLI_Command_Parser_Factory.hpp
      src/cli/cmd/CLICommandArgumentType.hpp
+     src/cli/cmd/CLICommandParseStatus.hpp
      src/thirdparty/ncurses/NCurses_Utilities.hpp
      src/thirdparty/pugixml.hpp
      src/thirdparty/pugixml/src/pugixml.hpp
