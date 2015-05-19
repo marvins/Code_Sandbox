@@ -8,6 +8,11 @@
 
 // C++ Standard Libraries
 #include <string>
+#include <vector>
+
+// CLI Arguments
+#include "A_CLI_Command_Argument.hpp"
+
 
 namespace CLI{
 namespace CMD{
@@ -22,8 +27,16 @@ class A_CLI_Command{
         /**
          * @brief Constructor
         */
-        A_CLI_Command( const std::string& command_name,
-                       const std::string& command_description );
+        A_CLI_Command( const std::string&                         command_name,
+                       const std::string&                         command_description );
+
+        /**
+         * @brief Constructor
+         */
+        A_CLI_Command( const std::string&                         command_name,
+                       const std::string&                         command_description,
+                       const std::vector<A_CLI_Command_Argument>& command_arguments );
+
 
         /**
          * @brief Get the Command Name.
@@ -43,6 +56,17 @@ class A_CLI_Command{
         }
 
 
+        /**
+         * @brief Get the argument list.
+         *
+         * @return Argument list.
+         */
+        inline std::vector<A_CLI_Command_Argument> Get_Argument_List()const
+        {
+            return m_command_argument_list;
+        }
+
+
     private:
 
         /// Command Name
@@ -50,6 +74,9 @@ class A_CLI_Command{
 
         /// Command Description
         std::string m_command_description;
+
+        /// Command Argument List
+        std::vector<A_CLI_Command_Argument> m_command_argument_list;
 
 }; // End of A_CLI_Command 
 

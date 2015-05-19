@@ -18,6 +18,25 @@ A_CLI_Command_Parser::A_CLI_Command_Parser( const std::vector<A_CLI_Command>& co
 }
 
 
+/***************************************/
+/*          Evaluate Command           */
+/***************************************/
+A_CLI_Command_Result  A_CLI_Command_Parser::Evaulate_Command( const std::string& test_str )
+{
+    // Create output result
+    std::string command_name;
+
+    // Split the string
+    
+
+
+    // return the result
+    A_CLI_Command_Result result;
+
+    return result;
+}
+
+
 } // End of CMD Namespace
 } // End of CLI Namespace
 

@@ -34,6 +34,16 @@ class A_CLI_Command_Parser {
         */
         A_CLI_Command_Parser( std::vector<A_CLI_Command> const& command_list );
 
+        
+        /**
+         * @brief Evaluate Command
+         *
+         * @param[in] test_str String to evaluate.
+         *
+         * @return Command result.
+         */
+        A_CLI_Command_Result Evaulate_Command( const std::string& test_str );
+
 
     private:
         

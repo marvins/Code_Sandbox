@@ -7,6 +7,18 @@
             <name value="shutdownSystem" />
             <description value="Shut down the complete system." />
         </command>
+
+        <!-- Ping subsystem member -->
+        <command>
+            <name value="ping" />
+            <description value="Testing of command and response mechanisms. Does not affect subsystem operations." />
+            <arguments>
+                <argument name="pingType" type="STRING" description="Enumeration.  Should be either NORMAL or PENDING." />
+                <argument name="statusMessage" type="STRING" description="Text to be returned in the response message from system." />
+                <argument name="responseDelay" type="INT64"  description="Delay before returning response in milliseconds." />
+                <argument name="pendingDelay"  type="INT64"  description="Delay before sending CommandStatus alert." />
+            </arguments>
+        </command>
     </commands>
 
 </command-configuration>

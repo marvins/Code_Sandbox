@@ -7,6 +7,7 @@
 
 // C++ Standard Libraries
 #include <iostream>
+#include <sstream>
 
 namespace CLI{
 
@@ -16,7 +17,8 @@ namespace CLI{
 /****************************/
 A_Console_Render_Manager::A_Console_Render_Manager()
   : m_class_name("A_Console_Render_Manager"),
-    m_context(nullptr)
+    m_context(nullptr),
+    m_render_state(std::make_shared<A_Console_Render_State>())
 {
 }
 
@@ -34,8 +36,16 @@ void A_Console_Render_Manager::Update_NCurses_Context( NCURSES::An_NCurses_Conte
 /********************************/
 void A_Console_Render_Manager::Initialize()
 {
+
     // Initialize NCurses
     NCURSES::Initialize( m_context );
+
+    // Create new render state
+    m_render_state.reset(new A_Console_Render_State());
+
+    // Set the size
+    m_render_state->Set_Window_Size( LINES, COLS );
+
 }
 
 /********************************/
@@ -60,10 +70,26 @@ void A_Console_Render_Manager::Refresh()
         std::cerr << "warning: Main Window is still null." << std::endl;
         return;
     }
+    wclear( m_context->main_window );
+    
+    // Draw the header
+    Print_Header();
 
+    
+    // Draw the main context
+    Print_Main_Content();
+
+    
+    // Draw the footer
+    Print_Footer();
+
+    
+    // Draw the CLI
+    Print_CLI();
+
+
+    // Refresh the window
     wrefresh( m_context->main_window );
-
-    // Draw everthing
 
 }
 
@@ -77,6 +103,59 @@ int A_Console_Render_Manager::Wait_Keyboard_Input()
     // Wait
     return wgetch( m_context->main_window );
 }
+
+
+/****************************************/
+/*          Print the header            */
+/****************************************/
+void A_Console_Render_Manager::Print_Header()
+{
+    // header string
+    std::string header_string = "Console";
+
+    // Move to the top-left corner
+    mvwprintw( m_context->main_window, 0, 0, header_string.c_str() );
+
+}
+
+
+/************************************************/
+/*          Print the Main Context              */
+/************************************************/
+void A_Console_Render_Manager::Print_Main_Content()
+{
+
+
+
+}
+
+
+/****************************************/
+/*          Print the Footer            */
+/****************************************/
+void A_Console_Render_Manager::Print_Footer()
+{
+
+
+}
+
+
+/********************************/
+/*          Print the CLI       */
+/********************************/
+void A_Console_Render_Manager::Print_CLI()
+{
+
+    // Move the cursor
+    mvwprintw( m_context->main_window,
+               m_render_state->Get_Rows()-2,
+               2,
+               "cmd: " );
+    wprintw( m_context->main_window,
+             m_render_state->Get_Cursor_Text().c_str());
+
+}
+
 
 } // End of CLI Namespace
 

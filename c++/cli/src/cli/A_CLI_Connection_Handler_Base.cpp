@@ -14,7 +14,6 @@ namespace CLI{
 A_CLI_Connection_Handler_Base::A_CLI_Connection_Handler_Base()
   : m_is_running(false),
     m_console_render_manager(nullptr),
-    m_current_command_string(""),
     m_cli_command_parser(nullptr),
     m_class_name("A_CLI_Connection_Handler_Base")
 {
@@ -37,6 +36,12 @@ A_CLI_Connection_Handler_Base::~A_CLI_Connection_Handler_Base()
 /***************************************/
 void A_CLI_Connection_Handler_Base::Start_Handler()
 {
+
+    // Get the current context
+    if( m_render_state == nullptr ){
+        return;
+    }
+    
     // Signal that we are running
     m_is_running = true;
 

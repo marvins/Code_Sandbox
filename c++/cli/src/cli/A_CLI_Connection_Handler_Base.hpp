@@ -64,6 +64,7 @@ class A_CLI_Connection_Handler_Base{
         inline virtual void Update_Render_Manager( A_Console_Render_Manager::ptr_t render_manager )
         {
             m_console_render_manager = render_manager;
+            m_render_state = m_console_render_manager->Get_Render_State();
         }
 
 
@@ -91,10 +92,9 @@ class A_CLI_Connection_Handler_Base{
         /// Console Render Manager
         A_Console_Render_Manager::ptr_t m_console_render_manager;
 
-
-        /// Current Command
-        std::string m_current_command_string;
-
+        
+        /// Current Render State
+        A_Console_Render_State::ptr_t m_render_state;
 
         /// CLI Command Parser
         CMD::A_CLI_Command_Parser::ptr_t m_cli_command_parser;

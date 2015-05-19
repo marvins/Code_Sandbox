@@ -45,8 +45,14 @@ void A_CLI_Connection_Handler_Local::Run_Handler()
 
     if( this->m_console_render_manager != nullptr ){
         this->m_console_render_manager->Initialize();
+        this->m_render_state = this->m_console_render_manager->Get_Render_State();
     }
 
+    if( this->m_render_state == nullptr ){
+        std::cerr << "error: Unable to process the render state." << std::endl;
+        m_is_running = false;
+        return;
+    }
 
     // Loop until time to quit
     while( true ){
@@ -62,15 +68,17 @@ void A_CLI_Connection_Handler_Local::Run_Handler()
         
         // Check keyboard value
         key = this->m_console_render_manager->Wait_Keyboard_Input();
-
+    
+        // Exit if we have an appropriate exit command
         if( key == 27 || key == KEY_ENTER || key == 10 )
         {
             // Check the current command
             m_is_running = false;
         }
-        // Otherwise, add the character
+
+        // Otherwise, add the character to the cli render state
         else{
-            this->m_current_command_string += (char)key;
+            this->m_render_state->Push_Text( (char)key );
         }
 
         // Check if time to exit

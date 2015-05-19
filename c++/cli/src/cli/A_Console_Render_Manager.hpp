@@ -12,7 +12,7 @@
 
 // CLI Libraries
 #include "../thirdparty/ncurses/NCurses_Utilities.hpp"
-
+#include "A_Console_Render_State.hpp"
 
 namespace CLI{
 
@@ -66,6 +66,39 @@ class A_Console_Render_Manager{
          */
         virtual void Update_NCurses_Context( NCURSES::An_NCurses_Context::ptr_t context );
 
+        
+        /**
+         * @brief Get the render state
+         */
+        inline virtual A_Console_Render_State::ptr_t Get_Render_State()const{
+            return m_render_state;
+        }
+
+
+    protected:
+        
+        /**
+         * @brief Print the header
+         */
+        void Print_Header();
+        
+
+        /**
+         * @brief Print Main Context.
+         */
+        void Print_Main_Content();
+
+
+        /**
+         * @brief Print Footer
+         */
+        void Print_Footer();
+
+
+        /**
+         * @brief Print CLI
+         */
+        void Print_CLI();
 
     private:
         
@@ -75,6 +108,8 @@ class A_Console_Render_Manager{
         /// NCurses Context
         NCURSES::An_NCurses_Context::ptr_t m_context;
 
+        /// Render State
+        A_Console_Render_State::ptr_t m_render_state;
 
 }; // End of A_Console_Render_Manager Class
 

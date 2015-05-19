@@ -41,6 +41,7 @@ set( CLI_SOURCES
      src/cli/A_CLI_Manager_Configuration.cpp
      src/cli/A_CLI_Manager_Factory.cpp
      src/cli/A_Console_Render_Manager.cpp
+     src/cli/A_Console_Render_State.cpp
      src/cli/CLIConnectionType.cpp
      src/cli/cmd/A_CLI_Command.cpp
      src/cli/cmd/A_CLI_Command_Argument.cpp
@@ -65,6 +66,7 @@ set( CLI_HEADERS
      src/cli/A_CLI_Manager_Configuration.hpp
      src/cli/A_CLI_Manager_Factory.hpp
      src/cli/A_Console_Render_Manager.hpp
+     src/cli/A_Console_Render_State.hpp
      src/cli/CLIConnectionType.hpp
      src/cli/cmd/A_CLI_Command.hpp
      src/cli/cmd/A_CLI_Command_Argument.hpp

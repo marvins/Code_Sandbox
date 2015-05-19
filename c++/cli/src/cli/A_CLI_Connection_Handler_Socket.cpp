@@ -9,6 +9,7 @@
 #include "A_CLI_Connection_Handler_Socket_Config.hpp"
 
 // C++ Standard Libraries
+#include <cstring>
 #include <iostream>
 #include <unistd.h>
 #include <sys/socket.h>

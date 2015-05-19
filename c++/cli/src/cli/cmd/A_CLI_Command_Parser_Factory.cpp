@@ -45,10 +45,14 @@ A_CLI_Command_Parser::ptr_t  A_CLI_Command_Parser_Factory::Initialize( const std
     
     // Command List
     std::vector<A_CLI_Command> command_list;
+    std::vector<A_CLI_Command_Argument> argument_list;
 
     // Parse the Commands Node
     for( pugi::xml_node_iterator it = commands_node.begin(); it != commands_node.end(); it++ )
     {
+        
+        // Clear the argument list
+        argument_list.clear();
 
         // Convert to node
         pugi::xml_node command_node = (*it);
@@ -58,9 +62,23 @@ A_CLI_Command_Parser::ptr_t  A_CLI_Command_Parser_Factory::Initialize( const std
         
         // Get the command description
         std::string command_description = command_node.child("description").attribute("value").as_string();
+        
+        // Get the arguments node
+        pugi::xml_node arguments_node = command_node.child("arguments");
+        for( pugi::xml_node_iterator ait = arguments_node.begin(); ait != arguments_node.end(); ait++ )
+        {
+            // Get the node
+            pugi::xml_node arg_node = (*ait);
+
+            // Add the next argument
+            argument_list.push_back( A_CLI_Command_Argument( arg_node.attribute("name").as_string(),
+                                                             StringToCLICommandArgumentType( arg_node.attribute("type").as_string()),
+                                                             arg_node.attribute("description").as_string()));
+
+        }
 
         // Add the command
-        command_list.push_back(A_CLI_Command( command_name, command_description ));
+        command_list.push_back(A_CLI_Command( command_name, command_description, argument_list ));
 
     }
 
