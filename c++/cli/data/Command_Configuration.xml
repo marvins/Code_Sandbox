@@ -1,5 +1,25 @@
 <command-configuration>
 
+    <!-- Command Formatting Regex Pattern for Splitting.-->
+    <regex-split-pattern value=" "/>
+
+    <!-- Parser-Specific Commands -->
+    <parser-commands>
+
+        <!-- Shutdown Command -->
+        <command mode="shutdown">
+            <name value="bye" />
+        </command>
+        
+        <!-- Help Command -->
+        <command mode="help" >
+            <name value="?" />
+            <name value="help" />
+        </command>
+
+    </parser-commands>
+
+    <!-- List of Commands -->
     <commands>
 
         <!-- System Shutdown Command -->

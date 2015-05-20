@@ -11,6 +11,9 @@
 #include <string>
 
 
+// CLI Libraries
+#include "CLIConnectionType.hpp"
+
 namespace CLI{
 
 
@@ -28,7 +31,7 @@ class A_Console_Render_State{
         /**
          * @brief Constructor
          */
-        A_Console_Render_State();
+        A_Console_Render_State( CLIConnectionType const& conn_type );
 
         
         /**
@@ -51,14 +54,21 @@ class A_Console_Render_State{
          * @brief Get the cursor
          */
         inline std::string Get_Cursor_Text()const{
-            return m_cli_prompt_text;
+            return m_cli_prompt_text.substr(m_cli_prompt_cursor_tail,
+                                            m_cli_prompt_cursor_head - m_cli_prompt_cursor_tail);
         }
+
+
+        /**
+         * @brief Clear the cursor text.
+         */
+        void Clear_Cursor_Text();
 
         
         /**
          * @brief Add Text
          */
-        virtual void Push_Text( const char& c );
+        virtual void Process_Input( const int& input );
    
         
         /**
@@ -67,7 +77,39 @@ class A_Console_Render_State{
         virtual void Set_Window_Size( const int& rows,
                                       const int& cols );
 
+        
+        /**
+         * @brief Set the help mode
+         */
+        inline void Set_Help_Mode( const bool& help_mode ){
+            m_help_mode = help_mode;
+        }
+
+
+        /**
+         * @brief Get the help mode
+         */
+        inline bool Get_Help_Mode()const{
+            return m_help_mode;
+        }
+        
+
     private:
+
+        /**
+         * @brief Add Backspace
+         */
+        void Apply_Backspace();
+        
+
+        /**
+         * @brief Apply Delete
+         */
+        void Apply_Delete();
+
+
+        /// Connection Type
+        CLIConnectionType m_connection_type;
 
         /// CLI Text
         std::string m_cli_prompt_text;
@@ -84,6 +126,8 @@ class A_Console_Render_State{
         /// Window Cols
         int m_window_cols;
 
+        /// Help Mode
+        bool m_help_mode;
 
 }; // End of A_Console_Render_State Class
 

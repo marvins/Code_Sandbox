@@ -67,6 +67,12 @@ class A_CLI_Command{
         }
 
 
+        /**
+         * @brief Check if Name Match
+         */
+        bool Is_Name_Match( const std::string& command_name )const;
+
+
     private:
 
         /// Command Name

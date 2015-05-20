@@ -40,9 +40,52 @@ A_CLI_Command_Parser::ptr_t  A_CLI_Command_Parser_Factory::Initialize( const std
     if( root_node == pugi::xml_node() ){ return nullptr; }
 
 
+    // Get the regex split pattern
+    std::string regex_split_pattern = root_node.child("regex-split-pattern").attribute("value").as_string();
+
+    
+    // Get the Parser Command Nodes
+    pugi::xml_node parser_commands_node = root_node.child("parser-commands");
+    std::vector<CMD::A_CLI_Parser_Command> parser_command_list;
+
+    // Iterate over each command
+    CMD::A_CLI_Parser_Command parser_command( CMD::CLICommandParseStatus::UNKNOWN );
+    for( pugi::xml_node_iterator pit = parser_commands_node.begin(); pit != parser_commands_node.end(); pit++ )
+    {
+
+        // Get the node
+        pugi::xml_node parser_command_node = (*pit);
+
+        // Get the mode
+        std::string mode_str = parser_command_node.attribute("mode").as_string();
+
+        // set the mode
+        if( mode_str == "shutdown" ){
+            parser_command = CMD::A_CLI_Parser_Command( CMD::CLICommandParseStatus::CLI_SHUTDOWN );
+        }
+        else if( mode_str == "help" ){
+            parser_command = CMD::A_CLI_Parser_Command( CMD::CLICommandParseStatus::CLI_HELP );
+        }
+        else{
+            std::cerr << "error: Unknown parser command mode (" << mode_str << ")" << std::endl;
+            return nullptr;
+        }
+
+        // Iterate over names
+        for( pugi::xml_node_iterator ait = parser_command_node.begin(); ait != parser_command_node.end(); ait++ )
+        {
+            parser_command.Add_Name( (*ait).attribute("value").as_string());
+        }
+
+        // Add parser command
+        parser_command_list.push_back(parser_command);
+
+    }
+
+
     // Get the Commands Node
     pugi::xml_node commands_node = root_node.child("commands");
-    
+
     // Command List
     std::vector<A_CLI_Command> command_list;
     std::vector<A_CLI_Command_Argument> argument_list;
@@ -83,7 +126,7 @@ A_CLI_Command_Parser::ptr_t  A_CLI_Command_Parser_Factory::Initialize( const std
     }
 
     // Create the parser
-    A_CLI_Command_Parser::ptr_t parser = std::make_shared<A_CLI_Command_Parser>( command_list );
+    A_CLI_Command_Parser::ptr_t parser = std::make_shared<A_CLI_Command_Parser>( regex_split_pattern, parser_command_list, command_list );
 
     // Return new parser
     return parser;

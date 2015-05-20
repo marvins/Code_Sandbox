@@ -8,6 +8,7 @@
 
 // CLI Libraries
 #include "A_CLI_Connection_Handler_Base.hpp"
+#include "A_Console_Render_Manager_NCurses.hpp"
 
 // C++ Standard Libraries
 #include <iostream>
@@ -25,7 +26,12 @@ A_CLI_Manager::A_CLI_Manager( A_CLI_Manager_Configuration const& configuration )
     m_ncurses_context(NULL)
 {
     // Grab the console render manager
-    m_console_render_manager = std::make_shared<A_Console_Render_Manager>();
+    if( m_configuration.Get_CLI_Connection_Type() == CLIConnectionType::SOCKET ){
+        m_console_render_manager = std::make_shared<A_Console_Render_Manager>();
+    }
+    else if( m_configuration.Get_CLI_Connection_Type() == CLIConnectionType::LOCAL ){
+        m_console_render_manager = std::make_shared<A_Console_Render_Manager_NCurses>();
+    }
 
     
     // Create CLI Communication Type

@@ -19,6 +19,21 @@ std::string CLICommandParseStatusToString( CLICommandParseStatus const& status )
         return "VALID";
     }
 
+    // Valid Shutdown
+    if( status == CLICommandParseStatus::CLI_SHUTDOWN ){
+        return "CLI_SHUTDOWN";
+    }
+
+    // Valid help
+    if( status == CLICommandParseStatus::CLI_HELP ){
+        return "CLI_HELP";
+    }
+
+    // Invalid arguments
+    if( status == CLICommandParseStatus::INVALID_ARGUMENTS ){
+        return "INVALID_ARGUMENTS";
+    }
+
     // No Command Found
     if( status == CLICommandParseStatus::NO_COMMAND_FOUND ){
         return "NO_COMMAND_FOUND";
@@ -38,7 +53,21 @@ CLICommandParseStatus StringToCLICommandParseStatus( const std::string& status )
     if( status == "VALID" ){
         return CLICommandParseStatus::VALID;
     }
-    
+
+    // Valid Shutdown
+    if( status == "CLI_SHUTDOWN" ){
+        return CLICommandParseStatus::CLI_SHUTDOWN;
+    }    
+
+    // Valid help
+    if( status == "CLI_HELP" ){
+        return CLICommandParseStatus::CLI_HELP;
+    }
+
+    // Invalid ARguments
+    if( status == "INVALID_ARGUMENTS" ){
+        return CLICommandParseStatus::INVALID_ARGUMENTS;
+    }
 
     // No Command Found
     if( status == "NO_COMMAND_FOUND" ){

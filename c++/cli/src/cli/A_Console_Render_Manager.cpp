@@ -9,6 +9,9 @@
 #include <iostream>
 #include <sstream>
 
+// CLI Libraries
+#include "../utils/ANSI_Utilities.hpp"
+
 namespace CLI{
 
 
@@ -17,19 +20,10 @@ namespace CLI{
 /****************************/
 A_Console_Render_Manager::A_Console_Render_Manager()
   : m_class_name("A_Console_Render_Manager"),
-    m_context(nullptr),
-    m_render_state(std::make_shared<A_Console_Render_State>())
+    m_render_state(std::make_shared<A_Console_Render_State>(CLIConnectionType::SOCKET))
 {
 }
 
-
-/****************************************/
-/*      Update the NCurses Context      */
-/****************************************/
-void A_Console_Render_Manager::Update_NCurses_Context( NCURSES::An_NCurses_Context::ptr_t context )
-{
-    m_context = context;
-}
 
 /********************************/
 /*      Initialize Curses       */
@@ -37,14 +31,14 @@ void A_Console_Render_Manager::Update_NCurses_Context( NCURSES::An_NCurses_Conte
 void A_Console_Render_Manager::Initialize()
 {
 
-    // Initialize NCurses
-    NCURSES::Initialize( m_context );
-
     // Create new render state
-    m_render_state.reset(new A_Console_Render_State());
+    m_render_state.reset(new A_Console_Render_State(CLIConnectionType::SOCKET));
 
     // Set the size
-    m_render_state->Set_Window_Size( LINES, COLS );
+    m_render_state->Set_Window_Size( 20, 100 );
+
+    // Build the console buffer
+    Build_Console_Buffer();
 
 }
 
@@ -53,8 +47,6 @@ void A_Console_Render_Manager::Initialize()
 /********************************/
 void A_Console_Render_Manager::Finalize()
 {
-    // Finalize NCurses
-    NCURSES::Finalize( m_context );
 }
 
 
@@ -63,15 +55,9 @@ void A_Console_Render_Manager::Finalize()
 /********************************/
 void A_Console_Render_Manager::Refresh()
 {
+    // CLear the buffer
+    m_console_buffer = UTILS::ANSI_CLEARSCREEN + UTILS::ANSI_RESETCURSOR;
 
-    // Clear the window
-    if( m_context->main_window == NULL || 
-        m_context->main_window == nullptr ){
-        std::cerr << "warning: Main Window is still null." << std::endl;
-        return;
-    }
-    wclear( m_context->main_window );
-    
     // Draw the header
     Print_Header();
 
@@ -88,20 +74,6 @@ void A_Console_Render_Manager::Refresh()
     Print_CLI();
 
 
-    // Refresh the window
-    wrefresh( m_context->main_window );
-
-}
-
-
-/************************************/
-/*      Wait on Keyboard Input      */
-/************************************/
-int A_Console_Render_Manager::Wait_Keyboard_Input()
-{
-
-    // Wait
-    return wgetch( m_context->main_window );
 }
 
 
@@ -110,11 +82,20 @@ int A_Console_Render_Manager::Wait_Keyboard_Input()
 /****************************************/
 void A_Console_Render_Manager::Print_Header()
 {
-    // header string
-    std::string header_string = "Console";
+    // Add the main header
+    for( int i=0; i<m_render_state->Get_Cols(); i++ ){
+        m_console_buffer+='-';
+    }
+    m_console_buffer += "\n\r";
+    
+    m_console_buffer += "      Console\n\r";
+    
+    
+    for( int i=0; i<m_render_state->Get_Cols(); i++ ){
+        m_console_buffer+='-';
+    }
+    m_console_buffer += "\n\r";
 
-    // Move to the top-left corner
-    mvwprintw( m_context->main_window, 0, 0, header_string.c_str() );
 
 }
 
@@ -125,7 +106,10 @@ void A_Console_Render_Manager::Print_Header()
 void A_Console_Render_Manager::Print_Main_Content()
 {
 
-
+    // Put blank data here
+    for( int i=0; i<m_render_state->Get_Rows()-6; i++ ){
+        m_console_buffer += "\n\r";
+    }
 
 }
 
@@ -145,14 +129,22 @@ void A_Console_Render_Manager::Print_Footer()
 /********************************/
 void A_Console_Render_Manager::Print_CLI()
 {
-
     // Move the cursor
-    mvwprintw( m_context->main_window,
-               m_render_state->Get_Rows()-2,
-               2,
-               "cmd: " );
-    wprintw( m_context->main_window,
-             m_render_state->Get_Cursor_Text().c_str());
+    std::string output = "   ";
+    output += UTILS::ANSI_GREEN + std::string("cmd: ") + UTILS::ANSI_RESET;
+    std::cout << "Cursor: " << m_render_state->Get_Cursor_Text() << std::endl;
+    m_console_buffer += output + m_render_state->Get_Cursor_Text() + "\n\r";
+
+}
+
+
+/****************************************/
+/*      Build the Console Buffer        */
+/****************************************/
+void A_Console_Render_Manager::Build_Console_Buffer()
+{
+    // Create string
+    m_console_buffer = "";//UTILS::ANSI_CLEARSCREEN;
 
 }
 

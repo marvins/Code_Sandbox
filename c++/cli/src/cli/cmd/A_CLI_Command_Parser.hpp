@@ -13,6 +13,8 @@
 
 // CLI Libraries
 #include "A_CLI_Command.hpp"
+#include "A_CLI_Command_Result.hpp"
+#include "A_CLI_Parser_Command.hpp"
 
 
 namespace CLI{
@@ -32,7 +34,9 @@ class A_CLI_Command_Parser {
         /**
          * @brief Constructor
         */
-        A_CLI_Command_Parser( std::vector<A_CLI_Command> const& command_list );
+        A_CLI_Command_Parser( const std::string&                        regex_split_pattern,
+                              std::vector<A_CLI_Parser_Command> const&  parser_command_list,
+                              std::vector<A_CLI_Command> const&         command_list );
 
         
         /**
@@ -42,16 +46,28 @@ class A_CLI_Command_Parser {
          *
          * @return Command result.
          */
-        A_CLI_Command_Result Evaulate_Command( const std::string& test_str );
-
-
+        A_CLI_Command_Result Evaluate_Command( const std::string& test_str ) const;
+    
+    
     private:
-        
+    
+        /**
+         * @brief Parse the string.
+         */
+        std::vector<std::string> Parse_String( const std::string& test_str )const;
+
+
         /// Class Name
         std::string m_class_name;
 
         /// Command List
         std::vector<A_CLI_Command> m_command_list;
+
+        /// Parser Command List
+        std::vector<A_CLI_Parser_Command> m_parser_command_list;
+
+        /// Regex Split Pattern
+        std::string m_regex_split_pattern;
 
 }; // End of A_CLI_Command_Parser Class
 

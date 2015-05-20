@@ -11,9 +11,12 @@
 // C++ Standard Libraries
 #include <cstring>
 #include <iostream>
+#include <sstream>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <netinet/in.h>
+
+const std::string KEYBOARD_DELETE_KEY = "\033\133\063\176";
 
 namespace CLI{
 
@@ -52,6 +55,13 @@ void A_CLI_Connection_Handler_Socket::Setup_Socket()
     m_sock_fd = socket( AF_INET, SOCK_STREAM, 0 );
     if( m_sock_fd < 0 ){
         std::cerr << "error opening socket" << std::endl;
+        return;
+    }
+
+    // Configure the socket
+    int optionFlag = 1;
+    if( setsockopt( m_sock_fd, SOL_SOCKET, SO_REUSEADDR, (const char*)&optionFlag, sizeof(int)) < 0 ){
+        std::cerr << "error setting SO_REUSEADDR" << std::endl;
         return;
     }
 
@@ -95,14 +105,14 @@ void A_CLI_Connection_Handler_Socket::Close_Socket()
 void A_CLI_Connection_Handler_Socket::Run_Handler()
 {
 
+    // Misc Variables
+    int key;
+
     // Read the socket
     char buffer[256];
     int n;
     std::string input;
     
-    if( this->m_console_render_manager != nullptr ){
-        this->m_console_render_manager->Initialize();
-    }
     
     // Get the length
     socklen_t clilen;
@@ -123,6 +133,12 @@ void A_CLI_Connection_Handler_Socket::Run_Handler()
     write( m_client_fd,"\377\375\042\377\373\001",6);
     write( m_client_fd,"Welcome\n\0", 9);
 
+    // Setup NCUrses for the socket
+    if( this->m_console_render_manager != nullptr ){
+        this->m_console_render_manager->Initialize();
+        this->m_render_state = this->m_console_render_manager->Get_Render_State();
+    }
+    
     // run until time to quit
     while( true ){
     
@@ -132,20 +148,69 @@ void A_CLI_Connection_Handler_Socket::Run_Handler()
         }
 
 
-        // Render the screen
-        this->m_console_render_manager->Refresh();
         
         // Check keyboard value
         n = read( m_client_fd, buffer, 255 );
+        if( n == 0 ){
+            std::cerr << "socket closed." << std::endl;
+            break;
+        }
         if (n < 0){
             std::cerr << "error reading the socket" << std::endl;
         }
         
         // Check the buffer
         input = std::string(buffer).substr(0,n);
-        std::cout << "Input: <" << input << ">" << std::endl;
-        if( input == "q" ){
-            m_is_running = false;
+        
+        // Process the text
+        if( input.size() > 1 ){
+            
+            // Check Delete Key
+            if( input == KEYBOARD_DELETE_KEY ){
+                this->m_render_state->Process_Input( KEY_DC );
+            }
+            
+            
+            // Otherwise, there was an error
+            else{
+                std::cerr << "Warning, data is larger than expected. Size: " << input.size() << std::endl;
+                for( int i=0; i<input.size(); i++ ){
+                    std::cout << i << " : " << (int)input[i] << std::endl;
+                }
+                continue;
+            }
+        }
+        else{
+            
+            // cast the key
+            key = input[0];
+
+            // Check if enter
+            if( key == 27 || key == 13 || key == 10 ){
+                this->Process_Command();
+            }
+            
+            // Otherwise, add the key
+            else{
+                this->m_render_state->Process_Input( key );
+            }
+        }
+
+        
+        // Render the screen
+        this->m_console_render_manager->Refresh();
+
+        // Get the buffer string
+        std::string temp_buffer = m_console_render_manager->Get_Console_Buffer();
+        //std::cout << temp_buffer << std::endl;
+        int max_off = 200;
+        int current_offset;
+        int startx = 0;
+        int numsteps = temp_buffer.size()/200;
+        for( int j=0; j<=numsteps; j++ ){
+            current_offset = std::min( (int)temp_buffer.size(), startx + max_off);
+            write( m_client_fd, temp_buffer.substr(startx, current_offset).c_str(), current_offset - startx);
+            startx += max_off;
         }
 
         // Check if time to exit
@@ -157,8 +222,10 @@ void A_CLI_Connection_Handler_Socket::Run_Handler()
 
     // Set the running flag
     m_is_running = false;
-    
+    std::cout << "Exiting" << std::endl;
 
+    // Close Socket
+    Close_Socket();
 
 }
 

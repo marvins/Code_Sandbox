@@ -6,7 +6,7 @@
           - LOCAL  : Connect via stdin
           - SOCKET : Connect via network
     -->
-    <connection-type value="LOCAL" />
+    <connection-type value="SOCKET" />
 
     <!-- Local CLI Configuration -->
     <local-configuration>

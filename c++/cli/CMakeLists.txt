@@ -41,12 +41,15 @@ set( CLI_SOURCES
      src/cli/A_CLI_Manager_Configuration.cpp
      src/cli/A_CLI_Manager_Factory.cpp
      src/cli/A_Console_Render_Manager.cpp
+     src/cli/A_Console_Render_Manager_NCurses.cpp
      src/cli/A_Console_Render_State.cpp
      src/cli/CLIConnectionType.cpp
      src/cli/cmd/A_CLI_Command.cpp
      src/cli/cmd/A_CLI_Command_Argument.cpp
      src/cli/cmd/A_CLI_Command_Parser.cpp
      src/cli/cmd/A_CLI_Command_Parser_Factory.cpp
+     src/cli/cmd/A_CLI_Command_Result.cpp
+     src/cli/cmd/A_CLI_Parser_Command.cpp
      src/cli/cmd/CLICommandArgumentType.cpp
      src/cli/cmd/CLICommandParseStatus.cpp
      src/thirdparty/ncurses/NCurses_Utilities.cpp
@@ -67,18 +70,23 @@ set( CLI_HEADERS
      src/cli/A_CLI_Manager_Configuration.hpp
      src/cli/A_CLI_Manager_Factory.hpp
      src/cli/A_Console_Render_Manager.hpp
+     src/cli/A_Console_Render_Manager_NCurses.hpp
      src/cli/A_Console_Render_State.hpp
      src/cli/CLIConnectionType.hpp
      src/cli/cmd/A_CLI_Command.hpp
      src/cli/cmd/A_CLI_Command_Argument.hpp
      src/cli/cmd/A_CLI_Command_Parser.hpp
      src/cli/cmd/A_CLI_Command_Parser_Factory.hpp
+     src/cli/cmd/A_CLI_Command_Result.hpp
+     src/cli/cmd/A_CLI_Parser_Command.hpp
+     src/cli/cmd/CLICommandArgumentType.cpp
      src/cli/cmd/CLICommandArgumentType.hpp
      src/cli/cmd/CLICommandParseStatus.hpp
      src/thirdparty/ncurses/NCurses_Utilities.hpp
      src/thirdparty/pugixml.hpp
      src/thirdparty/pugixml/src/pugixml.hpp
      src/thirdparty/pugixml/src/pugiconfig.hpp
+     src/utils/ANSI_Utilities.hpp
 )
 
      

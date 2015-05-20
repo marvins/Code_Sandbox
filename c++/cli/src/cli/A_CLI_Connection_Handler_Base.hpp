@@ -75,10 +75,17 @@ class A_CLI_Connection_Handler_Base{
         {
             m_cli_command_parser = cli_command_parser;
         }
+        
 
 
     protected:
         
+        /**
+         * @brief Process the argument
+         */
+        virtual void Process_Command();
+        
+
         /**
          * @brief Run the handler
          */

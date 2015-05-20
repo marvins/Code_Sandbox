@@ -31,6 +31,43 @@ A_CLI_Connection_Handler_Base::~A_CLI_Connection_Handler_Base()
 }
 
 
+/**************************************/
+/*        Process the Command         */
+/**************************************/
+void A_CLI_Connection_Handler_Base::Process_Command()
+{
+    // Check the command
+    CMD::A_CLI_Command_Result result = m_cli_command_parser->Evaluate_Command( this->m_render_state->Get_Cursor_Text() );
+
+    //  Look for CLI Shutdown
+    if( result.Get_Parse_Status() == CMD::CLICommandParseStatus::CLI_SHUTDOWN ){
+        m_is_running = false;
+    }
+
+    
+    // Look for CLI Help
+    else if( result.Get_Parse_Status() == CMD::CLICommandParseStatus::CLI_HELP ){
+        this->m_render_state->Set_Help_Mode( true );
+    }
+
+
+    // Otherwise, handle command
+    else if( result.Get_Parse_Status() == CMD::CLICommandParseStatus::VALID ){
+
+    }
+
+    // Otherwise, error
+    else{
+        
+    }
+
+    
+    // Clear the cursor    
+    this->m_render_state->Clear_Cursor_Text();
+
+}
+
+
 /***************************************/
 /*          Start the Handler          */
 /***************************************/

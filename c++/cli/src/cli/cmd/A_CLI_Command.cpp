@@ -32,6 +32,18 @@ A_CLI_Command::A_CLI_Command( const std::string& command_name,
 }
 
 
+/**************************************/
+/*        Check if Name Match         */
+/**************************************/
+bool A_CLI_Command::Is_Name_Match( const std::string& command_name )const
+{
+    if( m_command_name == command_name ){
+        return true;
+    }
+    return false;
+}
+
+
 
 } // End of CMD
 } // End of CLI
