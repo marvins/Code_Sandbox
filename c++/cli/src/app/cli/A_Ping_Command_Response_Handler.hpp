@@ -1,31 +1,31 @@
 /**
- * @file    A_Demo_Command_Response_Handler.hpp
+ * @file    A_Ping_Command_Response_Handler.hpp
  * @author  Marvin Smith
  * @date    5/20/2015
  */
-#ifndef __CLI_A_DEMO_COMMAND_RESPONSE_HANDLER_HPP__
-#define __CLI_A_DEMO_COMMAND_RESPONSE_HANDLER_HPP__
+#ifndef __CLI_A_PING_COMMAND_RESPONSE_HANDLER_HPP__
+#define __CLI_A_PING_COMMAND_RESPONSE_HANDLER_HPP__
 
 // CLI Libraries
 #include "A_Command_Response_Handler_Base.hpp"
 
 
 /**
- * @class A_Demo_Command_Response_Handler
+ * @class A_Ping_Command_Response_Handler
  */
-class A_Demo_Command_Response_Handler : public CLI::A_Command_Response_Handler_Base 
+class A_Ping_Command_Response_Handler : public CLI::A_Command_Response_Handler_Base 
 {
 
     public:
         
         /// Pointer Type
-        typedef std::shared_ptr<A_Demo_Command_Response_Handler> ptr_t;
+        typedef std::shared_ptr<A_Ping_Command_Response_Handler> ptr_t;
 
 
         /**
          * @brief Constructor
          */
-        A_Demo_Command_Response_Handler();
+        A_Ping_Command_Response_Handler();
 
 
         /**
@@ -40,7 +40,7 @@ class A_Demo_Command_Response_Handler : public CLI::A_Command_Response_Handler_B
         virtual void Process_Command( const CLI::CMD::A_CLI_Command_Result& command );
 
 
-}; // End of A_Demo_Command_Response_Handler Class
+}; // End of A_Ping_Command_Response_Handler Class
 
 
 #endif

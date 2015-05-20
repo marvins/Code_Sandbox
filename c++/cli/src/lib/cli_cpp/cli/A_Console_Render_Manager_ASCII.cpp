@@ -76,8 +76,15 @@ void A_Console_Render_Manager_ASCII::Finalize()
 /********************************/
 void A_Console_Render_Manager_ASCII::Refresh()
 {
+
+    // If help is selected, then use that buffer
+    if( m_render_state->Get_Help_Mode() == true ){
+        return; 
+    }
+
+
     // Draw the header
-    Print_Header();
+    Print_Header( m_console_buffer );
 
     
     // Draw the main context
@@ -98,11 +105,11 @@ void A_Console_Render_Manager_ASCII::Refresh()
 /****************************************/
 /*          Print the header            */
 /****************************************/
-void A_Console_Render_Manager_ASCII::Print_Header()
+void A_Console_Render_Manager_ASCII::Print_Header( std::vector<std::string>& print_buffer )
 {
     
     // Set the header
-    m_console_buffer[0] = UTILS::ANSI_CLEARSCREEN + "     " + m_cli_title + BUFFER_NEWLINE;
+    print_buffer[0] = UTILS::ANSI_CLEARSCREEN + "     " + m_cli_title + BUFFER_NEWLINE;
 
 }
 
@@ -236,12 +243,27 @@ void A_Console_Render_Manager_ASCII::Build_Console_Buffer()
 {
     // Allocate buffer
     m_console_buffer.resize(m_window_rows, "\n\r");
-
-
     m_console_buffer[0].insert(0, UTILS::ANSI_CLEARSCREEN);
+}
 
+
+/*****************************************/
+/*      Build the General Help Buffer    */
+/*****************************************/
+void A_Console_Render_Manager_ASCII::Build_Help_General_Buffer()
+{
+
+    // Allocate Buffer
+    m_help_general_buffer.resize(m_window_rows, "\n\r");
+    m_help_general_buffer[0].insert(0, UTILS::ANSI_CLEARSCREEN);
+
+    // Create the main text
+    Print_Header( m_help_general_buffer );
+
+    // Iterate over all commands
 
 }
+
 
 
 } // End of CLI Namespace

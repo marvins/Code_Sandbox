@@ -111,7 +111,7 @@ class A_Console_Render_Manager_ASCII : public A_Console_Render_Manager {
         /**
          * @brief Print the header
          */
-        virtual void Print_Header();
+        virtual void Print_Header( std::vector<std::vector>& print_buffer );
         
 
         /**
@@ -140,6 +140,12 @@ class A_Console_Render_Manager_ASCII : public A_Console_Render_Manager {
         void Build_Console_Buffer();
 
 
+        /**
+         * @brief Build the help main buffer
+         */
+        void Build_Help_General_Buffer();
+
+
         /// Class Name
         std::string m_class_name;
 
@@ -150,7 +156,9 @@ class A_Console_Render_Manager_ASCII : public A_Console_Render_Manager {
 
         /// Console Buffer
         std::vector<std::string> m_console_buffer;
-
+        
+        /// General Help Buffer
+        std::vector<std::string> m_help_general_buffer;
 
         /// Window Size
         int m_window_rows;

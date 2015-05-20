@@ -9,6 +9,12 @@
 #   Configure C++11
 set( CMAKE_CXX_FLAGS "-std=c++11 -Wall" )
 
+#---------------------------------#
+#-     Change the Output Path    -#
+#---------------------------------#
+SET( EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin )
+SET( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
+
 
 #----------------------------------#
 #-    Define our demo sources     -#
@@ -24,6 +30,10 @@ set( CLI_APP_HEADERS
 
 )
 
+#----------------------------------#
+#-      Include the library       -#
+#----------------------------------#
+include_directories(../lib)
 
 #----------------------------------#
 #-      Build the Executable      -#
@@ -38,8 +48,7 @@ add_executable( cli-network-tester
 #-      Link Required Libraries      -#
 #-------------------------------------#
 target_link_libraries( cli-network-tester 
-                       ${CLI_APP_SOURCES}
-                       ${CLI_APP_HEADERS}
+                       cli_cpp
                      )
 
 

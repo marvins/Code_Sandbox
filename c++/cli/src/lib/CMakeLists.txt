@@ -8,6 +8,12 @@
 #   Configure C++11
 set( CMAKE_CXX_FLAGS "-std=c++11 -Wall" )
 
+#---------------------------------#
+#-     Change the Output Path    -#
+#---------------------------------#
+SET( EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin )
+SET( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
+
 #-------------------------------------#
 #-     Find Boost C++ Libraries      -#
 #-------------------------------------#
@@ -54,7 +60,7 @@ set( CLI_CPP_SOURCES
      cli_cpp/cli/CLIConnectionType.cpp
      cli_cpp/cli/cmd/A_CLI_Command.cpp
      cli_cpp/cli/cmd/A_CLI_Command_Argument.cpp
-     cli/cmd/A_CLI_Command_Parser.cpp
+     cli_cpp/cli/cmd/A_CLI_Command_Parser.cpp
      cli_cpp/cli/cmd/A_CLI_Command_Parser_Factory.cpp
      cli_cpp/cli/cmd/A_CLI_Command_Result.cpp
      cli_cpp/cli/cmd/A_CLI_Parser_Command.cpp

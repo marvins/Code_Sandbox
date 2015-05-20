@@ -5,6 +5,10 @@
 */
 #include "A_CLI_Connection_Handler_Base.hpp"
 
+// C++ Standard Libraries
+#include <iostream>
+
+
 namespace CLI{
 
 
@@ -46,23 +50,26 @@ void A_CLI_Connection_Handler_Base::Process_Command()
     //  Look for CLI Shutdown
     if( result.Get_Parse_Status() == CMD::CLICommandParseStatus::CLI_SHUTDOWN ){
         m_is_running = false;
+        std::cout << "shutdown requested" << std::endl;
     }
 
     
     // Look for CLI Help
     else if( result.Get_Parse_Status() == CMD::CLICommandParseStatus::CLI_HELP ){
         this->m_render_state->Set_Help_Mode( true );
+        std::cout << "help requested" << std::endl;
     }
 
 
     // Otherwise, handle command
     else if( result.Get_Parse_Status() == CMD::CLICommandParseStatus::VALID ){
         m_cli_command_queue->Push_Command( result );
+        std::cout << "valid command" << std::endl;
     }
 
     // Otherwise, error
     else{
-        
+        std::cout << "invalid command" << std::endl;
     }
 
     
