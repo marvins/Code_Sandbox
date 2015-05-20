@@ -34,35 +34,35 @@ include_directories(${CURSES_INCLUDE_DIR})
 #-       Define the Library Sources         -#
 #--------------------------------------------#
 set( CLI_CPP_SOURCES 
-     cli/A_CLI_Command_Queue.cpp
-     cli/A_CLI_Configuration_File_Parser.cpp
-     cli/A_CLI_Connection_Handler_Base.cpp
-     cli/A_CLI_Connection_Handler_Base_Config.cpp
-     cli/A_CLI_Connection_Handler_Local.cpp
-     cli/A_CLI_Connection_Handler_Local_Config.cpp
-     cli/A_CLI_Connection_Handler_Socket.cpp
-     cli/A_CLI_Connection_Handler_Socket_Config.cpp
-     cli/A_CLI_Manager.cpp
-     cli/A_CLI_Manager_Configuration.cpp
-     cli/A_CLI_Manager_Factory.cpp
-     cli/A_Command_History_Entry.cpp
-     cli/A_Command_Response_Handler_Base.cpp
-     cli/A_Console_Render_Manager.cpp
-     cli/A_Console_Render_Manager_ASCII.cpp
-     cli/A_Console_Render_Manager_NCurses.cpp
-     cli/A_Console_Render_State.cpp
-     cli/CLIConnectionType.cpp
-     cli/cmd/A_CLI_Command.cpp
-     cli/cmd/A_CLI_Command_Argument.cpp
+     cli_cpp/cli/A_CLI_Command_Queue.cpp
+     cli_cpp/cli/A_CLI_Configuration_File_Parser.cpp
+     cli_cpp/cli/A_CLI_Connection_Handler_Base.cpp
+     cli_cpp/cli/A_CLI_Connection_Handler_Base_Config.cpp
+     cli_cpp/cli/A_CLI_Connection_Handler_Local.cpp
+     cli_cpp/cli/A_CLI_Connection_Handler_Local_Config.cpp
+     cli_cpp/cli/A_CLI_Connection_Handler_Socket.cpp
+     cli_cpp/cli/A_CLI_Connection_Handler_Socket_Config.cpp
+     cli_cpp/cli/A_CLI_Manager.cpp
+     cli_cpp/cli/A_CLI_Manager_Configuration.cpp
+     cli_cpp/cli/A_CLI_Manager_Factory.cpp
+     cli_cpp/cli/A_Command_History_Entry.cpp
+     cli_cpp/cli/A_Command_Response_Handler_Base.cpp
+     cli_cpp/cli/A_Console_Render_Manager.cpp
+     cli_cpp/cli/A_Console_Render_Manager_ASCII.cpp
+     cli_cpp/cli/A_Console_Render_Manager_NCurses.cpp
+     cli_cpp/cli/A_Console_Render_State.cpp
+     cli_cpp/cli/CLIConnectionType.cpp
+     cli_cpp/cli/cmd/A_CLI_Command.cpp
+     cli_cpp/cli/cmd/A_CLI_Command_Argument.cpp
      cli/cmd/A_CLI_Command_Parser.cpp
-     cli/cmd/A_CLI_Command_Parser_Factory.cpp
-     cli/cmd/A_CLI_Command_Result.cpp
-     cli/cmd/A_CLI_Parser_Command.cpp
-     cli/cmd/CLICommandArgumentType.cpp
-     cli/cmd/CLICommandParseStatus.cpp
-     thirdparty/ncurses/NCurses_Utilities.cpp
-     thirdparty/pugixml/src/pugixml.cpp
-     utils/String_Utilities.cpp
+     cli_cpp/cli/cmd/A_CLI_Command_Parser_Factory.cpp
+     cli_cpp/cli/cmd/A_CLI_Command_Result.cpp
+     cli_cpp/cli/cmd/A_CLI_Parser_Command.cpp
+     cli_cpp/cli/cmd/CLICommandArgumentType.cpp
+     cli_cpp/cli/cmd/CLICommandParseStatus.cpp
+     cli_cpp/thirdparty/ncurses/NCurses_Utilities.cpp
+     cli_cpp/thirdparty/pugixml/src/pugixml.cpp
+     cli_cpp/utils/String_Utilities.cpp
 )
 
 
@@ -70,39 +70,39 @@ set( CLI_CPP_SOURCES
 #-      Define the Library Headers       -#
 #-----------------------------------------#
 set( CLI_CPP_HEADERS
-     cli/A_CLI_Command_Queue.hpp
-     cli/A_CLI_Configuration_File_Parser.hpp
-     cli/A_CLI_Connection_Handler_Base.hpp
-     cli/A_CLI_Connection_Handler_Base_Config.hpp
-     cli/A_CLI_Connection_Handler_Local.hpp
-     cli/A_CLI_Connection_Handler_Local_Config.hpp
-     cli/A_CLI_Connection_Handler_Socket.hpp
-     cli/A_CLI_Connection_Handler_Socket_Config.hpp
-     cli/A_CLI_Manager.hpp
-     cli/A_CLI_Manager_Configuration.hpp
-     cli/A_CLI_Manager_Factory.hpp
-     cli/A_Command_History_Entry.hpp
-     cli/A_Command_Response_Handler_Base.hpp
-     cli/A_Console_Render_Manager.hpp
-     cli/A_Console_Render_Manager_ASCII.hpp
-     cli/A_Console_Render_Manager_NCurses.hpp
-     cli/A_Console_Render_State.hpp
-     cli/CLIConnectionType.hpp
-     cli/cmd/A_CLI_Command.hpp
-     cli/cmd/A_CLI_Command_Argument.hpp
-     cli/cmd/A_CLI_Command_Parser.hpp
-     cli/cmd/A_CLI_Command_Parser_Factory.hpp
-     cli/cmd/A_CLI_Command_Result.hpp
-     cli/cmd/A_CLI_Parser_Command.hpp
-     cli/cmd/CLICommandArgumentType.cpp
-     cli/cmd/CLICommandArgumentType.hpp
-     cli/cmd/CLICommandParseStatus.hpp
-     thirdparty/ncurses/NCurses_Utilities.hpp
-     thirdparty/pugixml.hpp
-     thirdparty/pugixml/src/pugixml.hpp
-     thirdparty/pugixml/src/pugiconfig.hpp
-     utils/ANSI_Utilities.hpp
-     utils/String_Utilities.hpp
+     cli_cpp/cli/A_CLI_Command_Queue.hpp
+     cli_cpp/cli/A_CLI_Configuration_File_Parser.hpp
+     cli_cpp/cli/A_CLI_Connection_Handler_Base.hpp
+     cli_cpp/cli/A_CLI_Connection_Handler_Base_Config.hpp
+     cli_cpp/cli/A_CLI_Connection_Handler_Local.hpp
+     cli_cpp/cli/A_CLI_Connection_Handler_Local_Config.hpp
+     cli_cpp/cli/A_CLI_Connection_Handler_Socket.hpp
+     cli_cpp/cli/A_CLI_Connection_Handler_Socket_Config.hpp
+     cli_cpp/cli/A_CLI_Manager.hpp
+     cli_cpp/cli/A_CLI_Manager_Configuration.hpp
+     cli_cpp/cli/A_CLI_Manager_Factory.hpp
+     cli_cpp/cli/A_Command_History_Entry.hpp
+     cli_cpp/cli/A_Command_Response_Handler_Base.hpp
+     cli_cpp/cli/A_Console_Render_Manager.hpp
+     cli_cpp/cli/A_Console_Render_Manager_ASCII.hpp
+     cli_cpp/cli/A_Console_Render_Manager_NCurses.hpp
+     cli_cpp/cli/A_Console_Render_State.hpp
+     cli_cpp/cli/CLIConnectionType.hpp
+     cli_cpp/cli/cmd/A_CLI_Command.hpp
+     cli_cpp/cli/cmd/A_CLI_Command_Argument.hpp
+     cli_cpp/cli/cmd/A_CLI_Command_Parser.hpp
+     cli_cpp/cli/cmd/A_CLI_Command_Parser_Factory.hpp
+     cli_cpp/cli/cmd/A_CLI_Command_Result.hpp
+     cli_cpp/cli/cmd/A_CLI_Parser_Command.hpp
+     cli_cpp/cli/cmd/CLICommandArgumentType.cpp
+     cli_cpp/cli/cmd/CLICommandArgumentType.hpp
+     cli_cpp/cli/cmd/CLICommandParseStatus.hpp
+     cli_cpp/thirdparty/ncurses/NCurses_Utilities.hpp
+     cli_cpp/thirdparty/pugixml.hpp
+     cli_cpp/thirdparty/pugixml/src/pugixml.hpp
+     cli_cpp/thirdparty/pugixml/src/pugiconfig.hpp
+     cli_cpp/utils/ANSI_Utilities.hpp
+     cli_cpp/utils/String_Utilities.hpp
 )
 
 
