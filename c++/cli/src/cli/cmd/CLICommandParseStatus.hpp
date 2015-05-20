@@ -18,12 +18,13 @@ namespace CMD{
  * @enum CLICommandParseStatus
  */
 enum class CLICommandParseStatus : uint8_t {
-    UNKNOWN           = 0 /**< Unknown problem. Avoid this setting.*/,
-    VALID             = 1 /**< Valid command with valid arguments.*/,
-    NO_COMMAND_FOUND  = 2 /**< No command with a matching name found.*/,
-    CLI_SHUTDOWN      = 3 /**< The user set the parser's expected shutdown command.*/,
-    CLI_HELP          = 4 /**< The user requested help */,
-    INVALID_ARGUMENTS = 5 /**< Problem parsing arguments.*/,
+    UNKNOWN             = 0 /**< Unknown problem. Avoid this setting.*/,
+    VALID               = 1 /**< Valid command with valid arguments.*/,
+    NO_COMMAND_FOUND    = 2 /**< No command with a matching name found.*/,
+    CLI_SHUTDOWN        = 3 /**< The user set the parser's expected shutdown command.*/,
+    CLI_HELP            = 4 /**< The user requested help */,
+    INVALID_ARGUMENTS   = 5 /**< Problem parsing arguments.*/,
+    EXCESSIVE_ARGUMENTS = 6 /**< Too many arguments compared to matching command.*/,
 }; // End of CLICommandParseStatus Enumeration
 
 

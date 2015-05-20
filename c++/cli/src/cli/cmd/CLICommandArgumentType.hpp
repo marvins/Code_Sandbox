@@ -19,7 +19,8 @@ namespace CMD{
 enum class CLICommandArgumentType : uint8_t {
     UNKNOWN = 0,
     STRING  = 1,
-    INT8    = 2,
+    INTEGER = 2,
+    FLOAT   = 3,
 }; // End of CLICommandArgument Enumeration
 
 

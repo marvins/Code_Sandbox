@@ -52,6 +52,21 @@ bool A_CLI_Command::Is_Name_Match( const std::string& command_name )const
 }
 
 
+/************************************/
+/*         Check Arguments          */
+/************************************/
+bool A_CLI_Command::Check_Argument( const int& argument_idx,
+                                    const std::string& test_argument )const
+{
+    // Check the size
+    if( argument_idx >= m_command_argument_list.size() ){
+        return false;
+    }
+
+    // Compare
+    return m_command_argument_list[argument_idx].Is_Valid_Type( test_argument );
+}
+
 
 } // End of CMD
 } // End of CLI

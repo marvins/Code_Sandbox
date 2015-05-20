@@ -9,6 +9,7 @@
 // CLI Libraries
 #include "A_CLI_Command_Queue.hpp"
 #include "A_CLI_Manager_Configuration.hpp"
+#include "A_Command_Response_Handler_Base.hpp"
 #include "A_Console_Render_Manager.hpp"
 #include "../thirdparty/ncurses/NCurses_Utilities.hpp"
 
@@ -66,6 +67,11 @@ class A_CLI_Manager{
         }
 
 
+        /**
+         * @brief Register Command Response Handler.
+         */
+        void Register_Command_Response_Handler( A_Command_Response_Handler_Base::ptr_t handler );
+
     private:
 
         /**
@@ -95,6 +101,10 @@ class A_CLI_Manager{
 
         /// Handler Queue
         A_CLI_Command_Queue::ptr_t m_cli_command_queue;
+
+        /// CLI Handler List
+        std::vector<A_Command_Response_Handler_Base::ptr_t> m_cli_command_handlers;
+
 
 }; // End of A_CLI_Manager Class
 

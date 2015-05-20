@@ -16,6 +16,7 @@ find_package( Boost REQUIRED
                 COMPONENTS
                     system
                     filesystem
+                    regex
 )
 
 include_directories(${Boost_INCLUDE_DIRS})
@@ -41,6 +42,7 @@ set( CLI_SOURCES
      src/cli/A_CLI_Manager.cpp
      src/cli/A_CLI_Manager_Configuration.cpp
      src/cli/A_CLI_Manager_Factory.cpp
+     src/cli/A_Command_Response_Handler_Base.cpp
      src/cli/A_Console_Render_Manager.cpp
      src/cli/A_Console_Render_Manager_NCurses.cpp
      src/cli/A_Console_Render_State.cpp
@@ -71,6 +73,7 @@ set( CLI_HEADERS
      src/cli/A_CLI_Manager.hpp
      src/cli/A_CLI_Manager_Configuration.hpp
      src/cli/A_CLI_Manager_Factory.hpp
+     src/cli/A_Command_Response_Handler_Base.hpp
      src/cli/A_Console_Render_Manager.hpp
      src/cli/A_Console_Render_Manager_NCurses.hpp
      src/cli/A_Console_Render_State.hpp
@@ -95,6 +98,8 @@ set( CLI_HEADERS
 #   Define our main files
 set( CLI_DEMO_MAIN
      src/main.cpp
+     src/cli/A_Demo_Command_Response_Handler.hpp
+     src/cli/A_Demo_Command_Response_Handler.cpp
 )
 
 #   Create the Library
@@ -105,7 +110,8 @@ add_library( cli_cpp
 
 target_link_libraries( cli_cpp 
                        ${Boost_LIBRARIES}
-                       ${CURSES_LIBRARIES} )
+                       ${CURSES_LIBRARIES} 
+                       pthread )
 
 
 #   Create the demo application

@@ -56,6 +56,12 @@ class A_CLI_Command_Argument{
         }
         
 
+        /**
+         * @brief Is Valid Type.
+         */
+        bool Is_Valid_Type( const std::string& test_str )const;
+
+
     private:
         
         /// Argument Name

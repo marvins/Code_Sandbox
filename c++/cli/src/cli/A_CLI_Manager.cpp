@@ -88,6 +88,8 @@ void A_CLI_Manager::Disconnect()
 
     // Stop the handler thread
     if( m_handler_thread_running == true ){
+        m_handler_thread_running = false;
+        m_cli_command_queue->Clear();
         m_handler_thread.join();
     }
 
@@ -99,6 +101,7 @@ void A_CLI_Manager::Disconnect()
 /************************************************/
 void A_CLI_Manager::Wait_Shutdown()
 {
+    // Wait for the connection handler to stop
     m_connection_handler->Wait_Shutdown();
 }
 
@@ -131,6 +134,19 @@ void A_CLI_Manager::Process_Command_Results()
 
     // Set flag
     m_handler_thread_running = false;
+}
+
+
+/*******************************************************/
+/*          Register Command Response Handler          */
+/*******************************************************/
+void A_CLI_Manager::Register_Command_Response_Handler( A_Command_Response_Handler_Base::ptr_t handler )
+{
+
+    // Add to the list
+    m_cli_command_handlers.push_back( handler );
+
+
 }
 
 

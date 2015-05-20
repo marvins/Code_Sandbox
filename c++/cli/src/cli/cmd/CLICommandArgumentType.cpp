@@ -18,11 +18,17 @@ std::string CLICommandArgumentTypeToString( CLICommandArgumentType const& arg_ty
         return "STRING";
     }
 
-    // Int8
-    if( arg_type == CLICommandArgumentType::INT8 ){
-        return "INT8";
+
+    // Integer
+    if( arg_type == CLICommandArgumentType::INTEGER ){
+        return "INTEGER";
     }
 
+
+    // Float
+    if( arg_type == CLICommandArgumentType::FLOAT ){
+        return "FLOAT";
+    }
 
     return "UNKNOWN";
 }
@@ -42,11 +48,19 @@ CLICommandArgumentType  StringToCLICommandArgumentType( const std::string& arg_t
     }
 
     // Integer Type
-    if( arg_type == "int8" ||
-        arg_type == "INT8" )
+    if( arg_type == "integer" ||
+        arg_type == "INTEGER" )
     {
-        return CLICommandArgumentType::INT8;
+        return CLICommandArgumentType::INTEGER;
     }
+
+    // Float Type
+    if( arg_type == "float" || 
+        arg_type == "FLOAT" )
+    {
+        return CLICommandArgumentType::FLOAT;
+    }
+
 
     return CLICommandArgumentType::UNKNOWN;
 }

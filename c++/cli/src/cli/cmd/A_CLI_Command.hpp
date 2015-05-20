@@ -72,6 +72,13 @@ class A_CLI_Command{
             return m_command_argument_list;
         }
 
+        
+        /**
+         * @brief Check an argument against the list.
+         */
+        bool Check_Argument( const int& argument_idx,
+                             const std::string& test_argument )const;
+                        
 
         /**
          * @brief Check if Name Match

@@ -5,6 +5,9 @@
 */
 #include "A_CLI_Command_Argument.hpp"
 
+// Boost Libraries
+#include <boost/regex.hpp>
+
 namespace CLI{
 namespace CMD{
 
@@ -32,6 +35,33 @@ A_CLI_Command_Argument::A_CLI_Command_Argument( const std::string&             a
 {
 }
 
+
+/*****************************************/
+/*          Check String Type            */
+/*****************************************/
+bool A_CLI_Command_Argument::Is_Valid_Type( const std::string& test_str )const
+{
+    // String Match
+    boost::smatch what;
+
+    // Compare Integer Types
+    if( m_type == CLICommandArgumentType::INTEGER ){
+        return boost::regex_match( test_str, what, boost::regex("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?")); 
+    }
+
+    // Compare Float Types
+    if( m_type == CLICommandArgumentType::FLOAT ){
+        return boost::regex_match( test_str, what, boost::regex("[-+]?[0-9]*\\.?[0-9]+([eE][-+]?[0-9]+)?")); 
+    }
+
+    // Compare String Types
+    if( m_type == CLICommandArgumentType::STRING ){
+        return true;
+    }
+
+    // Otherwise, there is a problem
+    return false;
+}
 
 } // End of CMD Namespace
 } // End of CLI Namespace

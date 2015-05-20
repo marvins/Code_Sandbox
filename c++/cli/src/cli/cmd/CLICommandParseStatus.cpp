@@ -34,6 +34,11 @@ std::string CLICommandParseStatusToString( CLICommandParseStatus const& status )
         return "INVALID_ARGUMENTS";
     }
 
+    // Excessive Arguments
+    if( status == CLICommandParseStatus::EXCESSIVE_ARGUMENTS ){
+        return "EXCESSIVE_ARGUMENTS";
+    }
+
     // No Command Found
     if( status == CLICommandParseStatus::NO_COMMAND_FOUND ){
         return "NO_COMMAND_FOUND";
@@ -67,6 +72,11 @@ CLICommandParseStatus StringToCLICommandParseStatus( const std::string& status )
     // Invalid ARguments
     if( status == "INVALID_ARGUMENTS" ){
         return CLICommandParseStatus::INVALID_ARGUMENTS;
+    }
+
+    // Excessive Arguments
+    if( status == "EXCESSIVE_ARGUMENTS" ){
+        return CLICommandParseStatus::EXCESSIVE_ARGUMENTS;
     }
 
     // No Command Found

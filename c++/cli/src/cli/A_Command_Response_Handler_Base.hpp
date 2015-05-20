@@ -10,7 +10,7 @@
 #include <memory>
 
 // CLI Libraries
-#include "cmd/A_CLI_Command_Response.hpp"
+#include "cmd/A_CLI_Command_Result.hpp"
 
 namespace CLI{
 
@@ -20,6 +20,10 @@ namespace CLI{
 class A_Command_Response_Handler_Base{
 
     public:
+
+        /// Pointer TYpe
+        typedef std::shared_ptr<A_Command_Response_Handler_Base> ptr_t;
+
         
         /**
          * @brief Constructor
@@ -30,13 +34,13 @@ class A_Command_Response_Handler_Base{
         /**
          * @brief Check if valid
          */
-        virtual bool Is_Supported( const CMD::A_Response_Command& command )const = 0;
+        virtual bool Is_Supported( const CMD::A_CLI_Command_Result& command )const = 0;
 
 
         /**
          * @brief Process COmmand
         */
-        virtual void Process_Command( const CMD::A_Response_Command& command ) = 0;
+        virtual void Process_Command( const CMD::A_CLI_Command_Result& command ) = 0;
 
 }; // End of A_Command_Response_Handler_Base
 

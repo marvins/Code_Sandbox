@@ -62,6 +62,10 @@ class A_CLI_Command_Result{
         static A_CLI_Command_Result  Process_Arguments( const A_CLI_Command&             command,
                                                         const std::vector<std::string>&  arguments );
 
+        /**
+         * @brief Print to a debug string.
+         */
+        std::string To_Debug_String( const int& offset = 0 )const;
 
     private:
     
