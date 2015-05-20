@@ -18,7 +18,9 @@ namespace CMD{
 A_CLI_Command_Argument::A_CLI_Command_Argument()
   : m_name(""),
     m_type(CLICommandArgumentType::UNKNOWN),
-    m_description("")
+    m_description(""),
+    m_default_value(""),
+    m_required(true)
 {
 }
 
@@ -28,10 +30,14 @@ A_CLI_Command_Argument::A_CLI_Command_Argument()
 /**********************************/
 A_CLI_Command_Argument::A_CLI_Command_Argument( const std::string&             arg_name,
                                                 const CLICommandArgumentType&  arg_type,
-                                                const std::string&             arg_description )
+                                                const std::string&             arg_description,
+                                                const bool&                    arg_required,
+                                                const std::string&             arg_default_value )
    : m_name(arg_name),
      m_type(arg_type),
-     m_description(arg_description)
+     m_description(arg_description),
+     m_default_value(arg_default_value),
+     m_required(true)
 {
 }
 

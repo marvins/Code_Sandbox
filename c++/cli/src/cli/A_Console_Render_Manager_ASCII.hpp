@@ -1,10 +1,10 @@
 /**
- * @file    A_Console_Render_Manager.hpp
+ * @file    A_Console_Render_Manager_ASCII.hpp
  * @author  Marvin Smith
  * @date    5/18/2015
  */
-#ifndef __CLI_A_CONSOLE_RENDER_MANAGER_HPP__
-#define __CLI_A_CONSOLE_RENDER_MANAGER_HPP__
+#ifndef __CLI_A_CONSOLE_RENDER_MANAGER_ASCII_HPP__
+#define __CLI_A_CONSOLE_RENDER_MANAGER_ASCII_HPP__
 
 // C++ Standard Libraries
 #include <deque>
@@ -13,6 +13,7 @@
 
 // CLI Libraries
 #include "A_Command_History_Entry.hpp"
+#include "A_Console_Render_Manager.hpp"
 #include "A_Console_Render_State.hpp"
 #include "../thirdparty/ncurses/NCurses_Utilities.hpp"
 
@@ -21,39 +22,45 @@ namespace CLI{
 
 
 /**
- * @class A_Console_Render_Manager
+ * @class A_Console_Render_Manager_ASCII
  */
-class A_Console_Render_Manager{
+class A_Console_Render_Manager_ASCII : public A_Console_Render_Manager {
 
     public:
 
         
         /// Pointer Type
-        typedef std::shared_ptr<A_Console_Render_Manager> ptr_t;
+        typedef std::shared_ptr<A_Console_Render_Manager_ASCII> ptr_t;
         
         
         /**
          * @brief Constructor
          */
-        A_Console_Render_Manager();
+        A_Console_Render_Manager_ASCII();
         
 
         /**
+         * @brief Constructor given width and size
+         */
+        A_Console_Render_Manager_ASCII( const int& window_rows,
+                                  const int& window_cols );
+        
+        /**
          * @brief Initialize
         */
-        virtual void Initialize() = 0;
+        virtual void Initialize();
 
 
         /** 
          * @brief Finalize
         */
-        virtual void Finalize() = 0;
+        virtual void Finalize();
 
 
         /**
          * @brief Refresh the Screen.
          */
-        virtual void Refresh() = 0;
+        virtual void Refresh();
         
 
         /**
@@ -65,22 +72,12 @@ class A_Console_Render_Manager{
 
 
         /**
-         * @brief Wait on keyboard input.
-         *
-         * @return character pressed.
+         * Brief Get the Buffer
          */
-        inline virtual int Wait_Keyboard_Input(){ return -1; }
-        
-        
-        /**
-         * @brief Update the NCurses Context.
-         *
-         * @param[in] ncurses_context new context to register.
-         */
-        virtual void Update_NCurses_Context( NCURSES::An_NCurses_Context::ptr_t context )
-        {
+        inline std::vector<std::string>& Get_Console_Buffer(){
+            return m_console_buffer;
         }
-
+        
         
         /**
          * @brief Set the Title
@@ -111,24 +108,55 @@ class A_Console_Render_Manager{
 
     protected:
         
-        /// CLI Title
-        std::string m_cli_title;
+        /**
+         * @brief Print the header
+         */
+        virtual void Print_Header();
         
-        /// Command History
-        std::deque<A_Command_History_Entry> m_command_history;
 
-        /// Command Counter
-        int m_command_counter;
-        
-        /// Render State
-        A_Console_Render_State::ptr_t m_render_state;
+        /**
+         * @brief Print Main Context.
+         */
+        virtual void Print_Main_Content();
+
+
+        /**
+         * @brief Print Footer
+         */
+        virtual void Print_Footer();
+
+
+        /**
+         * @brief Print CLI
+         */
+        virtual void Print_CLI();
+
 
     private:
+
+        /**
+         * @brief Build the console buffer.
+         */
+        void Build_Console_Buffer();
+
 
         /// Class Name
         std::string m_class_name;
 
-}; // End of A_Console_Render_Manager Class
+
+        /// Render State
+        A_Console_Render_State::ptr_t m_render_state;
+
+
+        /// Console Buffer
+        std::vector<std::string> m_console_buffer;
+
+
+        /// Window Size
+        int m_window_rows;
+        int m_window_cols;
+
+}; // End of A_Console_Render_Manager_ASCII Class
 
 } // End of CLI Namespace
 

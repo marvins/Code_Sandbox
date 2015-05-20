@@ -116,7 +116,9 @@ A_CLI_Command_Parser::ptr_t  A_CLI_Command_Parser_Factory::Initialize( const std
             // Add the next argument
             argument_list.push_back( A_CLI_Command_Argument( arg_node.attribute("name").as_string(),
                                                              StringToCLICommandArgumentType( arg_node.attribute("type").as_string()),
-                                                             arg_node.attribute("description").as_string()));
+                                                             arg_node.attribute("description").as_string(""),
+                                                             arg_node.attribute("required").as_bool(true),
+                                                             arg_node.attribute("default").as_string("")));
 
         }
 

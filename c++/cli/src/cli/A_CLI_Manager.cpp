@@ -8,6 +8,7 @@
 
 // CLI Libraries
 #include "A_CLI_Connection_Handler_Base.hpp"
+#include "A_Console_Render_Manager_ASCII.hpp"
 #include "A_Console_Render_Manager_NCurses.hpp"
 
 // C++ Standard Libraries
@@ -26,10 +27,15 @@ A_CLI_Manager::A_CLI_Manager( A_CLI_Manager_Configuration const& configuration )
     m_ncurses_context(NULL),
     m_handler_thread_running(false)
 {
-    // Grab the console render manager
+
+
+    // Grab the socket console render manager
     if( m_configuration.Get_CLI_Connection_Type() == CLIConnectionType::SOCKET ){
-        m_console_render_manager = std::make_shared<A_Console_Render_Manager>();
+        m_console_render_manager = std::make_shared<A_Console_Render_Manager_ASCII>(m_configuration.Get_Socket_Window_Rows(),
+                                                                                    m_configuration.Get_Socket_Window_Cols());
     }
+
+    // Grab the ncurses console render manager
     else if( m_configuration.Get_CLI_Connection_Type() == CLIConnectionType::LOCAL ){
         m_console_render_manager = std::make_shared<A_Console_Render_Manager_NCurses>();
     }
@@ -118,13 +124,13 @@ void A_CLI_Manager::Process_Command_Results()
     // Set flag
     m_handler_thread_running = true;
 
-    while( true ){
+    while( m_handler_thread_running != false ){
 
         // Pop the next command
         command_result = m_cli_command_queue->Pop_Command();
 
         // Process Command
-        for( int i=0; i<m_cli_command_handlers.size(); i++ ){
+        for( size_t i=0; i<m_cli_command_handlers.size(); i++ ){
             if( m_cli_command_handlers[i]->Is_Supported( command_result ) == true )
             {
                 m_cli_command_handlers[i]->Process_Command( command_result );

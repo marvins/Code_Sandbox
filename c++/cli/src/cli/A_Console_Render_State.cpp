@@ -142,7 +142,7 @@ void A_Console_Render_State::Apply_Backspace()
 void A_Console_Render_State::Apply_Delete()
 {
     // Erase the current character
-    if( m_cli_prompt_text.size() > 0 && m_cli_prompt_cursor_at <= (m_cli_prompt_text.size()-1))
+    if( m_cli_prompt_text.size() > 0 && m_cli_prompt_cursor_at <= ((int)m_cli_prompt_text.size()-1))
     {
         m_cli_prompt_text.erase( m_cli_prompt_cursor_at, 1 );
 

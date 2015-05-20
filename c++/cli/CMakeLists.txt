@@ -42,8 +42,10 @@ set( CLI_SOURCES
      src/cli/A_CLI_Manager.cpp
      src/cli/A_CLI_Manager_Configuration.cpp
      src/cli/A_CLI_Manager_Factory.cpp
+     src/cli/A_Command_History_Entry.cpp
      src/cli/A_Command_Response_Handler_Base.cpp
      src/cli/A_Console_Render_Manager.cpp
+     src/cli/A_Console_Render_Manager_ASCII.cpp
      src/cli/A_Console_Render_Manager_NCurses.cpp
      src/cli/A_Console_Render_State.cpp
      src/cli/CLIConnectionType.cpp
@@ -57,6 +59,7 @@ set( CLI_SOURCES
      src/cli/cmd/CLICommandParseStatus.cpp
      src/thirdparty/ncurses/NCurses_Utilities.cpp
      src/thirdparty/pugixml/src/pugixml.cpp
+     src/utils/String_Utilities.cpp
 )
 
 
@@ -73,8 +76,10 @@ set( CLI_HEADERS
      src/cli/A_CLI_Manager.hpp
      src/cli/A_CLI_Manager_Configuration.hpp
      src/cli/A_CLI_Manager_Factory.hpp
+     src/cli/A_Command_History_Entry.hpp
      src/cli/A_Command_Response_Handler_Base.hpp
      src/cli/A_Console_Render_Manager.hpp
+     src/cli/A_Console_Render_Manager_ASCII.hpp
      src/cli/A_Console_Render_Manager_NCurses.hpp
      src/cli/A_Console_Render_State.hpp
      src/cli/CLIConnectionType.hpp
@@ -92,6 +97,7 @@ set( CLI_HEADERS
      src/thirdparty/pugixml/src/pugixml.hpp
      src/thirdparty/pugixml/src/pugiconfig.hpp
      src/utils/ANSI_Utilities.hpp
+     src/utils/String_Utilities.hpp
 )
 
      

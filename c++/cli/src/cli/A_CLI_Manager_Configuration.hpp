@@ -134,6 +134,40 @@ class A_CLI_Manager_Configuration{
          */
          NCURSES::An_NCurses_Context::ptr_t Create_NCurses_Context()const;
          
+        
+         /**
+          * @brief Get the socket terminal window size
+          */
+         inline int Get_Socket_Window_Rows()const{
+             return m_socket_window_rows;
+         }
+
+         
+         /**
+          * @brief Set the socket terminal window rows
+          */
+         inline void Set_Socket_Window_Rows( const int& socket_window_rows )
+         {
+            m_socket_window_rows = socket_window_rows;
+         }
+
+
+         /**
+          * @brief Get the socket terminal window columns
+          */
+         inline int Get_Socket_Window_Cols()const{
+             return m_socket_window_cols;
+         }
+
+
+         /**
+          * @brief Set the socket terminal window columns
+          */
+         inline void Set_Socket_Window_Cols( const int& socket_window_cols )
+         {
+            m_socket_window_cols = socket_window_cols;
+         }
+
 
          /**
           * @brief Check if the configuration is valid.
@@ -162,6 +196,13 @@ class A_CLI_Manager_Configuration{
             
         /// CLI Command Queue Max Size
         int m_cli_command_queue_max_size;
+
+        /// Socket window rows
+        int m_socket_window_rows;
+
+
+        /// Socket window cols
+        int m_socket_window_cols;
 
 
 }; // End of A_CLI_Manager_Configuration Class

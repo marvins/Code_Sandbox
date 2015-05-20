@@ -22,21 +22,14 @@
     <!-- List of Commands -->
     <commands>
 
-        <!-- System Shutdown Command -->
-        <command>
-            <name value="shutdownSystem" />
-            <description value="Shut down the complete system." />
-        </command>
-
-        <!-- Ping subsystem member -->
+        <!-- Ping Command -->
         <command>
             <name value="ping" />
-            <description value="Testing of command and response mechanisms. Does not affect subsystem operations." />
+            <description value="Do a ping of another network address." />
+            <expect_response value="true" />
             <arguments>
-                <argument name="pingType" type="STRING" description="Enumeration.  Should be either NORMAL or PENDING." />
-                <argument name="statusMessage" type="STRING" description="Text to be returned in the response message from system." />
-                <argument name="responseDelay" type="INT64"  description="Delay before returning response in milliseconds." />
-                <argument name="pendingDelay"  type="INT64"  description="Delay before sending CommandStatus alert." />
+                <argument name="destination"   type="STRING"   description="Address of the destination to ping." required="TRUE" />
+                <argument name="max_attempts"  type="INTEGER"  description="Max number of attempts to try."      required="FALSE" default="1" />
             </arguments>
         </command>
     </commands>

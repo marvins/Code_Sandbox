@@ -24,7 +24,9 @@ namespace CLI{
 A_CLI_Manager_Configuration::A_CLI_Manager_Configuration( CLIConnectionType const& cli_conn_type )
   : m_class_name("A_CLI_Manager_Configuration"),
     m_cli_conn_type(cli_conn_type),
-    m_command_parser(nullptr)
+    m_command_parser(nullptr),
+    m_socket_window_rows(20),
+    m_socket_window_cols(80)
 {
 }
 

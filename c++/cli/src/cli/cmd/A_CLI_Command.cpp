@@ -59,7 +59,7 @@ bool A_CLI_Command::Check_Argument( const int& argument_idx,
                                     const std::string& test_argument )const
 {
     // Check the size
-    if( argument_idx >= m_command_argument_list.size() ){
+    if( argument_idx >= (int)m_command_argument_list.size() ){
         return false;
     }
 

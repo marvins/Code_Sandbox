@@ -30,7 +30,9 @@ class A_CLI_Command_Argument{
         */
         A_CLI_Command_Argument( const std::string&             arg_name,
                                 const CLICommandArgumentType&  arg_type,
-                                const std::string&             arg_description );
+                                const std::string&             arg_description,
+                                const bool&                    arg_required = true,
+                                const std::string&             arg_default_value = "" );
 
         /**
          * @brief Get the Name
@@ -72,6 +74,12 @@ class A_CLI_Command_Argument{
 
         /// Description
         std::string m_description;
+
+        /// Default Value
+        std::string m_default_value;
+
+        /// Required
+        bool m_required;
 
 }; // End of A_CLI_Command_Argument Class
 

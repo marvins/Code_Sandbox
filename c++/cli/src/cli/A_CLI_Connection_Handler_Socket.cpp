@@ -7,6 +7,7 @@
 
 // CLI Libraries
 #include "A_CLI_Connection_Handler_Socket_Config.hpp"
+#include "A_Console_Render_Manager_ASCII.hpp"
 
 // C++ Standard Libraries
 #include <cstring>
@@ -174,10 +175,9 @@ void A_CLI_Connection_Handler_Socket::Run_Handler()
             // Otherwise, there was an error
             else{
                 std::cerr << "Warning, data is larger than expected. Size: " << input.size() << std::endl;
-                for( int i=0; i<input.size(); i++ ){
+                for( size_t i=0; i<input.size(); i++ ){
                     std::cout << i << " : " << (int)input[i] << std::endl;
                 }
-                continue;
             }
         }
         else{
@@ -201,16 +201,11 @@ void A_CLI_Connection_Handler_Socket::Run_Handler()
         this->m_console_render_manager->Refresh();
 
         // Get the buffer string
-        std::string temp_buffer = m_console_render_manager->Get_Console_Buffer();
-        //std::cout << temp_buffer << std::endl;
-        int max_off = 200;
-        int current_offset;
-        int startx = 0;
-        int numsteps = temp_buffer.size()/200;
-        for( int j=0; j<=numsteps; j++ ){
-            current_offset = std::min( (int)temp_buffer.size(), startx + max_off);
-            write( m_client_fd, temp_buffer.substr(startx, current_offset).c_str(), current_offset - startx);
-            startx += max_off;
+        std::vector<std::string>& buffer_data = std::dynamic_pointer_cast<A_Console_Render_Manager_ASCII>(m_console_render_manager)->Get_Console_Buffer();
+       
+        // Write each line to the socket
+        for( int i=0; i<buffer_data.size(); i++ ){
+            write( m_client_fd, buffer_data[i].c_str(), buffer_data[i].size() );
         }
 
         // Check if time to exit
@@ -222,7 +217,6 @@ void A_CLI_Connection_Handler_Socket::Run_Handler()
 
     // Set the running flag
     m_is_running = false;
-    std::cout << "Exiting" << std::endl;
 
     // Close Socket
     Close_Socket();

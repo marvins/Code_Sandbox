@@ -100,6 +100,10 @@ void A_CLI_Configuration_File_Parser::Parse_Configuration_File()
         // Create the configuration
         m_connection_handler_config = std::make_shared<A_CLI_Connection_Handler_Socket_Config>( portno );
         m_current_configuration.Set_CLI_Connection_Handler_Config( m_connection_handler_config );
+
+        // set the window size
+        m_current_configuration.Set_Socket_Window_Cols( socket_config_node.child("window-size").attribute("cols").as_int(100));
+        m_current_configuration.Set_Socket_Window_Rows( socket_config_node.child("window-size").attribute("rows").as_int(20));
     }
 
     // Get the Command Parser config file

@@ -55,7 +55,7 @@ A_CLI_Command_Result  A_CLI_Command_Result::Process_Arguments( const A_CLI_Comma
 {
 
     //  Iterate over arguments
-    for( int arg=0; arg < arguments.size(); arg++ )
+    for( size_t arg=0; arg < arguments.size(); arg++ )
     {
         // Check the types
         if( command.Check_Argument( arg, arguments[arg] ) == false ){
@@ -100,7 +100,7 @@ std::string A_CLI_Command_Result::To_Debug_String( const int& offset )const
     sin << gap << "    Command Name: " << m_command.Get_Name() << "\n";
     sin << gap << "    Command Desc: " << m_command.Get_Description() << "\n";
     sin << gap << "    Command Args: "; 
-    for( int i=0; i<m_command.Get_Argument_List().size(); i++ ){
+    for( size_t i=0; i<m_command.Get_Argument_List().size(); i++ ){
         sin << gap << "       Argument " << i << " : Name : " << m_command.Get_Argument_List()[i].Get_Name() << "\n";
         sin << gap << "                              Type : " << CMD::CLICommandArgumentTypeToString(m_command.Get_Argument_List()[i].Get_Type()) << "\n";
         sin << gap << "                              Desc : " << m_command.Get_Argument_List()[i].Get_Description() << "\n";
