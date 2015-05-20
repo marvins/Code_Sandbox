@@ -87,6 +87,16 @@ class A_Console_Render_Manager{
         {
         }
 
+        
+        /**
+         * @brief Set the Title
+         *
+         * @param[in] cli_title
+        */
+        inline virtual void Set_CLI_Title( const std::string& cli_title )
+        {
+            m_cli_title = cli_title;
+        }
 
 
 
@@ -95,25 +105,29 @@ class A_Console_Render_Manager{
         /**
          * @brief Print the header
          */
-        void Print_Header();
+        virtual void Print_Header();
         
 
         /**
          * @brief Print Main Context.
          */
-        void Print_Main_Content();
+        virtual void Print_Main_Content();
 
 
         /**
          * @brief Print Footer
          */
-        void Print_Footer();
+        virtual void Print_Footer();
 
 
         /**
          * @brief Print CLI
          */
-        void Print_CLI();
+        virtual void Print_CLI();
+
+
+        /// CLI Title
+        std::string m_cli_title;
 
     private:
 

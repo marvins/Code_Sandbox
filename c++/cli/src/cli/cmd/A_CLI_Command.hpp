@@ -25,6 +25,12 @@ class A_CLI_Command{
     public:
         
         /**
+         * @brief Default Constructor
+        */
+        A_CLI_Command();
+
+
+        /**
          * @brief Constructor
         */
         A_CLI_Command( const std::string&                         command_name,

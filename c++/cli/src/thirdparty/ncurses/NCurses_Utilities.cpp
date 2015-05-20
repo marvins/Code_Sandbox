@@ -51,24 +51,16 @@ void Initialize( An_NCurses_Context::ptr_t  context )
         std::cout << "warning: context is null" << std::endl;
         return;
     }
-
-    // Create the screen
-    context->screen  = newterm( context->tty_fd, 
-                                context->tty_in,
-                                context->tty_out );
+    
+    // Initialize
+    initscr();
 
     // Clear the window
-    wclear( context->main_window );
+    clear();
     noecho();
 
-    // Setup colors
-    
-
-    // Create the window
-    context->main_window = newwin( LINES, COLS, 0, 0 );
-
     // Set the keyboard
-    keypad( context->main_window, TRUE );
+    keypad( stdscr, TRUE );
 }
 
 
@@ -86,18 +78,6 @@ void Finalize( An_NCurses_Context::ptr_t   context )
     
     // End the window
     endwin();
-
-    // Delete the window
-    if( context->main_window != NULL && context->main_window != nullptr )
-    {
-        delwin( context->main_window );
-    }
-
-    // Delete the screen
-    if( context->screen != NULL && context->screen != nullptr )
-    {
-        delscreen( context->screen );
-    }
 
 }
 

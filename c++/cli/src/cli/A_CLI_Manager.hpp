@@ -7,6 +7,7 @@
 #define __CLI_A_CLI_MANAGER_HPP__
 
 // CLI Libraries
+#include "A_CLI_Command_Queue.hpp"
 #include "A_CLI_Manager_Configuration.hpp"
 #include "A_Console_Render_Manager.hpp"
 #include "../thirdparty/ncurses/NCurses_Utilities.hpp"
@@ -66,6 +67,12 @@ class A_CLI_Manager{
 
 
     private:
+
+        /**
+         * @brief Process Command Result Messages
+        */
+        void Process_Command_Results();
+
         
         /// Class Name
         std::string m_class_name;
@@ -76,14 +83,18 @@ class A_CLI_Manager{
         /// NCurses Context
         NCURSES::An_NCurses_Context::ptr_t m_ncurses_context;
 
-        /// Management Thread
-        std::thread m_console_thread;
-
         /// CLI Connection Handler
         A_CLI_Connection_Handler_Base::ptr_t m_connection_handler;
 
         /// Console Render Manager
         A_Console_Render_Manager::ptr_t m_console_render_manager;
+
+        /// Handler Thread
+        std::thread m_handler_thread;
+        std::atomic<bool> m_handler_thread_running;
+
+        /// Handler Queue
+        A_CLI_Command_Queue::ptr_t m_cli_command_queue;
 
 }; // End of A_CLI_Manager Class
 

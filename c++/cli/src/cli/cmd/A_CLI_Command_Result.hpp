@@ -27,6 +27,12 @@ class A_CLI_Command_Result{
         
         /**
          * @brief Constructor
+        */
+        A_CLI_Command_Result();
+
+
+        /**
+         * @brief Constructor
          */
         A_CLI_Command_Result( CLICommandParseStatus const&    parse_status,
                               A_CLI_Command const&            command );

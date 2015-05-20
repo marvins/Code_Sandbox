@@ -20,6 +20,12 @@ class A_CLI_Command_Argument{
     public:
         
         /**
+         * @brief Default Constructor
+        */
+        A_CLI_Command_Argument();
+
+
+        /**
          * @brief Constructor
         */
         A_CLI_Command_Argument( const std::string&             arg_name,
@@ -53,13 +59,13 @@ class A_CLI_Command_Argument{
     private:
         
         /// Argument Name
-        const std::string m_name;
+        std::string m_name;
 
         /// Type
-        const CLICommandArgumentType m_type;
+        CLICommandArgumentType m_type;
 
         /// Description
-        const std::string m_description;
+        std::string m_description;
 
 }; // End of A_CLI_Command_Argument Class
 

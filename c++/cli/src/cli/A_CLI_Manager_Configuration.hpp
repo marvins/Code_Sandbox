@@ -91,6 +91,43 @@ class A_CLI_Manager_Configuration{
 
 
         /**
+         * @brief Set the CLI Title.
+         *
+         * @return CLI Title
+        */
+        inline std::string Get_CLI_Title()const{
+            return m_cli_title;
+        }
+
+
+        /**
+         * @brief Set the CLI Title
+         *
+         * @param[in] cli_title
+        */
+        inline void Set_CLI_Title( const std::string& cli_title ){
+            m_cli_title = cli_title;
+        }
+
+
+        /**
+         * @brief Get the CLI Command Queue Max Size
+        */
+        inline int Get_CLI_Command_Queue_Max_Size()const{
+            return m_cli_command_queue_max_size;
+        }
+
+
+        /**
+         * @brief Set the CLI Command Queue Max Size
+        */
+        inline void Set_CLI_Command_Queue_Max_Size( const int& cli_command_queue_max_size )
+        {
+            m_cli_command_queue_max_size = cli_command_queue_max_size;
+        }
+
+
+        /**
          * @brief Create NCurses Context.
          *
          * @return NCurses Context.
@@ -120,6 +157,13 @@ class A_CLI_Manager_Configuration{
         /// Command Parser
         CMD::A_CLI_Command_Parser::ptr_t m_command_parser;
         
+        /// Command-Line Title
+        std::string m_cli_title;
+            
+        /// CLI Command Queue Max Size
+        int m_cli_command_queue_max_size;
+
+
 }; // End of A_CLI_Manager_Configuration Class
 
 

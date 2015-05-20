@@ -51,6 +51,14 @@ class A_Console_Render_State{
 
 
         /**
+         * @brief Get the Cursor Position
+         */
+        inline virtual int Get_Cursor_Pos()const{
+            return m_cli_prompt_cursor_at;
+        }
+
+
+        /**
          * @brief Get the cursor
          */
         inline std::string Get_Cursor_Text()const{
@@ -106,6 +114,18 @@ class A_Console_Render_State{
          * @brief Apply Delete
          */
         void Apply_Delete();
+        
+
+        /**
+         * @brief Apply Left Key
+        */
+        void Apply_Left_Key();
+
+
+        /**
+         * @brief Apply Right Key
+        */
+        void Apply_Right_Key();
 
 
         /// Connection Type
@@ -119,6 +139,7 @@ class A_Console_Render_State{
 
         /// CLI Cursor Position
         int m_cli_prompt_cursor_tail;
+        int m_cli_prompt_cursor_at;
 
         /// Window Rows
         int m_window_rows;

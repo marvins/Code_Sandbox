@@ -30,6 +30,7 @@ include_directories(${CURSES_INCLUDE_DIR})
 
 #   Define our sources
 set( CLI_SOURCES
+     src/cli/A_CLI_Command_Queue.cpp
      src/cli/A_CLI_Configuration_File_Parser.cpp
      src/cli/A_CLI_Connection_Handler_Base.cpp
      src/cli/A_CLI_Connection_Handler_Base_Config.cpp
@@ -59,6 +60,7 @@ set( CLI_SOURCES
 
 #   Define our headers
 set( CLI_HEADERS
+     src/cli/A_CLI_Command_Queue.hpp
      src/cli/A_CLI_Configuration_File_Parser.hpp
      src/cli/A_CLI_Connection_Handler_Base.hpp
      src/cli/A_CLI_Connection_Handler_Base_Config.hpp

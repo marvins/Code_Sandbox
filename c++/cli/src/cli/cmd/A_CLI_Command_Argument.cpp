@@ -12,6 +12,17 @@ namespace CMD{
 /**********************************/
 /*          Constructor           */
 /**********************************/
+A_CLI_Command_Argument::A_CLI_Command_Argument()
+  : m_name(""),
+    m_type(CLICommandArgumentType::UNKNOWN),
+    m_description("")
+{
+}
+
+
+/**********************************/
+/*          Constructor           */
+/**********************************/
 A_CLI_Command_Argument::A_CLI_Command_Argument( const std::string&             arg_name,
                                                 const CLICommandArgumentType&  arg_type,
                                                 const std::string&             arg_description )

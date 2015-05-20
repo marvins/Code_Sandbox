@@ -12,6 +12,15 @@ namespace CMD{
 /*************************************/
 /*            Constructor            */
 /*************************************/
+A_CLI_Command_Result::A_CLI_Command_Result()
+  : m_parse_status( CLICommandParseStatus::UNKNOWN )
+{
+}
+
+
+/*************************************/
+/*            Constructor            */
+/*************************************/
 A_CLI_Command_Result::A_CLI_Command_Result( CLICommandParseStatus const&  parse_status,
                                             A_CLI_Command const&          command)
   : m_parse_status(parse_status),

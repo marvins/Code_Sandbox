@@ -40,7 +40,7 @@ void A_Console_Render_State::Process_Input( const int& input )
     // Process commands over the socket
     if( m_connection_type == CLIConnectionType::SOCKET ){
         
-        // Check for backspace
+        // Check for backspace on socket
         if( input == 127 ){
             Apply_Backspace();
             return;
@@ -58,7 +58,7 @@ void A_Console_Render_State::Process_Input( const int& input )
     else{
 
         // check for backspace
-        if( input == KEY_BACKSPACE ){
+        if( input == KEY_BACKSPACE || input == 127 ){
             Apply_Backspace();
             return;
         }
@@ -68,6 +68,18 @@ void A_Console_Render_State::Process_Input( const int& input )
             Apply_Delete();
             return;
         }
+
+        // Check for left-key
+        else if( input == KEY_LEFT ){
+            Apply_Left_Key();
+            return;
+        }
+
+        // Check for right-key
+        else if( input == KEY_RIGHT ){
+            Apply_Right_Key();
+            return;
+        }
     }
 
     // Otherwise, add character to string
@@ -75,6 +87,7 @@ void A_Console_Render_State::Process_Input( const int& input )
 
     // increment head
     m_cli_prompt_cursor_head++;
+    m_cli_prompt_cursor_at++;
 
 }
 
@@ -101,6 +114,7 @@ void A_Console_Render_State::Clear_Cursor_Text()
     // Reset the cursors
     m_cli_prompt_cursor_head = 0;
     m_cli_prompt_cursor_tail = 0;
+    m_cli_prompt_cursor_at   = 0;
 }
 
 
@@ -109,12 +123,16 @@ void A_Console_Render_State::Clear_Cursor_Text()
 /*******************************/
 void A_Console_Render_State::Apply_Backspace()
 {
-    // Avoid going into negative space
-    m_cli_prompt_cursor_head = std::max( 0, m_cli_prompt_cursor_head-1);
         
     // Erase the current character
-    if( m_cli_prompt_text.size() > 0 ){
-        m_cli_prompt_text.erase( m_cli_prompt_cursor_head, 1 );
+    if( m_cli_prompt_text.size() > 0 && m_cli_prompt_cursor_at > 0){
+        
+        // Avoid going into negative space
+        m_cli_prompt_cursor_head = std::max( 0, m_cli_prompt_cursor_head-1);
+        m_cli_prompt_cursor_at   = std::max( 0, m_cli_prompt_cursor_at-1);
+        
+        // Delete the character
+        m_cli_prompt_text.erase( m_cli_prompt_cursor_at, 1 );
     }
 }
 
@@ -124,13 +142,34 @@ void A_Console_Render_State::Apply_Backspace()
 void A_Console_Render_State::Apply_Delete()
 {
     // Erase the current character
-    if( m_cli_prompt_text.size() > 0 && m_cli_prompt_cursor_head <= (m_cli_prompt_text.size()-1))
+    if( m_cli_prompt_text.size() > 0 && m_cli_prompt_cursor_at <= (m_cli_prompt_text.size()-1))
     {
-        m_cli_prompt_text.erase( m_cli_prompt_cursor_head, 1 );
+        m_cli_prompt_text.erase( m_cli_prompt_cursor_at, 1 );
+
+        // Back up the cursor
+        m_cli_prompt_cursor_head--;
     }
 }
 
 
+/******************************/
+/*      Apply Right Key       */
+/******************************/
+void A_Console_Render_State::Apply_Left_Key()
+{
+    // Move the head left
+    m_cli_prompt_cursor_at = std::max( m_cli_prompt_cursor_at-1, 0);
 
+}
+
+/******************************/
+/*      Apply Left Key        */
+/******************************/
+void A_Console_Render_State::Apply_Right_Key()
+{
+    // Move the head right
+    m_cli_prompt_cursor_at = std::min( m_cli_prompt_cursor_at+1, (int)m_cli_prompt_text.size()-1);
+}
+    
 
 } // End of CLI Namespace

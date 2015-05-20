@@ -6,7 +6,8 @@
           - LOCAL  : Connect via stdin
           - SOCKET : Connect via network
     -->
-    <connection-type value="SOCKET" />
+    <connection-type value="LOCAL" />
+
 
     <!-- Local CLI Configuration -->
     <local-configuration>
@@ -22,7 +23,14 @@
 
     </socket-configuration>
 
+
     <!-- Command Configuration -->
     <command-configuration path="../data/Command_Configuration.xml" />
+
+    <!-- CLI Name -->
+    <cli>
+        <title value="Command-Line Interface Demo" />
+        <command-queue max_size="100" />
+    </cli>
 
 </cli-manager-configuration>

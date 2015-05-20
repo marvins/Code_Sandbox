@@ -53,7 +53,7 @@ void A_CLI_Connection_Handler_Base::Process_Command()
 
     // Otherwise, handle command
     else if( result.Get_Parse_Status() == CMD::CLICommandParseStatus::VALID ){
-
+        m_cli_command_queue->Push_Command( result );
     }
 
     // Otherwise, error

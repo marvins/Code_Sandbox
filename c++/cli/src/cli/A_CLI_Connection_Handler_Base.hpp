@@ -12,6 +12,7 @@
 #include <thread>
 
 // CLI Libraries
+#include "A_CLI_Command_Queue.hpp"
 #include "A_Console_Render_Manager.hpp"
 #include "cmd/A_CLI_Command_Parser.hpp"
 
@@ -77,6 +78,14 @@ class A_CLI_Connection_Handler_Base{
         }
         
 
+        /**
+         * @brief Update the CLI Command Queue
+        */
+        inline virtual void Update_CLI_Command_Queue( A_CLI_Command_Queue::ptr_t cli_command_queue )
+        {
+            m_cli_command_queue = cli_command_queue;
+        }
+
 
     protected:
         
@@ -105,6 +114,9 @@ class A_CLI_Connection_Handler_Base{
 
         /// CLI Command Parser
         CMD::A_CLI_Command_Parser::ptr_t m_cli_command_parser;
+
+        /// CLI Command Queue
+        A_CLI_Command_Queue::ptr_t m_cli_command_queue;
 
     private:
         

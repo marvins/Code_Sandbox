@@ -42,11 +42,15 @@ void A_CLI_Configuration_File_Parser::Parse_Configuration_File()
 {
 
     /// List of queries
-    const std::string CONNECTION_TYPE_QUERY = "connection-type";
-    const std::string COMMAND_CONFIG_NODE   = "command-configuration";
+    const std::string CONNECTION_TYPE_QUERY   = "connection-type";
+    const std::string COMMAND_CONFIG_NODE     = "command-configuration";
+    const std::string CLI_CONFIG_QUERY        = "cli";
+    const std::string CLI_TITLE_QUERY         = "title";
+    const std::string CLI_COMMAND_QUEUE_QUERY = "command-queue"; 
 
     // Temp Variables
     std::string temp_str;
+    int temp_int;
 
     // Create XML Document
     pugi::xml_document xmldoc;
@@ -109,6 +113,24 @@ void A_CLI_Configuration_File_Parser::Parse_Configuration_File()
 
     // Set the parser
     m_current_configuration.Set_CLI_Command_Parser( CMD::A_CLI_Command_Parser_Factory::Initialize( temp_str ));
+
+    // Grab the CLI Node
+    pugi::xml_node cli_node = root_node.child(CLI_CONFIG_QUERY.c_str());
+
+    // Get the CLI title
+    temp_str = cli_node.child(CLI_TITLE_QUERY.c_str()).attribute("value").as_string();
+    if( temp_str == "" ){
+        temp_str = "Console";
+    }
+    m_current_configuration.Set_CLI_Title( temp_str );
+
+    // Get the CLI Command Queue Max Size
+    temp_int = cli_node.child( CLI_COMMAND_QUEUE_QUERY.c_str()).attribute("max_size").as_int();
+    if( temp_int <= 0 ){
+        std::cerr << "CLI Command Queue Max Size must be > 0" << std::endl;
+        return;
+    }
+    m_current_configuration.Set_CLI_Command_Queue_Max_Size( temp_int );
 
     // Set valid
     m_is_valid = true;

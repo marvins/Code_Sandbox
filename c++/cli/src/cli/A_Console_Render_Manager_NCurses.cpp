@@ -65,12 +65,7 @@ void A_Console_Render_Manager_NCurses::Refresh()
 {
 
     // Clear the window
-    if( m_context->main_window == NULL || 
-        m_context->main_window == nullptr ){
-        std::cerr << "warning: Main Window is still null." << std::endl;
-        return;
-    }
-    wclear( m_context->main_window );
+    clear();
     
     // Draw the header
     Print_Header();
@@ -89,7 +84,7 @@ void A_Console_Render_Manager_NCurses::Refresh()
 
 
     // Refresh the window
-    wrefresh( m_context->main_window );
+    refresh();
 
 }
 
@@ -101,7 +96,7 @@ int A_Console_Render_Manager_NCurses::Wait_Keyboard_Input()
 {
 
     // Wait
-    return wgetch( m_context->main_window );
+    return getch();
 }
 
 
@@ -111,10 +106,10 @@ int A_Console_Render_Manager_NCurses::Wait_Keyboard_Input()
 void A_Console_Render_Manager_NCurses::Print_Header()
 {
     // header string
-    std::string header_string = "Console";
+    std::string header_string = m_cli_title;
 
     // Move to the top-left corner
-    mvwprintw( m_context->main_window, 0, 0, header_string.c_str() );
+    mvprintw( 0, 0, header_string.c_str() );
 
 }
 
@@ -145,15 +140,19 @@ void A_Console_Render_Manager_NCurses::Print_Footer()
 /********************************/
 void A_Console_Render_Manager_NCurses::Print_CLI()
 {
+    // Set the CLI Row
+    int cli_row = m_render_state->Get_Rows()-2;
+    int cli_col = 2;
 
-    // Move the cursor
-    mvwprintw( m_context->main_window,
-               m_render_state->Get_Rows()-2,
-               2,
-               "cmd: " );
-    wprintw( m_context->main_window,
-             m_render_state->Get_Cursor_Text().c_str());
-
+    // Print the Command-Line
+    mvprintw( cli_row, cli_col, "cmd: " );
+    cli_col += 5;
+    
+    // Print the rest
+    printw( m_render_state->Get_Cursor_Text().c_str());
+    
+    // Set the cursor
+    move( cli_row, cli_col + m_render_state->Get_Cursor_Pos() );
 }
 
 
