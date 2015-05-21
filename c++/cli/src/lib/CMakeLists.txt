@@ -6,7 +6,7 @@
 #
 
 #   Configure C++11
-set( CMAKE_CXX_FLAGS "-std=c++11 -Wall" )
+set( CMAKE_CXX_FLAGS "-std=c++11 -Wall -ldl -rdynamic " )
 
 #---------------------------------#
 #-     Change the Output Path    -#
@@ -17,11 +17,13 @@ SET( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 #-------------------------------------#
 #-     Find Boost C++ Libraries      -#
 #-------------------------------------#
+ADD_DEFINITIONS(-DBOOST_LOG_DYN_LINK)
 find_package( Boost REQUIRED
                 COMPONENTS
                     system
                     filesystem
                     regex
+                    log
 )
 
 include_directories( ${Boost_INCLUDE_DIRS})
@@ -69,6 +71,7 @@ set( CLI_CPP_SOURCES
      cli_cpp/thirdparty/ncurses/An_NCurses_Table.cpp
      cli_cpp/thirdparty/ncurses/NCurses_Utilities.cpp
      cli_cpp/thirdparty/pugixml/src/pugixml.cpp
+     cli_cpp/utils/Log_Utilities.cpp
      cli_cpp/utils/String_Utilities.cpp
 )
 
@@ -110,6 +113,7 @@ set( CLI_CPP_HEADERS
      cli_cpp/thirdparty/pugixml/src/pugixml.hpp
      cli_cpp/thirdparty/pugixml/src/pugiconfig.hpp
      cli_cpp/utils/ANSI_Utilities.hpp
+     cli_cpp/utils/Log_Utilities.hpp
      cli_cpp/utils/String_Utilities.hpp
 )
 
@@ -117,7 +121,7 @@ set( CLI_CPP_HEADERS
 #--------------------------------#
 #-      Build the Library       -#
 #--------------------------------#
-add_library( cli_cpp
+add_library( cli_cpp SHARED
              ${CLI_CPP_HEADERS}
              ${CLI_CPP_SOURCES}
 )

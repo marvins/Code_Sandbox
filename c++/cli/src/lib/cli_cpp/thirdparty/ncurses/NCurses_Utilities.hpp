@@ -55,6 +55,12 @@ class An_NCurses_Context{
         FILE* tty_in;
         FILE* tty_out;
 
+        /// Keyboard Timeout
+        bool keyboard_blocking;
+
+        /// Keyboard Timeout
+        int keyboard_timeout_usec;
+
     private:
         
         /// Class name

@@ -1,5 +1,16 @@
 <cli-manager-configuration>
 
+    <!--  Logging Configuration 
+    
+        - Log Levels
+          * info
+          * debug
+          * trace
+    -->
+    <logging enabled="true" 
+             log_path="cli.log"
+             log_level="trace" />
+
     <!-- Type of Connection 
           
           Supported Options:

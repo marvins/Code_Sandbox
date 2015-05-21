@@ -65,7 +65,7 @@ bool A_Console_Render_Manager::Check_Waiting_Command_Response(){
     // Check if recieved
     if( m_waiting_command_response_value->Check_System_Response() ){
         m_waiting_command_response = false;
-        return false;
+        return true;
     }
 
     else{

@@ -17,14 +17,16 @@ namespace CLI{
 /************************************/
 /*          Constructor             */
 /************************************/
-A_Console_Render_State::A_Console_Render_State( CLIConnectionType const& conn_type )
+A_Console_Render_State::A_Console_Render_State( CLIConnectionType const& conn_type,
+                                                A_Command_History::ptr_t command_history )
   : m_connection_type(conn_type),
     m_cli_prompt_text(""),
     m_cli_prompt_cursor_head(0),
     m_cli_prompt_cursor_tail(0),
     m_window_rows(0),
     m_window_cols(0),
-    m_help_mode(false)
+    m_help_mode(false),
+    m_command_history(command_history)
 {
 }
 
@@ -80,6 +82,18 @@ void A_Console_Render_State::Process_Input( const int& input )
             Apply_Right_Key();
             return;
         }
+
+        // Check for up-key
+        else if( input == KEY_UP ){
+            Apply_Up_Key();
+            return;
+        }
+
+        // Check for down-key
+        else if( input == KEY_DOWN ){
+            Apply_Down_Key();
+            return;
+        }
     }
 
     // Otherwise, add character to string
@@ -115,6 +129,10 @@ void A_Console_Render_State::Clear_Cursor_Text()
     m_cli_prompt_cursor_head = 0;
     m_cli_prompt_cursor_tail = 0;
     m_cli_prompt_cursor_at   = 0;
+
+    // reset the history pointer
+    m_command_history_ptr = m_command_history->Size();
+
 }
 
 
@@ -169,6 +187,54 @@ void A_Console_Render_State::Apply_Right_Key()
 {
     // Move the head right
     m_cli_prompt_cursor_at = std::min( m_cli_prompt_cursor_at+1, (int)m_cli_prompt_text.size()-1);
+}
+
+
+/******************************/
+/*       Apply Up Key         */
+/******************************/
+void A_Console_Render_State::Apply_Up_Key()
+{
+    // Skip if the cursor is at the max
+    if( m_command_history_ptr < (m_command_history->Size()-1) ){
+
+        // Increment the counter
+        m_command_history_ptr++;
+        
+        // Change the text
+        m_cli_prompt_text = m_command_history->Get_Entry( m_command_history_ptr ).Get_Command_String();
+        
+        // Update the pointers
+        m_cli_prompt_cursor_at = 0;
+        m_cli_prompt_cursor_tail = 0;
+        m_cli_prompt_cursor_head = m_cli_prompt_text.size();
+
+
+
+    }
+
+}
+
+
+/**********************************/
+/*         Apply Down Key         */
+/**********************************/
+void A_Console_Render_State::Apply_Down_Key()
+{
+    // skip if the cursor is at zero
+    if( m_command_history_ptr > 0 ){
+        
+        // decrement the counter
+        m_command_history_ptr--;
+    
+        // Change the text
+        m_cli_prompt_text = m_command_history->Get_Entry( m_command_history_ptr ).Get_Command_String();
+        
+        // Update the pointers
+        m_cli_prompt_cursor_at = 0;
+        m_cli_prompt_cursor_tail = 0;
+        m_cli_prompt_cursor_head = m_cli_prompt_text.size();
+    }
 }
 
 

@@ -14,6 +14,7 @@
 // CLI Libraries
 #include "CLIConnectionType.hpp"
 #include "cmd/A_CLI_Command_Result.hpp"
+#include "A_Command_History_Entry.hpp"
 
 namespace CLI{
 
@@ -32,7 +33,8 @@ class A_Console_Render_State{
         /**
          * @brief Constructor
          */
-        A_Console_Render_State( CLIConnectionType const& conn_type );
+        A_Console_Render_State( CLIConnectionType const& conn_type,
+                                A_Command_History::ptr_t command_history );
 
         
         /**
@@ -137,6 +139,18 @@ class A_Console_Render_State{
         void Apply_Right_Key();
 
 
+        /**
+         * @brief Apply the Up Key.
+         */
+        void Apply_Up_Key();
+
+
+        /**
+         * @brief Apply the Down Key
+         */
+        void Apply_Down_Key();
+
+
         /// Connection Type
         CLIConnectionType m_connection_type;
 
@@ -158,6 +172,12 @@ class A_Console_Render_State{
 
         /// Help Mode
         bool m_help_mode;
+
+        /// Reference to Command History
+        A_Command_History::ptr_t m_command_history;
+
+        /// Current History Index
+        int m_command_history_ptr;
 
 }; // End of A_Console_Render_State Class
 

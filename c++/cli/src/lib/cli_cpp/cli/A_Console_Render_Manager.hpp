@@ -106,10 +106,10 @@ class A_Console_Render_Manager{
         inline virtual void Add_Command_History( const std::string&                command_string,
                                          const CMD::A_CLI_Command_Result&  command_result )
         {
-            m_command_history.push_back(A_Command_History_Entry(++m_command_counter,
-                                                                command_string,
-                                                                command_result ));
-        }
+            m_command_history->Add_Entry(A_Command_History_Entry(++m_command_counter,
+                                                                 command_string,
+                                                                 command_result ));
+        } 
 
 
         /**
@@ -148,7 +148,7 @@ class A_Console_Render_Manager{
         std::string m_cli_title;
         
         /// Command History
-        std::deque<A_Command_History_Entry> m_command_history;
+        A_Command_History::ptr_t m_command_history;
 
         /// Command Counter
         int m_command_counter;

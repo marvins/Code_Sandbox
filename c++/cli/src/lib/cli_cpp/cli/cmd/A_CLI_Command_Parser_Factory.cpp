@@ -118,7 +118,7 @@ A_CLI_Command_Parser::ptr_t  A_CLI_Command_Parser_Factory::Initialize( const std
         std::string command_description = command_node.child("description").attribute("value").as_string();
         
         // Check the required response
-        bool command_response = command_node.child("expected-response").attribute("value").as_bool(false);
+        bool command_response = command_node.child("expect_response").attribute("value").as_bool(false);
 
         // Get the arguments node
         pugi::xml_node arguments_node = command_node.child("arguments");

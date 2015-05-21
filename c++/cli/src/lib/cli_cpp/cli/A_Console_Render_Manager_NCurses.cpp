@@ -8,8 +8,11 @@
 // C++ Standard Libraries
 #include <iostream>
 #include <sstream>
+#include <unistd.h>
+
 
 // CLI Libraries
+#include "../utils/Log_Utilities.hpp"
 #include "../utils/String_Utilities.hpp"
 
 namespace CLI{
@@ -19,9 +22,11 @@ namespace CLI{
 /*      Constructor         */
 /****************************/
 A_Console_Render_Manager_NCurses::A_Console_Render_Manager_NCurses()
-  : m_class_name("A_Console_Render_Manager_NCurses"),
+  : A_Console_Render_Manager(),
+    m_class_name("A_Console_Render_Manager_NCurses"),
     m_context(nullptr),
-    m_render_state(std::make_shared<A_Console_Render_State>( CLIConnectionType::LOCAL ))
+    m_render_state(std::make_shared<A_Console_Render_State>( CLIConnectionType::LOCAL, 
+                                                             m_command_history ))
 {
 }
 
@@ -44,7 +49,8 @@ void A_Console_Render_Manager_NCurses::Initialize()
     NCURSES::Initialize( m_context );
 
     // Create new render state
-    m_render_state.reset(new A_Console_Render_State( CLIConnectionType::LOCAL));
+    m_render_state.reset(new A_Console_Render_State( CLIConnectionType::LOCAL, 
+                                                     m_command_history ));
 
     // Set the size
     m_render_state->Set_Window_Size( LINES, COLS );
@@ -65,7 +71,7 @@ void A_Console_Render_Manager_NCurses::Initialize_Command_Print_Tables(){
 
     int col_offset = 5;
     int col0_width = 10;
-    int col2_width = 30;
+    int col2_width = 50;
     int col1_width = m_render_state->Get_Cols() - col0_width - col2_width - 2*col_offset;
     
     // Initialize the history print table configuration
@@ -169,6 +175,14 @@ void A_Console_Render_Manager_NCurses::Finalize()
 void A_Console_Render_Manager_NCurses::Refresh()
 {
 
+    // Check system response
+    if( Check_Waiting_Command_Response() == true ){
+        m_history_print_table->Add_Entry( m_command_history->Get_Back().Get_Command_ID(),
+                                          2,
+                                          m_waiting_command_response_value->Get_System_Response() );
+    }
+
+
     // Clear the window
     clear();
     
@@ -201,9 +215,27 @@ void A_Console_Render_Manager_NCurses::Refresh()
 /************************************/
 int A_Console_Render_Manager_NCurses::Wait_Keyboard_Input()
 {
+    int value;
 
-    // Wait
-    return getch();
+    // Wait unless we are waiting for a command response
+    while( true ){
+
+        // Get the value
+        value = getch();
+
+        // Skip waiting
+        if( m_waiting_command_response == true ||
+            value > 0 )
+        {
+            break;
+        }
+
+        // Sleep
+        usleep( m_context->keyboard_timeout_usec );
+    }
+
+    // Return value
+    return value;
 }
 
 
@@ -303,6 +335,10 @@ void A_Console_Render_Manager_NCurses::Print_CLI()
 void  A_Console_Render_Manager_NCurses::Add_Command_History( const std::string&                command_string,
                                                              const CMD::A_CLI_Command_Result&  command_result )
 {
+
+    // Log
+    BOOST_LOG_TRIVIAL(debug) << "Adding Command\"" << command_string << "\" to history.";
+
     // Increment the counter
     m_command_counter++;
 
@@ -320,9 +356,9 @@ void  A_Console_Render_Manager_NCurses::Add_Command_History( const std::string& 
                                       command_result.Get_Parse_Status_String());
 
     // Append to the history
-    m_command_history.push_back(A_Command_History_Entry(m_command_counter,
-                command_string,
-                command_result ));
+    m_command_history->Add_Entry(A_Command_History_Entry( m_command_counter,
+                                                          command_string,
+                                                          command_result ));
 }
 
 } // End of CLI Namespace

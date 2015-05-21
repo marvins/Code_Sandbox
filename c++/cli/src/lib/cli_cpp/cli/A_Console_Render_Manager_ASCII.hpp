@@ -97,9 +97,9 @@ class A_Console_Render_Manager_ASCII : public A_Console_Render_Manager {
         inline void Add_Command_History( const std::string&                command_string,
                                          const CMD::A_CLI_Command_Result&  command_result )
         {
-            m_command_history.push_back(A_Command_History_Entry(++m_command_counter,
-                                                                command_string,
-                                                                command_result ));
+            m_command_history->Add_Entry(A_Command_History_Entry(++m_command_counter,
+                                                                 command_string,
+                                                                 command_result ));
         }
 
 

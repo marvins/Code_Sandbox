@@ -27,7 +27,7 @@ A_Console_Render_Manager_ASCII::A_Console_Render_Manager_ASCII()
     m_window_cols(0)
 {
     // Create new render state
-    m_render_state.reset(new A_Console_Render_State(CLIConnectionType::SOCKET));
+    m_render_state.reset(new A_Console_Render_State(CLIConnectionType::SOCKET, m_command_history));
 }
 
 
@@ -41,7 +41,7 @@ A_Console_Render_Manager_ASCII::A_Console_Render_Manager_ASCII( const int& windo
     m_window_cols(window_cols)
 {
     // Create new render state
-    m_render_state.reset(new A_Console_Render_State(CLIConnectionType::SOCKET));
+    m_render_state.reset(new A_Console_Render_State(CLIConnectionType::SOCKET, m_command_history));
 }
 
 
@@ -52,7 +52,7 @@ void A_Console_Render_Manager_ASCII::Initialize()
 {
 
     // Create new render state
-    m_render_state.reset(new A_Console_Render_State(CLIConnectionType::SOCKET));
+    m_render_state.reset(new A_Console_Render_State(CLIConnectionType::SOCKET, m_command_history ));
 
     // Set the size
     m_render_state->Set_Window_Size( m_window_rows, 
@@ -198,12 +198,12 @@ void A_Console_Render_Manager_ASCII::Print_Main_Content()
 
 
         // Check if we still have commands to print
-        else if( row_id < (int)m_command_history.size() ){
+        else if( row_id < (int)m_command_history->Size() ){
         
             // Creatde new row string
-            row_data = "|" + UTILS::Format_String( UTILS::num2str<int>( m_command_history[row_id].Get_Command_ID()),
+            row_data = "|" + UTILS::Format_String( UTILS::num2str<int>( m_command_history->Get_Entry( row_id ).Get_Command_ID()),
                                                    cmd_entry_width );
-            row_data += "|" + UTILS::Format_String( "  " + m_command_history[row_id].Get_Command_String(),
+            row_data += "|" + UTILS::Format_String( "  " + m_command_history->Get_Entry( row_id ).Get_Command_String(),
                                                     input_entry_width,
                                                     UTILS::StringAlignment::LEFT );
             row_data += "|";

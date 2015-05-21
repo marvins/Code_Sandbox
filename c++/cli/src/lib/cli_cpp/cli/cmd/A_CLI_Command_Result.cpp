@@ -9,6 +9,9 @@
 #include <sstream>
 #include <string>
 
+// CLI Libraries
+#include "../../utils/Log_Utilities.hpp"
+
 namespace CLI{
 namespace CMD{
 
@@ -53,6 +56,9 @@ A_CLI_Command_Result::A_CLI_Command_Result( CLICommandParseStatus const&     par
 /*****************************************/
 std::string A_CLI_Command_Result::Get_Parse_Status_String()const
 {
+    // Log 
+    BOOST_LOG_TRIVIAL(trace) << "File: " << __FILE__ << ", Line: " << __LINE__ << ", Func: " << __func__ << ", Response Expected: " << std::boolalpha << m_command.Response_Expected() << ", Status: " << Check_System_Response();
+
     // Check if we are waiting on a response
     if( m_command.Response_Expected() == true &&
         Check_System_Response() == false )
@@ -86,6 +92,7 @@ void A_CLI_Command_Result::Set_System_Response( const std::string& system_respon
 A_CLI_Command_Result  A_CLI_Command_Result::Process_Arguments( const A_CLI_Command& command,    
                                                                const std::vector<std::string>&  arguments )
 {
+    
     // Check for enough arguments
     for( int i=(int)arguments.size(); i<(int)command.Get_Argument_List().size(); i++ ){
         
@@ -141,6 +148,7 @@ std::string A_CLI_Command_Result::To_Debug_String( const int& offset )const
     sin << gap << "A_CLI_Command_Result:\n";
     sin << gap << "    Command Name: " << m_command.Get_Name() << "\n";
     sin << gap << "    Command Desc: " << m_command.Get_Description() << "\n";
+    sin << gap << "    Command Resp: " << std::boolalpha << m_command.Response_Expected() << "\n";
     sin << gap << "    Command Args:\n"; 
     for( size_t i=0; i<m_command.Get_Argument_List().size(); i++ ){
         sin << gap << "       Argument " << i << " : Name   : " << m_command.Get_Argument_List()[i].Get_Name() << "\n";

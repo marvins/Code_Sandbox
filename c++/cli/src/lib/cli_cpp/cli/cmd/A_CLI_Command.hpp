@@ -106,6 +106,12 @@ class A_CLI_Command{
          * @brief Check if Name Match
          */
         bool Is_Name_Match( const std::string& command_name )const;
+        
+
+        /**
+         * @brief Print as a debug string.
+         */
+        std::string To_Debug_String()const;
 
 
     private:

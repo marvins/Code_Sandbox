@@ -21,6 +21,8 @@ An_NCurses_Context::An_NCurses_Context()
     tty_fd(NULL),
     tty_in(NULL),
     tty_out(NULL),
+    keyboard_blocking(false),
+    keyboard_timeout_usec(100),
     m_class_name("An_NCurses_Context")
 {
 }
@@ -61,6 +63,10 @@ void Initialize( An_NCurses_Context::ptr_t  context )
 
     // Set the keyboard
     keypad( stdscr, TRUE );
+
+    // Prevent blocking
+    nodelay( stdscr, !(context->keyboard_blocking) );
+
 }
 
 

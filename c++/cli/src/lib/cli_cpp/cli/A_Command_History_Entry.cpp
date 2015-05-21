@@ -21,5 +21,15 @@ A_Command_History_Entry::A_Command_History_Entry( const int&                    
 }
 
 
+
+/*******************************/
+/*         Add Entry           */
+/*******************************/
+void A_Command_History::Add_Entry( A_Command_History_Entry const& entry )
+{
+    m_command_history.push_back(entry);
+}
+
+
 } // End of CLI Namespace
 

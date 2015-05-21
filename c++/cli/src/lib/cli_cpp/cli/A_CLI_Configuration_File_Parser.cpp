@@ -7,6 +7,7 @@
 
 // CLI Libraries
 #include "../thirdparty/pugixml.hpp"
+#include "../utils/Log_Utilities.hpp"
 #include "cmd/A_CLI_Command_Parser_Factory.hpp"
 #include "A_CLI_Connection_Handler_Local_Config.hpp"
 #include "A_CLI_Connection_Handler_Socket_Config.hpp"
@@ -44,6 +45,7 @@ void A_CLI_Configuration_File_Parser::Parse_Configuration_File()
     /// List of queries
     const std::string CONNECTION_TYPE_QUERY   = "connection-type";
     const std::string COMMAND_CONFIG_NODE     = "command-configuration";
+    const std::string LOGGING_QUERY           = "logging";
     const std::string CLI_CONFIG_QUERY        = "cli";
     const std::string CLI_TITLE_QUERY         = "title";
     const std::string CLI_COMMAND_QUEUE_QUERY = "command-queue"; 
@@ -70,7 +72,18 @@ void A_CLI_Configuration_File_Parser::Parse_Configuration_File()
     // Check the node
     if( root_node == pugi::xml_node() ){ return; }
 
-    
+    // Get the logging node
+    pugi::xml_node log_node = root_node.child(LOGGING_QUERY.c_str());
+
+    // Get the parameters
+    bool        log_enabled = log_node.attribute("enabled").as_bool(false);
+    std::string log_path    = log_node.attribute("log_path").as_string();
+    std::string log_severity = log_node.attribute("log_level").as_string("info");
+
+    if( log_enabled == true ){
+        UTILS::Initialize_Logger( log_severity, log_path );
+    }
+
 
     // Check the connection type
     CLIConnectionType cli_conn_type = StringToCLIConnectionType( root_node.child(CONNECTION_TYPE_QUERY.c_str()).attribute("value").as_string());

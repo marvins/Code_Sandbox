@@ -7,6 +7,7 @@
 #define __CLI_A_COMMAND_HISTORY_ENTRY_HPP__
 
 // C++ Standard Libraries
+#include <deque>
 #include <string>
 
 // CLI Libraries
@@ -69,6 +70,58 @@ class A_Command_History_Entry{
         CMD::A_CLI_Command_Result m_command_result;
 
 }; // End of A_Command_History_Entry Class
+
+
+/**
+ * @brief A_Command_History
+ */
+class A_Command_History{
+
+    public:
+
+        /// Pointer TYpe
+        typedef std::shared_ptr<A_Command_History> ptr_t;
+
+
+        /**
+         * @brief Add Entry
+         */
+        void Add_Entry( const A_Command_History_Entry& entry );
+
+        
+        /**
+         * @brief Get entry
+         */
+        inline A_Command_History_Entry Get_Entry( const int& entry )const{
+            return m_command_history[entry];
+        }
+
+        
+        /**
+         * @brief Get back entry.
+         */
+         inline A_Command_History_Entry Get_Back()const{
+             return m_command_history.back();
+         }
+
+        
+        /**
+         * @brief Get the size.
+         */
+        inline int Size()const{
+            return m_command_history.size();
+        }
+
+        
+
+    private:
+        
+        /// History
+        std::deque<A_Command_History_Entry> m_command_history;
+
+
+}; // End A_Command_History Class
+
 
 } // End of CLI Namespace
 

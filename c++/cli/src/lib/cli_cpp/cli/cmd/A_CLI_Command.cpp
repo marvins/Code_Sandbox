@@ -5,6 +5,9 @@
 */
 #include "A_CLI_Command.hpp"
 
+// C++ Standard Libraries
+#include <sstream>
+
 namespace CLI{
 namespace CMD{
 
@@ -69,6 +72,21 @@ bool A_CLI_Command::Check_Argument( const int& argument_idx,
 
     // Compare
     return m_command_argument_list[argument_idx].Is_Valid_Type( test_argument );
+}
+
+
+/************************************/
+/*      Write as a debug string     */
+/************************************/
+std::string A_CLI_Command::To_Debug_String()const
+{
+    // Create stream
+    std::stringstream sin;
+    sin << "A_CLI_Command:\n";
+    sin << "   Name: " << Get_Name() << "\n";
+    sin << "   Desc: " << Get_Description() << "\n";
+    
+    return sin.str();
 }
 
 

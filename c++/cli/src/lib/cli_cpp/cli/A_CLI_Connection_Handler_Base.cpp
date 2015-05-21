@@ -8,6 +8,8 @@
 // C++ Standard Libraries
 #include <iostream>
 
+// CLI Libraries
+#include "../utils/Log_Utilities.hpp"
 
 namespace CLI{
 
@@ -51,6 +53,9 @@ void A_CLI_Connection_Handler_Base::Process_Command()
 
     // Check the command
     CMD::A_CLI_Command_Result result = m_cli_command_parser->Evaluate_Command( this->m_render_state->Get_Cursor_Text() );
+    
+    // Log 
+    BOOST_LOG_TRIVIAL(trace) << "File: " << __FILE__ << ", Line: " << __LINE__ << ", Func: " << __func__ << ", Command Result: " << result.To_Debug_String();
 
     // Add to history
     this->m_console_render_manager->Add_Command_History( this->m_render_state->Get_Cursor_Text(), 
