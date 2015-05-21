@@ -66,6 +66,7 @@ set( CLI_CPP_SOURCES
      cli_cpp/cli/cmd/A_CLI_Parser_Command.cpp
      cli_cpp/cli/cmd/CLICommandArgumentType.cpp
      cli_cpp/cli/cmd/CLICommandParseStatus.cpp
+     cli_cpp/thirdparty/ncurses/An_NCurses_Table.cpp
      cli_cpp/thirdparty/ncurses/NCurses_Utilities.cpp
      cli_cpp/thirdparty/pugixml/src/pugixml.cpp
      cli_cpp/utils/String_Utilities.cpp
@@ -103,6 +104,7 @@ set( CLI_CPP_HEADERS
      cli_cpp/cli/cmd/CLICommandArgumentType.cpp
      cli_cpp/cli/cmd/CLICommandArgumentType.hpp
      cli_cpp/cli/cmd/CLICommandParseStatus.hpp
+     cli_cpp/thirdparty/ncurses/An_NCurses_Table.hpp
      cli_cpp/thirdparty/ncurses/NCurses_Utilities.hpp
      cli_cpp/thirdparty/pugixml.hpp
      cli_cpp/thirdparty/pugixml/src/pugixml.hpp

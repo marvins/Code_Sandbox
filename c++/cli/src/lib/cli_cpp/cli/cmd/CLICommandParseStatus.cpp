@@ -29,6 +29,11 @@ std::string CLICommandParseStatusToString( CLICommandParseStatus const& status )
         return "CLI_HELP";
     }
 
+    // Back help
+    if( status == CLICommandParseStatus::CLI_BACK ){
+        return "CLI_BACK";
+    }
+
     // Invalid arguments
     if( status == CLICommandParseStatus::INVALID_ARGUMENTS ){
         return "INVALID_ARGUMENTS";
@@ -47,6 +52,53 @@ std::string CLICommandParseStatusToString( CLICommandParseStatus const& status )
     // UNKNOWN
     return "UNKNOWN";
 }
+
+
+/********************************************************/
+/*      Convert CLI Command Parse Status to String      */
+/********************************************************/
+std::string CLICommandParseStatusToHistoryString( CLICommandParseStatus const& status )
+{
+
+    // Valid
+    if( status == CLICommandParseStatus::VALID ){
+        return "Valid Command";
+    }
+
+    // Valid Shutdown
+    if( status == CLICommandParseStatus::CLI_SHUTDOWN ){
+        return "CLI Shutdown Command";
+    }
+
+    // Valid help
+    if( status == CLICommandParseStatus::CLI_HELP ){
+        return "Success";
+    }
+
+    // Back help
+    if( status == CLICommandParseStatus::CLI_BACK ){
+        return "Success";
+    }
+
+    // Invalid arguments
+    if( status == CLICommandParseStatus::INVALID_ARGUMENTS ){
+        return "Invalid arguments";
+    }
+
+    // Excessive Arguments
+    if( status == CLICommandParseStatus::EXCESSIVE_ARGUMENTS ){
+        return "Too many arguments";
+    }
+
+    // No Command Found
+    if( status == CLICommandParseStatus::NO_COMMAND_FOUND ){
+        return "No command found.";
+    }
+
+    // UNKNOWN
+    return "Unknown";
+}
+
 
 
 /********************************************************/
@@ -84,10 +136,33 @@ CLICommandParseStatus StringToCLICommandParseStatus( const std::string& status )
         return CLICommandParseStatus::NO_COMMAND_FOUND;
     }
 
+    // Back Command
+    if( status == "CLI_BACK" ){
+        return CLICommandParseStatus::CLI_BACK;
+    }
+
     // Unknown
     return CLICommandParseStatus::UNKNOWN;
 }
 
+
+/************************************************************/
+/*      Check CLI Command Status if Valid CLI Command       */
+/************************************************************/
+bool Is_Valid_CLI_Command( CLICommandParseStatus const& command ){
+
+    // Check if Valid
+    switch( command ){
+        
+        // Valid Commands
+        case CLICommandParseStatus::CLI_BACK:
+        case CLICommandParseStatus::CLI_HELP:
+        case CLICommandParseStatus::CLI_SHUTDOWN:
+            return true;
+
+    }
+    return false;
+}
 
 } // End of CMD Namespace
 } // End of CLI Namespace

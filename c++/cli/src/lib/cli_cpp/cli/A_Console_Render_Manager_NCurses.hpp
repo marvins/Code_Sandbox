@@ -74,6 +74,16 @@ class A_Console_Render_Manager_NCurses : public A_Console_Render_Manager {
         inline virtual A_Console_Render_State::ptr_t Get_Render_State()const{
             return m_render_state;
         }
+        
+        
+        /**
+         * @brief Append Command To History.
+         *
+         * @param[in] command_string String representing what the user typed in.
+         * @param[in] command_result Parsing and evaluation result.
+         */
+        virtual void Add_Command_History( const std::string&                command_string,
+                                          const CMD::A_CLI_Command_Result&  command_result );
 
 
     protected:
@@ -91,9 +101,9 @@ class A_Console_Render_Manager_NCurses : public A_Console_Render_Manager {
 
 
         /**
-         * @brief Print Footer
+         * @brief Print Help Content
          */
-        void Print_Footer();
+        void Print_Help_Content();
 
 
         /**
@@ -103,6 +113,12 @@ class A_Console_Render_Manager_NCurses : public A_Console_Render_Manager {
 
     private:
         
+        /**
+         * @brief Initialize the NCurses Tables
+         */
+         void Initialize_Command_Print_Tables();
+
+
         /// Class Name
         std::string m_class_name;
 
@@ -111,6 +127,16 @@ class A_Console_Render_Manager_NCurses : public A_Console_Render_Manager {
 
         /// Render State
         A_Console_Render_State::ptr_t m_render_state;
+        
+        /// NCurses Tables
+        NCURSES::An_NCurses_Table::ptr_t m_parser_command_print_table;
+        NCURSES::An_NCurses_Table::ptr_t m_command_print_table;
+
+        /// History Print Table
+        NCURSES::An_NCurses_Table::ptr_t m_history_print_table;
+
+        /// History Print Table configuration
+        NCURSES::An_NCurses_Table_Configuration m_history_print_table_config;
 
 }; // End of A_Console_Render_Manager_NCurses Class
 

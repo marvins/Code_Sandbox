@@ -68,6 +68,12 @@ class A_CLI_Command_Result{
 
 
         /**
+         * @brief Get the Parsing Status
+        */
+        std::string Get_Parse_Status_String()const;
+
+
+        /**
          * @brief Get the command.
          *
          * @return Command.

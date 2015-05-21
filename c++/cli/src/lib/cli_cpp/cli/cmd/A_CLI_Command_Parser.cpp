@@ -8,6 +8,9 @@
 // Boost Libraries
 #include <boost/algorithm/string.hpp>
 
+// CLI Libraries
+#include "../../utils/String_Utilities.hpp"
+
 namespace CLI{
 namespace CMD{
 
@@ -82,8 +85,11 @@ std::vector<std::string>  A_CLI_Command_Parser::Parse_String( const std::string&
     // Create output list
     std::vector<std::string> output;
 
+    // Trim the string
+    std::string trimmed_string = UTILS::String_Trim( test_str, " ", UTILS::StringDirection::BOTH );
+
     // Split
-    boost::split( output, test_str, boost::is_any_of( m_regex_split_pattern ));
+    boost::split( output, trimmed_string, boost::is_any_of( m_regex_split_pattern ));
 
     // return results
     return output;

@@ -25,6 +25,7 @@ enum class CLICommandParseStatus : uint8_t {
     CLI_HELP            = 4 /**< The user requested help */,
     INVALID_ARGUMENTS   = 5 /**< Problem parsing arguments.*/,
     EXCESSIVE_ARGUMENTS = 6 /**< Too many arguments compared to matching command.*/,
+    CLI_BACK            = 7 /**< Back command entered.*/,
 }; // End of CLICommandParseStatus Enumeration
 
 
@@ -35,9 +36,25 @@ std::string CLICommandParseStatusToString( const CLICommandParseStatus& status )
 
 
 /**
+ * @brief Convert a CLICommandParseStatus to History Mode String
+ */
+std::string CLICommandParseStatusToHistoryString( const CLICommandParseStatus& status );
+
+
+/**
  * @brief Convert a string to CLICommandParseStatus
  */
 CLICommandParseStatus StringToCLICommandParseStatus( std::string const& status );
+
+
+/**
+ * @brief Check if CLI Command Status is a Valid CLI Command
+ *
+ * @param[in] command Command to test.
+ *
+ * @return True if a valid command, false otherwise.
+*/
+bool Is_Valid_CLI_Command( CLICommandParseStatus const& command );
 
 
 } // End of CMD Namespace

@@ -48,6 +48,29 @@ A_CLI_Command_Result::A_CLI_Command_Result( CLICommandParseStatus const&     par
 }
 
 
+/*****************************************/
+/*      Get the parse status string      */
+/*****************************************/
+std::string A_CLI_Command_Result::Get_Parse_Status_String()const
+{
+    // Check if we are waiting on a response
+    if( m_command.Response_Expected() == true &&
+        Check_System_Response() == false )
+    {
+        return "Waiting on system response.";
+    }
+    if( m_command.Response_Expected() == true &&
+        Check_System_Response() == true )
+    {
+        return m_system_response_value;
+    }
+
+    // otherwise, return the default
+    return CMD::CLICommandParseStatusToHistoryString( m_parse_status );
+
+}
+
+
 /*************************************/
 /*      Set the system response      */
 /*************************************/
@@ -92,8 +115,7 @@ A_CLI_Command_Result  A_CLI_Command_Result::Process_Arguments( const A_CLI_Comma
                                      command,
                                      arguments );
     }
-
-
+    
     // Return success
     return A_CLI_Command_Result( CLICommandParseStatus::VALID,
                                  command,

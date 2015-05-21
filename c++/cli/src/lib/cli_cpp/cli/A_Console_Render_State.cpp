@@ -170,6 +170,29 @@ void A_Console_Render_State::Apply_Right_Key()
     // Move the head right
     m_cli_prompt_cursor_at = std::min( m_cli_prompt_cursor_at+1, (int)m_cli_prompt_text.size()-1);
 }
-    
+
+
+/********************************************/
+/*      Process a CLI Command Result        */
+/********************************************/
+void A_Console_Render_State::Process_CLI_Command_Result( const CMD::A_CLI_Command_Result& result ){
+
+    // If help
+    if( result.Get_Parse_Status() == CMD::CLICommandParseStatus::CLI_HELP )
+    {
+        Set_Help_Mode(true);
+    }
+
+    // If back
+    else if( result.Get_Parse_Status() == CMD::CLICommandParseStatus::CLI_BACK )
+    {
+        // If in help mode
+        if( Get_Help_Mode() == true ){
+            Set_Help_Mode(false);
+        }
+
+        // Otherwise, error
+    }
+}
 
 } // End of CLI Namespace

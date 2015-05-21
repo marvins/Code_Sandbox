@@ -63,9 +63,18 @@ enum class StringAlignment : uint8_t{
 enum class StringDirection : uint8_t{
     LEFT  = 0,
     RIGHT = 1,
+    BOTH  = 2,
 }; // End of StringDirection Enum Class
 
 
+/**
+ * @brief String Strip
+ */
+std::string String_Trim( const std::string&     data,
+                         const std::string&     strip_patterns = "\n\0 ",
+                         const StringDirection& strip_direction = StringDirection::BOTH );
+
+                
 /**
  * @brief String Fill
 */

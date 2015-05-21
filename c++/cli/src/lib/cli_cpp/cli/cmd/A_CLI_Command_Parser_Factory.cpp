@@ -68,6 +68,10 @@ A_CLI_Command_Parser::ptr_t  A_CLI_Command_Parser_Factory::Initialize( const std
             parser_command = CMD::A_CLI_Parser_Command( CMD::CLICommandParseStatus::CLI_HELP );
             parser_command.Set_Formal_Name("Help");
         }
+        else if( mode_str == "back" ){
+            parser_command = CMD::A_CLI_Parser_Command( CMD::CLICommandParseStatus::CLI_BACK );
+            parser_command.Set_Formal_Name("Back");
+        }
         else{
             std::cerr << "error: Unknown parser command mode (" << mode_str << ")" << std::endl;
             return nullptr;
@@ -76,7 +80,12 @@ A_CLI_Command_Parser::ptr_t  A_CLI_Command_Parser_Factory::Initialize( const std
         // Iterate over names
         for( pugi::xml_node_iterator ait = parser_command_node.begin(); ait != parser_command_node.end(); ait++ )
         {
-            parser_command.Add_Name( (*ait).attribute("value").as_string());
+            if( std::string((*ait).name()) == "name" ){
+                parser_command.Add_Name( (*ait).attribute("value").as_string());
+            }
+            if( std::string((*ait).name()) == "description") {
+                parser_command.Set_Description( (*ait).attribute("value").as_string());
+            }
         }
 
         // Add parser command

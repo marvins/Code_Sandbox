@@ -17,6 +17,7 @@
 #include "cmd/A_CLI_Command.hpp"
 #include "cmd/A_CLI_Command_Result.hpp"
 #include "cmd/A_CLI_Parser_Command.hpp"
+#include "../thirdparty/ncurses/An_NCurses_Table.hpp"
 #include "../thirdparty/ncurses/NCurses_Utilities.hpp"
 
 
@@ -102,7 +103,7 @@ class A_Console_Render_Manager{
          * @param[in] command_string String representing what the user typed in.
          * @param[in] command_result Parsing and evaluation result.
          */
-        inline void Add_Command_History( const std::string&                command_string,
+        inline virtual void Add_Command_History( const std::string&                command_string,
                                          const CMD::A_CLI_Command_Result&  command_result )
         {
             m_command_history.push_back(A_Command_History_Entry(++m_command_counter,

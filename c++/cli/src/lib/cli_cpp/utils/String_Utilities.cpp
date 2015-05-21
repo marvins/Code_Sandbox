@@ -5,7 +5,37 @@
  */
 #include "String_Utilities.hpp"
 
+// Boost Libraries
+#include <boost/algorithm/string.hpp>
+
 namespace UTILS{
+
+/************************************/
+/*         Strip A String           */
+/************************************/
+std::string String_Trim( const std::string&  data,
+                         const std::string&  patterns,
+                         const StringDirection& strip_direction )
+{
+    // Set our output
+    std::string output = data;
+
+    // trim from start
+    if( strip_direction == StringDirection::LEFT ||
+        strip_direction == StringDirection::BOTH )
+    {
+        boost::trim_left_if( output, boost::is_any_of(patterns));
+    }
+
+    // trim right
+    if( strip_direction == StringDirection::RIGHT || 
+        strip_direction == StringDirection::BOTH )
+    {
+        boost::trim_right_if( output, boost::is_any_of(patterns));
+    }
+
+    return output;
+}
 
 
 /************************************/

@@ -13,6 +13,7 @@
 
 // CLI Libraries
 #include "CLIConnectionType.hpp"
+#include "cmd/A_CLI_Command_Result.hpp"
 
 namespace CLI{
 
@@ -100,6 +101,14 @@ class A_Console_Render_State{
         inline bool Get_Help_Mode()const{
             return m_help_mode;
         }
+
+
+        /**
+         * @brief Process CLI Command
+         *
+         * @param[in] command Command to process.
+         */
+        void Process_CLI_Command_Result( CMD::A_CLI_Command_Result const& result );
         
 
     private:

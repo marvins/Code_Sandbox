@@ -40,6 +40,15 @@ A_CLI_Connection_Handler_Base::~A_CLI_Connection_Handler_Base()
 /**************************************/
 void A_CLI_Connection_Handler_Base::Process_Command()
 {
+    // Make sure the command is not blank
+    if( UTILS::String_Trim( this->m_render_state->Get_Cursor_Text() ).size() <= 0 ){
+        
+        // Clear the string
+        this->m_render_state->Clear_Cursor_Text();
+        return;
+    }
+
+
     // Check the command
     CMD::A_CLI_Command_Result result = m_cli_command_parser->Evaluate_Command( this->m_render_state->Get_Cursor_Text() );
 
@@ -54,10 +63,9 @@ void A_CLI_Connection_Handler_Base::Process_Command()
     }
 
     
-    // Look for CLI Help
-    else if( result.Get_Parse_Status() == CMD::CLICommandParseStatus::CLI_HELP ){
-        this->m_render_state->Set_Help_Mode( true );
-        std::cout << "help requested" << std::endl;
+    // Look for other CLI Command
+    else if( CMD::Is_Valid_CLI_Command( result.Get_Parse_Status() ) == true ){
+        this->m_render_state->Process_CLI_Command_Result( result );
     }
 
 
@@ -69,7 +77,6 @@ void A_CLI_Connection_Handler_Base::Process_Command()
         
         // Add the command to the queue
         m_cli_command_queue->Push_Command( result_ptr );
-        std::cout << "valid command" << std::endl;
     
         // Wait for a completed response if response required
         if( result.Get_Command().Response_Expected() == true ){

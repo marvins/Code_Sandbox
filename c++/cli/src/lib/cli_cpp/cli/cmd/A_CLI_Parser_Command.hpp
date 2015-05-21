@@ -63,6 +63,36 @@ class A_CLI_Parser_Command{
         inline std::string Get_Formal_Name()const{
             return m_formal_name;
         }
+
+
+        /**
+         * @brief Get the Description.
+         *
+         * @return Description string.
+         */
+        inline std::string Get_Description()const{
+            return m_description;
+        }
+
+
+        /**
+         * @brief Set the description.
+         *
+         * @param[in] description Description to set.
+         */
+        inline void Set_Description( const std::string& description ){
+            m_description = description;
+        }
+
+
+        /**
+         * @brief Get the name list.
+         * 
+         * @return list of command names.
+         */
+        inline std::vector<std::string> Get_Command_Name_List()const{
+            return m_names;
+        }
         
     
     private:
@@ -75,6 +105,9 @@ class A_CLI_Parser_Command{
 
         /// Formal Name
         std::string m_formal_name;
+
+        /// Description
+        std::string m_description;
 
 }; // End of A_CLI_Parser_Command Class
 

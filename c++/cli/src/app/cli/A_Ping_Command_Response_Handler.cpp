@@ -49,7 +49,6 @@ void A_Ping_Command_Response_Handler::Process_Command( CLI::CMD::A_CLI_Command_R
         response->Set_System_Response( hostname + " is not responding. Details: " + details );
     }
     
-    std::cout << "Completed response" << std::endl;
 }
 
 

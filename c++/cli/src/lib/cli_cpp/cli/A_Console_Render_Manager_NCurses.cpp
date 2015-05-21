@@ -49,6 +49,108 @@ void A_Console_Render_Manager_NCurses::Initialize()
     // Set the size
     m_render_state->Set_Window_Size( LINES, COLS );
 
+    // Rebuild Print Tables
+    Initialize_Command_Print_Tables();
+
+}
+
+/****************************************************/
+/*      Initialize the NCurses Print Tables         */
+/****************************************************/
+void A_Console_Render_Manager_NCurses::Initialize_Command_Print_Tables(){
+
+    // Rebuild the tables
+    std::vector<std::string> titles;
+    std::vector<int>  widths;
+
+    int col_offset = 5;
+    int col0_width = 10;
+    int col2_width = 30;
+    int col1_width = m_render_state->Get_Cols() - col0_width - col2_width - 2*col_offset;
+    
+    // Initialize the history print table configuration
+    m_history_print_table_config = NCURSES::An_NCurses_Table_Configuration(false,false);
+
+    // Process the main command print table
+    titles.push_back("ID");      widths.push_back(col0_width);
+    titles.push_back("Command"); widths.push_back(col1_width);
+    titles.push_back("Status");  widths.push_back(col2_width);
+    m_history_print_table = std::make_shared<NCURSES::An_NCurses_Table>( titles, widths,
+                                                                         m_history_print_table_config);
+
+    
+    // Update the sizes
+    col0_width = 20;
+    col1_width = 30;
+    col2_width = m_render_state->Get_Cols() - col0_width - col1_width - 2*col_offset;
+    
+    // Process Parser Command List
+    titles.clear();
+    widths.clear();
+    titles.push_back("CLI Task");            widths.push_back(col0_width);
+    titles.push_back("Valid Command Names"); widths.push_back(col1_width);
+    titles.push_back("Description");         widths.push_back(col2_width);
+    m_parser_command_print_table = std::make_shared<NCURSES::An_NCurses_Table>( titles, widths );
+    
+    // Add entries
+    std::string command_list;
+    std::vector<std::string> command_name_list;
+    for( int i=0; i<(int)m_parser_command_list.size(); i++ ){
+
+        // Set the Formal Name
+        m_parser_command_print_table->Add_Entry( i, 0, m_parser_command_list[i].Get_Formal_Name() );
+
+        // Set argument list
+        command_list = "";
+        command_name_list = m_parser_command_list[i].Get_Command_Name_List();
+        for( int j=0; j<(int)command_name_list.size(); j++ ){
+            command_list += command_name_list[j];
+            if( j < (int)command_name_list.size()-1){
+                command_list += ", ";
+            }
+        }
+        
+        m_parser_command_print_table->Add_Entry( i, 1, command_list );
+        
+        
+        // Add Description
+        m_parser_command_print_table->Add_Entry( i, 2, m_parser_command_list[i].Get_Description() );
+    }
+    
+
+    // Process Command List
+    titles.clear();
+    widths.clear();
+    
+    titles.push_back("Command");        widths.push_back(col0_width);
+    titles.push_back("Arguments");      widths.push_back(col1_width);
+    titles.push_back("Description");    widths.push_back(col2_width);
+    m_command_print_table = std::make_shared<NCURSES::An_NCurses_Table>( titles, widths );
+
+    // Add entries
+    std::vector<CMD::A_CLI_Command_Argument> argument_list;
+    for( int i=0; i<(int)m_command_list.size(); i++ ){
+
+        // Set the Formal Name
+        m_command_print_table->Add_Entry( i, 0, m_command_list[i].Get_Name() );
+
+        // Set argument list
+        command_list = "";
+        argument_list = m_command_list[i].Get_Argument_List();
+        for( int j=0; j<(int)argument_list.size(); j++ ){
+            command_list += argument_list[j].Get_Name();
+            if( j < (int)argument_list.size()-1){
+                command_list += ", ";
+            }
+        }
+        
+        m_command_print_table->Add_Entry( i, 1, command_list );
+    
+        // Add Description
+        m_command_print_table->Add_Entry( i, 2, m_command_list[i].Get_Description() );
+    }
+
+
 }
 
 /********************************/
@@ -73,14 +175,16 @@ void A_Console_Render_Manager_NCurses::Refresh()
     // Draw the header
     Print_Header();
 
-    
+   
+    // If help requested, draw the help menu
+    if( m_render_state->Get_Help_Mode() == true ){
+        Print_Help_Content();
+    }
+
     // Draw the main context
-    Print_Main_Content();
-
-    
-    // Draw the footer
-    Print_Footer();
-
+    else{
+        Print_Main_Content();
+    }
     
     // Draw the CLI
     Print_CLI();
@@ -123,93 +227,51 @@ void A_Console_Render_Manager_NCurses::Print_Header()
 void A_Console_Render_Manager_NCurses::Print_Main_Content()
 {
     
-    // Define our stop and start rows
-    int starty = 5;
-    int endy   = m_render_state->Get_Rows() - 5;
-    
-    // Define our start columns
-    int offset_col = 5;
+    // Set the min and max rows
+    int min_row = 5;
+    int max_row = m_render_state->Get_Rows() - 5;
+    int offset_col = 3;
 
-    // Table Sizes
-    const int cmd_entry_width   = 7;
-    const int input_entry_width = m_render_state->Get_Cols() - cmd_entry_width - (2*offset_col);
-
-    // Create Header lines
-    std::string header_line_row = "+";
-    std::string header_data_row = "|";
-    
-    for( int i=0; i<cmd_entry_width; i++ ){ header_line_row += "-"; }
-    header_data_row += UTILS::Format_String("CMD", cmd_entry_width);
-    
-    header_line_row += "+";
-    header_data_row += "|";
-
-    for( int i=0; i<input_entry_width; i++ ){ header_line_row += "-"; }
-    header_data_row += UTILS::Format_String("  Input", input_entry_width, UTILS::StringAlignment::LEFT);
-    
-    header_line_row += "+";
-    header_data_row += "|";
-
-
-    // Print Table Header
-    mvprintw( starty++, offset_col, header_line_row.c_str());
-    mvprintw( starty++, offset_col, header_data_row.c_str());
-    mvprintw( starty++, offset_col, header_line_row.c_str());
-
-    // Build a blank table entry line
-    std::string blank_line_row  = "|" + std::string(cmd_entry_width, ' ') + "|" + std::string(input_entry_width,' ') + "|";
-    
-    // Iterate over main window region
-    int row_id = 0;
-    std::string row_data;
-    bool skip_row = false;
-    for( int row = starty; row <= endy; row++, row_id++ )
-    {
-        
-        // If we need to skip the row
-        if( skip_row == true ){ 
-            mvprintw( row, offset_col, blank_line_row.c_str() );
-            continue;
-        }
-
-
-        // Check if we still have commands to print
-        else if( row_id < (int)m_command_history.size() ){
-        
-            // Creatde new row string
-            row_data = "|" + UTILS::Format_String( UTILS::num2str<int>( m_command_history[row_id].Get_Command_ID()),
-                                                   cmd_entry_width );
-            row_data += "|" + UTILS::Format_String( "  " + m_command_history[row_id].Get_Command_String(),
-                                                    input_entry_width,
-                                                    UTILS::StringAlignment::LEFT );
-            row_data += "|";
-
-            // Print
-            mvprintw( row, offset_col, row_data.c_str());
-            
-        }
-
-
-        // Otherwise, print a blank line
-        else{
-            mvprintw( row, offset_col, blank_line_row.c_str() );
-            continue;
-        }
-
-    }
-
-    // Print bottom row
-    mvprintw( endy+1, offset_col, header_line_row.c_str());
+    // Print the table
+    m_history_print_table->Print_Table( min_row, max_row, offset_col );
 
 }
 
 
 /****************************************/
-/*          Print the Footer            */
+/*        Print the Help Content        */
 /****************************************/
-void A_Console_Render_Manager_NCurses::Print_Footer()
+void A_Console_Render_Manager_NCurses::Print_Help_Content()
 {
 
+    // Define our stop and start rows
+    int min_row = 5;
+    int max_row   = m_render_state->Get_Rows() - 5;
+    
+    // Define our start columns
+    int offset_col = 3;
+
+    // Table Sizes
+    const int title_entry_width = m_render_state->Get_Cols() - (2*offset_col);
+
+    // Create Header lines
+    std::string header_line_row = "+";
+    std::string header_data_row = "|";
+    
+    for( int i=0; i<title_entry_width; i++ ){ header_line_row += "-"; }
+    header_data_row += UTILS::Format_String("Help Menu", title_entry_width);
+    
+    header_line_row += "+";
+    header_data_row += "|";
+
+    // Print Title Header
+    mvprintw( min_row++, offset_col, header_line_row.c_str());
+    mvprintw( min_row++, offset_col, header_data_row.c_str());
+    mvprintw( min_row++, offset_col, header_line_row.c_str());
+
+    // Print Parse Table
+    m_parser_command_print_table->Print_Table( min_row, max_row/3, offset_col );
+    m_command_print_table->Print_Table( max_row/3+1, max_row, offset_col );
 
 }
 
@@ -234,6 +296,34 @@ void A_Console_Render_Manager_NCurses::Print_CLI()
     move( cli_row, cli_col + m_render_state->Get_Cursor_Pos() );
 }
 
+
+/************************************************************/
+/*          Add History to the Command Parser Table         */
+/************************************************************/
+void  A_Console_Render_Manager_NCurses::Add_Command_History( const std::string&                command_string,
+                                                             const CMD::A_CLI_Command_Result&  command_result )
+{
+    // Increment the counter
+    m_command_counter++;
+
+    // Update the table
+    m_history_print_table->Add_Entry( m_command_counter,
+                                      0,
+                                      UTILS::num2str(m_command_counter));
+
+    m_history_print_table->Add_Entry( m_command_counter, 
+                                      1,
+                                      command_string );
+    
+    m_history_print_table->Add_Entry( m_command_counter, 
+                                      2,
+                                      command_result.Get_Parse_Status_String());
+
+    // Append to the history
+    m_command_history.push_back(A_Command_History_Entry(m_command_counter,
+                command_string,
+                command_result ));
+}
 
 } // End of CLI Namespace
 
