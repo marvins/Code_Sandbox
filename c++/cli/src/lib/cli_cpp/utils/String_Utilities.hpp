@@ -31,6 +31,24 @@ std::string num2str( TP const& value )
 
 
 /**
+ * @brief Convert a String into a Number.
+ *
+ * @param[in] value to convert.
+ *
+ * @return number format.
+ */
+template <typename TP>
+TP str2num( const std::string& value )
+{
+    std::stringstream sin;
+    sin << value;
+    TP output;
+    sin >> output;
+    return output;
+}
+
+
+/**
  * @enum StringAlignment
  */
 enum class StringAlignment : uint8_t{

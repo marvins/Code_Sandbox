@@ -50,6 +50,20 @@ class A_CLI_Parser_Command{
          */
         bool Is_Match( const std::string& name )const;
 
+        
+        /**
+         * @brief Set the Formal Name
+         */
+        void Set_Formal_Name( const std::string& formal_name );
+
+
+        /**
+         * @brief Get the formal name
+         */
+        inline std::string Get_Formal_Name()const{
+            return m_formal_name;
+        }
+        
     
     private:
         
@@ -58,6 +72,9 @@ class A_CLI_Parser_Command{
 
         /// Names
         std::vector<std::string> m_names;
+
+        /// Formal Name
+        std::string m_formal_name;
 
 }; // End of A_CLI_Parser_Command Class
 

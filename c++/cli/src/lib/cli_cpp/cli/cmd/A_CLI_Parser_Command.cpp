@@ -29,6 +29,15 @@ void A_CLI_Parser_Command::Add_Name( const std::string& name )
 
 
 /****************************/
+/*      Set formal Name     */
+/****************************/
+void A_CLI_Parser_Command::Set_Formal_Name( const std::string& formal_name )
+{
+    m_formal_name = formal_name;
+}
+
+
+/****************************/
 /*          Is Valid        */
 /****************************/
 bool A_CLI_Parser_Command::Is_Match( const std::string& name )const

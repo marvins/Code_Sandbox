@@ -28,8 +28,8 @@
             <description value="Do a ping of another network address." />
             <expect_response value="true" />
             <arguments>
-                <argument name="destination"   type="STRING"   description="Address of the destination to ping." required="TRUE" />
-                <argument name="max_attempts"  type="INTEGER"  description="Max number of attempts to try."      required="FALSE" default="1" />
+                <argument name="destination"   type="STRING"   description="Address of the destination to ping." required="true" />
+                <argument name="max_attempts"  type="INTEGER"  description="Max number of attempts to try."      required="false" default="1" />
             </arguments>
         </command>
     </commands>

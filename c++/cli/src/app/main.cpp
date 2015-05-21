@@ -9,6 +9,8 @@
 #include <string>
 #include <unistd.h>
 
+// Demo Libraries
+#include "cli/A_Ping_Command_Response_Handler.hpp"
 
 // CLI Libraries
 #include <cli_cpp/cli/A_CLI_Manager_Factory.hpp>
@@ -40,6 +42,9 @@ int main( int argc, char* argv[] )
         return 1;
     }
 
+    // Register a Ping Command-Response Handler
+    A_Ping_Command_Response_Handler::ptr_t  ping_handler = std::make_shared<A_Ping_Command_Response_Handler>();
+    manager->Register_Command_Response_Handler( ping_handler );
 
     // Initialize the CLI Manager
     manager->Connect();

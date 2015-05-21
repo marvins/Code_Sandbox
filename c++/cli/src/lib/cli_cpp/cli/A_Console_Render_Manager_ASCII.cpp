@@ -60,6 +60,9 @@ void A_Console_Render_Manager_ASCII::Initialize()
 
     // Build the console buffer
     Build_Console_Buffer();
+    
+    // Build the Help Buffer
+    Build_Help_General_Buffer();
 
 }
 
@@ -71,6 +74,21 @@ void A_Console_Render_Manager_ASCII::Finalize()
 }
 
 
+/****************************/
+/*      Get the buffer      */
+/****************************/
+std::vector<std::string>& A_Console_Render_Manager_ASCII::Get_Console_Buffer(){
+
+    // Check if help requested
+    if( m_render_state->Get_Help_Mode() == true ){
+        return m_help_general_buffer;
+    }
+
+    // Otherwise, return the main buffer
+    return m_console_buffer;
+}
+
+
 /********************************/
 /*      Refresh the screen      */
 /********************************/
@@ -79,6 +97,10 @@ void A_Console_Render_Manager_ASCII::Refresh()
 
     // If help is selected, then use that buffer
     if( m_render_state->Get_Help_Mode() == true ){
+        
+        // Update the CLI materials
+        Print_CLI( m_help_general_buffer );
+        
         return; 
     }
 
@@ -96,7 +118,7 @@ void A_Console_Render_Manager_ASCII::Refresh()
 
     
     // Draw the CLI
-    Print_CLI();
+    Print_CLI( m_console_buffer );
 
 
 }
@@ -219,7 +241,7 @@ void A_Console_Render_Manager_ASCII::Print_Footer()
 /********************************/
 /*          Print the CLI       */
 /********************************/
-void A_Console_Render_Manager_ASCII::Print_CLI()
+void A_Console_Render_Manager_ASCII::Print_CLI( std::vector<std::string>& print_buffer )const
 {
     // Set the buffer row
     int cli_row = m_window_rows - 2;
@@ -227,10 +249,17 @@ void A_Console_Render_Manager_ASCII::Print_CLI()
     // Move the cursor
     std::string output = "   ";
     output += UTILS::ANSI_GREEN + std::string("cmd: ") + UTILS::ANSI_RESET;
-    output += m_render_state->Get_Cursor_Text() + "\n\r";
+    output += m_render_state->Get_Cursor_Text();
+    
+    // Check if awaiting response
+    if( m_waiting_command_response == true ){
+        output += "      " + UTILS::ANSI_BLACK + UTILS::ANSI_BACK_RED + "   WAITING FOR COMMAND RESPONSE   " + UTILS::ANSI_RESET;
+    }
+
+    output += "\n\r";
 
     // Copy to the buffer
-    m_console_buffer[cli_row] = output;
+    print_buffer[cli_row] = output;
     
 
 }
@@ -253,14 +282,43 @@ void A_Console_Render_Manager_ASCII::Build_Console_Buffer()
 void A_Console_Render_Manager_ASCII::Build_Help_General_Buffer()
 {
 
+    // Define our start columns
+    int offset_col = 5;
+    std::string BUFFER_OFFSET( offset_col, ' ');
+    
+    
     // Allocate Buffer
     m_help_general_buffer.resize(m_window_rows, "\n\r");
     m_help_general_buffer[0].insert(0, UTILS::ANSI_CLEARSCREEN);
 
+    
     // Create the main text
     Print_Header( m_help_general_buffer );
 
-    // Iterate over all commands
+    
+    // set the starting positions
+    int min_row = 3;
+    int max_row = m_window_rows - 5;
+    int cur_row = min_row;
+
+    // Create the header
+    m_help_general_buffer[cur_row++] = BUFFER_OFFSET + "General Help Options" + BUFFER_NEWLINE;
+    m_help_general_buffer[cur_row++] = BUFFER_NEWLINE;
+
+    // Iterate over all parser commands
+    for( size_t i=0; i<m_parser_command_list.size(); i++ ){
+
+        //  make sure we don't go past
+        if( cur_row > max_row ){
+            break;
+        }
+
+        //  Create the row
+        m_help_general_buffer[cur_row++] = m_parser_command_list[i].Get_Formal_Name() + BUFFER_NEWLINE;
+        m_help_general_buffer[cur_row++] = BUFFER_NEWLINE;
+    
+    }
+
 
 }
 

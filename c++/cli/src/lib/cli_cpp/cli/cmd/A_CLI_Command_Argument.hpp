@@ -56,12 +56,32 @@ class A_CLI_Command_Argument{
         inline std::string Get_Description()const{
             return m_description;
         }
+
+
+        /**
+         * @brief Get the default value.
+         *
+         * @return Default value.
+         */
+        inline std::string Get_Default_Value()const{
+            return m_default_value;
+        }
         
 
         /**
          * @brief Is Valid Type.
          */
         bool Is_Valid_Type( const std::string& test_str )const;
+        
+
+        /**
+         * @brief Check if the parameter is required.
+         *
+         * @return True if required, false otherwise.
+         */
+        inline bool Is_Required()const{
+            return m_required;
+        }
 
 
     private:

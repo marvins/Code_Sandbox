@@ -204,7 +204,7 @@ void A_CLI_Connection_Handler_Socket::Run_Handler()
         std::vector<std::string>& buffer_data = std::dynamic_pointer_cast<A_Console_Render_Manager_ASCII>(m_console_render_manager)->Get_Console_Buffer();
        
         // Write each line to the socket
-        for( int i=0; i<buffer_data.size(); i++ ){
+        for( size_t i=0; i<buffer_data.size(); i++ ){
             write( m_client_fd, buffer_data[i].c_str(), buffer_data[i].size() );
         }
 

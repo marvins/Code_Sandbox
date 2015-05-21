@@ -12,7 +12,7 @@ namespace CLI{
 /*        Constructor         */
 /******************************/
 A_CLI_Command_Queue::A_CLI_Command_Queue( const int& max_queue_size )
-  : m_command_queue(new CMD::A_CLI_Command_Result[max_queue_size] ),
+  : m_command_queue(new CMD::A_CLI_Command_Result::ptr_t[max_queue_size] ),
     m_head(0),
     m_tail(0),
     m_max_queue_size(max_queue_size),
@@ -21,6 +21,11 @@ A_CLI_Command_Queue::A_CLI_Command_Queue( const int& max_queue_size )
     // Initialize the semaphores
     sem_init( &m_push_semaphore, 0, max_queue_size);
     sem_init( &m_pop_semaphore, 0, 0);
+
+    // Initialize array values
+    for( int i=0; i<m_max_queue_size; i++ ){
+        m_command_queue[i] = nullptr;
+    }
 }
 
 
@@ -55,7 +60,7 @@ void A_CLI_Command_Queue::Clear()
 /*****************************/
 /*        Push Command       */
 /*****************************/
-void A_CLI_Command_Queue::Push_Command( CMD::A_CLI_Command_Result const& command )
+void A_CLI_Command_Queue::Push_Command( CMD::A_CLI_Command_Result::ptr_t const& command )
 {
     // Decrement the push semaphore
     sem_wait( &m_push_semaphore );
@@ -79,17 +84,17 @@ void A_CLI_Command_Queue::Push_Command( CMD::A_CLI_Command_Result const& command
 /*****************************/
 /*        Pop Command        */
 /*****************************/
-CMD::A_CLI_Command_Result A_CLI_Command_Queue::Pop_Command()
+CMD::A_CLI_Command_Result::ptr_t A_CLI_Command_Queue::Pop_Command()
 {
     // Output
-    CMD::A_CLI_Command_Result command;
+    CMD::A_CLI_Command_Result::ptr_t  command;
 
     // Decrement the pop semaphore
     sem_wait( &m_pop_semaphore );
     
     // Return if the list is empty
     if( m_close_flag == true ){
-        return CMD::A_CLI_Command_Result();
+        return nullptr;
     }
 
     // Lock the mutex
@@ -97,6 +102,7 @@ CMD::A_CLI_Command_Result A_CLI_Command_Queue::Pop_Command()
     
     // Get the value
     command = m_command_queue[m_tail];
+    m_command_queue[m_tail] = nullptr;
 
     // Update the tail
     m_tail = (m_tail+1) % m_max_queue_size;

@@ -40,7 +40,7 @@ class A_Command_Response_Handler_Base{
         /**
          * @brief Process COmmand
         */
-        virtual void Process_Command( const CMD::A_CLI_Command_Result& command ) = 0;
+        virtual void Process_Command( CMD::A_CLI_Command_Result::ptr_t command ) = 0;
 
 }; // End of A_Command_Response_Handler_Base
 

@@ -14,6 +14,9 @@
 // CLI Libraries
 #include "A_Command_History_Entry.hpp"
 #include "A_Console_Render_State.hpp"
+#include "cmd/A_CLI_Command.hpp"
+#include "cmd/A_CLI_Command_Result.hpp"
+#include "cmd/A_CLI_Parser_Command.hpp"
 #include "../thirdparty/ncurses/NCurses_Utilities.hpp"
 
 
@@ -108,6 +111,35 @@ class A_Console_Render_Manager{
         }
 
 
+        /**
+         * @brief Update the Command List.
+         *
+         * @param[in] command_list List of commands supported.
+         */
+        void Update_Command_List( const std::vector<CMD::A_CLI_Command>& command_list );
+
+
+        /**
+         * @brief Update the Parser Command List.
+         *
+         * @param[in] command_list List of parser commands supported.
+         */
+        void Update_Parser_Command_List( const std::vector<CMD::A_CLI_Parser_Command>& command_list );
+        
+
+        /**
+         * @brief Command the system to wait on the input command response.
+         */
+        void Set_Waiting_Command_Response( const CMD::A_CLI_Command_Result::ptr_t response );
+
+
+        /**
+         * @brief Get the waiting status
+         *
+         * @return True if waiting on command result response.
+         */
+        bool Check_Waiting_Command_Response();
+
 
     protected:
         
@@ -122,6 +154,18 @@ class A_Console_Render_Manager{
         
         /// Render State
         A_Console_Render_State::ptr_t m_render_state;
+
+        /// Command List
+        std::vector<CMD::A_CLI_Command> m_command_list;
+
+        /// Parser Command List
+        std::vector<CMD::A_CLI_Parser_Command> m_parser_command_list;
+
+        /// Waiting Response
+        bool m_waiting_command_response;
+
+        /// Waiting command
+        CMD::A_CLI_Command_Result::ptr_t m_waiting_command_response_value;
 
     private:
 

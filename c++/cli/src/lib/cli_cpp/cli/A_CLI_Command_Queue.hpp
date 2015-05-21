@@ -43,13 +43,13 @@ class A_CLI_Command_Queue{
         /**
          * @brief Add Command
          */
-        void Push_Command( CMD::A_CLI_Command_Result const& command );
+        void Push_Command( CMD::A_CLI_Command_Result::ptr_t const& command );
 
 
         /**
          * @brief Pop Command
          */
-        CMD::A_CLI_Command_Result Pop_Command();
+        CMD::A_CLI_Command_Result::ptr_t Pop_Command();
 
 
         /**
@@ -61,7 +61,7 @@ class A_CLI_Command_Queue{
     private:
         
         /// Command Queue
-        CMD::A_CLI_Command_Result* m_command_queue;
+        CMD::A_CLI_Command_Result::ptr_t* m_command_queue;
     
         /// Main Mutex
         std::mutex m_mtx;

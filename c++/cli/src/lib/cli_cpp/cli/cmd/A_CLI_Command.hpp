@@ -34,13 +34,15 @@ class A_CLI_Command{
          * @brief Constructor
         */
         A_CLI_Command( const std::string&                         command_name,
-                       const std::string&                         command_description );
+                       const std::string&                         command_description,
+                       const bool&                                command_expect_response );
 
         /**
          * @brief Constructor
          */
         A_CLI_Command( const std::string&                         command_name,
                        const std::string&                         command_description,
+                       const bool&                                command_expect_response,
                        const std::vector<A_CLI_Command_Argument>& command_arguments );
 
 
@@ -63,6 +65,14 @@ class A_CLI_Command{
 
 
         /**
+         * @brief Check if a response is required.
+         */
+        inline bool Response_Expected()const{
+            return m_expect_response;
+        }
+
+
+        /**
          * @brief Get the argument list.
          *
          * @return Argument list.
@@ -70,6 +80,18 @@ class A_CLI_Command{
         inline std::vector<A_CLI_Command_Argument> Get_Argument_List()const
         {
             return m_command_argument_list;
+        }
+        
+
+        /**
+         * @brief Get the requested argument.
+         *
+         * @param[in] index Position to fetch.
+         *
+         * @return Desired command.
+         */
+        inline A_CLI_Command_Argument Get_Command_Argument( const int& index )const{
+            return m_command_argument_list[index];
         }
 
         
@@ -96,6 +118,9 @@ class A_CLI_Command{
 
         /// Command Argument List
         std::vector<A_CLI_Command_Argument> m_command_argument_list;
+        
+        /// Expect Response Flag
+        bool m_expect_response;
 
 }; // End of A_CLI_Command 
 

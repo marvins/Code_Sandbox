@@ -21,13 +21,16 @@ SET( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 #----------------------------------#
 set( CLI_APP_SOURCES
      main.cpp
+     cli/A_Ping_Command_Response_Handler.cpp
+     utils/System_Utilities.cpp
 )
 
 #----------------------------------#
 #-    Define our demo headers     -#
 #----------------------------------#
 set( CLI_APP_HEADERS
-
+     cli/A_Ping_Command_Response_Handler.hpp
+     utils/System_Utilities.hpp
 )
 
 #----------------------------------#

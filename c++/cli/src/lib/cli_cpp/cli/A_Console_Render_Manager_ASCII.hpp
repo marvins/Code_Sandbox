@@ -74,9 +74,7 @@ class A_Console_Render_Manager_ASCII : public A_Console_Render_Manager {
         /**
          * Brief Get the Buffer
          */
-        inline std::vector<std::string>& Get_Console_Buffer(){
-            return m_console_buffer;
-        }
+        std::vector<std::string>& Get_Console_Buffer();
         
         
         /**
@@ -111,7 +109,7 @@ class A_Console_Render_Manager_ASCII : public A_Console_Render_Manager {
         /**
          * @brief Print the header
          */
-        virtual void Print_Header( std::vector<std::vector>& print_buffer );
+        virtual void Print_Header( std::vector<std::string>& print_buffer );
         
 
         /**
@@ -128,8 +126,10 @@ class A_Console_Render_Manager_ASCII : public A_Console_Render_Manager {
 
         /**
          * @brief Print CLI
+         *
+         * @param[in] print_buffer Buffer to post cli contents to.
          */
-        virtual void Print_CLI();
+        virtual void Print_CLI( std::vector<std::string>& print_buffer ) const;
 
 
     private:

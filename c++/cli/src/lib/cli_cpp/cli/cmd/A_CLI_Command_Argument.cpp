@@ -37,7 +37,7 @@ A_CLI_Command_Argument::A_CLI_Command_Argument( const std::string&             a
      m_type(arg_type),
      m_description(arg_description),
      m_default_value(arg_default_value),
-     m_required(true)
+     m_required(arg_required)
 {
 }
 

@@ -17,7 +17,9 @@ namespace CMD{
 /*            Constructor            */
 /*************************************/
 A_CLI_Command_Result::A_CLI_Command_Result()
-  : m_parse_status( CLICommandParseStatus::UNKNOWN )
+  : m_parse_status( CLICommandParseStatus::UNKNOWN ),
+    m_system_response_set(false),
+    m_system_response_value("")
 {
 }
 
@@ -46,6 +48,14 @@ A_CLI_Command_Result::A_CLI_Command_Result( CLICommandParseStatus const&     par
 }
 
 
+/*************************************/
+/*      Set the system response      */
+/*************************************/
+void A_CLI_Command_Result::Set_System_Response( const std::string& system_response ){
+    m_system_response_value = system_response;
+    m_system_response_set = true;
+}
+
 
 /**********************************************/
 /*          Process Command Arguments         */
@@ -53,6 +63,16 @@ A_CLI_Command_Result::A_CLI_Command_Result( CLICommandParseStatus const&     par
 A_CLI_Command_Result  A_CLI_Command_Result::Process_Arguments( const A_CLI_Command& command,    
                                                                const std::vector<std::string>&  arguments )
 {
+    // Check for enough arguments
+    for( int i=(int)arguments.size(); i<(int)command.Get_Argument_List().size(); i++ ){
+        
+        // Validate missing argument is not required
+        if( command.Get_Command_Argument(i).Is_Required() == true ){
+            return A_CLI_Command_Result( CLICommandParseStatus::INVALID_ARGUMENTS,
+                                         command,
+                                         arguments );
+        }
+    }
 
     //  Iterate over arguments
     for( size_t arg=0; arg < arguments.size(); arg++ )
@@ -99,14 +119,16 @@ std::string A_CLI_Command_Result::To_Debug_String( const int& offset )const
     sin << gap << "A_CLI_Command_Result:\n";
     sin << gap << "    Command Name: " << m_command.Get_Name() << "\n";
     sin << gap << "    Command Desc: " << m_command.Get_Description() << "\n";
-    sin << gap << "    Command Args: "; 
+    sin << gap << "    Command Args:\n"; 
     for( size_t i=0; i<m_command.Get_Argument_List().size(); i++ ){
-        sin << gap << "       Argument " << i << " : Name : " << m_command.Get_Argument_List()[i].Get_Name() << "\n";
-        sin << gap << "                              Type : " << CMD::CLICommandArgumentTypeToString(m_command.Get_Argument_List()[i].Get_Type()) << "\n";
-        sin << gap << "                              Desc : " << m_command.Get_Argument_List()[i].Get_Description() << "\n";
-        sin << gap << "                              Value: ";
+        sin << gap << "       Argument " << i << " : Name   : " << m_command.Get_Argument_List()[i].Get_Name() << "\n";
+        sin << gap << "                              Type   : " << CMD::CLICommandArgumentTypeToString(m_command.Get_Argument_List()[i].Get_Type()) << "\n";
+        sin << gap << "                              Desc   : " << m_command.Get_Argument_List()[i].Get_Description() << "\n";
+        sin << gap << "                              Req    : " << std::boolalpha << m_command.Get_Argument_List()[i].Is_Required() << std::endl;
+        sin << gap << "                              Value  : ";
         if( m_argument_values.size() > i ){ sin << m_argument_values[i]; }
         sin << "\n";
+        sin << gap << "                              Default: " << m_command.Get_Argument_List()[i].Get_Default_Value() << std::endl;
     }
 
     return sin.str();

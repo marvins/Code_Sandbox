@@ -40,8 +40,13 @@ A_CLI_Manager::A_CLI_Manager( A_CLI_Manager_Configuration const& configuration )
         m_console_render_manager = std::make_shared<A_Console_Render_Manager_NCurses>();
     }
 
+
     // Set the title
     m_console_render_manager->Set_CLI_Title( m_configuration.Get_CLI_Title() );
+
+    // Set the command lists
+    m_console_render_manager->Update_Parser_Command_List( m_configuration.Get_CLI_Command_Parser()->Get_Parser_Command_List());
+    m_console_render_manager->Update_Command_List( m_configuration.Get_CLI_Command_Parser()->Get_Command_List());
 
     
     // Create CLI Communication Type
@@ -119,7 +124,7 @@ void A_CLI_Manager::Process_Command_Results()
 {
     
     // Misc Variables
-    CMD::A_CLI_Command_Result command_result;
+    CMD::A_CLI_Command_Result::ptr_t command_result;
 
     // Set flag
     m_handler_thread_running = true;
@@ -129,9 +134,14 @@ void A_CLI_Manager::Process_Command_Results()
         // Pop the next command
         command_result = m_cli_command_queue->Pop_Command();
 
+        // Check if null
+        if( command_result == nullptr ){
+            continue;
+        }
+
         // Process Command
         for( size_t i=0; i<m_cli_command_handlers.size(); i++ ){
-            if( m_cli_command_handlers[i]->Is_Supported( command_result ) == true )
+            if( m_cli_command_handlers[i]->Is_Supported( *command_result ) == true )
             {
                 m_cli_command_handlers[i]->Process_Command( command_result );
             }

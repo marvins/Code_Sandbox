@@ -49,7 +49,7 @@ A_CLI_Command_Result  A_CLI_Command_Parser::Evaluate_Command( const std::string&
         if( m_parser_command_list[idx].Is_Match( command_name ) == true )
         {
             return A_CLI_Command_Result( m_parser_command_list[idx].Get_Mode(),
-                                         A_CLI_Command( "", ""),
+                                         A_CLI_Command( "", "", false),
                                          components );
         }
 
@@ -68,7 +68,7 @@ A_CLI_Command_Result  A_CLI_Command_Parser::Evaluate_Command( const std::string&
 
     // return the result
     return A_CLI_Command_Result( CLICommandParseStatus::NO_COMMAND_FOUND,
-                                 A_CLI_Command( command_name, ""),
+                                 A_CLI_Command( command_name, "", false),
                                  components);
 
 }

@@ -63,13 +63,26 @@ void A_CLI_Connection_Handler_Base::Process_Command()
 
     // Otherwise, handle command
     else if( result.Get_Parse_Status() == CMD::CLICommandParseStatus::VALID ){
-        m_cli_command_queue->Push_Command( result );
+
+        // Create shared pointer
+        CMD::A_CLI_Command_Result::ptr_t result_ptr = std::make_shared<CMD::A_CLI_Command_Result>( result );
+        
+        // Add the command to the queue
+        m_cli_command_queue->Push_Command( result_ptr );
         std::cout << "valid command" << std::endl;
+    
+        // Wait for a completed response if response required
+        if( result.Get_Command().Response_Expected() == true ){
+            
+            // Publish the notice
+            m_console_render_manager->Set_Waiting_Command_Response( result_ptr );
+        }
     }
 
     // Otherwise, error
     else{
         std::cout << "invalid command" << std::endl;
+        std::cout << result.To_Debug_String() << std::endl;
     }
 
     

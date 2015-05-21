@@ -47,7 +47,28 @@ class A_CLI_Command_Parser {
          * @return Command result.
          */
         A_CLI_Command_Result Evaluate_Command( const std::string& test_str ) const;
-    
+        
+
+        /**
+         * @brief Get the current command list.
+         *
+         * @return Command list.
+         */
+        inline std::vector<A_CLI_Command> Get_Command_List()const
+        {
+            return m_command_list;
+        }
+
+
+        /**
+         * @brief Get the parser command list.
+         *
+         * @return Parser command list
+         */
+        inline std::vector<A_CLI_Parser_Command> Get_Parser_Command_List()const{
+            return m_parser_command_list;
+        }
+
     
     private:
     
