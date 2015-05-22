@@ -9,7 +9,7 @@
     -->
     <logging enabled="true" 
              log_path="cli.log"
-             log_level="trace" />
+             log_level="debug" />
 
     <!-- Type of Connection 
           

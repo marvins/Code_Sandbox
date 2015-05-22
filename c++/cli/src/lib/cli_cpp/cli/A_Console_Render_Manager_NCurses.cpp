@@ -178,7 +178,7 @@ void A_Console_Render_Manager_NCurses::Refresh()
 
     // Check system response
     if( Check_Waiting_Command_Response() == true ){
-        BOOST_LOG_TRIVIAL(debug) << "Using the system response value.";
+        BOOST_LOG_TRIVIAL(trace) << "Using the system response value.";
         m_history_print_table->Add_Entry( m_command_history->Get_Back().Get_Command_ID(),
                                           2,
                                           m_waiting_command_response_value->Get_System_Response() );
