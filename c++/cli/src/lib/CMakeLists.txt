@@ -6,7 +6,7 @@
 #
 
 #   Configure C++11
-set( CMAKE_CXX_FLAGS "-std=c++11 -Wall -ldl -rdynamic " )
+set( CMAKE_CXX_FLAGS "-std=c++11 -Wall -ldl" )
 
 #---------------------------------#
 #-     Change the Output Path    -#
@@ -24,6 +24,7 @@ find_package( Boost REQUIRED
                     filesystem
                     regex
                     log
+                    thread
 )
 
 include_directories( ${Boost_INCLUDE_DIRS})
@@ -73,6 +74,7 @@ set( CLI_CPP_SOURCES
      cli_cpp/thirdparty/pugixml/src/pugixml.cpp
      cli_cpp/utils/Log_Utilities.cpp
      cli_cpp/utils/String_Utilities.cpp
+     cli_cpp/utils/System_Utilities.cpp
 )
 
 
@@ -115,6 +117,7 @@ set( CLI_CPP_HEADERS
      cli_cpp/utils/ANSI_Utilities.hpp
      cli_cpp/utils/Log_Utilities.hpp
      cli_cpp/utils/String_Utilities.hpp
+     cli_cpp/utils/System_Utilities.hpp
 )
 
 

@@ -6,6 +6,7 @@
 #include "A_Console_Render_Manager_NCurses.hpp"
 
 // C++ Standard Libraries
+#include <stdexcept>
 #include <iostream>
 #include <sstream>
 #include <unistd.h>
@@ -177,6 +178,7 @@ void A_Console_Render_Manager_NCurses::Refresh()
 
     // Check system response
     if( Check_Waiting_Command_Response() == true ){
+        BOOST_LOG_TRIVIAL(debug) << "Using the system response value.";
         m_history_print_table->Add_Entry( m_command_history->Get_Back().Get_Command_ID(),
                                           2,
                                           m_waiting_command_response_value->Get_System_Response() );
@@ -354,6 +356,13 @@ void  A_Console_Render_Manager_NCurses::Add_Command_History( const std::string& 
     m_history_print_table->Add_Entry( m_command_counter, 
                                       2,
                                       command_result.Get_Parse_Status_String());
+
+    // Throw an error if the history is null
+    if( m_command_history == nullptr ){
+        BOOST_LOG_TRIVIAL(fatal) << "Command history is currently nullptr.";
+        throw std::runtime_error("Command History is currently null.");
+    }
+
 
     // Append to the history
     m_command_history->Add_Entry(A_Command_History_Entry( m_command_counter,

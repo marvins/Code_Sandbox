@@ -6,6 +6,7 @@
 
 // C++ Standard Libraries
 #include <iostream>
+#include <signal.h>
 #include <string>
 #include <unistd.h>
 
@@ -14,6 +15,7 @@
 
 // CLI Libraries
 #include <cli_cpp/cli/A_CLI_Manager_Factory.hpp>
+#include <cli_cpp/utils/System_Utilities.hpp>
 
 using namespace std;
 
@@ -23,7 +25,7 @@ using namespace std;
 int main( int argc, char* argv[] )
 {
     try{
-
+    
     // Check args
     if( argc < 2 ){
         std::cerr << "usage: " << argv[0] << " <config-path>" << std::endl;
