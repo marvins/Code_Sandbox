@@ -193,7 +193,7 @@ void A_Console_Render_State::Apply_Right_Key()
 /******************************/
 /*       Apply Up Key         */
 /******************************/
-void A_Console_Render_State::Apply_Up_Key()
+void A_Console_Render_State::Apply_Down_Key()
 {
     // Skip if the cursor is at the max
     if( m_command_history_ptr < (m_command_history->Size()-1) ){
@@ -219,7 +219,7 @@ void A_Console_Render_State::Apply_Up_Key()
 /**********************************/
 /*         Apply Down Key         */
 /**********************************/
-void A_Console_Render_State::Apply_Down_Key()
+void A_Console_Render_State::Apply_Up_Key()
 {
     // skip if the cursor is at zero
     if( m_command_history_ptr > 0 ){

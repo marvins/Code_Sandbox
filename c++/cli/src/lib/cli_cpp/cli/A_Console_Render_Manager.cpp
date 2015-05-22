@@ -11,6 +11,7 @@
 
 // CLI Libraries
 #include "../utils/ANSI_Utilities.hpp"
+#include "../utils/Log_Utilities.hpp"
 
 namespace CLI{
 
@@ -60,6 +61,9 @@ void A_Console_Render_Manager::Set_Waiting_Command_Response( const CMD::A_CLI_Co
 /**************************************************/
 bool A_Console_Render_Manager::Check_Waiting_Command_Response(){
     
+    // Log
+    BOOST_LOG_TRIVIAL(trace) << "Start of " << __func__ << ". Status: " << std::boolalpha << m_waiting_command_response;
+    
     // Avoid null
     if( m_waiting_command_response_value == nullptr ){ 
         return false; 
@@ -70,8 +74,17 @@ bool A_Console_Render_Manager::Check_Waiting_Command_Response(){
         return false;
     }
 
+    // Check if still waiting
+    if( m_waiting_command_response_value->Check_System_Response() == false &&
+        m_waiting_command_response == true )
+    {
+        return true;
+    }
+
     // Check if recieved
-    if( m_waiting_command_response_value->Check_System_Response() ){
+    if( m_waiting_command_response_value->Check_System_Response() &&
+        m_waiting_command_response == true )
+    {
         m_waiting_command_response = false;
         return true;
     }

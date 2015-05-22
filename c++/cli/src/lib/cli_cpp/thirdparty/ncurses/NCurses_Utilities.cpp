@@ -22,7 +22,7 @@ An_NCurses_Context::An_NCurses_Context()
     tty_in(NULL),
     tty_out(NULL),
     keyboard_blocking(false),
-    keyboard_timeout_usec(100),
+    keyboard_timeout_usec(1000),
     m_class_name("An_NCurses_Context")
 {
 }
@@ -66,7 +66,14 @@ void Initialize( An_NCurses_Context::ptr_t  context )
 
     // Prevent blocking
     nodelay( stdscr, !(context->keyboard_blocking) );
+    
+    // Initialize Color
+    start_color();
 
+    // Initialize Color Pairs
+    init_pair(1, COLOR_RED, COLOR_BLACK);
+    init_pair(2, COLOR_BLUE, COLOR_BLACK);
+    init_pair(3, COLOR_GREEN, COLOR_BLACK);
 }
 
 

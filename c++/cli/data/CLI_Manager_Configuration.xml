@@ -22,7 +22,7 @@
 
     <!-- Local CLI Configuration -->
     <local-configuration>
-
+        <keyboard_sleep_while_waiting_response value_usec="1000" />
     </local-configuration>
 
 

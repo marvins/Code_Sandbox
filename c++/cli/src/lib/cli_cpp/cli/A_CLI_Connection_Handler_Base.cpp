@@ -50,6 +50,13 @@ void A_CLI_Connection_Handler_Base::Process_Command()
         return;
     }
 
+    // Cancel the command if we are still waiting on another command to finish
+    if( this->m_console_render_manager->Check_Waiting_Command_Response() )
+    {
+        BOOST_LOG_TRIVIAL(debug) << "Waiting on response for existing command. Skipping action.";
+        this->m_render_state->Clear_Cursor_Text();
+        return;
+    }
 
     // Check the command
     CMD::A_CLI_Command_Result result = m_cli_command_parser->Evaluate_Command( this->m_render_state->Get_Cursor_Text() );

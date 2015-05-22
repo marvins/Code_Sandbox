@@ -177,11 +177,20 @@ void A_Console_Render_Manager_NCurses::Refresh()
 {
 
     // Check system response
-    if( Check_Waiting_Command_Response() == true ){
-        BOOST_LOG_TRIVIAL(trace) << "Using the system response value.";
+    if( Check_Waiting_Command_Response() == true )
+    {
+        int result_color_code = 0;
+        if( m_waiting_command_response_value->Get_Command().Response_Expected() == true &&
+            m_waiting_command_response_value->Check_System_Response() == false )
+        {
+            result_color_code = 2;
+        }
+
+        BOOST_LOG_TRIVIAL(debug) << "Using the system response value: " << m_waiting_command_response_value->Get_System_Response();
         m_history_print_table->Add_Entry( m_command_history->Get_Back().Get_Command_ID(),
                                           2,
-                                          m_waiting_command_response_value->Get_System_Response() );
+                                          m_waiting_command_response_value->Get_Parse_Status_String(),
+                                          result_color_code );
     }
 
 
@@ -229,6 +238,11 @@ int A_Console_Render_Manager_NCurses::Wait_Keyboard_Input()
         if( m_waiting_command_response == true ||
             value > 0 )
         {
+            // Sleep if waiting to avoid flickering
+            if( m_waiting_command_response == true ){
+                usleep(10000);
+            }
+
             break;
         }
 
@@ -339,10 +353,13 @@ void  A_Console_Render_Manager_NCurses::Add_Command_History( const std::string& 
 {
 
     // Log
-    BOOST_LOG_TRIVIAL(debug) << "Adding Command\"" << command_string << "\" to history.";
+    BOOST_LOG_TRIVIAL(debug) << "Adding Command \"" << command_string << "\" to history.";
 
     // Increment the counter
     m_command_counter++;
+
+    // Set the color code 
+    int status_color_code = CMD::CLICommandParseStatusToColorCode(command_result.Get_Parse_Status());
 
     // Update the table
     m_history_print_table->Add_Entry( m_command_counter,
@@ -355,7 +372,9 @@ void  A_Console_Render_Manager_NCurses::Add_Command_History( const std::string& 
     
     m_history_print_table->Add_Entry( m_command_counter, 
                                       2,
-                                      command_result.Get_Parse_Status_String());
+                                      command_result.Get_Parse_Status_String(),
+                                      status_color_code );
+
 
     // Throw an error if the history is null
     if( m_command_history == nullptr ){

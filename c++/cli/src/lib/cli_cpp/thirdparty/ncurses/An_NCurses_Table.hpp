@@ -82,7 +82,10 @@ class An_NCurses_Table{
         /**
          * @brief Add Entry
         */
-        void Add_Entry( const int& row, const int& col, const std::string& data );
+        void Add_Entry( const int& row, 
+                        const int& col, 
+                        const std::string& data,
+                        const int& color_code = 0 );
 
 
     private:
@@ -95,6 +98,9 @@ class An_NCurses_Table{
 
         /// Table Data
         std::vector<std::vector<std::string>> m_table_data;
+        
+        /// Table Color Data
+        std::vector<std::vector<int>> m_table_colors;
 
         /// Configuration
         An_NCurses_Table_Configuration m_configuration;

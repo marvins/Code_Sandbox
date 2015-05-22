@@ -28,6 +28,10 @@ enum class CLICommandParseStatus : uint8_t {
     CLI_BACK            = 7 /**< Back command entered.*/,
 }; // End of CLICommandParseStatus Enumeration
 
+/**
+ * @brief Convert a CLICommandParseStatus to Color Code
+ */
+int CLICommandParseStatusToColorCode( const CLICommandParseStatus& status );
 
 /**
  * @brief Convert a CLICommandParseStatus to String

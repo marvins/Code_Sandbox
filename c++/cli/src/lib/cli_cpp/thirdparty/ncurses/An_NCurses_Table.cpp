@@ -34,6 +34,7 @@ An_NCurses_Table::An_NCurses_Table( const std::vector<std::string>& column_title
  : m_column_titles(column_titles),
    m_column_widths(column_widths),
    m_table_data( column_titles.size() ),
+   m_table_colors( column_titles.size() ),
    m_configuration(configuration)
 {
 
@@ -101,20 +102,28 @@ void An_NCurses_Table::Print_Table( const int& min_row,
 
 
         // Reset the string
-        current_line = "|";
+        mvprintw( row, min_col, "|");//current_line = "|";
 
         // Print the data
         for( int col=0; col<(int)m_table_data.size(); col++ ){
             
+            // Set the color
+            attron(COLOR_PAIR(m_table_colors[col][current_row_entry]));
+
             // Append column
-            current_line += UTILS::Format_String( m_table_data[col][current_row_entry], 
-                                                  m_column_widths[col],
-                                                  UTILS::StringAlignment::LEFT ) + "|";
+            printw( UTILS::Format_String( m_table_data[col][current_row_entry], 
+                                          m_column_widths[col],
+                                          UTILS::StringAlignment::LEFT ).c_str());
             
+            // Set the color
+            attroff(COLOR_PAIR(m_table_colors[col][current_row_entry]));
+            
+            // Print the end
+            printw( "|" );
         }
         
         // Print
-        mvprintw( row, min_col, current_line.c_str() );
+        //mvprintw( row, min_col, current_line.c_str() );
 
         // make blank space underneath
         if( m_configuration.Has_Blank_Line_After_Entry() == true ){
@@ -135,7 +144,8 @@ void An_NCurses_Table::Print_Table( const int& min_row,
 /********************************/
 void An_NCurses_Table::Add_Entry( const int& row,
                                   const int& col,
-                                  const std::string& data )
+                                  const std::string& data,
+                                  const int& color_code )
 {
 
     // Check column sizes
@@ -147,11 +157,13 @@ void An_NCurses_Table::Add_Entry( const int& row,
     if( (int)m_table_data[col].size() <= row ){
         for( int c=0; c<(int)m_table_data.size(); c++ ){
             m_table_data[c].resize( row+1, std::string(""));
+            m_table_colors[c].resize( row+1, 0 );
         }
     }
 
     // Set the value
     m_table_data[col][row] = data;
+    m_table_colors[col][row] = color_code;
 
 }
 

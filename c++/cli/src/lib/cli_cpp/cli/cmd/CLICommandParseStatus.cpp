@@ -99,6 +99,51 @@ std::string CLICommandParseStatusToHistoryString( CLICommandParseStatus const& s
     return "Unknown";
 }
 
+/********************************************************/
+/*    Convert CLI Command Parse Status to Color Code    */
+/********************************************************/
+int CLICommandParseStatusToColorCode( CLICommandParseStatus const& status )
+{
+
+    // Valid
+    if( status == CLICommandParseStatus::VALID ){
+        return 0;
+    }
+
+    // Valid Shutdown
+    if( status == CLICommandParseStatus::CLI_SHUTDOWN ){
+        return 0;
+    }
+
+    // Valid help
+    if( status == CLICommandParseStatus::CLI_HELP ){
+        return 0;
+    }
+
+    // Back help
+    if( status == CLICommandParseStatus::CLI_BACK ){
+        return 0;
+    }
+
+    // Invalid arguments
+    if( status == CLICommandParseStatus::INVALID_ARGUMENTS ){
+        return 1;
+    }
+
+    // Excessive Arguments
+    if( status == CLICommandParseStatus::EXCESSIVE_ARGUMENTS ){
+        return 1;
+    }
+
+    // No Command Found
+    if( status == CLICommandParseStatus::NO_COMMAND_FOUND ){
+        return 1;
+    }
+
+    // UNKNOWN
+    return 0;
+}
+
 
 
 /********************************************************/
