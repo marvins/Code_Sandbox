@@ -262,7 +262,7 @@ void A_Console_Render_Manager_NCurses::Print_Main_Content()
 {
     
     // Set the min and max rows
-    int min_row = 5;
+    int min_row = 3;
     int max_row = m_render_state->Get_Rows() - 5;
     int offset_col = 3;
 
@@ -279,7 +279,7 @@ void A_Console_Render_Manager_NCurses::Print_Help_Content()
 {
 
     // Define our stop and start rows
-    int min_row = 5;
+    int min_row = 3;
     int max_row   = m_render_state->Get_Rows() - 5;
     
     // Define our start columns
