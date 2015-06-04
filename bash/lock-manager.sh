@@ -4,7 +4,7 @@
 #    Author:  Marvin Smith
 #    Date:    4/24/2014
 #
-#    Purpose: Lock and unlock llnms files
+#    Purpose: Lock and unlock using the filesystem.
 #
 #    References: http://wiki.grzegorz.wierzowiecki.pl/code:mutex-in-bash
 #
