@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Traveling Salesman Solutions</title>
+    <meta name="viewport" content="initial-scale=1.0">
+    <meta charset="utf-8">
+    <style>
+      html, body {
+        height: 100%;
+        margin: 0;
+        padding: 0;
+      }
+      #map {
+        height: 100%;
+      }
+    </style>
+      <script>
+        var map;
+        var ga_markers = [];
+        var ga_windows = [];
+        var ga_titles = []
+
+        /**
+         * Initialize the Google Map Window
+        */
+        function initMap()
+        {
+
+            // Create the Google Earth Map Object
+            map = new google.maps.Map(document.getElementById('map'), {
+                center: {lat: __CENTER_LAT__, lng: __CENTER_LON__},
+                zoom: 5
+              });
+
+
+            // Add our Points
+            __GA_POINTS_HERE__
+            __BF_POINTS_HERE__
+            __GD_POINTS_HERE__
+
+            #  Titles
+            __WINDOW_TITLES_HERE__
+
+
+            // Build the Flight Path
+            var ga_path = new google.maps.Polyline({
+                path: ga_path_coordinates,
+                geodesic: true,
+                strokeColor: '#FF0000',
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+            });
+
+            var gd_path = new google.maps.Polyline({
+                path: gd_path_coordinates,
+                geodesic: true,
+                strokeColor: '#FF0000',
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+            });
+
+            var bf_path = new google.maps.Polyline({
+                path: bf_path_coordinates,
+                geodesic: true,
+                strokeColor: '#00FF00',
+                strokeOpacity: 1.0,
+                strokeWeight: 2
+            });
+
+            ga_path.setMap(map);
+            gd_path.setMap(map);
+            bf_path.setMap(map);
+
+            // Iterate over both sets of points, creating markers
+            ga_path_length = ga_path_coordinates.length;
+            for( var i = 0; i < ga_path_length; i++ )
+            {
+                ga_windows[i] = new google.maps.InfoWindow({
+                    content: ga_titles[i]
+                });
+
+                // Create marker
+                ga_markers[i] = new google.maps.Marker({
+                    position: ga_path_coordinates[i],
+                    title:"Marker_" + i.toString(),
+                    label: "G",
+                    map: map
+                });
+            }
+
+            __ADD_LISTENERS__
+        }
+
+      </script>
+    <script src="https://maps.googleapis.com/maps/api/js?callback=initMap" async defer></script>
+  </head>
+  <body>
+
+    <!-- Define our Map -->
+    <div id="map"></div>
+
+  </body>
+</html>
+
