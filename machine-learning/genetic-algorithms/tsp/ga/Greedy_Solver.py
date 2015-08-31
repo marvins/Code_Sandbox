@@ -60,4 +60,7 @@ class Greedy_Solver(object):
             city_list.remove(city_list[candidate_idx])
 
 
+        #  Update the fitness
+        output.Update_Fitness()
+
         return output

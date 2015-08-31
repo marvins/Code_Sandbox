@@ -14,7 +14,12 @@
         height: 100%;
       }
     </style>
-      <script>
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
+    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+    <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
+
+
+    <script>
         var map;
         var ga_markers = [];
         var ga_windows = [];
@@ -97,8 +102,19 @@
   </head>
   <body>
 
-    <!-- Define our Map -->
-    <div id="map"></div>
+    <!-- Main Page -->
+    <div id="map-page" data-role="page" data-url="map-page">
+    
+        <!-- Build the Header -->
+        <div style="overflow:hidden;" data-role="header" data-position="fixed" >
+            <h1>Traveling Salesman Results</h1>
+        </div> <!-- End of Header -->
+
+        <!-- Define our Map -->
+        <div id="map"></div>
+
+    </div> <!-- End of main (map) page -->
+
 
   </body>
 </html>
