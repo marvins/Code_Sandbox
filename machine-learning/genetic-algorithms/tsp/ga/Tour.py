@@ -21,7 +21,7 @@ class Tour(object):
     def __init__(self, cities = []):
 
         #  List of cities
-        if len(cities) > 0:
+        if cities is not None and len(cities) > 0:
 
             #  Set the list
             self.cities = list(cities)

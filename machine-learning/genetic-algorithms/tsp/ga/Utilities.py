@@ -64,8 +64,8 @@ def Build_Google_Map_Coordinate_List(alg_name, alg_list, xoff = 0, yoff = 0):
     output += "];\n"
 
     #  Divide the center values
-    center_lat /= len(alg_list)
-    center_lon /= len(alg_list)
+    center_lat /= len(alg_list.cities)
+    center_lon /= len(alg_list.cities)
 
     #  Return output
     return output, center_lat, center_lon
@@ -90,22 +90,22 @@ def Write_Output( best_fit_ga,
     xoff_ga = 0
     yoff_ga = 0
 
-    xoff_gd = -0.01
-    yoff_gd = -0.01
+    xoff_gd = -0.05
+    yoff_gd = -0.05
 
-    xoff_bf = 0.01
-    yoff_bf = 0.01
+    xoff_bf = 0.05
+    yoff_bf = 0.05
 
     #  Construct the output
     ga_point_text, ga_center_lat, ga_center_lon = Build_Google_Map_Coordinate_List('ga_path_coordinates', best_fit_ga, xoff_ga, yoff_ga)
     gd_point_text, gd_center_lat, gd_center_lon = Build_Google_Map_Coordinate_List('gd_path_coordinates', best_fit_gd, xoff_gd, yoff_gd)
-    bf_point_text, bf_center_lat, bf_center_lon = Build_Google_Map_Coordinate_List('ga_path_coordinates', best_fit_bf, xoff_bf, yoff_bf)
+    bf_point_text, bf_center_lat, bf_center_lon = Build_Google_Map_Coordinate_List('bf_path_coordinates', best_fit_bf, xoff_bf, yoff_bf)
 
 
     #  Update the Point Info
     data = data.replace('__GA_POINTS_HERE__', ga_point_text)
-    data = data.replace('__GD_POINTS_HERE__', ga_point_text)
-    data = data.replace('__BF_POINTS_HERE__', ga_point_text)
+    data = data.replace('__GD_POINTS_HERE__', gd_point_text)
+    data = data.replace('__BF_POINTS_HERE__', bf_point_text)
 
     #   Update the center map position
     data = data.replace('__CENTER_LAT__', str(ga_center_lat))
