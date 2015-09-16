@@ -40,7 +40,21 @@ def Haversine_Distance_Meters(lat1, long1, lat2, long2):
     return arc * radius_meters
 
 
-def Build_Google_Map_Coordinate_List(alg_name, alg_list, xoff = 0, yoff = 0):
+def Build_Google_Map_Coordinate_List(alg_name,
+                                     alg_list,
+                                     xoff = 0,
+                                     yoff = 0):
+    """
+    Build Google Map Coordinate List
+    :param alg_name:
+    :param alg_list:
+    :param xoff:
+    :param yoff:
+    :return:
+    """
+
+    # Gap
+    gap = '                                       '
 
     #  Create output
     output =  'var ' + alg_name + ' = ['
@@ -54,7 +68,7 @@ def Build_Google_Map_Coordinate_List(alg_name, alg_list, xoff = 0, yoff = 0):
 
     #  Iterate over each city in list
     for city in alg_list.cities[1:]:
-        output += ",\n{lat: " + str(city.latitude) + ", lng: " + str(city.longitude) + "}"
+        output += ",\n" + gap + "{lat: " + str(city.latitude) + ", lng: " + str(city.longitude) + "}"
 
         #  Sum the latitudes and longitudes
         center_lat += city.latitude
@@ -90,11 +104,11 @@ def Write_Output( best_fit_ga,
     xoff_ga = 0
     yoff_ga = 0
 
-    xoff_gd = -0.05
-    yoff_gd = -0.05
+    xoff_gd = -0.1
+    yoff_gd = -0.1
 
-    xoff_bf = 0.05
-    yoff_bf = 0.05
+    xoff_bf = 0.1
+    yoff_bf = 0.1
 
     #  Construct the output
     ga_point_text, ga_center_lat, ga_center_lon = Build_Google_Map_Coordinate_List('ga_path_coordinates', best_fit_ga, xoff_ga, yoff_ga)
@@ -113,14 +127,16 @@ def Write_Output( best_fit_ga,
 
 
     #   Add the listeners
+    gap = '       '
     output_text = ''
     for x in range(0,len(best_fit_ga.cities)):
-        output_text += 'ga_markers[' + str(x) + '].addListener(\'click\',function(){ga_windows[' + str(x) + '].open(map,ga_markers[' + str(x) + ']);});\n'
+        output_text += gap + 'ga_markers[' + str(x) + '].addListener(\'click\',function(){ga_windows[' + str(x) + '].open(map,ga_markers[' + str(x) + ']);});\n'
     data = data.replace('__ADD_LISTENERS__', output_text)
 
 
     #  Add the Window Titles
     output_text = ''
+    gap = '            '
     output_text += 'ga_titles[' + str(x) + ']=\'Start and Finish\'\n'
     for x in range(1,len(best_fit_ga.cities)-1):
         bf_marker = 0
@@ -128,7 +144,7 @@ def Write_Output( best_fit_ga,
             if best_fit_ga.cities[x].name == best_fit_bf.cities[y].name:
                 bf_marker = y
                 break
-        output_text += 'ga_titles[' + str(x) + ']=\'GA Marker ' + str(x) + ', BF Marker ' + str(bf_marker) + '\'\n'
+        output_text += gap + 'ga_titles[' + str(x) + ']=\'GA Marker ' + str(x) + ', BF Marker ' + str(bf_marker) + '\'\n'
 
     data = data.replace('__WINDOW_TITLES_HERE__', output_text)
 

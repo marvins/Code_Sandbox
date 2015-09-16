@@ -10,17 +10,44 @@
         margin: 0;
         padding: 0;
       }
-      #map {
+      #map-page, #map-canvas {
         height: 100%;
       }
+
+      .bruteButton{
+        background-color: lightGreen !important;
+        border: 0 !important;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+      }
+
+      .greedyButton{
+        background-color: lightRed !important;
+        border: 0 !important;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+      }
+
+      .geneticButton {
+        background-color: lightBlue !important;
+        border: 0 !important;
+        -webkit-box-shadow: none;
+        box-shadow: none;
+      }
+
     </style>
 
+    <!-- JQuery Mobile -->
     <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
     <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
+
+    <!-- Google Maps API -->
     <script src="http://maps.google.com/maps/api/js?sensor=false"></script>
 
+
+    <!-- Create Map Data -->
     <script>
 
     $( document ).on( "pagecreate", "#map-page", function() {
@@ -37,7 +64,7 @@
         {
 
             // Create the Google Earth Map Object
-            map = new google.maps.Map(document.getElementById('map'), {
+            map = new google.maps.Map(document.getElementById('map-canvas'), {
                 center: {lat: __CENTER_LAT__, lng: __CENTER_LON__},
                 zoom: 5
               });
@@ -103,9 +130,12 @@
 
         } // End of Init_Map Method
 
-        }); // End of Document Page Creation
+        // Initialize the Map
+        initMap();
 
-      </script>
+    }); // End of Document Page Creation
+
+    </script>
 
   </head>
   <body>
@@ -114,15 +144,39 @@
     <div id="map-page" data-role="page" data-url="map-page">
 
         <!-- Build the Header -->
-        <div style="overflow:hidden;" data-role="header" data-position="fixed" >
-            <h1>Traveling Salesman Results</h1>
+        <div data-role="header" data-theme="a" >
+          <h1>Traveling Salesman Results</h1>
         </div> <!-- End of Header -->
 
-        <!-- Define our Map -->
-        <div id="map"></div>--.
+        <!-- Main Page -->
+        <div data-role="content" style="width:100%;">
 
+          <!-- Grid -->
+          <div class="ui-grid-a" id="mygrid" style="width:90%;">
+
+            <!-- Main Control Panel -->
+            <div id="div1" class="ui-block-a" style="width:20%;">
+              <h3>Options</h3>
+              <div data-role="controlgroup" >
+                <a href="#" class="ui-btn ui-btn-icon-right ui-nodisk-icon geneticButton">Genetic</a>
+                <a href="#" class="ui-btn ui-btn-icon-right ui-nodisk-icon greedyButton">Greedy</a>
+                <a href="#" class="ui-btn ui-btn-icon-right ui-nodisk-icon bruteButton">Brute-Force</a>
+              </div>
+            </div>
+
+            <div id="div2" class="ui-block-b" style="width:80%;">
+
+              <!-- Define our Map -->
+              <div id="map-canvas" style="width:100%; height:550px;">
+              <!-- map loads here... -->
+              </div>
+
+            </div>
+
+          </div>
+
+      </div><!-- End of the main window-->
     </div> <!-- End of main (map) page -->
-
 
   </body>
 </html>
