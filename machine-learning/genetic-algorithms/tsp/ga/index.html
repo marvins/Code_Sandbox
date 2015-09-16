@@ -14,12 +14,15 @@
         height: 100%;
       }
     </style>
-    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css" />
-    <script src="http://code.jquery.com/jquery-1.11.1.min.js"></script>
+
+    <link rel="stylesheet" href="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.css">
+    <script src="http://code.jquery.com/jquery-1.11.3.min.js"></script>
     <script src="http://code.jquery.com/mobile/1.4.5/jquery.mobile-1.4.5.min.js"></script>
 
 
     <script>
+
+    $( document ).on( "pagecreate", "#map-page", function() {
         var map;
         var ga_markers = [];
         var ga_windows = [];
@@ -54,7 +57,7 @@
                 geodesic: true,
                 strokeColor: '#FF0000',
                 strokeOpacity: 1.0,
-                strokeWeight: 2
+                strokeWeight: 4
             });
 
             var gd_path = new google.maps.Polyline({
@@ -62,7 +65,7 @@
                 geodesic: true,
                 strokeColor: '#0000FF',
                 strokeOpacity: 1.0,
-                strokeWeight: 2
+                strokeWeight: 4
             });
 
             var bf_path = new google.maps.Polyline({
@@ -70,7 +73,7 @@
                 geodesic: true,
                 strokeColor: '#00FF00',
                 strokeOpacity: 1.0,
-                strokeWeight: 2
+                strokeWeight: 4
             });
 
             ga_path.setMap(map);
@@ -97,6 +100,8 @@
             __ADD_LISTENERS__
         }
 
+        }); // End of Document Page Creation
+
       </script>
     <script src="https://maps.googleapis.com/maps/api/js?callback=initMap" async defer></script>
   </head>
@@ -104,14 +109,14 @@
 
     <!-- Main Page -->
     <div id="map-page" data-role="page" data-url="map-page">
-    
+
         <!-- Build the Header -->
         <div style="overflow:hidden;" data-role="header" data-position="fixed" >
             <h1>Traveling Salesman Results</h1>
         </div> <!-- End of Header -->
 
         <!-- Define our Map -->
-        <div id="map"></div>
+        <div id="map"></div>--.
 
     </div> <!-- End of main (map) page -->
 
