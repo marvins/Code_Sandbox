@@ -89,7 +89,12 @@ def Build_Google_Map_Coordinate_List(alg_name,
 #----------------------------------#
 def Write_Output( best_fit_ga,
                   best_fit_bf,
-                  best_fit_gd):
+                  best_fit_gd,
+                  ga_time,
+                  bf_time,
+                  gd_time,
+                  ga_dist,
+                  gd_dist):
 
     #  Select the input HTML Path
     filename = 'ga/index.html'
@@ -125,6 +130,14 @@ def Write_Output( best_fit_ga,
     data = data.replace('__CENTER_LAT__', str(ga_center_lat))
     data = data.replace('__CENTER_LON__', str(ga_center_lon))
 
+    #  Update the performance times
+    data = data.replace('__GA_TIME__', "%f" % ga_time)
+    data = data.replace('__GD_TIME__', "%f" % gd_time)
+    data = data.replace('__BF_TIME__', "%f" % bf_time)
+
+    #  Update distnaces
+    data = data.replace('__GA_DIST__', "%f" % ga_dist)
+    data = data.replace('__GD_DIST__', "%f" % gd_dist)
 
     #   Add the listeners
     gap = '       '

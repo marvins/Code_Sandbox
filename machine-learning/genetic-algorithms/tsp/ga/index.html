@@ -35,6 +35,27 @@
         box-shadow: none;
       }
 
+      .opContainer{
+        float:left;
+        width=100%;
+        clear: left;
+      }
+
+      .leftBox {
+        float: left;
+         width: 260px;
+      }
+
+      div.midBox {
+         float: left;
+         width: 150px;
+      }
+
+      div.rightBox {
+         float: left;
+         width: 800px;
+      }
+
     </style>
 
     <!-- JQuery Mobile -->
@@ -50,9 +71,49 @@
     <!-- Create Map Data -->
     <script>
 
+    var map;
+    var ga_path;
+    var gd_path;
+    var bf_path;
+
+    function hidePath( pathName ){
+        pathName.setMap(null);
+    }
+    function showPath( pathName ){
+        pathName.setMap(map);
+    }
+
+    function toggleBrute(){
+        var a = $("#bruteFlipSwitch").prop("checked");
+        if( a == true ){
+            hidePath( bf_path );
+        }
+        else{
+            showPath( bf_path );
+        }
+    }
+    function toggleGreedy(){
+        var a = $("#greedyFlipSwitch").prop("checked");
+        if( a == true ){
+            hidePath( gd_path );
+        }
+        else{
+            showPath( gd_path );
+        }
+    }
+
+    function toggleGenetic(){
+        var a = $("#geneticFlipSwitch").prop("checked");
+        if( a == true ){
+            hidePath( ga_path );
+        }
+        else{
+            showPath( ga_path );
+        }
+      }
+
     $( document ).on( "pagecreate", "#map-page", function() {
 
-        var map;
         var ga_markers = [];
         var ga_windows = [];
         var ga_titles = []
@@ -81,7 +142,7 @@
 
 
             // Build the Flight Path
-            var ga_path = new google.maps.Polyline({
+            ga_path = new google.maps.Polyline({
                 path: ga_path_coordinates,
                 geodesic: true,
                 strokeColor: '#FF0000',
@@ -89,7 +150,7 @@
                 strokeWeight: 4
             });
 
-            var gd_path = new google.maps.Polyline({
+            gd_path = new google.maps.Polyline({
                 path: gd_path_coordinates,
                 geodesic: true,
                 strokeColor: '#0000FF',
@@ -97,7 +158,7 @@
                 strokeWeight: 4
             });
 
-            var bf_path = new google.maps.Polyline({
+            bf_path = new google.maps.Polyline({
                 path: bf_path_coordinates,
                 geodesic: true,
                 strokeColor: '#00FF00',
@@ -121,7 +182,6 @@
                 ga_markers[i] = new google.maps.Marker({
                     position: ga_path_coordinates[i],
                     title:"Marker_" + i.toString(),
-                    label: "G",
                     map: map
                 });
             }
@@ -129,6 +189,8 @@
             __ADD_LISTENERS__
 
         } // End of Init_Map Method
+
+
 
         // Initialize the Map
         initMap();
@@ -151,33 +213,74 @@
         <!-- Main Page -->
         <div data-role="content" style="width:100%;">
 
-          <!-- Grid -->
-          <div class="ui-grid-a" id="mygrid" style="width:90%;">
-
-            <!-- Main Control Panel -->
-            <div id="div1" class="ui-block-a" style="width:20%;">
-              <h3>Options</h3>
-              <div data-role="controlgroup" >
-                <a href="#" class="ui-btn ui-btn-icon-right ui-nodisk-icon geneticButton">Genetic</a>
-                <a href="#" class="ui-btn ui-btn-icon-right ui-nodisk-icon greedyButton">Greedy</a>
-                <a href="#" class="ui-btn ui-btn-icon-right ui-nodisk-icon bruteButton">Brute-Force</a>
-              </div>
-            </div>
-
-            <div id="div2" class="ui-block-b" style="width:80%;">
-
-              <!-- Define our Map -->
-              <div id="map-canvas" style="width:100%; height:550px;">
-              <!-- map loads here... -->
-              </div>
-
-            </div>
-
+          <!-- Define our Map -->
+          <div id="map-canvas" style="width:100%; height:550px;">
+          <!-- map loads here... -->
           </div>
 
+          <!-- Header Content Area -->
+          <div class="opContainer">
+              <div class="leftBox"><h2>Algorithm</h2></div>
+              <div class="midBox"><h2>Route Selector</h2></div>
+              <div class="rightBox"><h2>Performance</h2></div>
+          </div>
+
+          <!-- Greedy Algorithm Content Area -->
+          <div class="opContainer">
+
+              <!-- Greedy Algorithm -->
+              <div class="leftBox"><h3>Greedy Algorithm</h3></div>
+
+              <!-- Greedy Flipswitch -->
+              <div class="midBox" id="greedyFlipSwitchWrapper">
+                <form>
+                    <input name="flip-checkbox-2" id="greedyFlipSwitch" type="checkbox" data-role="flipswitch" data-wrapper-class="custom-label-flipswitch" data-off-text="Hide" data-on-text="Show" >
+                </form>
+              </div>
+
+              <!-- Info -->
+              <div class="rightBox">Time: __GD_TIME__ seconds, Distance from Optimal: __GD_DIST__</div>
+            </div>
+
+            <!-- Genetic Algorithm Content Area -->
+            <div class="opContainer">
+              <!-- Genetic Algorithm -->
+              <div class="leftBox"><h3>Genetic Algorithm</h3></div>
+
+              <!-- GA FlipSwitch -->
+              <div class="midBox">
+                <form>
+                    <input name="flip-checkbox-2" id="geneticFlipSwitch" type="checkbox" data-role="flipswitch" data-wrapper-class="custom-label-flipswitch" data-off-text="Hide" data-on-text="Show" >
+                </form>
+              </div>
+
+              <!-- GA Info -->
+              <div class="rightBox">Time: __GA_TIME__ seconds, Distance from Optimal: __GA_DIST__</div>
+            </div>
+
+            <div class="opContainer">
+               <!-- Brute Force Algorithm -->
+              <div class="leftBox"><h3>Brute Force Algorithm</h3></div>
+
+              <!-- Greedy Flipswitch -->
+              <div class="midBox">
+                <form>
+                    <input name="flip-checkbox-2" id="bruteFlipSwitch" type="checkbox" data-role="flipswitch" data-wrapper-class="custom-label-flipswitch" data-off-text="Hide" data-on-text="Show" >
+                </form>
+              </div>
+
+              <!-- Info -->
+              <div class="rightBox">Time: __BF_TIME__ seconds, Optimal Solution</div>
+          </div> <!-- End of Content Area -->
       </div><!-- End of the main window-->
     </div> <!-- End of main (map) page -->
 
+  <script>
+      $("#greedyFlipSwitch").change(toggleGreedy);
+      $("#geneticFlipSwitch").change(toggleGenetic);
+      $("#bruteFlipSwitch").change(toggleBrute);
+
+  </script>
   </body>
 </html>
 

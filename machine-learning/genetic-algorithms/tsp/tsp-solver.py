@@ -156,11 +156,19 @@ def Main():
         else:
             logging.warning('solutions are different!')
 
+    #  Compute distances
+    ga_dist = population[0].distance
+    gd_dist = gd_solution.distance
 
     #  Print onto the web-page
     Write_Output(population[0],
                  bf_solution,
-                 gd_solution)
+                 gd_solution,
+                 ga_time,
+                 bf_time,
+                 gd_time,
+                 ga_dist,
+                 gd_dist)
 
     logging.info('GA Runtime: ' + str(ga_time) + ' seconds')
     logging.info('GD Runtime: ' + str(gd_time) + ' seconds')
