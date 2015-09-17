@@ -157,8 +157,8 @@ def Main():
             logging.warning('solutions are different!')
 
     #  Compute distances
-    ga_dist = population[0].distance
-    gd_dist = gd_solution.distance
+    ga_dist = bf_solution.distance - population[0].distance
+    gd_dist = bf_solution.distance - gd_solution.distance
 
     #  Print onto the web-page
     Write_Output(population[0],
