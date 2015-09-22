@@ -1,0 +1,17 @@
+<image-render-utility>
+
+    <window>
+        <size rows="700"
+              cols="800" />
+
+        <name value="Image Render Tool" />
+    
+        <!-- Set the Background Color -->
+        <background-color  red="0"
+                           green="0"
+                           blue="0"
+                           alpha="0" />
+    </window>
+
+
+</image-render-utility>

@@ -24,9 +24,9 @@ set expandtab        " expand tabs to spaces
 " makefiles must use tabs
 autocmd FileType * set expandtab
 autocmd BufRead,BufNewFile [Mm]akefile set noexpandtab
-autocmd BufRead,BufNewFile *.py set noexpandtab
+"autocmd BufRead,BufNewFile *.py set noexpandtab
 autocmd FileType make set noexpandtab
-autocmd FileType python set noexpandtab
+"autocmd FileType python set noexpandtab
 
 " set textwidth to wrap at 80 characters
 "set textwidth=80
