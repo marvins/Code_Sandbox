@@ -65,6 +65,7 @@ int main( int argc, char* argv[] )
     cv::Mat image = cv::imread( image_paths[0] );
 
     // Set the frame size
+    std::cout << "Frame size: " << image.size() << std::endl;
     cv::Size frame_size = image.size();
 
 
@@ -73,7 +74,7 @@ int main( int argc, char* argv[] )
     cv::VideoWriter video_writer;
     bool is_color = true;
     double fps = 2;
-    int four_cc = CV_FOURCC('M','P','4','2');//-1;
+    int four_cc = -1;//CV_FOURCC('M','P','4','2');//-1;
 
 
     // Open Video Writer

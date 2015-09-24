@@ -1,0 +1,103 @@
+\documentclass[12pt]{report}
+
+
+\usepackage{fullpage}
+\usepackage{algpseudocode}
+\usepackage{algorithmicx}
+\usepackage{amsmath}
+
+\begin{document}
+
+\section*{Data Description}
+
+The dataset contains 435 lines.  One per member of the House of Representatives.  Each 
+line contains the political party, followed by their votes on 17 selected issues.  
+
+Each vote can be \emph{yes}, \emph{no}, or \emph{no-vote}.  
+
+
+\section*{Algorithm}
+
+Because I want to consider non-voting choices, I use a Normal Distribution with the following values
+for each choice.
+
+\begin{itemize}
+\item[] yes = 1
+\item[] no  = 0
+\item[] no-vote = 0.5
+\end{itemize}
+
+The MLE equation for computing the mean $\mu$ given a sample is therefore
+
+\begin{equation}
+\mu = \sum_{i=1}^{N} \frac{\bar{x}_i}{N}
+\end{equation}
+
+The MLE equation for standard deviation, $\sigma$, is 
+
+\begin{equation}
+\sigma = \sqrt{\frac{1}{N} \sum_{i-1}^{N} \left( x_i - \mu \right)}
+\end{equation}
+
+
+First, a subset of the voting entries are taken and then split into a Republican group and 
+Democrat group. 
+
+A mean and standard deviation are computed for each party, for each vote.  The end result is
+
+\begin{equation}
+\begin{matrix}
+V_{r} = \{ \left( \mu_{r_1}, \sigma_{r_1} \right), \left( \mu_{r_2}, \sigma_{r_2} \right), \cdots, \left( \mu_{r_N}, \sigma_{r_N} \right) \}\\
+V_{d} = \{ \left( \mu_{d_1}, \sigma_{d_1} \right), \left( \mu_{d_2}, \sigma_{d_2} \right), \cdots, \left( \mu_{d_N}, \sigma_{d_N} \right) \}
+\end{matrix}
+\end{equation}
+
+
+\clearpage
+\subsection*{Classification}
+
+For classification, a test set with the same dimensionality as the training set is used.
+
+A test sample is compared against each party.  For the quality metric, we use the z-score.\\
+
+
+\begin{algorithmic}
+\State
+\State Given $S = \left( x_1, x_2, \cdots, x_N \right)$ where $N = $ number of votes and $x = $ (Y,N, no-vote).
+\State
+\State \# Set initial total to zero
+\State $total\_score = 0$
+\State
+\State \# Iterate over each vote
+\For{ $i = [1 : N]$}
+    
+    \State
+    \State \# Compute the Republican Z-Score
+    \State $Z_{r_i} = \frac{\left|\mu_{r_i} - x_i\right|}{\sigma}$
+    
+    \State
+    \State \# Compute the Democrat Z-Score
+    \State $Z_{d_i} = \frac{\left|\mu_{d_i} - x_i\right|}{\sigma}$
+    \State
+
+    \State \# Compute the Best Choice
+    \If{ $Z_{r_i} < Z_{d_i}$ }
+        \State $total\_score += Z_{r_i}$
+    \Else
+        \State $total\_score -= Z_{d_i}$
+    \EndIf
+
+
+\EndFor
+\State
+\State \# Compute Total Party
+\If{ $total\_score > 0$ }
+    \State $S$ is a Republican
+\Else
+    \State $S$ is a Democrat
+\EndIf
+
+\end{algorithmic}
+
+\end{document}
+
