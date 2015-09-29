@@ -5,6 +5,7 @@
 \usepackage{algpseudocode}
 \usepackage{algorithmicx}
 \usepackage{amsmath}
+\usepackage{amsfonts}
 
 \begin{document}
 
@@ -58,7 +59,7 @@ V_{d} = \{ \left( \mu_{d_1}, \sigma_{d_1} \right), \left( \mu_{d_2}, \sigma_{d_2
 
 For classification, a test set with the same dimensionality as the training set is used.
 
-A test sample is compared against each party.  For the quality metric, we use the z-score.\\
+A test sample is compared against each party.  For the quality metric, we use the z-score.
 
 
 \begin{algorithmic}
@@ -98,6 +99,56 @@ A test sample is compared against each party.  For the quality metric, we use th
 \EndIf
 
 \end{algorithmic}
+
+\clearpage
+\subsection*{Binomial Distribution}
+
+
+Probability Mass Function
+
+\begin{equation}
+f(n,k | p) = \begin{pmatrix}
+n\\k
+\end{pmatrix} p^k (1-p)^{n-k} =\left( \frac{n!}{k!(n-k)!}\right) p^k (1-p)^{n-k}
+\end{equation}
+
+Likelihood
+
+\begin{equation}
+\mathfrak{L}(p|n,k) = \begin{pmatrix}
+n\\k
+\end{pmatrix} p^k (1-p)^{n-k} =\left( \frac{n!}{k!(n-k)!}\right) p^k (1-p)^{n-k}
+\end{equation}
+
+Log Likelihood
+
+\begin{equation}
+\ln \mathfrak{L}(p | n, k) = \ln \left( \frac{n!}{k!(n-k)!}\right) + k \ln p  + (n-k) \ln (1-p)
+\end{equation}
+
+Derivative of Log-Likelihood
+
+\begin{equation}
+\frac{\partial \ln \mathfrak{L}(p | n, k)}{\partial p} = \frac{k}{p} - \frac{(n-k)}{1 - p} = \frac{k - np}{p (1-p)}
+\end{equation}
+
+
+Solution 
+\begin{equation}
+\frac{\partial \ln \mathfrak{L}(p | n, k)}{\partial p} = 0
+\end{equation}
+
+\begin{equation}
+\frac{k}{p} - \frac{(n-k)}{(1-p)} = 0
+\end{equation}
+
+\begin{equation}
+\frac{k - np}{p (1-p)} = 0
+\end{equation}
+
+\begin{equation}
+p = \frac{k}{n}
+\end{equation}
 
 \end{document}
 
