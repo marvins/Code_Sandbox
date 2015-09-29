@@ -7,6 +7,7 @@ import argparse, csv, math, numpy as np, time, logging
 #  Project Libraries
 import ga
 from ga import City, Tour
+from ga.Configuration import Configuration
 from ga.Greedy_Solver import Greedy_Solver
 from ga.Genetic_Algorithm import Genetic_Algorithm
 from ga.Tour_Manager import Tour_Manager
@@ -23,7 +24,7 @@ def Load_Dataset(options):
     counter = 0
 
     #  Load the csv file
-    with open( options.input_dataset) as csvfile:
+    with open( options.general_params['input_dataset']) as csvfile:
         tsp_reader = csv.DictReader(csvfile)
         for row in tsp_reader:
             cities.append( City.City(name=row['Name'],
@@ -31,76 +32,94 @@ def Load_Dataset(options):
                                      longitude=float(row['Longitude'])))
             counter += 1
 
+    #  Check if we need to remove any cities
+    if options.general_params['skip_cities'] > 0:
+        cities = cities[0:(len(cities)-options.general_params['skip_cities'])]
+    logging.debug('loaded ' + str(len(cities)) + " cities")
 
     return cities
 
 
+#-----------------------------------------#
+#-      Run the Genetic Algorithm        -#
+#-----------------------------------------#
+def Run_GA( options, cities ):
 
-#------------------------------------#
-#-        Parse Command-Line        -#
-#------------------------------------#
-def Parse_Command_Line():
+    #  Log
+    logging.debug('Running Genetic Algorithm')
 
-    #  Create parser
-    parser = argparse.ArgumentParser(description='Solve the Traveling Salesman Problem.')
+    #  Build the Initial Population
+    population = Tour_Manager(cities).Build_Population(options.ga_params['population_size'])
 
 
-    #   Set the input dataset
-    parser.add_argument('-i','--input',
-                        dest='input_dataset',
-                        required=True,
-                        help='Dataset to solve for.')
+    #  Construct Genetic Algorithm
+    ga = Genetic_Algorithm(population=population,
+                           fitness_function=lambda Tour: Tour.distance,
+                           crossover_algorithm=Tour.Tour.Crossover,
+                           selection_rate=options.ga_params['selection_rate'],
+                           mutation_algorithm=Tour.Tour.Mutate,
+                           mutation_rate=options.ga_params['mutation_rate'],
+                           preservation_rate=options.ga_params['preservation_rate'],
+                           exit_on_repeats=options.ga_params['exit_on_repeats'])
 
-    #   Set the population size
-    parser.add_argument('-p','--pop-size',
-                        dest='population_size',
-                        required=False,
-                        default=1000,
-                        help='Set the initial population size.')
 
-    #  Run a maximum number of iterations
-    parser.add_argument('-m','--max-iterations',
-                        dest='max_iterations',
-                        default=100000,
-                        required=False,
-                        help='Set the max number of times to run.')
 
-    parser.add_argument('-mr','--mutation-rate',
-                        dest='mutation_rate',
-                        default=0.15,
-                        required=False,
-                        type=float,
-                        help='Set the mutation rate.')
+    #  Run N Times
+    now = time.time()
+    logging.debug('Solving with Genetic Algorithm')
+    population = ga.Run_Iterations(options.ga_params['max_iterations'])
+    ga_time = time.time()-now
 
-    parser.add_argument('-sr','--selection-rate',
-                        dest='selection_rate',
-                        default=0.5,
-                        required=False,
-                        type=float,
-                        help='Set the selection rate.')
+    #  Log the Time
+    logging.info('GA Runtime: ' + str(ga_time) + ' seconds')
 
-    parser.add_argument('-pr','--preservation-rate',
-                        dest='preservation_rate',
-                        default=0.01,
-                        required=False,
-                        type=float,
-                        help='Set the preservation rate.')
+    #  Return results
+    return {'time':ga_time,
+            'solution':population[0],
+            'population_size':len(population),
+            'selection_rate':options.ga_params['selection_rate']}
 
-    parser.add_argument('-er','--exit-on-repeats',
-                        dest='exit_on_repeats',
-                        default=200,
-                        required=False,
-                        type=int,
-                        help="Set the number of times the best value is repeated before exiting.")
 
-    parser.add_argument('-v','--verbose',
-                        dest='verbosity',
-                        default='INFO',
-                        action='store_const',
-                        const='DEBUG',
-                        help='Enable verbose logging.')
-    #  Parse and return
-    return parser.parse_args()
+
+#----------------------------------------#
+#-      Run the Greedy Algorithm        -#
+#----------------------------------------#
+def Run_GD( options, cities):
+
+    #  Log
+    logging.debug('Running Greedy Algorithm')
+
+    #  Solve using greedy
+    now = time.time()
+    gd_solution = Greedy_Solver(cities).Solve()
+    gd_time = time.time()-now
+
+    #  Log the Time
+    logging.info('GD Runtime: ' + str(gd_time) + ' seconds')
+
+    return {'solution':gd_solution,
+            'time':gd_time}
+
+
+#---------------------------------------------#
+#-      Run the Brute Force Algorithm        -#
+#---------------------------------------------#
+def Run_BF( options, cities):
+
+    #  Log
+    logging.debug('Running Brute Force Algorithm')
+
+    #  Start algorithm
+    now = time.time()
+    bf_solution = Brute_Force_Solver(cities).Solve()
+    bf_time = time.time() -now
+
+    #  Log the Time
+    logging.info('BF Runtime: ' + str(bf_time) + ' seconds')
+
+    return {'time':bf_time,
+            'solution':bf_solution,
+            'dist':0}
 
 
 #---------------------#
@@ -109,75 +128,71 @@ def Parse_Command_Line():
 def Main():
 
     #  Parse Command-Line Options
-    options = Parse_Command_Line()
+    options = Configuration()
 
-    logging.basicConfig(level=getattr(logging,options.verbosity))
+
+    #  Configure Logging
+    logging.basicConfig(level=getattr(logging,
+                                      options.general_params['log_level']))
+
 
     #  Load the dataset
     cities = Load_Dataset(options)
-
-    #  Build the Initial Population
-    population = Tour_Manager(cities).Build_Population(options.population_size)
-
-
-    #  Construct Genetic Algorithm
-    ga = Genetic_Algorithm(population=population,
-                           fitness_function=lambda Tour: Tour.distance,
-                           crossover_algorithm=Tour.Tour.Crossover,
-                           selection_rate=options.selection_rate,
-                           mutation_algorithm=Tour.Tour.Mutate,
-                           mutation_rate=options.mutation_rate,
-                           preservation_rate=options.preservation_rate,
-                           exit_on_repeats=options.exit_on_repeats)
+    ga_results = {}
+    gd_results = {}
+    bf_results = {}
 
 
-    #  Run N Times
-    now = time.time()
-    logging.debug('Solving with Genetic Algorithm')
-    population = ga.Run_Iterations(options.max_iterations)
-    ga_time = time.time()-now
+    #  Run the Genetic Algorithm
+    if options.general_params['skip_ga'] is False:
+        ga_results = Run_GA(options, cities)
 
-    #  Solve using greedy
-    now = time.time()
-    logging.debug('Solving with Greedy Algorithm')
-    gd_solution = Greedy_Solver(cities).Solve()
-    gd_time = time.time()-now
 
-    #  Solve using brute-force
-    now = time.time()
-    logging.debug('Solving with Brute Force Algorithm')
-    bf_solution = Brute_Force_Solver(cities).Solve()
-    bf_time = time.time() -now
+    #  Run the Greedy Algorithm
+    if options.general_params['skip_gd'] is False:
+        gd_results = Run_GD(options, cities)
+
+
+    #  Run the Brute-force Algorithm
+    if options.general_params['skip_bf'] is False:
+        bf_results = Run_BF(options, cities)
+
 
     #  Check if the Brute-Force Solution is the same or backwards
-    if not (population[0] == bf_solution):
-        if (population[0] == Tour.Tour(bf_solution.cities.reverse())):
-            bf_solution = Tour.Tour(bf_solution.cities.reverse())
-        else:
-            logging.warning('solutions are different!')
+    if options.general_params['skip_bf'] is False and options.general_params['skip_ga'] is False:
+        if not (ga_results['solution'] == bf_results['solution']):
+            if (ga_results['solution'] == Tour.Tour(bf_results['solution'].cities.reverse())):
+                bf_results['solution'] = Tour.Tour(bf_results['solution'].cities.reverse())
+            else:
+                logging.warning('solutions are different!')
+
 
     #  Compute distances
-    ga_dist = bf_solution.distance - population[0].distance
-    gd_dist = bf_solution.distance - gd_solution.distance
+    if options.general_params['skip_ga'] is False and options.general_params['skip_bf'] is False:
+        ga_results['dist'] = ga_results['solution'].distance - bf_results['solution'].distance
+        logging.info('GA Best Solution: ' + str(ga_results['solution']))
+
+
+    if options.general_params['skip_gd'] is False and options.general_params['skip_bf'] is False:
+        gd_results['dist'] = gd_results['solution'].distance - bf_results['solution'].distance
+        logging.info('GD Best Solution: ' + str(gd_results['solution']))
+
+    if options.general_params['skip_bf'] is False:
+        logging.info('BF Best Solution: ' + str(bf_results['solution']))
 
     #  Print onto the web-page
-    Write_Output(population[0],
-                 bf_solution,
-                 gd_solution,
-                 ga_time,
-                 bf_time,
-                 gd_time,
-                 ga_dist,
-                 gd_dist)
-
-    logging.info('GA Runtime: ' + str(ga_time) + ' seconds')
-    logging.info('GD Runtime: ' + str(gd_time) + ' seconds')
-    logging.info('BF Runtime: ' + str(bf_time) + ' seconds\n')
-    logging.info('GA Best Solution: ' + str(population[0]))
-    logging.info('GD Best Solution: ' + str(gd_solution))
-    logging.info('BF Best Solution: ' + str(bf_solution))
+    if options.general_params['skip_html'] is False:
+        Write_Output(ga_results,
+                     gd_results,
+                     bf_results)
 
 
+
+    # Append Performance Info to Filename
+    options.Update_Performance_Information( ga_info=ga_results,
+                                            gd_info=gd_results,
+                                            bf_info=bf_results,
+                                            number_cities=len(cities))
 
 if __name__ == '__main__':
     Main()
