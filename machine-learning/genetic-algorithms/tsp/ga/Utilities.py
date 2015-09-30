@@ -87,14 +87,9 @@ def Build_Google_Map_Coordinate_List(alg_name,
 #----------------------------------#
 #-      Write the output file     -#
 #----------------------------------#
-def Write_Output( best_fit_ga,
-                  best_fit_bf,
-                  best_fit_gd,
-                  ga_time,
-                  bf_time,
-                  gd_time,
-                  ga_dist,
-                  gd_dist):
+def Write_Output( ga_solution,
+                  gd_solution,
+                  bf_solution ):
 
     #  Select the input HTML Path
     filename = 'ga/index.html'
@@ -116,9 +111,9 @@ def Write_Output( best_fit_ga,
     yoff_bf = 0.1
 
     #  Construct the output
-    ga_point_text, ga_center_lat, ga_center_lon = Build_Google_Map_Coordinate_List('ga_path_coordinates', best_fit_ga, xoff_ga, yoff_ga)
-    gd_point_text, gd_center_lat, gd_center_lon = Build_Google_Map_Coordinate_List('gd_path_coordinates', best_fit_gd, xoff_gd, yoff_gd)
-    bf_point_text, bf_center_lat, bf_center_lon = Build_Google_Map_Coordinate_List('bf_path_coordinates', best_fit_bf, xoff_bf, yoff_bf)
+    ga_point_text, ga_center_lat, ga_center_lon = Build_Google_Map_Coordinate_List('ga_path_coordinates', ga_solution['solution'], xoff_ga, yoff_ga)
+    gd_point_text, gd_center_lat, gd_center_lon = Build_Google_Map_Coordinate_List('gd_path_coordinates', gd_solution['solution'], xoff_gd, yoff_gd)
+    bf_point_text, bf_center_lat, bf_center_lon = Build_Google_Map_Coordinate_List('bf_path_coordinates', bf_solution['solution'], xoff_bf, yoff_bf)
 
 
     #  Update the Point Info
@@ -131,18 +126,18 @@ def Write_Output( best_fit_ga,
     data = data.replace('__CENTER_LON__', str(ga_center_lon))
 
     #  Update the performance times
-    data = data.replace('__GA_TIME__', "%f" % ga_time)
-    data = data.replace('__GD_TIME__', "%f" % gd_time)
-    data = data.replace('__BF_TIME__', "%f" % bf_time)
+    data = data.replace('__GA_TIME__', "%f" % ga_solution['time'])
+    data = data.replace('__GD_TIME__', "%f" % gd_solution['time'])
+    data = data.replace('__BF_TIME__', "%f" % bf_solution['time'])
 
     #  Update distnaces
-    data = data.replace('__GA_DIST__', "%f" % ga_dist)
-    data = data.replace('__GD_DIST__', "%f" % gd_dist)
+    data = data.replace('__GA_DIST__', "%f" % ga_solution['dist'])
+    data = data.replace('__GD_DIST__', "%f" % gd_solution['dist'])
 
     #   Add the listeners
     gap = '       '
     output_text = ''
-    for x in range(0,len(best_fit_ga.cities)):
+    for x in range(0,len(ga_solution['solution'].cities)):
         output_text += gap + 'ga_markers[' + str(x) + '].addListener(\'click\',function(){ga_windows[' + str(x) + '].open(map,ga_markers[' + str(x) + ']);});\n'
     data = data.replace('__ADD_LISTENERS__', output_text)
 
@@ -151,10 +146,10 @@ def Write_Output( best_fit_ga,
     output_text = ''
     gap = '            '
     output_text += 'ga_titles[' + str(x) + ']=\'Start and Finish\'\n'
-    for x in range(1,len(best_fit_ga.cities)-1):
+    for x in range(1,len(ga_solution['solution'].cities)-1):
         bf_marker = 0
-        for y in range(1,len(best_fit_bf.cities)-1):
-            if best_fit_ga.cities[x].name == best_fit_bf.cities[y].name:
+        for y in range(1,len(bf_solution['solution'].cities)-1):
+            if ga_solution['solution'].cities[x].name == bf_solution['solution'].cities[y].name:
                 bf_marker = y
                 break
         output_text += gap + 'ga_titles[' + str(x) + ']=\'GA Marker ' + str(x) + ', BF Marker ' + str(bf_marker) + '\'\n'
