@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
 __author__ = 'Marvin Smith'
 
@@ -250,7 +250,6 @@ def Main():
 
             #  Build the classifier
             classifier = Classifier(descriptors)
-
 
             valid_matches   = 0
             invalid_matches = 0
