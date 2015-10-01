@@ -2,7 +2,7 @@ __author__ = 'marvinsmith'
 
 
 #  Python Libraries
-import configparser, argparse, csv, os
+import ConfigParser, argparse, csv, os
 
 
 class Configuration(object):
@@ -75,7 +75,7 @@ class Configuration(object):
     def Parse_Configuration_File(self):
 
         #  Open the Config file
-        cfgParser = configparser.ConfigParser()
+        cfgParser = ConfigParser.ConfigParser()
         cfgParser.read(self.cmd_args.config_pathname)
 
         #  Parse the Input Dataset
