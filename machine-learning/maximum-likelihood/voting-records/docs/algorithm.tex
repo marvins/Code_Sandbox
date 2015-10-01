@@ -100,11 +100,16 @@ A test sample is compared against each party.  For the quality metric, we use th
 
 \end{algorithmic}
 
+
+%-------------------------------------%
+%-       Binomial Distribution       -%
+%-------------------------------------%
 \clearpage
 \subsection*{Binomial Distribution}
 
-
+%-     Start the PMF Equations     -%
 Probability Mass Function
+
 
 \begin{equation}
 f(n,k | p) = \begin{pmatrix}
@@ -112,6 +117,8 @@ n\\k
 \end{pmatrix} p^k (1-p)^{n-k} =\left( \frac{n!}{k!(n-k)!}\right) p^k (1-p)^{n-k}
 \end{equation}
 
+
+%-       Likelihood Equations     -%
 Likelihood
 
 \begin{equation}
@@ -120,12 +127,15 @@ n\\k
 \end{pmatrix} p^k (1-p)^{n-k} =\left( \frac{n!}{k!(n-k)!}\right) p^k (1-p)^{n-k}
 \end{equation}
 
+%-       Log Likelihood       -%
 Log Likelihood
 
 \begin{equation}
 \ln \mathfrak{L}(p | n, k) = \ln \left( \frac{n!}{k!(n-k)!}\right) + k \ln p  + (n-k) \ln (1-p)
 \end{equation}
 
+
+%-       Log Likelihood Derivative      -%
 Derivative of Log-Likelihood
 
 \begin{equation}
@@ -149,6 +159,28 @@ Solution
 \begin{equation}
 p = \frac{k}{n}
 \end{equation}
+
+
+%-------------------------------------------%
+%-           Normal Distribution           -%
+%-------------------------------------------%
+\clearpage
+\subsection*{Normal Distribution}
+
+
+%-       Start the Likelihood Function       -%
+Probability Density Function
+
+\begin{equation}
+f(x) = \frac{1}{\sigma \sqrt{2 \pi}} \exp^{-\frac{(x-\mu)^2}{2\sigma^2}}
+\end{equation}
+
+
+
+%--------------------------------------------%
+%-           Uniform Distribution           -%
+%--------------------------------------------%
+
 
 \end{document}
 
