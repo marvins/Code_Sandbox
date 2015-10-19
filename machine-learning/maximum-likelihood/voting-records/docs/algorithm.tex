@@ -176,6 +176,100 @@ f(x) = \frac{1}{\sigma \sqrt{2 \pi}} \exp^{-\frac{(x-\mu)^2}{2\sigma^2}}
 \end{equation}
 
 
+Likelihood Function
+
+\begin{equation}
+\mathfrak{L}(\bar{x}|\theta) = \mathfrak{L}(\bar{x}|\mu, \sigma^2) = \prod_{i=1}^n f(x_i, \mu, \sigma) 
+\end{equation}
+
+\begin{equation}
+\mathfrak{L}(\bar{x}|\theta) = \prod_{i=1}^{n} \frac{1}{\sigma\sqrt{2\pi}} \exp^{-\frac{(x_i - \mu)^2}{2\sigma^2}}
+\end{equation}
+
+\begin{equation}
+\mathfrak{L}(\bar{x}|\theta) = \left(\frac{1}{2\pi\sigma^2}\right)^{\frac{n}{2}} \exp^{\left( -\frac{\sum_{i=1}^n (x_i - \mu)^2}{2\sigma^2}\right)}
+\end{equation}
+Log Likelihood
+
+\begin{equation}
+\ln \mathfrak{L}(\bar{x}|\theta) = \ln \left(\frac{1}{2\pi\sigma^2}\right)^{\frac{n}{2}} \exp^{\left( -\frac{\sum_{i=1}^n (x_i - \mu)^2}{2\sigma^2}\right)}
+\end{equation}
+
+\begin{equation}
+\ln \mathfrak{L}(\bar{x}|\theta) = \frac{n}{2} \ln \frac{1}{2\pi\sigma^2} - \frac{1}{2\sigma^2} \sum_{i=1}^n (x_i - \mu)^2
+\end{equation}
+
+
+Derivative of Log Likelihood w.r. $\mu$
+
+\begin{equation}
+\frac{\partial \theta}{\partial \mu} \ln \mathfrak{L}(\bar{x}|\theta) = \frac{\partial \theta}{\partial \mu} \left( \frac{n}{2} \ln \frac{1}{2\pi\sigma^2}\right) - \frac{\partial \theta}{\partial \mu} \left(\frac{1}{2\sigma^2} \sum_{i=1}^n (x_i - \mu)^2\right)
+\end{equation}
+
+
+\begin{equation}
+\frac{\partial \theta}{\partial \mu} \ln \mathfrak{L}(\bar{x}|\theta) = 0 - \frac{-n \left(\bar{x} - \mu\right)}{\sigma^2}
+\end{equation}
+
+\begin{equation}
+\frac{\partial \theta}{\partial \mu} \ln \mathfrak{L}(\bar{x}|\theta) = \frac{n \left(\bar{x} - \mu\right)}{\sigma^2}
+\end{equation}
+
+Maximizing
+
+\begin{equation}
+\frac{\partial \theta}{\partial \mu} \ln \mathfrak{L}(\bar{x}|\theta) = 0 
+\end{equation}
+
+
+\begin{equation}
+\frac{n \left(\bar{x} - \mu\right)}{\sigma^2} = 0
+\end{equation}
+
+\begin{equation}
+n \bar{x} - n \mu = 0
+\end{equation}
+
+\begin{equation}
+\mu = \frac{\bar{x}}{n} = \sum_{i=1}^{n} \frac{x_i}{n}
+\end{equation}
+
+Derivative of Log Likelihood w.r. $\sigma$
+
+\begin{equation}
+\frac{\partial \theta}{\partial \sigma} \ln \mathfrak{L}(\bar{x}|\theta) = \frac{\partial \theta}{\partial \sigma} \left( \frac{n}{2} \ln \frac{1}{2\pi\sigma^2}\right) - \frac{\partial \theta}{\partial \mu} \left(\frac{1}{2\sigma^2} \sum_{i=1}^n (x_i - \mu)^2\right)
+\end{equation}
+
+\begin{equation}
+\frac{\partial \theta}{\partial \sigma} \ln \mathfrak{L}(\bar{x}|\theta) = \left(\frac{n}{2}\right) \left(-\frac{1}{\pi \sigma^{3}}\right) \left(\frac{2\pi\sigma^2}{1}\right) - \frac{1}{\sigma^3} \left( \sum_{i=1}^n (x_i - \mu)^2 \right) 
+\end{equation}
+
+\begin{equation}
+\frac{\partial \theta}{\partial \sigma} \ln \mathfrak{L}(\bar{x}|\theta) = -\frac{n}{\sigma} - \frac{ \sum_{i=1}^n (x_i - \mu)^2}{\sigma^3}
+\end{equation}
+
+Maximizing
+
+\begin{equation}
+\frac{\partial \theta}{\partial \sigma} \ln \mathfrak{L}(\bar{x}|\theta) = 0
+\end{equation}
+
+\begin{equation}
+-\frac{n}{\sigma} - \frac{ \sum_{i=1}^n (x_i - \mu)^2}{\sigma^3} = 0
+\end{equation}
+
+\begin{equation}
+-\frac{n}{\sigma} = \frac{ \sum_{i=1}^n (x_i - \mu)^2}{\sigma^3}
+\end{equation}
+
+\begin{equation}
+\sigma^2 = \frac{1}{n} \sum_{i=1}^n (x_i - \mu)^2
+\end{equation}
+
+
+\begin{equation}
+\sigma = \sqrt{\frac{1}{n} \sum_{i=1}^n (x_i - \mu)^2}
+\end{equation}
 
 %--------------------------------------------%
 %-           Uniform Distribution           -%
