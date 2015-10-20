@@ -56,6 +56,16 @@ class Options
          */
         void Usage()const;
 
+        
+        /**
+         * @brief Get the leap second pathname.
+         *
+         * @return Leap-second config file path.
+        */
+        inline std::string Get_Leap_Second_Pathname()const{
+            return m_leap_second_pathname;
+        }
+
 
     private:
 
@@ -78,6 +88,10 @@ class Options
         
         /// Program Mode
         ProgramMode m_program_mode;
+
+
+        /// Leap-Second Path File
+        std::string m_leap_second_pathname;
 
 }; // End of Options Class
 

@@ -17,7 +17,8 @@
 /**********************************/
 Options::Options( int argc, char* argv[] )
  : m_class_name("Options"),
-   m_program_mode(ProgramMode::PRINT_TIMES)
+   m_program_mode(ProgramMode::PRINT_TIMES),
+   m_leap_second_pathname("data/leap-seconds.csv")
 {
 
     // Parse the Command-Line
@@ -37,7 +38,8 @@ void Options::Usage()const
 
     // Print Optional Arguments
     std::cout << "  Flags:" << std::endl;
-    std::cout << "    -h|--help|--usage   Print usage and exit." << std::endl;
+    std::cout << "    -h|--help|--usage      Print usage and exit." << std::endl;
+    std::cout << "    -l <leap second csv>   Override default leap-second CSV file path (Default=" << m_leap_second_pathname << ")." << std::endl;
     std::cout << std::endl;
 
 }
@@ -73,7 +75,14 @@ void Options::Parse_Command_Line( int argc, char* argv[] )
             Usage();
             std::exit(0);
         }
+        
 
+        //  Check if leap-second file requested
+        else if( arg == "-l" )
+        {
+            m_leap_second_pathname = args.front();
+            args.pop_front();
+        }
 
         // Otherwise, Unknown value
         else

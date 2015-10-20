@@ -12,6 +12,7 @@
 // Utility Libraries
 #include "Options.hpp"
 #include "Print_Times.hpp"
+#include <TimeUtilities.hpp>
 
 
 /**
