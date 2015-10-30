@@ -56,17 +56,34 @@ int main( int argc, char* argv[] )
     // Get an image list
     string image_list_path = argv[2];
 
+    const int video_sx = 640;//3840;
+    const int video_sy = 480;//2160;
+    const int video_ox = 0;
+    const int video_oy = 0;
+
+
     // Load the list
     cout << "Loading image path list." << endl;
     vector<string> image_paths = Load_Image_Paths( image_list_path );
     
     // Load the first frame
-    cout << "Loading first image" << endl;
+    cout << "Loading first image: " << image_paths[0] << endl;
     cv::Mat image = cv::imread( image_paths[0] );
 
+
+    // Compute the Frame Size
+    cout << "Computing Frame Size" << std::endl;
+    cv::Rect roi_bbox = cv::Rect( 0, 0, image.cols, image.rows);
+    if( image.rows > video_sy && image.cols > video_sx )
+    {
+        roi_bbox = cv::Rect( video_ox, video_oy, 
+                             video_sx, video_sy);
+    }
+    cv::Size frame_size( roi_bbox.width, roi_bbox.height);
+
+
     // Set the frame size
-    std::cout << "Frame size: " << image.size() << std::endl;
-    cv::Size frame_size = image.size();
+    std::cout << "Frame size: " << frame_size << std::endl;
 
 
     // Create video writer
@@ -99,8 +116,10 @@ int main( int argc, char* argv[] )
         cout << "Loading image " << i << endl;
         image = cv::imread( image_paths[i] );
 
+                cv::Mat frame_image = cv::Mat(image, roi_bbox);
+        
         // Write the image
-        video_writer << image;
+        video_writer << frame_image;
 
     }
 
