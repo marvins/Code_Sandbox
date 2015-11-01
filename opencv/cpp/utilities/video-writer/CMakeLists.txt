@@ -26,6 +26,8 @@ include_directories( ${OpenCV_INCLUDES} )
 #-    Define the Sources    -#
 #----------------------------#
 set( VIDEO_WRITER_SOURCES
+     Options.cpp
+     Options.hpp
      writer.cpp
 )
 

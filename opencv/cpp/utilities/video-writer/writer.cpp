@@ -1,70 +1,48 @@
 
+// Project Libraries
+#include "Options.hpp"
+
+
 // OpenCV Libraries
 #include <opencv2/core/core.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+
 // C++ Libraries
-#include <algorithm>
-#include <fstream>
 #include <iostream>
 #include <string>
 #include <vector>
 
 using namespace std;
 
-vector<string> Load_Image_Paths( const string& image_list_path )
-{
-    // Create output
-    vector<string> output;
-
-    // Open file
-    ifstream fin;
-    fin.open(image_list_path.c_str());
-    
-    // Read lines
-    string line;
-    getline( fin, line );
-
-    while( fin.good() )
-    {
-        // Add the path
-        output.push_back(line);
-
-        // Read the next line
-        getline( fin, line );
-
-    }
-
-    fin.close();
-    
-    // Sort the list
-    std::sort( output.begin(),
-               output.end() );
-
-    // Return results
-    return output;
-
-}
-
 
 int main( int argc, char* argv[] )
 {
-    // Set the output video name
-    string video_output    = argv[1];
 
-    // Get an image list
-    string image_list_path = argv[2];
-
-    const int video_sx = 640;//3840;
-    const int video_sy = 480;//2160;
-    const int video_ox = 0;
-    const int video_oy = 0;
+    // Parse Command-Line Options
+    Options options(argc, argv);
 
 
-    // Load the list
-    cout << "Loading image path list." << endl;
-    vector<string> image_paths = Load_Image_Paths( image_list_path );
+    const int video_sx = 3840;
+    const int video_sy = 2160;
+    const int video_ox = options.Get_Corner_Offset().x;
+    const int video_oy = options.Get_Corner_Offset().y;
+
+
+    // Fetch the Affine Transform
+    cv::Mat affine_transform = options.Get_Affine_Transform();
+    std::cout << "Affine" << std::endl;
+    std::cout << affine_transform << std::endl;
+    std::cout << std::endl;
+
+
+    // Compute Corner For Overlays
+    cv::Point overlay_path_corner( video_sx * 0.1, 
+                                   video_sy * 0.95);
+
+    // Retrieve the image list
+    vector<string> image_paths = options.Get_Image_List();
     
     // Load the first frame
     cout << "Loading first image: " << image_paths[0] << endl;
@@ -90,14 +68,14 @@ int main( int argc, char* argv[] )
     cout << "Building video writer." << endl;
     cv::VideoWriter video_writer;
     bool is_color = true;
-    double fps = 2;
-    int four_cc = -1;//CV_FOURCC('M','P','4','2');//-1;
+    int four_cc = CV_FOURCC('F','M','P','4');
+    //int four_cc = -1;//CV_FOURCC('M','P','4','2');//-1;
 
 
     // Open Video Writer
-    video_writer.open( video_output.c_str(),
+    video_writer.open( options.Get_Output_Pathname().c_str(),
                        four_cc,
-                       fps,
+                       options.Get_FPS(),
                        frame_size,
                        is_color );
 
@@ -109,15 +87,33 @@ int main( int argc, char* argv[] )
     }
 
     // Iterate over images
-    for( size_t i=1; i<image_paths.size(); i++ )
+    for( size_t i=0; i<image_paths.size(); i++ )
     {
 
         // Load image
-        cout << "Loading image " << i << endl;
+        cout << "Loading image " << image_paths[i] << endl;
         image = cv::imread( image_paths[i] );
 
-                cv::Mat frame_image = cv::Mat(image, roi_bbox);
-        
+
+        // Warp Image
+        cv::warpAffine( image, image, affine_transform, image.size());
+
+
+        // Crop to the bounding box
+        cv::Mat frame_image = cv::Mat(image, roi_bbox);
+
+        // Overlay the text info if requested
+        if( options.Get_Overlay_Path_Flag() == true )
+        {
+            // Write Text
+            cv::putText( frame_image, 
+                         image_paths[i], 
+                         overlay_path_corner,
+                         cv::FONT_HERSHEY_DUPLEX,
+                         2,
+                         cv::Scalar(0,255,0));
+        }
+
         // Write the image
         video_writer << frame_image;
 
