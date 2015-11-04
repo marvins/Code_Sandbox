@@ -21,5 +21,5 @@ fi
 
 popd
 
-./release/bin/video-writer -v $OUTPUT_VIDEO -i $IMAGE_LIST --overlay-path -ox 3080 -oy 3920 -s 0.5
+./release/bin/video-writer -v $OUTPUT_VIDEO -i $IMAGE_LIST --overlay-path -ox 0 -oy 0 -s 1
 

@@ -201,8 +201,8 @@ std::vector<std::string> Options::Load_Image_Path_File( const std::string& image
     fin.close();
     
     // Sort the list
-    std::sort( output.begin(),
-               output.end() );
+    //std::sort( output.begin(),
+    //           output.end() );
 
     // Return results
     return output;
