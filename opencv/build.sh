@@ -3,6 +3,9 @@
 OUTPUT_VIDEO=output.mp4
 IMAGE_LIST=image-list.txt
 
+OX=6272
+OY=7112
+
 mkdir -p release
 
 pushd release
@@ -21,5 +24,6 @@ fi
 
 popd
 
-./release/bin/video-writer -v $OUTPUT_VIDEO -i $IMAGE_LIST --overlay-path -ox 0 -oy 0 -s 1
+
+./release/bin/video-writer -v $OUTPUT_VIDEO -i $IMAGE_LIST --overlay-path -ox $OX -oy $OY -s 1
 
