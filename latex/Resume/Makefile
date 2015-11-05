@@ -1,3 +1,5 @@
+all: resume.pdf cover-letter.pdf
+
 resume.pdf: resume.tex
 	pdflatex resume.tex
 	pdflatex resume.tex
