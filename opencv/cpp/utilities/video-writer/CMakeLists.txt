@@ -22,6 +22,18 @@ SET( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 find_package(OpenCV REQUIRED)
 include_directories( ${OpenCV_INCLUDES} )
 
+
+#-------------------#
+#-    Find Boost   -#
+#-------------------#
+set( Boost_USE_STATIC_LIBS ON )
+find_package(Boost REQUIRED
+                COMPONENTS
+                system
+                filesystem
+            )
+include_directories(${Boost_INCLUDE_DIRS})
+
 #----------------------------#
 #-    Define the Sources    -#
 #----------------------------#
@@ -46,5 +58,6 @@ add_executable( video-writer
 #-     Link the Executable     -#
 #-------------------------------#
 target_link_libraries( video-writer
-                       ${OpenCV_LIBRARIES})
+                       ${OpenCV_LIBRARIES}
+                       ${Boost_LIBRARIES})
 

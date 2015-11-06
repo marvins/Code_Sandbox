@@ -12,10 +12,16 @@
 #include <iostream>
 
 
+// Boost Libraries
+#include <boost/filesystem.hpp>
+
+
 // OpenCV Libraries
 #include <opencv2/imgproc/imgproc.hpp>
 #include <opencv2/highgui/highgui.hpp>
 
+
+namespace bf=boost::filesystem;
 
 /*****************************/
 /*          Options          */
@@ -28,6 +34,21 @@ Options::Options( int argc, char* argv[] )
    m_image_center_x(0.5),
    m_image_center_y(0.5),
    m_fps(2)
+{
+    // Parse the Command-Line
+    Parse_Command_Line( argc, argv );
+
+    // Validate
+    Validate();
+
+}
+
+
+/******************************************/
+/*          Parse the Command-Line        */
+/******************************************/
+void Options::Parse_Command_Line( int argc, 
+                                  char* argv[] )
 {
 
     // Set the program name
@@ -123,6 +144,12 @@ Options::Options( int argc, char* argv[] )
             args.pop_front();
         }
 
+        // Number of threads
+        else if( arg == "-nt" ){
+            m_num_threads = std::stoi(args.front());
+            args.pop_front();
+        }
+
         // Otherwise, error
         else
         {
@@ -147,6 +174,26 @@ Options::Options( int argc, char* argv[] )
 }
 
 
+/********************************/
+/*          Validate            */
+/********************************/
+void Options::Validate()
+{
+
+    // Make sure image paths exists
+    for( int i=0; i<(int)m_image_list.size(); i++ )
+    {
+        // Set image paths
+        if( bf::exists(bf::path(m_image_list[i])) == false )
+        {
+            std::cerr << "warning: " << m_image_list[i] << " does not exist. Removing from image list." << std::endl;
+            m_image_list.erase(m_image_list.begin() + i);
+            i--;
+        }
+    }
+}
+
+
 /**********************************************/
 /*          Print Usage Instructions          */
 /**********************************************/
@@ -155,7 +202,7 @@ void Options::Usage()const
     // Print usage
     std::cerr << "usage: " << m_program_name << " [optional-flags] -v <output-video-path> -i <image-list-file>" << std::endl;
     std::cerr << std::endl;
-    std::cerr << "optional-flags" << std::endl;
+    std::cerr << "optional rendering flags" << std::endl;
     std::cerr << std::endl;
     std::cerr << "  --overlay-path : Overlay the image path over the video. Default: " << std::boolalpha << m_overlay_path << std::endl;
     std::cerr << std::endl;
@@ -168,6 +215,11 @@ void Options::Usage()const
     std::cerr << "  -cy <double>   : Modify the center y position (0-1). Default: " << m_image_center_y << std::endl;
     std::cerr << std::endl;
     std::cerr << "  -fps <int>     : Set the Frames Per Second. Default: " << m_fps << std::endl;
+    std::cerr << std::endl;
+
+    std::cerr << "optional performance flags" << std::endl;
+    std::cerr << std::endl;
+    std::cerr << "  -nt <int>      : Use multiple threads to load data. Default: 1" << std::endl;
     std::cerr << std::endl;
 }
 

@@ -3,8 +3,12 @@
 OUTPUT_VIDEO=output.mp4
 IMAGE_LIST=image-list.txt
 
-OX=6272
-OY=7112
+#OX=1080
+#OY=920
+
+#  16K x 16K
+OX="`expr 8192 - 1920`"
+OY="`expr 8192 - 1080`"
 
 mkdir -p release
 

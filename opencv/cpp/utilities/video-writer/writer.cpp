@@ -9,13 +9,17 @@
 #include <opencv2/highgui/highgui.hpp>
 
 
+// Boost Libraries
+#include <boost/filesystem.hpp>
+
+
 // C++ Libraries
 #include <iostream>
 #include <string>
 #include <vector>
 
 using namespace std;
-
+namespace bf=boost::filesystem;
 
 int main( int argc, char* argv[] )
 {
@@ -43,6 +47,10 @@ int main( int argc, char* argv[] )
 
     // Retrieve the image list
     vector<string> image_paths = options.Get_Image_List();
+    vector<string> base_image_paths;
+    for( size_t i=0; i<image_paths.size(); i++ ){
+        base_image_paths.push_back(bf::path(image_paths[i]).filename().native());
+    }
     
     // Load the first frame
     cout << "Loading first image: " << image_paths[0] << endl;
@@ -107,7 +115,7 @@ int main( int argc, char* argv[] )
         {
             // Write Text
             cv::putText( frame_image, 
-                         image_paths[i], 
+                         base_image_paths[i], 
                          overlay_path_corner,
                          cv::FONT_HERSHEY_DUPLEX,
                          2,

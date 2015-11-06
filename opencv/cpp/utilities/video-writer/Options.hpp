@@ -106,6 +106,16 @@ class Options
             return m_fps;
         }
 
+        
+        /**
+         * @brief Get the Number of threads.
+         *
+         * @return Number of threads.
+         */
+        inline int Get_Number_Threads()const{
+            return m_num_threads;
+        }
+
 
         /**
          * @brief Print Usage Instructions.
@@ -114,6 +124,22 @@ class Options
 
 
     private:
+        
+        /**
+         * @brief Parse Command-Line
+         *
+         * @param[in] argc
+         * @param[in] argv
+         */
+        void Parse_Command_Line( int argc, 
+                                 char* argv[] );
+
+
+        /**
+         * @brief Validate Configuration.
+         */
+        void Validate();
+
 
         /**
          * @brief Load an image path file
@@ -170,6 +196,9 @@ class Options
 
         /// Frames Per Second
         int m_fps;
+
+        /// Number of Threads
+        int m_num_threads;
 
 }; // End of Options Class
 
