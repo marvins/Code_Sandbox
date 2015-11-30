@@ -1,0 +1,458 @@
+/3.2
+(ODB.1
+	FirstRootClassName:	"Legend"
+	Roots:	2
+	Version:	32
+)
+
+(Legend.2
+	SymType:	0x02
+	LegType:	0x08
+	ClassType:	0x03
+	FieldNames:	3
+	Symbols:	4
+	Class:	53
+	Class:	54
+	Class:	55
+	Class:	56
+	Class:	57
+	Class:	58
+	Class:	59
+	Class:	60
+	Class:	61
+	Class:	62
+	Class:	63
+	StdDevs:	1.00000000000000
+	NullSym:	64
+	NullValues:	68
+	StatValues:	69
+	Precision:	-3
+)
+
+(AVStr.3
+	S:	"Entity_def"
+)
+
+(SymList.4
+	Child:	5
+	Child:	9
+	Child:	14
+	Child:	19
+	Child:	24
+	Child:	28
+	Child:	33
+	Child:	37
+	Child:	41
+	Child:	45
+	Child:	49
+)
+
+(BShSym.5
+	Color:	6
+	Outline:	1
+	OutlineColor:	7
+	OutlineWidth:	0.10000000000000
+	BgColor:	8
+)
+
+(TClr.6
+	Red:	0xfe
+	Green:	0xfeff
+	Blue:	0xed15
+)
+
+(TClr.7
+)
+
+(TClr.8
+	Red:	0xffff
+	Green:	0xffff
+	Blue:	0xffff
+)
+
+(BShSym.9
+	Color:	10
+	Outline:	1
+	OutlineColor:	11
+	OutlineWidth:	0.10000000000000
+	BgColor:	12
+	Style:	0x03
+	Stipple:	13
+)
+
+(TClr.10
+	Red:	0x54
+	Green:	0x4721
+	Blue:	0x54ff
+)
+
+(TClr.11
+	Red:	0x3c11
+	Green:	0x6900
+	Blue:	0x68
+)
+
+(TClr.12
+	Name:	"Transparent"
+)
+
+(Stipple.13
+	Columns:	8
+	Rows:	8
+	Bits:	00550055 00550055 
+)
+
+(BShSym.14
+	Color:	15
+	Outline:	1
+	OutlineColor:	16
+	OutlineWidth:	0.10000000000000
+	BgColor:	17
+	Style:	0x03
+	Stipple:	18
+)
+
+(TClr.15
+	Red:	0xa5a5
+	Green:	0xa5a5
+	Blue:	0xa5a5
+)
+
+(TClr.16
+	Red:	0x7878
+	Green:	0x7878
+	Blue:	0x7878
+)
+
+(TClr.17
+	Name:	"Transparent"
+)
+
+(Stipple.18
+	Columns:	8
+	Rows:	8
+	Bits:	88112244 88112244 
+)
+
+(BShSym.19
+	Color:	20
+	Outline:	1
+	OutlineColor:	21
+	OutlineWidth:	0.10000000000000
+	BgColor:	22
+	Style:	0x03
+	Stipple:	23
+)
+
+(TClr.20
+	Red:	0xfd
+	Green:	0x9f2f
+	Blue:	0xfdff
+)
+
+(TClr.21
+	Red:	0x85df
+	Green:	0xd545
+	Blue:	0xfbff
+)
+
+(TClr.22
+	Name:	"Transparent"
+)
+
+(Stipple.23
+	Columns:	8
+	Rows:	8
+	Bits:	44221188 44221188 
+)
+
+(BShSym.24
+	Color:	25
+	Outline:	1
+	OutlineColor:	26
+	OutlineWidth:	0.10000000000000
+	BgColor:	27
+)
+
+(TClr.25
+	Red:	0x85df
+	Green:	0xd545
+	Blue:	0xfbff
+)
+
+(TClr.26
+	Name:	"Transparent"
+)
+
+(TClr.27
+	Red:	0xffff
+	Green:	0xffff
+	Blue:	0xffff
+)
+
+(BShSym.28
+	Color:	29
+	Outline:	1
+	OutlineColor:	30
+	OutlineWidth:	0.10000000000000
+	BgColor:	31
+	Style:	0x03
+	Stipple:	32
+)
+
+(TClr.29
+	Red:	0x925b
+	Green:	0xadff
+	Blue:	0x2f93
+)
+
+(TClr.30
+	Red:	0x925b
+	Green:	0xadff
+	Blue:	0x2f93
+)
+
+(TClr.31
+	Name:	"Transparent"
+)
+
+(Stipple.32
+	Columns:	8
+	Rows:	8
+	Bits:	11441144 11441144 
+)
+
+(BShSym.33
+	Color:	34
+	Outline:	1
+	OutlineColor:	35
+	OutlineWidth:	0.10000000000000
+	BgColor:	36
+)
+
+(TClr.34
+	Red:	0xae6d
+	Green:	0xa559
+	Blue:	0xff00
+)
+
+(TClr.35
+	Name:	"Transparent"
+)
+
+(TClr.36
+	Red:	0xffff
+	Green:	0xffff
+	Blue:	0xffff
+)
+
+(BShSym.37
+	Color:	38
+	Outline:	1
+	OutlineColor:	39
+	OutlineWidth:	0.10000000000000
+	BgColor:	40
+)
+
+(TClr.38
+	Red:	0x7878
+	Green:	0x7878
+	Blue:	0x7878
+)
+
+(TClr.39
+)
+
+(TClr.40
+	Red:	0xffff
+	Green:	0xffff
+	Blue:	0xffff
+)
+
+(BShSym.41
+	Color:	42
+	Outline:	1
+	OutlineColor:	43
+	OutlineWidth:	0.10000000000000
+	BgColor:	44
+)
+
+(TClr.42
+	Red:	0x7d3f
+	Green:	0xa700
+	Blue:	0x994a
+)
+
+(TClr.43
+	Red:	0x7d3f
+	Green:	0xa700
+	Blue:	0x994a
+)
+
+(TClr.44
+	Red:	0xffff
+	Green:	0xffff
+	Blue:	0xffff
+)
+
+(BShSym.45
+	Color:	46
+	Outline:	1
+	OutlineColor:	47
+	OutlineWidth:	0.10000000000000
+	BgColor:	48
+)
+
+(TClr.46
+	Red:	0x85df
+	Green:	0xd545
+	Blue:	0xfbff
+)
+
+(TClr.47
+	Name:	"Transparent"
+)
+
+(TClr.48
+	Red:	0xffff
+	Green:	0xffff
+	Blue:	0xffff
+)
+
+(BShSym.49
+	Color:	50
+	Outline:	1
+	OutlineColor:	51
+	OutlineWidth:	0.10000000000000
+	BgColor:	52
+)
+
+(TClr.50
+	Name:	"Transparent"
+)
+
+(TClr.51
+	Name:	"Transparent"
+)
+
+(TClr.52
+	Red:	0xffff
+	Green:	0xffff
+	Blue:	0xffff
+)
+
+(LClass.53
+	IsText:	1
+	Label:	"DAM OR WEIR"
+	MinStr:	"DAM OR WEIR"
+	MaxStr:	"DAM OR WEIR"
+	Precision:	-3
+)
+
+(LClass.54
+	IsText:	1
+	Label:	"FLATS (TIDAL, MUD, SAND, OR GRAVEL)"
+	MinStr:	"FLATS (TIDAL, MUD, SAND, OR GRAVEL)"
+	MaxStr:	"FLATS (TIDAL, MUD, SAND, OR GRAVEL)"
+	Precision:	-3
+)
+
+(LClass.55
+	IsText:	1
+	Label:	"GRAVEL PIT OR QUARRY FILLED WITH WATER"
+	MinStr:	"GRAVEL PIT OR QUARRY FILLED WITH WATER"
+	MaxStr:	"GRAVEL PIT OR QUARRY FILLED WITH WATER"
+	Precision:	-3
+)
+
+(LClass.56
+	IsText:	1
+	Label:	"INUNDATION AREA"
+	MinStr:	"INUNDATION AREA"
+	MaxStr:	"INUNDATION AREA"
+	Precision:	-3
+)
+
+(LClass.57
+	IsText:	1
+	Label:	"LAKE OR POND"
+	MinStr:	"LAKE OR POND"
+	MaxStr:	"LAKE OR POND"
+	Precision:	-3
+)
+
+(LClass.58
+	IsText:	1
+	Label:	"MARSH, WETLAND, SWAMP, OR BOG"
+	MinStr:	"MARSH, WETLAND, SWAMP, OR BOG"
+	MaxStr:	"MARSH, WETLAND, SWAMP, OR BOG"
+	Precision:	-3
+)
+
+(LClass.59
+	IsText:	1
+	Label:	"RESERVOIR"
+	MinStr:	"RESERVOIR"
+	MaxStr:	"RESERVOIR"
+	Precision:	-3
+)
+
+(LClass.60
+	IsText:	1
+	Label:	"ROCK"
+	MinStr:	"ROCK"
+	MaxStr:	"ROCK"
+	Precision:	-3
+)
+
+(LClass.61
+	IsText:	1
+	Label:	"SEWAGE DISPOSAL POND OR SETTLING BASIN"
+	MinStr:	"SEWAGE DISPOSAL POND OR SETTLING BASIN"
+	MaxStr:	"SEWAGE DISPOSAL POND OR SETTLING BASIN"
+	Precision:	-3
+)
+
+(LClass.62
+	IsText:	1
+	Label:	"STREAM"
+	MinStr:	"STREAM"
+	MaxStr:	"STREAM"
+	Precision:	-3
+)
+
+(LClass.63
+	IsNoData:	1
+	IsText:	1
+	Label:	"No Data"
+	Precision:	-3
+)
+
+(BShSym.64
+	Color:	65
+	Outline:	1
+	OutlineColor:	66
+	OutlineWidth:	0.10000000000000
+	BgColor:	67
+)
+
+(TClr.65
+	Name:	"Transparent"
+)
+
+(TClr.66
+	Name:	"Transparent"
+)
+
+(TClr.67
+	Red:	0xffff
+	Green:	0xffff
+	Blue:	0xffff
+)
+
+(NameDict.68
+)
+
+(NameDict.69
+)
+
