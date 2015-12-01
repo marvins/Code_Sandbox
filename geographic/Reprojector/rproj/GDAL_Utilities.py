@@ -74,7 +74,8 @@ def Process_Vector_Subgeometry( geometry, gidx, min_point_threshold, counter ):
 
     #  Get the geometry
     sub_geom = geometry.GetGeometryRef(gidx)
-    
+    gtype    = sub_geom.GetGeometryType()
+
     # Get the Point Count
     num_points  = sub_geom.GetPointCount()
 
@@ -83,7 +84,7 @@ def Process_Vector_Subgeometry( geometry, gidx, min_point_threshold, counter ):
         return [[sub_geom.GetX(), sub_geom.GetY()]]
 
     #  Process Polygon
-    elif sub_geom is not None and sub_geom.GetGeometryType() == ogr.wkbPolygon:
+    elif sub_geom is not None and (gtype == ogr.wkbPolygon or gtype == ogr.wkbMultiPolygon):
         
         #  Fetch the geometry count
         geo_count = sub_geom.GetGeometryCount()
@@ -95,7 +96,14 @@ def Process_Vector_Subgeometry( geometry, gidx, min_point_threshold, counter ):
         for geoidx in range(geo_count):
             
             #  Fetch the next geometry
-            output.append( Process_Vector_Subgeometry( sub_geom, geoidx, counter+1 ))
+            geometries = Process_Vector_Subgeometry( sub_geom, 
+                                                     geoidx, 
+                                                     min_point_threshold,
+                                                     counter+1 )
+
+            for ii in geometries:
+                if ii is not None and len(ii) > 0:
+                    output.append(ii)
 
         #  Return output
         return output
@@ -130,6 +138,7 @@ def Process_Vector_Geometry( feature, gidx, min_point_threshold, counter = 0 ):
 
     #  Get the geometry
     geom = feature.GetGeomFieldRef(gidx)
+    geom_type = geom.GetGeometryType()
 
     #  Get the geometry components
     #field_defn = feature_def.GetFieldDefn(gidx)
@@ -139,7 +148,7 @@ def Process_Vector_Geometry( feature, gidx, min_point_threshold, counter = 0 ):
         return [[geom.GetX(), geom.GetY()]]
 
     #  Process Polygon
-    elif geom is not None and geom.GetGeometryType() == ogr.wkbPolygon:
+    elif geom is not None and (geom_type == ogr.wkbPolygon or geom_type == ogr.wkbMultiPolygon):
         
         #  Fetch the geometry count
         geo_count = geom.GetGeometryCount()

@@ -54,6 +54,8 @@ def Render_Map( options ):
                 
                 # Project Point
                 proj_point = projector.Transform_Forward(point)
+                if proj_point is None:
+                    continue
 
                 #  Check against min and max
                 if min_range is None:
@@ -132,4 +134,5 @@ def Render_Map( options ):
 
     #  Write Image
     cv2.imwrite( render_config['output_image_path'], image )
+    logging.info('Writing output to ' + render_config['output_image_path'])
 

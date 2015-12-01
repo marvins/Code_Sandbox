@@ -1,9 +1,6 @@
 #!/bin/sh
 
-SHAPEFILE=data/24k_lakes/24k_lakes-wgs84.shp
-
 #  Application Mode
-# - convert : Convert shapefile to desired type
 # - project : Render maps
 MODE=project
 
@@ -16,20 +13,19 @@ VERBOSITY=-v
 #  Mode flags
 MODE_FLAGS=
 
+#CONFIG_PATH=data/options-states.cfg
+#CONFIG_PATH=data/options-nevada.cfg
+CONFIG_PATH=data/options-globe.cfg
 
-#  Path to shapefile
-SHAPEFILE_PATH=data/24k_lakes/24k_lakes.shp
-
+#  List of Projections
+#PROJECTIONS="geographic_direct utm cassini bonne armadillo"
+#PROJECTIONS="geographic_direct"
+PROJECTIONS="armadillo"
 
 if [ "$MODE" = 'project' ]; then
-
-    #  Process the shapefile flag
-    a=4
-
-elif [ "$MODE" = 'convert' ]; then
     
-    #  Process the Shapefile flag
-    MODE_FLAGS="$MODE_FLAGS -s $SHAPEFILE_PATH"
+    #  Set the Config
+    echo '' &> /dev/null
 
 else
     echo "Unsupported mode flag ($MODE)"
@@ -38,5 +34,8 @@ fi
 
 
 #  Run Projection Application
-./reprojector.py -m $MODE $MODE_FLAGS $VERBOSITY
+for PROJECTION in $PROJECTIONS; do
+    echo "Running with $PROJECTION projection."
+    ./reprojector.py -m $MODE $MODE_FLAGS -c $CONFIG_PATH -p $PROJECTION $VERBOSITY
+done
 
