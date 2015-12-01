@@ -32,7 +32,8 @@ def Render_Map( options ):
 
     #  Get the projection parameters
     projected_vectors = {}
-    projector         = Get_Projector( render_config['output_projection']) 
+    projector         = Get_Projector( render_config['output_projection'],
+                                       render_config ) 
 
     #  Iterate over pixels
     vec_ids = vec_data.keys()

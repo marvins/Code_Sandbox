@@ -121,13 +121,25 @@ class Options(object):
 
         #  Process Rendering parameters
         render_config = {}
-        render_config['min_x_padding'] = self.cfg_parser.getfloat('rendering','min_x_padding')
-        render_config['max_x_padding'] = self.cfg_parser.getfloat('rendering','max_x_padding')
-        render_config['min_y_padding'] = self.cfg_parser.getfloat('rendering','min_y_padding')
-        render_config['max_y_padding'] = self.cfg_parser.getfloat('rendering','max_y_padding')
         render_config['output_projection'] = self.cfg_parser.get('rendering','output_projection')
-        render_config['window_gsd'] = self.cfg_parser.getfloat('rendering','window_gsd')
         render_config['output_image_path'] = self.cfg_parser.get('rendering','output_image_path')
+        
+        projection_name = render_config['output_projection']
+
+        #  Get Projection Specific Parameters
+        render_config['min_x_padding'] = self.cfg_parser.getfloat(projection_name,'min_x_padding')
+        render_config['max_x_padding'] = self.cfg_parser.getfloat(projection_name,'max_x_padding')
+        render_config['min_y_padding'] = self.cfg_parser.getfloat(projection_name,'min_y_padding')
+        render_config['max_y_padding'] = self.cfg_parser.getfloat(projection_name,'max_y_padding')
+        render_config['window_gsd'] = self.cfg_parser.getfloat(projection_name,'window_gsd')
+       
+        if projection_name == 'utm':
+
+            #  Add Grid Zone Data
+            render_config['grid_zone'] = self.cfg_parser.getint(projection_name,'grid_zone')
+            render_config['is_north']  = self.cfg_parser.getboolean(projection_name,'is_north')
+            render_config['datum']     = self.cfg_parser.get(projection_name,'datum')
+
 
         self.config['rendering'] = render_config
 

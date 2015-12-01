@@ -6,6 +6,7 @@
 
 #  Python Libraries
 import math, logging
+from osgeo import gdal, ogr, osr
 
 
 class Projector_Base(object):
@@ -40,6 +41,34 @@ class Projector_Cassini(Projector_Base):
 
         return output
 
+class Projector_UTM(Projector_Base):
+    
+    def __init__(self,projector_args):
+        
+        #  Create Parent
+        Projector_Base.__init__(self, projector_args)
+
+        self.grid_zone = projector_args['grid_zone']
+        self.is_north  = projector_args['is_north']
+        self.datum     = projector_args['datum']
+        
+        #  Create Spatial References
+        self.in_srs = osr.SpatialReference()
+        self.in_srs.SetWellKnownGeogCS('WGS84')
+
+        self.out_srs = osr.SpatialReference()
+        self.out_srs.SetWellKnownGeogCS(projector_args['datum'])
+        self.out_srs.SetUTM( self.grid_zone,
+                             self.is_north )
+
+        #  Build Transformer
+        self.transformer = osr.CoordinateTransformation( self.in_srs,
+                                                         self.out_srs)
+
+    def Transform_Forward( self, point ):
+
+        return self.transformer.TransformPoint( point[0], point[1] )
+        
 
 def Get_Projector( projection_def, projection_args = None):
 
@@ -51,6 +80,9 @@ def Get_Projector( projection_def, projection_args = None):
 
     elif projection_def == 'cassini':
         projector = Projector_Cassini(projection_args)
+
+    elif projection_def == 'utm':
+        projector = Projector_UTM(projection_args)
 
     else:
         logging.warning('No projector found for def (' + projection_def + ')')
