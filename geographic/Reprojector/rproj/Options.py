@@ -116,6 +116,20 @@ class Options(object):
         #  Set the reference shapefile
         self.reference_shapefile = self.cfg_parser.get('general','pathname')
 
+        #  Get the Feature Point Min Threshold
+        self.config['feature_point_min_threshold'] = self.cfg_parser.getint('general','feature_point_min_threshold')
+
+        #  Process Rendering parameters
+        render_config = {}
+        render_config['min_x_padding'] = self.cfg_parser.getfloat('rendering','min_x_padding')
+        render_config['max_x_padding'] = self.cfg_parser.getfloat('rendering','max_x_padding')
+        render_config['min_y_padding'] = self.cfg_parser.getfloat('rendering','min_y_padding')
+        render_config['max_y_padding'] = self.cfg_parser.getfloat('rendering','max_y_padding')
+        render_config['output_projection'] = self.cfg_parser.get('rendering','output_projection')
+        render_config['window_gsd'] = self.cfg_parser.getfloat('rendering','window_gsd')
+        render_config['output_image_path'] = self.cfg_parser.get('rendering','output_image_path')
+
+        self.config['rendering'] = render_config
 
     def Configure_Logging(self):
 

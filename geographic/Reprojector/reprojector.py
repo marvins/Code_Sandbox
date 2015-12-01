@@ -23,9 +23,7 @@ def Main():
 
     #  Otherwise, Project Files
     elif options.config['program_mode'] == 'project':
-
-        #  Process the Convert
-        pass
+        rproj.Render_Map(options)
 
 
     #  Otherwise, error
