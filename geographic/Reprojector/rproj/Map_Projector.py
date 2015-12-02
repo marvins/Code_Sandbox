@@ -133,6 +133,6 @@ def Render_Map( options ):
             cv2.polylines( image, [polygon], True, (0,0,0), thickness)
 
     #  Write Image
-    cv2.imwrite( render_config['output_image_path'], image )
     logging.info('Writing output to ' + render_config['output_image_path'])
+    cv2.imwrite( render_config['output_image_path'], image )
 

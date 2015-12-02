@@ -8,7 +8,7 @@ MODE=project
 #
 # -v : debug
 #  <blank> : Info
-VERBOSITY=-v
+#VERBOSITY=-v
 
 #  Mode flags
 MODE_FLAGS=
@@ -18,9 +18,9 @@ MODE_FLAGS=
 CONFIG_PATH=data/options-globe.cfg
 
 #  List of Projections
-#PROJECTIONS="geographic_direct utm cassini bonne armadillo"
+PROJECTIONS="geographic_direct utm cassini bonne armadillo"
 #PROJECTIONS="geographic_direct"
-PROJECTIONS="armadillo"
+
 
 if [ "$MODE" = 'project' ]; then
     
