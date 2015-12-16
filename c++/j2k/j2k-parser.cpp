@@ -20,6 +20,10 @@ int main( int argc, char* argv[] )
 {
     // Open the file
     std::string input_path = argv[1];
+    int64_t max_len = -1;
+    if( argc > 2 ){
+        max_len = stoi(argv[2]);
+    }
 
     // Open the file and extract the buffer
     uint8_t*  input_data; 
@@ -30,11 +34,15 @@ int main( int argc, char* argv[] )
                    input_size );
 
 
+    if( max_len < 0 ){
+        max_len = input_size;
+    }
+    
     // Start parsing the file
     J2K_Marker_Container container;
     container.Process_Markers( input_data,
                                offset,
-                               input_size );
+                               max_len );
     
 
     // Exit

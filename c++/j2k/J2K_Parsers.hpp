@@ -161,6 +161,53 @@ class J2K_COC_Marker : public J2K_Marker_Base
 
 
 /**
+ * @class J2K_COD_Marker
+ */
+class J2K_COD_Marker : public J2K_Marker_Base
+{
+    public:
+ 
+        /**
+         * @brief Constructor
+         */
+        J2K_COD_Marker();
+
+        
+        /**
+         * @brief Process
+         */
+        virtual void Process( const uint8_t* buffer,
+                              int64_t&       index );
+
+
+}; // End of J2D_COM_Marker Class
+
+
+
+/**
+ * @class J2K_COM_Marker
+ */
+class J2K_COM_Marker : public J2K_Marker_Base
+{
+    public:
+ 
+        /**
+         * @brief Constructor
+         */
+        J2K_COM_Marker();
+
+        
+        /**
+         * @brief Process
+         */
+        virtual void Process( const uint8_t* buffer,
+                              int64_t&       index );
+
+
+}; // End of J2K_COM_Marker Class
+
+
+/**
  * @class J2K_EOC_Marker
  */
 class J2K_EOC_Marker : public J2K_Marker_Base
