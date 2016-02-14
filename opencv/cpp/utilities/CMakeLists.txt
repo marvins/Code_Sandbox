@@ -6,6 +6,8 @@
 #
 
 
+#  Add the Analysis Utility
+add_subdirectory(analysis-utility)
 
 #  Add the Utilities
 add_subdirectory(video-writer)
