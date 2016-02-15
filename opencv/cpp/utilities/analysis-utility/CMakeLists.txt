@@ -39,6 +39,8 @@ include_directories(${Boost_INCLUDE_DIRS})
 #----------------------------#
 set( ANALYSIS_TOOL_SOURCES
      analysis-utility.cpp
+     Options.cpp
+     Options.hpp
 )
 
 
