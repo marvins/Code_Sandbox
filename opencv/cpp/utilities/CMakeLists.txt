@@ -9,6 +9,9 @@
 #  Add the Analysis Utility
 add_subdirectory(analysis-utility)
 
+#  Add the Pair Matcher
+add_subdirectory(pair-matcher)
+
 #  Add the Utilities
 add_subdirectory(video-writer)
 
