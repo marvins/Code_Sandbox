@@ -7,6 +7,7 @@
 #define __PAIR_MATCHER_OPTIONS_HPP__
 
 // C++ Libraries
+#include <map>
 #include <string>
 
 /**
@@ -34,7 +35,17 @@ class Options
          * @brief Print Usage Instruction
         */
         void Usage();
+        
 
+        /**
+         * @brief Get Config Setting
+        */
+        inline std::string Get_Config_Parameter( const std::string& key )const{
+            if( m_config_settings.find(key) == m_config_settings.end() ){
+                return "";
+            }
+            return m_config_settings.find(key)->second;
+        }
 
     private:
         
@@ -50,6 +61,10 @@ class Options
 
         /// Program Name
         std::string m_program_name;
+
+
+        /// Key/Value Pair List
+        std::map<std::string,std::string> m_config_settings;
 
 }; // End of Options class
 

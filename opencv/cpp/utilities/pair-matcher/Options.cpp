@@ -7,9 +7,11 @@
 
 
 // C++ Libraries
+#include <cstdlib>
 #include <deque>
 #include <iostream>
 #include <string>
+#include <unistd.h>
 
 /********************************/
 /*          Constructor         */
@@ -57,8 +59,19 @@ void Options::Parse_Command_Line( int argc, char* argv[] )
         arg = args.front();
         args.pop_front();
 
+        // Check if Usage Requested
+        if( arg == "-h" ||
+            arg == "--help" )
+        {
+            Usage();
+            std::exit(-1);
+        }
 
-
+        // Check if Test File
+        else
+        {
+            m_config_settings["TEST_IMAGE_PATH"] = arg;
+        }
 
 
     }
