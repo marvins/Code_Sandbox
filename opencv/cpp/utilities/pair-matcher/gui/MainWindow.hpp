@@ -25,13 +25,22 @@
 */
 class MainWindow : public QMainWindow
 {
-    public:
+    Q_OBJECT
     
+    public:
+
         /**
          * @brief Constructor
         */
         MainWindow( Options const& options );
 
+    
+    protected:
+
+        /**
+         * @brief KeyPress Event
+        */
+        void keyPressEvent( QKeyEvent* key_event );
 
     private:
         

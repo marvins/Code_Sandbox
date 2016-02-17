@@ -10,6 +10,7 @@
 #include "../Options.hpp"
 
 // Qt Libraries
+#include <QtGui>
 #include <QGraphicsScene>
 #include <QGraphicsPixmapItem>
 #include <QGraphicsView>
@@ -30,6 +31,7 @@
 */
 class TestImageWidget : public QWidget
 {
+    Q_OBJECT
 
     public:
         
@@ -38,6 +40,32 @@ class TestImageWidget : public QWidget
         */
         TestImageWidget( Options const& options,
                          QWidget*       parent );
+
+    
+        
+    protected:
+        
+        /**
+         * @brief Translate the Image
+        */
+        void Pan_Image( const double& x,
+                              const double& y );
+
+        /**
+         * @brief Scale the Image
+        */
+        void Zoom_Image( const double& scale );
+
+
+        /**
+         * @brief Detect Keyboard Actions.
+        */
+        void keyPressEvent( QKeyEvent* key_event ); 
+        
+        /**
+         * @brief Event Filter
+        */
+        bool eventFilter(QObject *obj, QEvent *event);
 
     private:
         
@@ -57,6 +85,9 @@ class TestImageWidget : public QWidget
         
         /// Layout
         QVBoxLayout* m_layout;
+
+        /// Scene Rectangle
+        QRectF m_scene_rect;
 
 }; // End of Options Class
 

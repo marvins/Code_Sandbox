@@ -5,6 +5,9 @@
 */
 #include "MainWindow.hpp"
 
+// C++ Libraries
+#include <iostream>
+
 
 /**********************************/
 /*          Constructor           */
@@ -21,7 +24,9 @@ MainWindow::MainWindow( Options const& options )
     
     // Build Docket Windows
     Build_Dock_Windows();
-
+    
+    // Define a strong focus 
+    setFocusPolicy ( Qt::StrongFocus );
 }
 
 
@@ -43,4 +48,14 @@ void MainWindow::Build_Dock_Windows()
     m_tst_image_dock->setWidget( new TestImageWidget( m_options, this )); 
     addDockWidget( Qt::RightDockWidgetArea, m_tst_image_dock );
 }
+
+
+/************************************/
+/*          Keyboard Event          */
+/************************************/
+void MainWindow::keyPressEvent( QKeyEvent* event )
+{
+    std::cout << m_class_name << "::keyPressEvent, Keyboard detected: " << event->key() << std::endl;
+}
+
 
