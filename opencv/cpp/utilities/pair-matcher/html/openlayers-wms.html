@@ -1,71 +1,242 @@
-<!DOCTYPE html>
-<html>
-    <head>
-        <title>WMTS</title>
-        <link rel="stylesheet" href="http://openlayers.org/en/v3.13.1/css/ol.css" type="text/css">
-        <script src="http://openlayers.org/en/v3.13.1/build/ol.js"></script>
-    </head>
-
-    <body>
-        <div id="map" class="map"></div>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+    <link rel="stylesheet" href="http://10.2.18.32:8082/geoserver/openlayers3/ol.css" type="text/css">
+    
+    <script src="http://10.2.18.32:8082/geoserver/openlayers3/ol.js" type="text/javascript"></script>
+    <title>OpenLayers map preview</title>
+  </head>
+  <body>
+    <div id="toolbar" style="display: none;">
+      <ul>
+        <li>
+          <a>WMS version:</a>
+          <select id="wmsVersionSelector" onchange="setWMSVersion(value)">
+            <option value="1.1.1">1.1.1</option>
+            <option value="1.3.0">1.3.0</option>
+          </select>
+        </li>
         
-        <script>
-            var projection = ol.proj.get('EPSG:32613');
-            var projectionExtent = projection.getExtent();
-            var size = ol.extent.getWidth(projectionExtent) / 256;
-            var resolutions = new Array(14);
-            var matrixIds = new Array(14);
+        <li>
+          <a>Antialias:</a>
+          <select id="antialiasSelector" onchange="setAntialiasMode(value)">
+            <option value="full">Full</option>
+            <option value="text">Text only</option>
+            <option value="none">Disabled</option>
+          </select>
+        </li>
+        <li>
+          <a>Format:</a>
+          <select id="imageFormatSelector" onchange="setImageFormat(value)">
+            <option value="image/png">PNG 24bit</option>
+            <option value="image/png8">PNG 8bit</option>
+            <option value="image/gif">GIF</option>
+            <option id="jpeg" value="image/jpeg">JPEG</option>
+          </select>
+        </li>
+        <li>
+          <a>Styles:</a>
+          <select id="imageFormatSelector" onchange="setStyle(value)">
+            <option value="">Default</option>
+          </select>
+        </li>
+          <li>
+              <a>Filter:</a>
+              <select id="filterType">
+                  <option value="cql">CQL</option>
+                  <option value="ogc">OGC</option>
+                  <option value="fid">FeatureID</option>
+              </select>
+              <input type="text" size="80" id="filter"/>
+              <a id="updateFilterButton" href="#" onClick="updateFilter()" title="Apply filter">Apply</a>
+              <a id="resetFilterButton" href="#" onClick="resetFilter()" title="Reset filter">Reset</a>
+          </li>
+        </ul>
+      </div>
+      
+      <!-- Main Map Element -->
+      <div id="map">
+        <div class="ol-toggle-options ol-unselectable"><a title="Toggle options toolbar" onClick="toggleControlPanel()" href="#toggle">...</a></div>
+      </div>
+    
+      <div id="wrapper">
+          <div id="location"></div>
+          <div id="scale">
+      </div>
+    
+      <script type="text/javascript">
+        var pureCoverage = true;
+        // if this is just a coverage or a group of them, disable a few items,
+        // and default to jpeg format
+        var format = 'image/png';
+        var bounds = [507000, 4290000,
+                      528000, 4309500];
+        if (pureCoverage) {
+        document.getElementById('filterType').disabled = true;
+        document.getElementById('filter').disabled = true;
+        document.getElementById('antialiasSelector').disabled = true;
+        document.getElementById('updateFilterButton').disabled = true;
+        document.getElementById('resetFilterButton').disabled = true;
+        document.getElementById('jpeg').selected = true;
+        format = "image/jpeg";
+      }
 
-            for (var z = 0; z < 14; ++z) 
-            {
-                // generate resolutions and matrixIds arrays for this WMTS
-                resolutions[z] = size / Math.pow(2, z);
-                matrixIds[z] = z;
-            }
+      var mousePositionControl = new ol.control.MousePosition({
+        className: 'custom-mouse-position',
+        target: document.getElementById('location'),
+        coordinateFormat: ol.coordinate.createStringXY(5),
+        undefinedHTML: '&nbsp;'
+      });
+      var untiled = new ol.layer.Image({
+        source: new ol.source.ImageWMS({
+          ratio: 1,
+          url: 'http://10.2.18.32:8082/geoserver/IPP-Data/wms',
+          params: {'FORMAT': format,
+                   'VERSION': '1.1.1',  
+                STYLES: '',
+                LAYERS: 'IPP-Data:2014',
+          }
+        })
+      });
+      
+      
+      // Projection to use for viewing data
+      var projection = new ol.proj.Projection({
+          code: 'EPSG:32613',
+          units: 'm',
+          axisOrientation: 'neu'
+      });
+      
+      
+      var map = new ol.Map({
+        controls: ol.control.defaults({
+          attribution: false
+        }).extend([mousePositionControl]),
+        target: 'map',
+        layers: [
+          untiled
+        ],
+        
+        view: new ol.View({
+           projection: projection
+        })
+      });
+      
+      map.getView().on('change:resolution', function(evt) {
+        var resolution = evt.target.get('resolution');
+        var units = map.getView().getProjection().getUnits();
+        var dpi = 25.4 / 0.28;
+        var mpu = ol.proj.METERS_PER_UNIT[units];
+        var scale = resolution * mpu * 39.37 * dpi;
+        if (scale >= 9500 && scale <= 950000) {
+          scale = Math.round(scale / 1000) + "K";
+        } else if (scale >= 950000) {
+          scale = Math.round(scale / 1000000) + "M";
+        } else {
+          scale = Math.round(scale);
+        }
+        document.getElementById('scale').innerHTML = "Scale = 1 : " + scale;
+      });
+      map.getView().fit(bounds, map.getSize());
+      
+      // Event Handler when you click the screen
+      map.on('singleclick', function(evt) 
+      {
+        document.getElementById('nodelist').innerHTML = "Loading... please wait...";
+        var view = map.getView();
+        var viewResolution = view.getResolution();
+        var source = untiled.getSource();
+        var url = source.getGetFeatureInfoUrl
+        (
+           evt.coordinate, viewResolution, view.getProjection(),
+           {'INFO_FORMAT': 'text/html', 'FEATURE_COUNT': 50});
+         if (url) 
+         {
+            document.getElementById('nodelist').innerHTML = '<iframe seamless src="' + url + '"></iframe>';
+         }
+      });
 
-            var attribution = new ol.Attribution({
-                html: 'Tiles &copy; <a href="http://services.arcgisonline.com/arcgis/rest/' +
-                'services/Demographics/USA_Population_Density/MapServer/">ArcGIS</a>'
-            });
+      // sets the chosen WMS version
+      function setWMSVersion(wmsVersion) {
+        map.getLayers().forEach(function(lyr) {
+          lyr.getSource().updateParams({'VERSION': wmsVersion});
+        });
+      }
+
+      
+      function setAntialiasMode(mode) {
+        map.getLayers().forEach(function(lyr) {
+          lyr.getSource().updateParams({'FORMAT_OPTIONS': 'antialias:' + mode});
+        });
+      }
+
+      // changes the current tile format
+      function setImageFormat(mime) {
+        map.getLayers().forEach(function(lyr) {
+          lyr.getSource().updateParams({'FORMAT': mime});
+        });
+      }
+
+      function setStyle(style){
+        map.getLayers().forEach(function(lyr) {
+          lyr.getSource().updateParams({'STYLES': style});
+        });
+      }
+
+      
 
 
-            var map = new ol.Map({
-                layers: [
-                    new ol.layer.Tile({
-                    source: new ol.source.OSM(),
-                    opacity: 0.7
-                }),
-                new ol.layer.Tile({
-                    opacity: 0.7,
-                    source: new ol.source.WMTS({
-                        attributions: [attribution],
-                        url: 'http://services.arcgisonline.com/arcgis/rest/' +
-                        'services/Demographics/USA_Population_Density/MapServer/WMTS/',
-                        layer: '0',
-                        matrixSet: 'EPSG:3857',
-format: 'image/png',
-projection: projection,
-tileGrid: new ol.tilegrid.WMTS({
-origin: ol.extent.getTopLeft(projectionExtent),
-resolutions: resolutions,
-matrixIds: matrixIds
-}),
-style: 'default',
-wrapX: true
-})
-})
-],
-    target: 'map',
-    controls: ol.control.defaults({
-attributionOptions: /** @type {olx.control.AttributionOptions} */ ({
-collapsible: false
-})
-}),
-view: new ol.View({
-center: [-11158582, 4813697],
-zoom: 4
-})
-});
-</script>
-</body>
+      function updateFilter()
+      {
+        if (pureCoverage) {
+          return;
+        }
+        var filterType = document.getElementById('filterType').value;
+        var filter = document.getElementById('filter').value;
+        // by default, reset all filters
+        var filterParams = {
+          'FILTER': null,
+          'CQL_FILTER': null,
+          'FEATUREID': null
+        };
+        if (filter.replace(/^\s\s*/, '').replace(/\s\s*$/, '') != "") {
+          if (filterType == "cql") {
+            filterParams["CQL_FILTER"] = filter;
+          }
+          if (filterType == "ogc") {
+            filterParams["FILTER"] = filter;
+          }
+          if (filterType == "fid")
+            filterParams["FEATUREID"] = filter;
+          }
+          // merge the new filter definitions
+          map.getLayers().forEach(function(lyr) {
+            lyr.getSource().updateParams(filterParams);
+          });
+        }
+
+        function resetFilter() {
+          if (pureCoverage) {
+            return;
+          }
+          document.getElementById('filter').value = "";
+          updateFilter();
+        }
+
+        // shows/hide the control panel
+        function toggleControlPanel(){
+          var toolbar = document.getElementById("toolbar");
+          if (toolbar.style.display == "none") {
+            toolbar.style.display = "block";
+          }
+          else {
+            toolbar.style.display = "none";
+          }
+          map.updateSize()
+        }
+
+    </script>
+  </body>
 </html>
+
