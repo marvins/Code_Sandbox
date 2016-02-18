@@ -17,6 +17,12 @@ SET( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
 
 
 #--------------------#
+#-    Find GDAL     -#
+#--------------------#
+find_package(GDAL REQUIRED)
+include_directories( ${GDAL_INCLUDE_DIRS})
+
+#--------------------#
 #-    Find OpenCV   -#
 #--------------------#
 find_package(OpenCV REQUIRED)
@@ -51,10 +57,14 @@ add_definitions(${Qt5Widgets_DEFINITIONS})
 #----------------------------#
 set( PAIR_MATCHER_SOURCES
      pair-matcher.cpp
+     GDAL_Utilities.cpp
+     GDAL_Utilities.hpp
      Options.cpp
      Options.hpp
      gui/MainWindow.cpp
      gui/MainWindow.hpp
+     gui/RefImageWidget.cpp
+     gui/RefImageWidget.hpp
      gui/TestImageWidget.cpp
      gui/TestImageWidget.hpp
 )
@@ -74,6 +84,7 @@ add_executable( pair-matcher
 #-     Link the Executable     -#
 #-------------------------------#
 target_link_libraries( pair-matcher
+                       ${GDAL_LIBRARY}
                        ${OpenCV_LIBRARIES}
                        ${Boost_LIBRARIES}
                        ${Qt5Widgets_LIBRARIES})

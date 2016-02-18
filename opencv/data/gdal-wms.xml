@@ -1,0 +1,25 @@
+<GDAL_WMS>
+    <Service name="WMS" >
+        <Version>1.3.0</Version>
+        <ServerURL>http://10.2.18.32:8082/geoserver/ows?</ServerURL>
+        <CRS>EPSG:32613</CRS>
+        <ImageFormat>image/png</ImageFormat>
+        <Layers>IPP-Data:2014</Layers>
+    </Service>
+
+    <DataWindow>
+        <UpperLeftX>510635</UpperLeftX>
+        <UpperLeftY>4305236.6</UpperLeftY>
+        <LowerRightX>518635</LowerRightX>
+        <LowerRightY>4297236.6</LowerRightY>
+        <SizeX>2000</SizeX>
+        <SizeY>2000</SizeY>
+    </DataWindow>
+
+
+    <Projection>EPSG:32613</Projection>
+    <BandsCount>4</BandsCount>
+    <DataType>Byte</DataType>
+
+
+</GDAL_WMS>

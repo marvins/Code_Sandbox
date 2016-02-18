@@ -17,6 +17,7 @@
 
 // Pair Matcher Libraries
 #include "../Options.hpp"
+#include "RefImageWidget.hpp"
 #include "TestImageWidget.hpp"
 
 
@@ -62,7 +63,9 @@ class MainWindow : public QMainWindow
         QDockWidget* m_ref_image_dock;
         QDockWidget* m_tst_image_dock;
         
-        
+        /// Ref Data
+        RefImageWidget*  m_ref_image_widget;
+
         /// Test Image Data
         TestImageWidget* m_test_image_widget;
 

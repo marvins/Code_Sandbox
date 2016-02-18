@@ -53,7 +53,13 @@ class Options
          * @brief Parse the Command-Line Options
         */
         void Parse_Command_Line( int argc, char* argv[] );
-        
+
+
+        /**
+         * @brief Parse Config File
+         */
+        void Parse_Config_File( );
+
 
         /// Class Name
         std::string m_class_name;
@@ -65,6 +71,10 @@ class Options
 
         /// Key/Value Pair List
         std::map<std::string,std::string> m_config_settings;
+
+        
+        /// Config Pathname
+        std::string m_config_pathname;
 
 }; // End of Options class
 

@@ -10,15 +10,22 @@ IMAGE_LIST=image-list.txt
 OX="`expr 8192 - 1920`"
 OY="`expr 8192 - 1080`"
 
+
+#  Create directory
 mkdir -p release
 
+
+#  Enter Directory
 pushd release
 
+
+#  Run CMake
 cmake ..
 if [ ! "$?" = '0' ]; then
     echo 'Error with CMake.'
     exit 1
 fi
+
 
 make -j4
 if [ ! "$?" = '0' ]; then

@@ -23,6 +23,8 @@ find_package(OpenCV REQUIRED)
 include_directories( ${OpenCV_INCLUDES} )
 
 
+find_package( GDAL )
+
 #-------------------#
 #-    Find Boost   -#
 #-------------------#
@@ -59,5 +61,6 @@ add_executable( video-writer
 #-------------------------------#
 target_link_libraries( video-writer
                        ${OpenCV_LIBRARIES}
-                       ${Boost_LIBRARIES})
+                       ${Boost_LIBRARIES}
+                       ${GDAL_LIBRARY} )
 

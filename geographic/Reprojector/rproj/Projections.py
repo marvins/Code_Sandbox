@@ -81,6 +81,9 @@ class Projector_Bonne(Projector_Base):
 
     def Transform_Forward( self, point ):
 
+        #  Adjust points too close to the south pole
+        if point[1] < -89.9999:
+            point[1] = -89
         return self.transformer.TransformPoint( point[0], point[1] )
 
 
@@ -94,6 +97,13 @@ class Projector_Cassini(Projector_Base):
     def Transform_Forward( self, point ):
         
         output = [0,0]
+
+        #  Adjust points too close to the south pole
+        if point[1] > 89.9:
+            point[1] = 89.9
+        if point[1] < -89.9:
+            point[1] = 89.9
+            
 
         output[0] = math.asin( math.cos(point[1] * self.deg2rad) * math.sin(point[0]*self.deg2rad))
         output[1] = math.atan2( math.tan(point[1] * self.deg2rad),

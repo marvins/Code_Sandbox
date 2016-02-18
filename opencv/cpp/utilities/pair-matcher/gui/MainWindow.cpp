@@ -37,7 +37,7 @@ void MainWindow::Build_Dock_Windows()
 {
     // Create Reference Image Dock Widget
     m_ref_image_dock = new QDockWidget(tr("Reference Imagery"), this);
-    
+    m_ref_image_dock->setWidget( new RefImageWidget( m_options, this ));    
     addDockWidget( Qt::LeftDockWidgetArea, m_ref_image_dock );
 
 
