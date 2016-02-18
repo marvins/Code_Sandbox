@@ -13,7 +13,13 @@
 
 using namespace std;
 
-BrowserPane::BrowserPane( QWidget* parent ) : QWidget(parent){
+
+/********************************/
+/*          Constructor         */
+/********************************/
+BrowserPane::BrowserPane( QWidget* parent ) 
+  : QWidget(parent)
+{
 
     // create main layout
     mainLayout = new QGridLayout;
@@ -81,7 +87,8 @@ void BrowserPane::build_toolbar_widget(){
 
 }
 
-void BrowserPane::reloadBrowserOverlays(){
+void BrowserPane::reloadBrowserOverlays()
+{
     
     /// Clear all overlays
     for( size_t i=0; i<settings.variables.size(); i++ ){

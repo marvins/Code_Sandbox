@@ -43,7 +43,7 @@ make_project(){
 
     #  Running qmake
     echo 'Running qmake'
-    qmake-qt5
+    qmake
 
     #  Running make
     echo 'Running make'
