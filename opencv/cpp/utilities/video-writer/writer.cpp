@@ -101,7 +101,13 @@ int main( int argc, char* argv[] )
         // Load image
         cout << "Loading image " << image_paths[i] << endl;
         image = cv::imread( image_paths[i] );
+        cout << "Size: " << image.size() << std::endl;
 
+        // Check image size
+        if( image.rows < 1 || image.cols < 1 ){
+            std::cerr << "Image is not valid.  Size: " << image.size() << ", Skipping." << std::endl;
+            continue;
+        }
 
         // Warp Image
         cv::warpAffine( image, image, affine_transform, image.size());

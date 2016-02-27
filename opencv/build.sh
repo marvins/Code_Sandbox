@@ -36,5 +36,7 @@ fi
 popd
 
 
-./release/bin/video-writer -v $OUTPUT_VIDEO -i $IMAGE_LIST --overlay-path -ox $OX -oy $OY -s 1
+CMD="./release/bin/video-writer -v $OUTPUT_VIDEO -i $IMAGE_LIST --overlay-path -ox $OX -oy $OY -s 1"
+echo $CMD
+$CMD
 
