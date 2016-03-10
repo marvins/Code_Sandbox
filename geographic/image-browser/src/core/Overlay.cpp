@@ -7,6 +7,9 @@
 
 #include <src/core/StringUtilities.hpp>
 
+// C++ Libraries
+#include <sstream>
+
 using namespace std;
 
 /**
@@ -26,8 +29,13 @@ Overlay::Overlay( const Rect& poly, const QColor& color ){
     this->color = color;
 }
 
-string Overlay::toGoogleMapsString( string& varname, const int& idx)const{
-    
+
+/*****************************************************************/
+/*          Print the Overlay as a Google Maps String            */
+/*****************************************************************/
+string Overlay::toGoogleMapsString( string& varname, const int& idx)const
+{
+
     varname = string("rectangle") + num2str(idx);
 
     string var = string("var rectangle") + num2str(idx) 
@@ -44,3 +52,17 @@ string Overlay::toGoogleMapsString( string& varname, const int& idx)const{
                + string("});");
     return var;
 }
+
+
+/******************************************************/
+/*          Print the Overlay as a Log String         */
+/******************************************************/
+std::string Overlay::To_Log_String()const
+{
+    // Create stringstream
+    std::stringstream sin;
+
+    sin << "Overlay:  Rectangle: " << shape;
+    return sin.str();
+}
+

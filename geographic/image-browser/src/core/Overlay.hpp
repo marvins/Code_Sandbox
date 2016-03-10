@@ -29,7 +29,17 @@ class Overlay{
         */
         Overlay( Rect const& poly, QColor const& color );
         
+
+        /**
+         * @brief Print the Overlay as a Google Maps String
+        */
         std::string toGoogleMapsString( std::string& varname, const int& idx = 0)const;
+        
+
+        /**
+         * @brief Print the Overlay as a Log String
+        */
+        std::string To_Log_String()const;
 
         /// Shape to view
         Rect  shape;

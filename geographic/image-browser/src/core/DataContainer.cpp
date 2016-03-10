@@ -13,8 +13,11 @@
 using namespace std;
 
 
-    
-DataContainer::DataContainer(){
+/********************************************/
+/*              Constructor                 */
+/********************************************/
+DataContainer::DataContainer()
+{
 
     // base directory
     base_directory = current_working_directory();
@@ -120,7 +123,11 @@ void DataContainer::load_unix_configuration(){
 }
 
 
-void DataContainer::read_file( const string& configurationFilename ){
+/**************************************************/
+/*          Read the Configuration File           */
+/**************************************************/
+void DataContainer::read_file( const string& configurationFilename )
+{
     
     // create the output filename 
     string filename = config_filename;

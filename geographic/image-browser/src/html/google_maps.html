@@ -16,14 +16,25 @@
             
             //<![CDATA[
             var map;
+            var markerVal = 5;
+            var marker = null;
+            var marker_lat = null;
+            var marker_lon = null;
+
+            var infowindow = new google.maps.InfoWindow({
+                    content: "Hello World;"
+                });
 
             /*
                 Initialize the Map to the default location
             */
             function initialize() {
+
+                // Define the Center Coordinates
                 var centerLat = -34.397;
                 var centerLon = 150.644;
-                
+
+                // Create Map Viewing Options
                 var mapOptions = {
                     center: new google.maps.LatLng( centerLat, centerLon),
                     zoom: 8,
@@ -32,12 +43,32 @@
     
                 /// The map object
                 map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
-            
+                
+                /// Event Listener For Map Clicks
+                map.addListener('click', function(event) {
+                    
+                    // Check the marker if we have allocated it yet
+                    if( marker == null ){
+                        marker = new google.maps.Marker({
+                                        position: event.latLng,
+                                        map: map });
+                    }
+                    // Otherwise, just set the position
+                    else{
+                        marker.setPosition( event.latLng );
+                    }
+
+                    // Update Lat and Lon
+                    marker_lat = event.latLng.lat();
+                    marker_lon = event.latLng.lng();
+                });
+          
             }
             
             /// Event listener for initialization function
             google.maps.event.addDomListener(window, 'load', initialize);
-            
+       
+
             //]]>
         </script>
     

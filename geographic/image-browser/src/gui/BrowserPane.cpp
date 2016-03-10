@@ -5,7 +5,9 @@
  */
 #include "BrowserPane.hpp"
 
+// Image-Browser Libraries
 #include <src/core/FilesystemUtilities.hpp>
+#include <src/core/Log_Utilities.hpp>
 #include <src/core/Rect.hpp>
 #include <src/core/Point.hpp>
 
@@ -28,20 +30,32 @@ BrowserPane::BrowserPane( QWidget* parent )
     webView = new QWebView(this);
     mainLayout->addWidget( webView, 0, 0 );
     
+    
     // create toolbar widget
     build_toolbar_widget();
 
+    
     // set the page
 	setUrl( string("file://localhost/") + current_working_directory() + string("/html/google_maps.html"));
 
+    
     // set the layout
     setLayout( mainLayout );
     
-    // listen for messages to reload the selected overlays
-    connect( &message_service, SIGNAL(reloadBrowserOverlaySignal()), this, SLOT(reloadBrowserOverlays()));
 
+    // listen for messages to reload the selected overlays
+    connect( &message_service, 
+             SIGNAL(reloadBrowserOverlaySignal()), 
+             this, 
+             SLOT(reloadBrowserOverlays()));
+    
+    // Listen for events in the view
+    webView->installEventFilter(this);
 }
 
+/*********************************/
+/*          Set the URL          */
+/*********************************/
 void BrowserPane::setUrl( const string& url ){
     
 	string turl = url;
@@ -50,16 +64,22 @@ void BrowserPane::setUrl( const string& url ){
 			turl[i] = '/';
 		}
 	}
-	cout << "url: " << turl << endl;
+    std::cout << "Setting QWebView URL: " << turl << std::endl;
     webView->setUrl(QUrl(turl.c_str()));
 
 }
 
-void BrowserPane::build_toolbar_widget(){
+
+/***********************************************/
+/*          Build the Toolbar Widget           */
+/***********************************************/
+void BrowserPane::build_toolbar_widget()
+{
     
     // create toolbar widget
     toolbarWidget = new QWidget;
-    toolbarWidget->setSizePolicy( QSizePolicy::Maximum, QSizePolicy::Minimum );
+    toolbarWidget->setSizePolicy( QSizePolicy::Maximum, 
+                                  QSizePolicy::Minimum );
 	
     // create layout
     toolbarLayout = new QVBoxLayout;
@@ -87,6 +107,10 @@ void BrowserPane::build_toolbar_widget(){
 
 }
 
+
+/************************************************/
+/*          Reload the Browser Overlays         */
+/************************************************/
 void BrowserPane::reloadBrowserOverlays()
 {
     
@@ -99,7 +123,7 @@ void BrowserPane::reloadBrowserOverlays()
 
     /// Iterate over the overlay list, adding them to the map
     for( size_t i=0; i<settings.overlay_list.size(); i++ ){
-        
+     
         // create the javascript variable
         string varname;
         string command = settings.overlay_list[i].toGoogleMapsString( varname, i);
@@ -111,4 +135,37 @@ void BrowserPane::reloadBrowserOverlays()
     
 }
 
+/********************************************/
+/*          Browser Event Filter            */
+/********************************************/
+bool BrowserPane::eventFilter(QObject *target, QEvent *event)
+{
+    // Check if we modified the webview
+    if( target == webView )
+    {
+        // Check for Mouse
+        if( event->type() == QEvent::MouseButtonPress )
+        {
+            sleep(1);
+            std::string lat_res = webView->page()->mainFrame()->evaluateJavaScript("marker_lat").toString().toStdString();
+            std::string lon_res = webView->page()->mainFrame()->evaluateJavaScript("marker_lon").toString().toStdString();
+            double lat, lon;
+            bool valid = false;
+            try{
+                lat = std::stod(lat_res); 
+                lon = std::stod(lon_res); 
+                valid = true;
+            }
+            catch(...){
+                cerr << "Unable to parse the marker coordinates" << std::endl; 
+            }
+
+            if( valid ){
+                std::cout << "Position: " << lat << ", " << lon << std::endl;
+            }
+        }
+
+    }
+    return false;
+}
 

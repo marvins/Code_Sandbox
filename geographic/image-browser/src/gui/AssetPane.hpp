@@ -26,7 +26,8 @@ extern MessagingService  message_service;
 /**
  * @class AssetPane
  */
-class AssetPane : public QWidget{
+class AssetPane : public QWidget
+{
 
     Q_OBJECT
 

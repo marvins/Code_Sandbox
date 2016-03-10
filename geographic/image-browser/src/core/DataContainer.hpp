@@ -12,10 +12,12 @@
 #include <src/core/ImageDatabase.hpp>
 #include <src/core/Overlay.hpp>
 
+
 /**
  * @class DataContainer
  */
-class DataContainer{
+class DataContainer
+{
 
     public:
 
@@ -29,17 +31,24 @@ class DataContainer{
         */
         void load( int argc, char* argv[] );
 
+
         /**
          * Load the container using a Unix configuration file
         */
         void load_unix_configuration();
         
+
+        /**
+         * @brief Load the Container using a Windows Configuration File.
+        */
 		void load_windows_configuration();
 		
+
         /**
          * Create Config File
         */
         void write( const std::string& configurationFilename = "" )const;
+
 
         /**
          * 

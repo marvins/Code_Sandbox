@@ -14,7 +14,8 @@
 /**
  * @class Rect
 */
-class Rect{
+class Rect
+{
 
     public:
 
@@ -25,9 +26,12 @@ class Rect{
 
         /**
          * Parameterized Constructor
+         *
+         * @param[in] topLeft  Top-Left Corner Point
+         * @param[in] bottomRight Bottom-Right Corner Point
         */
-        Rect( const Point& topLeft, const Point& bottomRight );
-
+        Rect( const Point& topLeft, 
+              const Point& bottomRight );
         
         /// Top Left
         Point tl;

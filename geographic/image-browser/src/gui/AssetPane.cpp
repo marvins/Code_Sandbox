@@ -15,10 +15,13 @@
 
 using namespace std;
 
-/**
- * Default Constructor
- */
-AssetPane::AssetPane( QWidget* parent ) : QWidget( parent ){
+
+/*************************************************/
+/*                 Default Constructor           */
+/*************************************************/
+AssetPane::AssetPane( QWidget* parent ) 
+  : QWidget( parent )
+{
     
     // create the main layout
     mainLayout = new QVBoxLayout;
@@ -81,7 +84,12 @@ void AssetPane::build_filesystem_widget(){
 
 }
 
-void AssetPane::build_asset_widget(){
+
+/*********************************************/
+/*          Create the Asset Widget          */
+/*********************************************/
+void AssetPane::build_asset_widget()
+{
 
     // create main widget
     assetWidget = new QWidget(this);

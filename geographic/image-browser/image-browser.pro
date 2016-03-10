@@ -4,7 +4,7 @@
 
 QT += core gui webkit widgets webkitwidgets network
 
-CONFIG += console
+CONFIG += console c++11
 
 TEMPLATE = app
 
@@ -29,6 +29,7 @@ HEADERS += src/core/DataContainer.hpp \
            src/core/Image.hpp \
 		   src/core/ImageDatabase.hpp \
 		   src/core/GDALLoader.hpp \
+           src/core/Log_Utilities.hpp \
            src/core/MessagingService.hpp \
            src/core/Overlay.hpp \
 		   src/core/Point.hpp \
@@ -47,6 +48,7 @@ SOURCES += src/imagebrowser.cpp \
 		   src/core/GDALLoader.cpp \
 		   src/core/Image.cpp \
 		   src/core/ImageDatabase.cpp \
+           src/core/Log_Utilities.cpp \
 		   src/core/MessagingService.cpp \
 		   src/core/Overlay.cpp \
 		   src/core/Point.cpp \
@@ -59,6 +61,11 @@ SOURCES += src/imagebrowser.cpp \
            src/gui/MainWindow.cpp \
 		   src/gui/PreferenceDialog.cpp
 
+
+
+#-----------------------------------------#
+#-    Building Non-Mac Systems (Linux)   -#
+#-----------------------------------------#
 unix:!macx{
 
 	message("using unix")
@@ -73,8 +80,7 @@ unix:!macx{
     LIBS += -lgdal
 
     # Boost Library
-    LIBS += -lboost_system -lboost_filesystem
-
+    LIBS += -L/usr/lib/x86_64-linux-gnu -lboost_system -lboost_filesystem -lboost_log -lboost_log_setup 
 
 }
 
@@ -89,7 +95,7 @@ unix:macx{
     LIBS += -lgdal
 
     # Boost Library
-    LIBS += -lboost_system -lboost_filesystem
+    LIBS += -lboost_system -lboost_filesystem -lboost_log -lboost_log_setup -lpthread
 
 
 }

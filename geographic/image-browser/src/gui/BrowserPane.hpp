@@ -33,13 +33,23 @@ class BrowserPane : public QWidget{
          */
         BrowserPane( QWidget* parent = NULL );
     
+        
         /**
          *  Set the url of the browser pane
          */
         void setUrl( std::string const& url );
+
+
+        /**
+         * @brief Event Filter
+        */
+        bool eventFilter(QObject *target, QEvent *event);
     
     public slots:
         
+        /**
+         * @brief Reload the Browser Overlays on the HTML Map.
+        */
         void reloadBrowserOverlays();
 
     private:

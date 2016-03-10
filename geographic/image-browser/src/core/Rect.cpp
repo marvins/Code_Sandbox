@@ -6,6 +6,9 @@
 
 #include "Rect.hpp"
 
+// C++ Libraries
+#include <sstream>
+
 using namespace std;
 
 Rect::Rect(){
