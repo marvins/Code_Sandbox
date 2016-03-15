@@ -14,33 +14,33 @@ import sys, time, math, datetime, pytz, calendar
 from dateutil import tz
 
 #  Default Date Timestamp Format
-defaultTimestampFormat = '%d/%m/%y %H:%M:%S';
+defaultTimestampFormat = '%d/%m/%y %H:%M:%S'
 
 #-----------------------------------#
 #-     Print Usage Instructions    -#
 #-----------------------------------#
 def usage():
 
-	print('usage: time-convert [options]  -i <input-format> -t <input-string>');
-	print('');
-	print('    Convert time strings between different formats.');
-	print('');
-	print('    Note: If no inputs are given, then the current time will be used.');
-	print('');
-	print('    options:');
-	print('    -o <output-format> : Specify output format');
-	print('    -f <timestamp>     :  For Gregorian dates, pass the format (ex. %d-%m-%y).')
-	print('       default: ' + defaultTimestampFormat);
-	print('    -v, --verbose:  Print output in descriptive format.');
-	print('    -z <utc offset> : UTC Offset, 0 = default.');
-	print('');
-	print('    input/output formats:')
-	print('      G : GPS');
-	print('      U : Unix');
-	print('      J : Julian');
-	print('      C : Gregorian Calendar');
-	print('      A : All (Output Only)');
-	print('');
+    print('usage: time-convert [options]  -i <input-format> -t <input-string>')
+    print('')
+    print('    Convert time strings between different formats.')
+    print('')
+    print('    Note: If no inputs are given, then the current time will be used.')
+    print('')
+    print('    options:')
+    print('    -o <output-format> : Specify output format')
+    print('    -f <timestamp>     :  For Gregorian dates, pass the format (ex. %d-%m-%y).')
+    print('       default: ' + defaultTimestampFormat)
+    print('    -v, --verbose:  Print output in descriptive format.')
+    print('    -z <utc offset> : UTC Offset, 0 = default.')
+    print('')
+    print('    input/output formats:')
+    print('      G : GPS')
+    print('      U : Unix')
+    print('      J : Julian')
+    print('      C : Gregorian Calendar')
+    print('      A : All (Output Only)')
+    print('')
 
 
 #-----------------------------------------------#
@@ -48,21 +48,20 @@ def usage():
 #-----------------------------------------------#
 def ComputeModifiedJulian( day, month, year ):
 
-	value = 367 * year;
+	value = 367 * year
 	value -= ((7*(((month+9)//12) + year))//4)
 	value -= ((3*(((((month+9)//12)+year-1)//100)+1))//4)
 	value += ((275 * month)//9)
 	value += day
 	value += 1721028
 	value -= 2400000
-	return value;
+	return value
 
 #--------------------------------------------------#
 #-      Convert a Unix Timestamp to Julian Time   -#
 #--------------------------------------------------#
 def Unix2Julian( unixTime ):
-
-	return (unixTime / 86400.0) + 2440587.5;
+	return (unixTime / 86400.0) + 2440587.5
 
 #---------------------------------------------------#
 #-     Convert a Julian Time to Unix Timestamp     -#
@@ -70,8 +69,7 @@ def Unix2Julian( unixTime ):
 def Julian2Unix( julianTime ):
 
 	#  Compute the year
-
-	raise Exception('Not Implemented Yet.');
+	raise Exception('Not Implemented Yet.')
 
 	return 1234;
 
@@ -80,10 +78,10 @@ def Julian2Unix( julianTime ):
 #--------------------------------------------------------#
 def Unix2Gregorian( unixTime, formatStr, utcOffset ):
 
-	d = datetime.datetime.fromtimestamp(unixTime);
-	a = d.replace(tzinfo=tz.tzlocal());
+	d = datetime.datetime.fromtimestamp(unixTime)
+	a = d.replace(tzinfo=tz.tzlocal())
 
-	return a.astimezone(pytz.timezone('UTC')).strftime(formatStr) + ' TZ: ' + '0';
+	return a.astimezone(pytz.timezone('UTC')).strftime(formatStr) + ' TZ: ' + '0'
 
 #--------------------------------------------------------#
 #-     Convert a Gregorian Date to a Unix Timestamp     -#
