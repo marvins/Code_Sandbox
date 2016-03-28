@@ -10,17 +10,62 @@
 #
 
 #  Python libraries
-import sys, time, math, datetime, pytz, calendar
+import sys, time, math, datetime, calendar, argparse, csv
 from dateutil import tz
 
 #  Default Date Timestamp Format
 defaultTimestampFormat = '%d/%m/%y %H:%M:%S'
 
-#-----------------------------------#
-#-     Print Usage Instructions    -#
-#-----------------------------------#
-def usage():
 
+class LeapSecondTable(object):
+
+    #  Configuration File Path
+    config_path = None
+
+    #  Leap Table Configuration
+    data = []
+
+    def __init__(self, config_path):
+
+        #  Set the Configuration Path
+        self.config_path = config_path
+
+
+        #  Parse the CSV File
+        first_row = True
+        with open(self.config_path, 'r') as csvfile:
+
+            csvparser = csv.reader(csvfile)
+            for row in csvparser:
+
+                #  Skip the First Row
+                if first_row is True:
+                    first_row = False
+                    continue
+
+                #  Add the elements
+                entry = {'year':  row[0],
+                         'month': row[1],
+                         'day':   row[2],
+                         'tai_utc': row[3],
+                         'gps_since_epoch': row[4] }
+
+                self.data.append(entry)
+
+
+    def Get_Leap_Seconds(self, unix_timestamp = None,
+                               gps_timestamp  = None,
+                               gps_week = None,
+                               gps_seconds = None):
+
+        #  If Unix Timestamp Provided
+        pass
+
+
+# ----------------------------------- #
+# -     Print Usage Instructions    - #
+# ----------------------------------- #
+def usage():
     print('usage: time-convert [options]  -i <input-format> -t <input-string>')
     print('')
     print('    Convert time strings between different formats.')
@@ -43,266 +88,292 @@ def usage():
     print('')
 
 
-#-----------------------------------------------#
-#-      Compute the modified julian date       -#
-#-----------------------------------------------#
-def ComputeModifiedJulian( day, month, year ):
+# ----------------------------------------------- #
+# -      Compute the modified julian date       - #
+# ----------------------------------------------- #
+def ComputeModifiedJulian(day, month, year):
+    value = 367 * year
+    value -= ((7 * (((month + 9) // 12) + year)) // 4)
+    value -= ((3 * (((((month + 9) // 12) + year - 1) // 100) + 1)) // 4)
+    value += ((275 * month) // 9)
+    value += day
+    value += 1721028
+    value -= 2400000
+    return value
 
-	value = 367 * year
-	value -= ((7*(((month+9)//12) + year))//4)
-	value -= ((3*(((((month+9)//12)+year-1)//100)+1))//4)
-	value += ((275 * month)//9)
-	value += day
-	value += 1721028
-	value -= 2400000
-	return value
 
-#--------------------------------------------------#
-#-      Convert a Unix Timestamp to Julian Time   -#
-#--------------------------------------------------#
-def Unix2Julian( unixTime ):
-	return (unixTime / 86400.0) + 2440587.5
+# -------------------------------------------------- #
+# -      Convert a Unix Timestamp to Julian Time   - #
+# -------------------------------------------------- #
+def Unix2Julian(unixTime):
 
-#---------------------------------------------------#
-#-     Convert a Julian Time to Unix Timestamp     -#
-#---------------------------------------------------#
-def Julian2Unix( julianTime ):
+    return (unixTime / 86400.0) + 2440587.5
 
-	#  Compute the year
-	raise Exception('Not Implemented Yet.')
 
-	return 1234;
+# --------------------------------------------------- #
+# -     Convert a Julian Time to Unix Timestamp     - #
+# --------------------------------------------------- #
+def Julian2Unix(julianTime):
 
-#--------------------------------------------------------#
-#-     Convert a Unix Timestamp to Gregorian Time       -#
-#--------------------------------------------------------#
-def Unix2Gregorian( unixTime, formatStr, utcOffset ):
+    #  Compute the year
+    raise Exception('Not Implemented Yet.')
 
-	d = datetime.datetime.fromtimestamp(unixTime)
-	a = d.replace(tzinfo=tz.tzlocal())
+    return 1234
 
-	return a.astimezone(pytz.timezone('UTC')).strftime(formatStr) + ' TZ: ' + '0'
 
-#--------------------------------------------------------#
-#-     Convert a Gregorian Date to a Unix Timestamp     -#
-#--------------------------------------------------------#
-def Gregorian2Unix( gregorianTime, formatStr ):
+# -------------------------------------------------------- #
+# -     Convert a Unix Timestamp to Gregorian Time       - #
+# -------------------------------------------------------- #
+def Unix2Gregorian(unixTime, formatStr, utcOffset):
 
-	#  Create a datetime object
-	dateObject = datetime.datetime.strptime( gregorianTime, formatStr);
+    d = datetime.datetime.fromtimestamp(unixTime)
+    a = d.replace(tzinfo=tz.tzlocal())
 
-	return time.mktime(dateObject.timetuple());
+    return a.strftime(formatStr) + ' TZ: ' + '0'
 
-def GetElapsedTime( unixTime ):
 
-	dateObject = datetime.datetime.fromtimestamp(unixTime);
-	dateObject = dateObject.replace(tzinfo=tz.tzlocal());
-	hours   = dateObject.astimezone(pytz.timezone('UTC')).hour;
-	minutes = dateObject.astimezone(pytz.timezone('UTC')).minute;
-	seconds = dateObject.astimezone(pytz.timezone('UTC')).second;
-	elapsed = (((hours*60) + minutes)*60) + seconds;
-	return elapsed;
+# -------------------------------------------------------- #
+# -     Convert a Gregorian Date to a Unix Timestamp     - #
+# -------------------------------------------------------- #
+def Gregorian2Unix(gregorianTime, formatStr):
+    #  Create a datetime object
+    dateObject = datetime.datetime.strptime(gregorianTime, formatStr)
 
-#--------------------------------------------------#
-#-      Convert a Unix Timestamp to GPS Time      -#
-#--------------------------------------------------#
-def Unix2GPS( unixTime ):
+    return time.mktime(dateObject.timetuple())
 
-	#  Need to get various gregorian components from the input
-	dateObject = datetime.datetime.fromtimestamp(unixTime, tz=tz.tzlocal());
-	calDay   = dateObject.day;
-	calMonth = dateObject.month;
-	calYear  = dateObject.year;
 
-	#  compute the modified julian date
-	calModJulian = ComputeModifiedJulian( calDay, calMonth, calYear);
+def GetElapsedTime(unixTime):
 
-	#  Need to get various gregorian components from the epoch
-	epochObject = datetime.datetime( 1980, 1, 6, tzinfo=pytz.utc);
-	epDay   = epochObject.day;
-	epMonth = epochObject.month;
-	epYear  = epochObject.year;
+    dateObject = datetime.datetime.fromtimestamp(unixTime)
+    dateObject = dateObject.replace(tzinfo=tz.tzlocal())
+    hours = dateObject.hour
+    minutes = dateObject.minute
+    seconds = dateObject.second
+    elapsed = (((hours * 60) + minutes) * 60) + seconds
+    return elapsed
 
-	#  Compute the modified julian date of the epoch
-	epModJulian = ComputeModifiedJulian( epDay, epMonth, epYear );
 
-	#  Compute GPS Day Count
-	gpsDayCount = calModJulian - epModJulian;
+# -------------------------------------------------- #
+# -      Convert a Unix Timestamp to GPS Time      - #
+# -------------------------------------------------- #
+def Unix2GPS(unixTime):
+    #  Need to get various gregorian components from the input
+    dateObject = datetime.datetime.fromtimestamp(unixTime, tz=tz.tzlocal())
+    calDay = dateObject.day
+    calMonth = dateObject.month
+    calYear = dateObject.year
 
-	#  GPS Week Count
-	gpsWeekCount = math.floor(gpsDayCount / 7);
+    #  compute the modified julian date
+    calModJulian = ComputeModifiedJulian(calDay, calMonth, calYear)
 
-	#  GPS Cycle
-	gpsCycle = math.floor( gpsWeekCount / 1024 );
-	gpsDay  = gpsDayCount % 7;
-	gpsWeek = gpsWeekCount % 1024;
+    #  Need to get various gregorian components from the epoch
+    epochObject = datetime.datetime(1980, 1, 6)
+    epDay = epochObject.day
+    epMonth = epochObject.month
+    epYear = epochObject.year
 
-	gpsSecond = (gpsDay * 86400) + GetElapsedTime(unixTime);
+    #  Compute the modified julian date of the epoch
+    epModJulian = ComputeModifiedJulian(epDay, epMonth, epYear)
 
-	#  Get the modified julian date
-	return [gpsSecond, gpsWeekCount];
+    #  Compute GPS Day Count
+    gpsDayCount = calModJulian - epModJulian
 
-#---------------------------#
-#-      Main Function      -#
-#---------------------------#
+    #  GPS Week Count
+    gpsWeekCount = math.floor(gpsDayCount / 7)
+
+    #  GPS Cycle
+    gpsCycle = math.floor(gpsWeekCount / 1024)
+    gpsDay = gpsDayCount % 7
+    gpsWeek = gpsWeekCount % 1024
+
+    gpsSecond = (gpsDay * 86400) + GetElapsedTime(unixTime)
+
+    #  Get the modified julian date
+    return [gpsSecond, gpsWeekCount]
+
+
+# --------------------------------------------- #
+# -      Parse the Command-Line Options       - #
+# --------------------------------------------- #
+def Parse_Command_Line():
+
+    #  Create argument parser
+    parser = argparse.ArgumentParser(description='Convert between common time formats.')
+
+    #  Define the CSV Data File
+    parser.add_argument('-l','--leap-second-config',
+                        dest='leap_second_config',
+                        default='leap-seconds.csv',
+                        required=False,
+                        help='Leap second configuration file.')
+
+
+
+    return parser.parse_args()
+
+
+# --------------------------- #
+# -      Main Function      - #
+# --------------------------- #
 def main():
 
-	#  User requested verbosity
-	isVerbose = False;
+    #  Parse the Command-Line Options
+    options = Parse_Command_Line()
 
-	#  Desired input format
-	inputFormat = 'U';
+    #  Build the Leap Second Table
+    leap_table = LeapSecondTable(options.leap_second_config)
 
-	#  Input Value
-	inputValue = 0;
+    #  User requested verbosity
+    isVerbose = False
 
-	#  Timestamp format
-	timestampFormat = defaultTimestampFormat
+    #  Desired input format
+    inputFormat = 'U'
 
-	#  Flag telling us whether the user set the input or not
-	inputProvided = False;
+    #  Input Value
+    inputValue = 0
 
-	#  Flag telling us whether the user set the input format or not
-	inputFormatProvided = False;
+    #  Timestamp format
+    timestampFormat = defaultTimestampFormat
 
-	#  Desired output format
-	outputFormat = 'A';
+    #  Flag telling us whether the user set the input or not
+    inputProvided = False
 
-	#  Converted Unix Time
-	unixTimestamp = 0;
+    #  Flag telling us whether the user set the input format or not
+    inputFormatProvided = False
 
-	#  UTC offset
-	utcOffset = 0;
+    #  Desired output format
+    outputFormat = 'A'
 
-	#  Get command-line args
-	args = sys.argv[1:];
+    #  Converted Unix Time
+    unixTimestamp = 0
 
-	#  Iterate over args until we run out
-	while len(args) > 0:
+    #  UTC offset
+    utcOffset = 0
 
-		#  get the next argument
-		arg = args[0];
-		args = args[1:];
+    #  Get command-line args
+    args = sys.argv[1:]
 
-		#  Check if the user requested help
-		if arg == '-h' or arg == '--help':
-			usage()
-			exit(1);
+    #  Iterate over args until we run out
+    while len(args) > 0:
 
-		#  Check if the user is providing an input format flag
-		elif arg == '-i':
+        #  get the next argument
+        arg = args[0]
+        args = args[1:]
 
-			#  Set the input format flag
-			inputFormat = args[0].upper();
+        #  Check if the user requested help
+        if arg == '-h' or arg == '--help':
+            usage()
+            exit(1)
 
-			#  Remove the argument
-			args = args[1:];
+        # Check if the user is providing an input format flag
+        elif arg == '-i':
 
-			#  Input Format Provided
-			inputFormatProvided = True;
+            #  Set the input format flag
+            inputFormat = args[0].upper()
 
-		#  Check if user wants verbose
-		elif arg == '-v' or arg == '--verbose':
-			isVerbose = True;
+            #  Remove the argument
+            args = args[1:]
 
-		#  Get the timestamp format
-		elif arg == '-f':
+            #  Input Format Provided
+            inputFormatProvided = True
 
-			#  Get the value
-			timestampFormat = args[0];
+        # Check if user wants verbose
+        elif arg == '-v' or arg == '--verbose':
+            isVerbose = True
 
-			#  Remove the element
-			args = args[1:];
+        # Get the timestamp format
+        elif arg == '-f':
 
-		#  Check if a timestamp was provided
-		elif arg == '-t':
+            #  Get the value
+            timestampFormat = args[0]
 
-			#  Set the time
-			inputValue = args[0];
+            #  Remove the element
+            args = args[1:]
 
-			#  Remove the argument
-			args = args[1:];
+        # Check if a timestamp was provided
+        elif arg == '-t':
 
-			#  Set the flag to tell us to not use local time
-			inputProvided = True;
+            #  Set the time
+            inputValue = args[0]
 
-		#  Look for the UTC Offset
-		elif arg == '-z':
+            #  Remove the argument
+            args = args[1:]
 
-			utcOffset = args[0];
-			args = args[1:];
+            #  Set the flag to tell us to not use local time
+            inputProvided = True
 
-		#  Look for the output format
-		elif arg == '-o':
+        # Look for the UTC Offset
+        elif arg == '-z':
 
-			#  Set the value
-			outputFormat = args[0].upper();
+            utcOffset = args[0]
+            args = args[1:]
 
-			#  remove the argument
-			args = args[1:];
+        # Look for the output format
+        elif arg == '-o':
 
-		#  Throw an error
-		else:
-			raise Exception('Unknown argument: '+arg);
+            #  Set the value
+            outputFormat = args[0].upper()
 
+            #  remove the argument
+            args = args[1:]
 
+        # Throw an error
+        else:
+            raise Exception('Unknown argument: ' + arg)
 
-	#  If no input time was provided, then use now
-	if inputProvided == False:
-		inputFormat = 'U';
-		inputValue  = calendar.timegm(datetime.datetime.utcnow().timetuple());
+    # If no input time was provided, then use now
+    if inputProvided == False:
+        inputFormat = 'U'
+        inputValue = calendar.timegm(datetime.datetime.utcnow().timetuple())
 
-	#  If no input format was specified, then solve for it.
-
-
-	#  Get the unix timestamp
-	if inputFormat == 'U':
-		unixTimestamp = float(inputValue);
-	elif inputFormat == 'G':
-		unixTimestamp = GPS2Unix(inputValue);
-	elif inputFormat == 'J':
-		unixTimestamp = Julian2Unix(inputValue);
-	elif inputFormat == 'C':
-		unixTimestamp = Gregorian2Unix(inputValue, timestampFormat);
-	else:
-		raise Exception('Unknown format \'' + inputFormat + '\'');
+        #  If no input format was specified, then solve for it.
 
 
-	#  GPS Timestamp
-	if outputFormat == 'G' or outputFormat == 'A':
-		[gpsSeconds,gpsWeek] = Unix2GPS(unixTimestamp);
-		print('GPS Week:' + str(gpsWeek) + ', GPS Seconds:'+ str(gpsSeconds));
+        #  Get the unix timestamp
+        if inputFormat == 'U':
+            unixTimestamp = float(inputValue);
+        elif inputFormat == 'G':
+            unixTimestamp = GPS2Unix(inputValue);
+        elif inputFormat == 'J':
+            unixTimestamp = Julian2Unix(inputValue);
+        elif inputFormat == 'C':
+            unixTimestamp = Gregorian2Unix(inputValue, timestampFormat);
+        else:
+            raise Exception('Unknown format \'' + inputFormat + '\'');
+
+        # GPS Timestamp
+        if outputFormat == 'G' or outputFormat == 'A':
+            [gpsSeconds, gpsWeek] = Unix2GPS(unixTimestamp);
+            print('GPS Week:' + str(gpsWeek) + ', GPS Seconds:' + str(gpsSeconds));
+
+        # Unix Date Format
+        if outputFormat == 'U' or outputFormat == 'A':
+            if outputFormat == 'A' and isVerbose == True:
+                print('Unix: ' + str(unixTimestamp));
+            elif outputFormat == 'A':
+                print('U: ' + str(unixTimestamp));
+            else:
+                print(str(unixTimestamp));
+
+            # Julian Date Format
+        if outputFormat == 'J' or outputFormat == 'A':
+            julianTime = Unix2Julian(unixTimestamp);
+            print('Julian: ' + str(julianTime));
+
+        # Gregorian Date Format
+        if outputFormat == 'C' or outputFormat == 'A':
+            gregTime = Unix2Gregorian(unixTimestamp, timestampFormat, utcOffset);
+
+            if outputFormat == 'A' and isVerbose == True:
+                print('Gregorian:' + gregTime);
+            elif outputFormat == 'A':
+                print('G: ' + gregTime);
+            else:
+                print(gregTime)
 
 
-	#   Unix Date Format
-	if outputFormat == 'U' or outputFormat == 'A':
-		if outputFormat == 'A' and isVerbose == True:
-			print('Unix: ' + str(unixTimestamp));
-		elif outputFormat == 'A':
-			print('U: ' + str(unixTimestamp));
-		else:
-			print(str(unixTimestamp));
-
-
-	#   Julian Date Format
-	if outputFormat == 'J' or outputFormat == 'A':
-		julianTime = Unix2Julian(unixTimestamp);
-		print('Julian: ' + str(julianTime) );
-
-
-	#  Gregorian Date Format
-	if outputFormat == 'C' or outputFormat == 'A':
-		gregTime = Unix2Gregorian(unixTimestamp, timestampFormat, utcOffset);
-
-		if outputFormat == 'A' and isVerbose == True:
-			print('Gregorian:' + gregTime);
-		elif outputFormat == 'A':
-			print('G: ' + gregTime);
-		else:
-			print(gregTime);
-
-#-----------------------------#
-#-       Program Entry       -#
-#-----------------------------#
+# ----------------------------- #
+# -       Program Entry       - #
+# ----------------------------- #
 if __name__ == "__main__":
-	main();
+    main()
