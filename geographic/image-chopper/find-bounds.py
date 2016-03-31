@@ -101,6 +101,21 @@ def Union_Bounds( current_bounds, input_bounds ):
     return {'min': min_pnt,
             'max': max_pnt}
 
+def Is_Inside( bbox, test_bbox ):
+
+    #  Check if test fully inside
+    if bbox['min'][0] < test_bbox['min'][0]:
+        return False
+    if bbox['min'][1] < test_bbox['min'][1]:
+        return False
+    if bbox['max'][0] > test_bbox['max'][0]:
+        return False
+    if bbox['max'][1] > test_bbox['max'][1]:
+        return False
+
+    return True
+
+
 def Chop_Bounds( bounds, tile_size ):
 
     minX = bounds['min'][0]
@@ -115,15 +130,31 @@ def Chop_Bounds( bounds, tile_size ):
     nX_tiles = dX / tile_size
     nY_tiles = dY / tile_size
 
-    print('NXT: ' + str(nX_tiles))
-    print('NYT: ' + str(nY_tiles))
+    tile_x_cnt = int(math.ceil(nX_tiles))
+    tile_y_cnt = int(math.ceil(nY_tiles))
+
+    print('NXT: ' + str(nX_tiles) + ', CNT: ' + str(tile_x_cnt))
+    print('NYT: ' + str(nY_tiles) + ', CNT: ' + str(tile_y_cnt))
+    raw_input('')
 
     # Create Output
     output = []
 
-    for tx in range(0, int(math.ceil(nX_tiles))):
-        for ty in range(0, int(math.ceil(nY_tiles))):
-            print (tx, ty)
+    for tx in range(0, tile_x_cnt):
+        for ty in range(0, tile_y_cnt):
+
+            #  Compute Tile Bounds
+            tmin_x = tx * tile_size + minX
+            tmin_y = ty * tile_size + minY
+
+            tmax_x = min( (tx+1) * tile_size + minX, maxX)
+            tmax_y = min( (ty+1) * tile_size + minY, maxY)
+
+            output.append({'min': (tmin_x, tmin_y),
+                           'max': (tmax_x, tmax_y)})
+
+
+    return output
 
 def Main():
 
