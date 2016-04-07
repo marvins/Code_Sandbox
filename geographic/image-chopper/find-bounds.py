@@ -2,6 +2,9 @@
 
 #  Import GDAL
 import os, sys, argparse, math, subprocess, logging
+import multiprocessing
+from multiprocessing import Pool
+
 
 from osgeo import gdal
 from osgeo.gdalconst import *
@@ -9,6 +12,17 @@ from osgeo.gdalconst import *
 
 CREATION_OPTIONS='-co TILED=YES -co TFW=YES'
 OUTPUT_FORMAT='-of GTiff'
+
+counter     = None
+counter_max = None
+counter_mtx = None
+
+def Init_Pool( cnt, cnt_max, cnt_mtx):
+
+    global counter, counter_max, counter_mtx
+    counter = cnt
+    counter_max = cnt_max
+    counter_mtx = cnt_mtx
 
 
 #---------------------------#
@@ -49,7 +63,15 @@ def Image_To_BBox( image ):
 def Generate_Output_Pathname( output_base_path, frame_number, imager_number, tx, ty):
 
     #  Create File
-    output_path = output_base_path + '/frame_' + str(frame_number).zfill(5) + '_imager_' + str(imager_number) + '_tile_' + str(tx).zfill(3) + '_' + str(ty).zfill(3) + '.tif'
+    output_path = output_base_path + '/frame_' + str(frame_number).zfill(5) + '/frame_' + str(frame_number).zfill(5) + '_imager_' + str(imager_number) + '_tile_' + str(tx).zfill(3) + '_' + str(ty).zfill(3) + '.tif'
+
+    return output_path
+
+
+def Generate_Merged_Output_Pathname( output_base_path, tx, ty):
+
+    #  Create File
+    output_path = output_base_path + '/tile_' + str(tx).zfill(3) + '_' + str(ty).zfill(3) + '.tif'
 
     return output_path
 
@@ -71,6 +93,11 @@ def Parse_Command_Line():
                         dest='output_directory',
                         required=True,
                         help='Provide Output Directory.')
+
+    parser.add_argument('-t','--temp-directory',
+                        dest='temp_directory',
+                        required=True,
+                        help='Provide Temp Working Data Directory for Writing.')
 
     #  Tile Size
     parser.add_argument('-tsm','--tile-size-meters',
@@ -103,6 +130,49 @@ def Parse_Command_Line():
                         type=float,
                         help='Image GSD in Meters Per Pixel')
 
+    parser.add_argument('-minx',
+                        dest='minx',
+                        required=False,
+                        default=None,
+                        type=float,
+                        help='Specify the Minimum X Value')
+
+    parser.add_argument('-miny',
+                        dest='miny',
+                        required=False,
+                        default=None,
+                        type=float,
+                        help='Specify the Minimum Y Value')
+
+    parser.add_argument('-maxx',
+                        dest='maxx',
+                        required=False,
+                        default=None,
+                        type=float,
+                        help='Specify the Max Y Value')
+
+    parser.add_argument('-maxy',
+                        dest='maxy',
+                        required=False,
+                        default=None,
+                        type=float,
+                        help='Specify the Max Y Value')
+
+    #  Size of Work Queue
+    parser.add_argument('-mqs','--max-queue-size',
+                        dest='max_queue_size',
+                        default=1000000,
+                        type=int,
+                        required=False,
+                        help='Set the size of the work queue.')
+
+    parser.add_argument('-nt', '-num-threads',
+                        dest='num_threads',
+                        default=1,
+                        type=int,
+                        required=False,
+                        help='Set the number of threads to process with.')
+
     #  Skip If Output Exists
     parser.add_argument('-s','--skip-exists',
                         dest='skip_exists',
@@ -110,6 +180,30 @@ def Parse_Command_Line():
                         action='store_true',
                         default=False,
                         help='Skip processing data if output already exists.')
+
+    #  Flag if we wish to skip processing GDAL Translate Commands
+    parser.add_argument('--skip-crop',
+                        dest='skip_crop',
+                        default=False,
+                        action='store_true',
+                        required=False,
+                        help='Skip cropping of images.')
+
+    parser.add_argument('--skip-merge',
+                        dest='skip_merge',
+                        default=False,
+                        action='store_true',
+                        required=False,
+                        help='Skip merging of crops.')
+
+    #  Request Dry Run
+    parser.add_argument('--dry-run',
+                        dest='dry_run',
+                        default=False,
+                        action='store_true',
+                        required=False,
+                        help='Print commands but don\'t execute.')
+
 
     #  Parse args
     return parser.parse_args()
@@ -257,6 +351,8 @@ def Chop_Bounds( bounds, tile_size ):
     tile_x_cnt = int(math.ceil(nX_tiles))
     tile_y_cnt = int(math.ceil(nY_tiles))
 
+    print('Number of Tiles (' + str(tile_x_cnt) + ' x ' + str(tile_y_cnt) + ' ) = ' + str(tile_x_cnt*tile_y_cnt))
+
     # Create Output
     output = []
 
@@ -273,7 +369,8 @@ def Chop_Bounds( bounds, tile_size ):
             output.append({'tx': tx,
                            'ty': ty,
                            'min': (tmin_x, tmin_y),
-                           'max': (tmax_x, tmax_y)})
+                           'max': (tmax_x, tmax_y),
+                           'opath-list': []})
 
 
     return output
@@ -293,6 +390,7 @@ def Generate_GDAL_Tile_Command( options, tile, image_path):
         frame_number  = bname[ fid+6 : fid+11 ]
         imager_number = bname[ iid+7 : iid+9 ]
 
+
     #  Create cmd
     cmd = 'gdal_translate '
 
@@ -309,12 +407,17 @@ def Generate_GDAL_Tile_Command( options, tile, image_path):
     cmd += ' -projwin ' + str(tile['min'][0]) + ' ' + str(tile['max'][1]) + ' ' + str(tile['max'][0]) + ' ' + str(tile['min'][1]) + ' '
 
     #  Add Datasets
-    output_pathname = Generate_Output_Pathname(options.output_directory, frame_number, imager_number, tile['tx'], tile['ty'])
+    output_pathname = Generate_Output_Pathname(options.temp_directory, frame_number, imager_number, tile['tx'], tile['ty'])
 
     #  Check if output eixsts
     if options.skip_exists is True and os.path.exists(output_pathname):
         print('Output (' + output_pathname + ') already exists.')
-        return None, None
+        return None, output_pathname
+
+    #  Create output directory
+    pdir = os.path.dirname(output_pathname)
+    if not os.path.exists(pdir):
+        os.makedirs(pdir)
 
     cmd += ' ' + image_path + ' ' + output_pathname
     return cmd, output_pathname
@@ -326,12 +429,17 @@ def Generate_GDAL_Merge_CMD( options, tile, image_list ):
         return None
 
     #  Generate the Output Pathname
-    output_pathname = Generate_Output_Pathname( options.output_directory, 0, 0, tile['tx'], tile['ty'])
+    output_pathname = Generate_Merged_Output_Pathname( options.output_directory, tile['tx'], tile['ty'])
 
     #  Check if output eixsts
     if options.skip_exists is True and os.path.exists(output_pathname):
         print('Output (' + output_pathname + ') already exists.')
         return None
+
+    #  Create output directory
+    pdir = os.path.dirname(output_pathname)
+    if not os.path.exists(pdir):
+        os.makedirs(pdir)
 
     #  Create Command
     cmd  = 'gdal_merge.py'
@@ -342,7 +450,7 @@ def Generate_GDAL_Merge_CMD( options, tile, image_list ):
     cmd += ' ' + options.creation_options
 
     #  Define NoData
-    cmd += ' -a_nodata 0'
+    cmd += ' -a_nodata 0 -n 0'
 
     #  Set the PIxel Size
     cmd += ' -ps ' + str(options.gsd) + ' ' + str(options.gsd) + ' '
@@ -350,6 +458,30 @@ def Generate_GDAL_Merge_CMD( options, tile, image_list ):
     for img in image_list:
         cmd += img + ' '
     return cmd
+
+def Extract_Option_Bounds( options, img_bounds ):
+
+    if options.minx is None or options.miny is None or options.maxx is None or options.maxy is None:
+        return img_bounds
+
+    return {'min': (min(options.minx, options.maxx), min(options.miny, options.maxy)),
+            'max': (max(options.minx, options.maxx), max(options.miny, options.maxy))}
+
+
+def Run_GDAL_Command( command ):
+
+    #  Print the COmmand
+    print(command)
+    Run_Command(command)
+
+    # Update Counter
+    global counter_max, counter, counter_mtx
+
+    counter_mtx.acquire()
+    counter.value += 1
+    res = 100 * counter.value/float(counter_max.value)
+    counter_mtx.release()
+    print("Current Progress: " + str(res))
 
 def Main():
 
@@ -375,10 +507,15 @@ def Main():
 
         bounds = Union_Bounds(bounds, img_bounds)
 
+    #  If Image Bounds Specified in Options, Override
+    bounds = Extract_Option_Bounds( options, img_bounds )
 
     #  Chop the Bounds into smaller tiles
     tile_bounds = Chop_Bounds( bounds, options.tile_size_meters )
 
+
+    #  Command-List
+    cmd_list = []
 
     #  Find Images that Fit Inside Each Tile
     for tile in tile_bounds:
@@ -389,23 +526,53 @@ def Main():
         #  Find list of intersecting Images
         image_list = Find_Intersecting_Images( tile, image_bounds_list)
 
-        #  Create Tile Chopping Commands
-        opath_list = []
+
+        #  Iterate over all images
         for img in image_list:
 
+            #  Generate the GDAL Command
             gdal_cmd, opath = Generate_GDAL_Tile_Command( options, tile, img)
 
-            if gdal_cmd and opath:
-                print('gdal-cmd: ' + str(gdal_cmd))
-                Run_Command(gdal_cmd)
-                opath_list.append(opath)
+            if gdal_cmd:
+                cmd_list.append(gdal_cmd)
+            if opath:    
+                tile['opath-list'].append(opath)
 
+
+    #  Generate all Tiles
+    if options.skip_crop is False and options.dry_run is False:
+        print('Number of GDAL Tile Commands: ' + str(len(cmd_list)))
+        cnt     = multiprocessing.Value('i', 0)
+        cnt_max = multiprocessing.Value('i', max(1, len(cmd_list)))
+        cnt_mtx = multiprocessing.Lock()
+        pool = Pool(processes=options.num_threads, initializer=Init_Pool, initargs=(cnt, cnt_max, cnt_mtx))
+        pool.map(Run_GDAL_Command, cmd_list)
+    elif options.dry_run is True:
+        for gdal_cmd in cmd_list:
+            print(gdal_cmd)
+            
+
+    #  Start Generating the GDAL Merge Commands
+    cmd_list = []
+    for tile in tile_bounds:
 
         #  Merge Like Frames
-        gdal_cmd = Generate_GDAL_Merge_CMD(options, tile, opath_list)
+        gdal_cmd = Generate_GDAL_Merge_CMD(options, tile, tile['opath-list'])
         if gdal_cmd:
-            print('GDAL Merge CMD:' + gdal_cmd)
-            Run_Command(gdal_cmd)
+            #Run_Command(gdal_cmd)
+            cmd_list.append(gdal_cmd)
+
+    #  Merge all Tiles
+    if options.skip_merge is False and options.dry_run is False:
+        print('Number of GDAL Merge Commands: ' + str(len(cmd_list)))
+        cnt = multiprocessing.Value('i', 0)
+        cnt_max = multiprocessing.Value('i', max(1, len(cmd_list)))
+        cnt_mtx = multiprocessing.Lock()
+        pool = Pool(processes=options.num_threads, initializer=Init_Pool, initargs=(cnt, cnt_max, cnt_mtx))
+        pool.map(Run_GDAL_Command, cmd_list)
+    elif options.dry_run is True:
+        for gdal_cmd in cmd_list:
+            print(gdal_cmd)
 
 
 if __name__ == '__main__':
