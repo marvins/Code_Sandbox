@@ -426,7 +426,7 @@ def Generate_GDAL_Tile_Command( options, tile, image_path):
 def Generate_GDAL_Merge_CMD( options, tile, image_list ):
 
     if len(image_list) <= 0:
-        return None
+        return None, None
 
     #  Generate the Output Pathname
     output_pathname = Generate_Merged_Output_Pathname( options.output_directory, tile['tx'], tile['ty'])
@@ -434,7 +434,7 @@ def Generate_GDAL_Merge_CMD( options, tile, image_list ):
     #  Check if output eixsts
     if options.skip_exists is True and os.path.exists(output_pathname):
         print('Output (' + output_pathname + ') already exists.')
-        return None
+        return None, None
 
     #  Create output directory
     pdir = os.path.dirname(output_pathname)
@@ -457,7 +457,7 @@ def Generate_GDAL_Merge_CMD( options, tile, image_list ):
 
     for img in image_list:
         cmd += img + ' '
-    return cmd
+    return cmd, output_pathname
 
 def Extract_Option_Bounds( options, img_bounds ):
 
@@ -470,9 +470,16 @@ def Extract_Option_Bounds( options, img_bounds ):
 
 def Run_GDAL_Command( command ):
 
-    #  Print the COmmand
-    print(command)
-    Run_Command(command)
+    #  Check Pathname
+    pathname = command[1]
+    if pathname is not None and os.path.exists(pathname) is True:
+
+        print(pathname + ' already exists. Skipping Command.')
+    
+    else:
+        #  Print the COmmand
+        print(command[0])
+        Run_Command(command[0])
 
     # Update Counter
     global counter_max, counter, counter_mtx
@@ -501,7 +508,6 @@ def Main():
     for img in img_list:
 
         #  Compute Image Bounds
-        print('Loading: ' + str(img))
         img_bounds = Compute_Image_Bounds( img, options )
         image_bounds_list.append(img_bounds)
 
@@ -520,12 +526,8 @@ def Main():
     #  Find Images that Fit Inside Each Tile
     for tile in tile_bounds:
 
-        #  Log Tile
-        print('Processing Tile: ' + str(tile))
-
         #  Find list of intersecting Images
         image_list = Find_Intersecting_Images( tile, image_bounds_list)
-
 
         #  Iterate over all images
         for img in image_list:
@@ -534,7 +536,7 @@ def Main():
             gdal_cmd, opath = Generate_GDAL_Tile_Command( options, tile, img)
 
             if gdal_cmd:
-                cmd_list.append(gdal_cmd)
+                cmd_list.append((gdal_cmd, opath))
             if opath:    
                 tile['opath-list'].append(opath)
 
@@ -557,10 +559,10 @@ def Main():
     for tile in tile_bounds:
 
         #  Merge Like Frames
-        gdal_cmd = Generate_GDAL_Merge_CMD(options, tile, tile['opath-list'])
+        gdal_cmd, opath = Generate_GDAL_Merge_CMD(options, tile, tile['opath-list'])
         if gdal_cmd:
             #Run_Command(gdal_cmd)
-            cmd_list.append(gdal_cmd)
+            cmd_list.append((gdal_cmd, opath))
 
     #  Merge all Tiles
     if options.skip_merge is False and options.dry_run is False:

@@ -28,6 +28,7 @@ IMAGE_BOUNDS='-minx 512700 -miny 4308231 -maxx 528046.8 -maxy 4384000.7'
 
 PASS_THROUGH_ARGS=''
 PASS_THROUGH_FLAG=0
+DRY_RUN=0
 
 #----------------------------------------#
 #-      Parse Command-Line Options      -#
@@ -63,6 +64,7 @@ for ARG in "$@"; do
         #  Request Dry Run
         '--dry-run')
             PASS_THROUGH_ARGS="$PASS_THROUGH_ARGS --dry-run"
+            DRY_RUN=1
             ;;
 
         #  Unknown option
@@ -136,8 +138,21 @@ pushd ${BASE_PATH}
 IMG_TILES=`ls tiles/*.tif`
 
 #  Build Overviews
-ls tiles/*.tif | parallel gdaladdo -r cubic {} 2 4 8 16
+echo 'Building Overviews'
+if [ "$DRY_RUN" = '1' ]; then
+    for X in `ls ${TILE_PATH/*.tif`; do
+        CMD=gdaladdo -r cubic $X 2 4 8 16 32
+        echo $CMD
+    done
+else
+    ls ${TILE_PATH}/*.tif | parallel gdaladdo -r cubic {} 2 4 8 16
+fi
 
+
+if [ "$DRY_RUN" = '1 ']; then
+    echo "Running Dry Run, Skipping Virtual Dataset."
+    exit 0
+fi
 
 #  Build the Virtual Dataset
 if [ -f "$VRT_PATH.vrt" ]; then
