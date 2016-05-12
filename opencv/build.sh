@@ -7,9 +7,12 @@ IMAGE_LIST=image-list.txt
 #OY=920
 
 #  16K x 16K
-OX="`expr 8192 - 1920`"
-OY="`expr 8192 - 1080`"
+OX="`expr 12500`"
+OY="`expr  2500`"
 
+SCALE=1
+
+FPS=4
 
 #  Create directory
 mkdir -p release
@@ -36,7 +39,7 @@ fi
 popd
 
 
-CMD="./release/bin/video-writer -v $OUTPUT_VIDEO -i $IMAGE_LIST --overlay-path -ox $OX -oy $OY -s 1"
+CMD="./release/bin/video-writer -v $OUTPUT_VIDEO -i $IMAGE_LIST --overlay-path -ox $OX -oy $OY -s $SCALE -fps $FPS"
 echo $CMD
 $CMD
 

@@ -59,18 +59,18 @@ int main( int argc, char* argv[] )
 
     // Compute the Frame Size
     cout << "Computing Frame Size" << std::endl;
+    cout << "Image Size: " << image.cols << " x " << image.rows << std::endl;
     cv::Rect roi_bbox = cv::Rect( 0, 0, image.cols, image.rows);
-    if( image.rows > video_sy && image.cols > video_sx )
-    {
-        roi_bbox = cv::Rect( video_ox, video_oy, 
-                             video_sx, video_sy);
-    }
+    roi_bbox = cv::Rect( video_ox, video_oy, 
+                         video_sx, video_sy);
+
+
     cv::Size frame_size( roi_bbox.width, roi_bbox.height);
 
 
     // Set the frame size
     std::cout << "Frame size: " << frame_size << std::endl;
-
+    std::cout << "ROI       : " << roi_bbox << std::endl;
 
     // Create video writer
     cout << "Building video writer." << endl;
