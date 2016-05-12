@@ -103,13 +103,14 @@ void J2K_SOT_Marker::Process( const uint8_t* buffer,
 {
     // Log Entry 
     std::cout << std::dec << index << ", SOT - Start of Tile" << std::endl;
-   
-    // Length of Marker Segment
+    index += m_marker_tag.size();
+
+    // Lsot - Length of Marker Segment
     uint16_t Lsot = ntohs(reinterpret_cast<const uint16_t*>(buffer + index)[0]);
     index += 2;
     std::cout << std::dec << "   - Lsot: " << Lsot << std::endl;
 
-    // Tile Index
+    // Isot - Tile Index
     uint16_t Isot = ntohs(reinterpret_cast<const uint16_t*>(buffer + index)[0]);
     index += 2;
     std::cout << std::dec << "   - Isot: " << Isot << std::endl;
@@ -119,9 +120,17 @@ void J2K_SOT_Marker::Process( const uint8_t* buffer,
     index += 4;
     std::cout << "   - Psot: " << Psot << std::endl;
 
+    // Tile Part Index
+    uint8_t TPsot = buffer[index];
+    index += 1;
+    std::cout << "   - TPsot: " << (int)TPsot << std::endl;
+
+
+    // Tile Number Parts
+    uint8_t TNsot = buffer[index];
+    index += 1;
+    std::cout << "   - TNsot: " << (int)TNsot << std::endl;    
     
-    // Increment by 2
-    index += m_marker_tag.size();
 
 }
 
