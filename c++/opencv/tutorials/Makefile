@@ -12,7 +12,7 @@ EXECS =  Gaussian_Blur Median_Blur Block_Smoothing\
 			Sobel_Detection Scharr_Detection\
 			FFT_Process Unsharp_Mask High_Boost Flood_Fill\
 			Connected_Components FFT_gaussian Harris_Corner\
-			Corner_Harris_OpenCV
+			Corner_Harris_OpenCV Pixel_Accessing
 
 all: $(EXECS) 
 
@@ -76,6 +76,9 @@ Corner_Harris_OpenCV: Corner_Harris_OpenCV.cpp
 
 ImageStitching: ImageStitching.cpp $(SOURCES) $(HEADERS)
 	g++ ImageStitching.cpp -o ImageStitching $(FLAGS) $(OPENCV) lmfit/lmmin.c
+
+Pixel_Accessing: Pixel_Accessing.cpp $(SOURCES) $(HEADERS)
+	g++ $< -o $@ $(FLAGS) $(OPENCV)
 
 clean: 
 	rm $(EXECS) *.o
