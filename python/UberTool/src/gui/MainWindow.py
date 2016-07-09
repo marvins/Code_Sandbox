@@ -26,65 +26,65 @@ class MainWindow(QtGui.QMainWindow):
     def __init__(self, preferences = None):
 
         #  Create parent
-        super( MainWindow, self).__init__()
+        QtGui.QMainWindow.__init__(self)
 
         #  Set preferences 
-        self.preferences = preferences
+        self.m_preferences = preferences
 
         #  Create the configuration pane
-        self.configurationPane = ConfigurationPane()
+        self.m_configuration_pane = ConfigurationPane()
 
         #  Load Plugins
-        self.loadPlugins()
+        self.Load_Plugins()
 
         #  Initialize the GUI
-        self.initUI()
+        self.Initialize_UI()
 
         #  Show the GUI
         self.show()
 
 
     #  Initialize the User Interface
-    def initUI(self):
+    def Initialize_UI(self):
 
         #  Set the window title
-        self.setWindowTitle('UberTool')
+        self.setWindowTitle(self.m_preferences.Query('GUI','MAIN_WINDOW_TITLE','UberTool App'))
 
         #  Create the scroll area
-        self.mainScrollArea = QtGui.QScrollArea(self)
+        self.m_mainScrollArea = QtGui.QScrollArea(self)
 
         #  Create the main widget
-        self.mainWidget = QtGui.QWidget(self.mainScrollArea)
+        self.m_mainWidget = QtGui.QWidget(self.m_mainScrollArea)
 
         #  Create the main layout
-        self.mainLayout = QtGui.QGridLayout()
-        self.mainLayout.setSpacing(0)
-        self.mainLayout.setContentsMargins(0,0,0,0)
+        self.m_mainLayout = QtGui.QGridLayout()
+        self.m_mainLayout.setSpacing(0)
+        self.m_mainLayout.setContentsMargins(0,0,0,0)
 
         #  Initialize the toolbar
-        self.initToolbar()
+        self.Initialize_Toolbar()
 
         #  Set the main widget
-        self.mainWidget.setLayout(self.mainLayout)
+        self.m_mainWidget.setLayout(self.m_mainLayout)
 
         #  Set the scroll area
-        self.mainScrollArea.setWidget(self.mainWidget)
+        self.m_mainScrollArea.setWidget(self.m_mainWidget)
 
         #  Set the central widget
-        self.setCentralWidget(self.mainScrollArea)
+        self.setCentralWidget(self.m_mainScrollArea)
 
 
     #  Initialize the toolbar
-    def initToolbar(self):
+    def Initialize_Toolbar(self):
 
         crow = 0
         ccol = 0
 
         #  Add each button to the toolbar
         for x in xrange(0, len(self.pluginButtons)):
-            self.mainLayout.addWidget( self.pluginButtons[x], crow, ccol)
+            self.m_mainLayout.addWidget( self.pluginButtons[x], crow, ccol)
             ccol += 1
-            if ccol >= int(self.preferences.get('core.ButtonsPerRow')):
+            if ccol >= int(self.m_preferences.Query('GUI','MainWindowButtonsPerRow')):
                 ccol = 0
                 crow += 1
 
@@ -93,33 +93,29 @@ class MainWindow(QtGui.QMainWindow):
             crow += 1
 
         #  Create the config button
-        self.configButton = QtGui.QToolButton(self.mainWidget)
-        self.configButton.setText('Configure')
-        self.configButton.setFixedWidth(int(self.preferences.get('core.MainWindowButtonWidth')))
-        self.configButton.setFixedHeight(int(self.preferences.get('core.MainWindowButtonHeight')))
-        self.configButton.setIcon(QtGui.QIcon(self.preferences.get('core.IconHome')+'/gear.png'))
-        self.configButton.setIconSize(QSize(int(self.preferences.get('core.MainWindowButtonIconWidth')), int(self.preferences.get('core.MainWindowButtonIconHeight'))))
-        self.configButton.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-        self.configButton.clicked.connect(self.openConfigurePane)
-        self.mainLayout.addWidget(self.configButton, crow, ccol)
+        self.m_config_button = self.Create_Main_Button( 'Configure',
+                                                        self.m_mainWidget,
+                                                        action=self.Open_Configuration_Pane,
+                                                        icon_path=self.m_preferences.Query('CORE','ICON_HOME')+'/gear.png')
+        self.m_mainLayout.addWidget(self.m_config_button, crow, ccol)
 
         #  Create the quit button
         ccol += 1
-        self.quitButton = QtGui.QToolButton(self.mainWidget)
-        self.quitButton.setText('Quit')
-        self.quitButton.setFixedWidth(int(self.preferences.get('core.MainWindowButtonWidth')))
-        self.quitButton.setFixedHeight(int(self.preferences.get('core.MainWindowButtonHeight')))
-        self.quitButton.setIcon(QtGui.QIcon(self.preferences.get('core.IconHome')+'/close.png'))
-        self.quitButton.setIconSize(QSize(int(self.preferences.get('core.MainWindowButtonIconWidth')), int(self.preferences.get('core.MainWindowButtonIconHeight'))))
-        self.quitButton.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
-        self.quitButton.clicked.connect(self.close)
-        self.mainLayout.addWidget(self.quitButton, crow, ccol)
+        self.m_quit_button = self.Create_Main_Button('Quit',
+                                                     self.m_mainWidget,
+                                                     action=self.close,
+                                                     icon_path=self.m_preferences.Query('CORE','ICON_HOME')+'/close.png')
+        self.m_mainLayout.addWidget( self.m_quit_button,
+                                     crow,
+                                     ccol)
+
 
     #  Load each plugin
-    def loadPlugins(self):
+    def Load_Plugins(self):
 
         # open the add-on loader
-        addOnLoader = AddOnLoader.AddOnLoader( self.preferences.get('AddOns.ModuleList'))
+        addOnLoader = AddOnLoader.AddOnLoader( self.m_preferences,
+                                               self.m_preferences.Query('CORE','MODULE_PATH'))
 
         # Get a list of plugins
         self.plugins = addOnLoader.plugins
@@ -129,20 +125,45 @@ class MainWindow(QtGui.QMainWindow):
         for x in xrange( 0, len(self.plugins)):
 
             #  Create the button
-            pluginButton = QtGui.QToolButton();
-            pluginButton.setText(self.plugins[x].getButtonText());
-            pluginButton.setIcon(QtGui.QIcon(self.preferences.get('core.IconHome') + '/' + self.plugins[x].getButtonIconPath()));
-            pluginButton.setFixedWidth(int(self.preferences.get('core.MainWindowButtonWidth')));
-            pluginButton.setFixedHeight(int(self.preferences.get('core.MainWindowButtonHeight')));
-            pluginButton.setIconSize(self.plugins[x].getButtonIconSize());
-            pluginButton.setToolButtonStyle(Qt.ToolButtonTextUnderIcon);
-            pluginButton.clicked.connect(self.plugins[x].openDialog);
-            self.pluginButtons.append(pluginButton);
+            icon_path = self.m_preferences.Query('CORE','ICON_HOME') + '/' + self.plugins[x].Get_Button_Icon_Path()
+            pluginButton = self.Create_Main_Button( name=self.plugins[x].Get_Button_Text(),
+                                                    parent=None,
+                                                    action=self.plugins[x].Open_Dialog,
+                                                    icon_path=icon_path,
+                                                    icon_size=self.plugins[x].Get_Button_Icon_Size())
+            self.pluginButtons.append(pluginButton)
 
 
     #  Open the configuration pane
-    def openConfigurePane(self):
+    def Open_Configuration_Pane(self):
 
         #  Open the configuration widget
-        self.configurationPane.show()
+        self.m_configuration_pane.show()
 
+
+    def Create_Main_Button( self, name, parent, action=None, icon_path = None, icon_size = None ):
+
+        #  Create ToolButton
+        button = QtGui.QToolButton(parent)
+
+        #  Set attributes
+        button.setText(name)
+
+        if not action is None:
+            button.clicked.connect(action)
+
+        button.setFixedWidth(int(self.m_preferences.Query('GUI','MainWindowButtonWidth',100)))
+        button.setFixedHeight(int(self.m_preferences.Query('GUI','MainWindowButtonHeight',100)))
+
+        if not icon_path is None:
+            button.setIcon(QtGui.QIcon(icon_path))
+
+        if icon_size is None:
+            button.setIconSize(QSize(int(self.m_preferences.Query('GUI','MainWindowButtonIconWidth')),
+                                     int(self.m_preferences.Query('GUI','MainWindowButtonIconHeight'))))
+        else:
+            button.setIconSize(icon_size)
+
+        button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+
+        return button

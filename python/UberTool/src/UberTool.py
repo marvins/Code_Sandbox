@@ -15,7 +15,7 @@ from PyQt4 import QtGui
 sys.path.insert(0, os.path.dirname(__file__))
 
 #  Core Files
-from core import Preferences
+from core.Preferences import Preferences
 
 #  Main Window
 from gui.MainWindow import MainWindow
@@ -27,7 +27,7 @@ from gui.MainWindow import MainWindow
 def main():
 
     #  Load the configuration file
-    preferences = Preferences.Preferences(args=sys.argv)
+    preferences = Preferences()
 
     # Create application
     app = QtGui.QApplication(sys.argv)

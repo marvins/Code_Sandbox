@@ -6,77 +6,91 @@
 #  
 
 #  Python Libraries
-import os
+import os, argparse, ConfigParser
+
+#  UberTool Libraries
+from core.Preference_Utilities import *
 
 
 #  Preferences Class
 class Preferences:
 
-    # settings
-    preferences = {}
 
     #  Constructor
-    def __init__(self, args = [], configFilename = None, loadConfig = False ):
-	
-        #  Set the config filename if provided
-        if not configFilename == None:
-            self.configFilename = configFilename
-        else:
-            self.configFilename = os.environ['HOME'] + '/.ubertool/options.cfg'
-
-        #  Initialize the container
-        self.initializeSettings()
-
-        #  Process command-line arguments
+    def __init__( self ):
 
 
-    #  Initialize Settings
-    def initializeSettings(self):
-
-        #  Add the module list
-        self.preferences['AddOns.ModuleList']=os.path.dirname(__file__) + '/../plugins/module-list.txt'
-
-        #  Add the button sizes
-        self.preferences['core.MainWindowButtonWidth']='100'
-        self.preferences['core.MainWindowButtonHeight']='100'
-
-        #  Set default button icon sizes
-        self.preferences['core.MainWindowButtonIconWidth']='70'
-        self.preferences['core.MainWindowButtonIconHeight']='70'
-
-        #  Set the default place for Main Window Icons
-        self.preferences['core.IconHome']='icons'
-
-        #  Set the default number of buttons horizontally
-        self.preferences['core.ButtonsPerRow']='3'
+        #  Set the UberTool Root Path
+        self.ubertool_root = Get_UberTool_Root()
 
 
-    #  Open the config file
-    def openConfigFile(self):
+        #  Set Default Parameters
+        self.Set_Default_Parameters()
+
+
+        #  Parse Command-Line Arguments
+        self.cmd_parser = self.Parse_Command_Line()
+
+
+        #  Parse Configuration File
+        self.cfg_parser = self.Parse_Configuration_File()
+
+
+        #  Load Plugins
+        self.Load_Plugin_Configurations()
+
+
+        #  Write Configuration if Requested
+        if self.Query('CORE','WRITE_CONFIGURATION') == 'True':
+            self.Write_Configuration_File()
+
+
+
+    def Set_Default_Parameters(self):
+
+        #  Initialize Containers
+        self.options = Initialize_Default_Options(self.ubertool_root)
+
+        #  Initialize Plugin Options
+        self.plugin_options = {}
+
+
+    def Parse_Command_Line(self):
+
+        #  Create argument parser
+        parser = argparse.ArgumentParser(description='UberTool Application')
+
+
+        #  Return Parser
+        return parser
+
+    def Parse_Configuration_File(self):
 
         pass
 
-    #  Write the config file
-    def saveConfigFile(self):
+
+
+    def Write_Configuration_File(self):
+
+        pass
+
+    def Load_Plugin_Configurations(self):
 
         pass
 
     #  Retrieve a setting
-    def get(self, key):
-        return self.preferences[key]
+    def Query(self, module, name, default = None):
 
-    #  Set a particular setting
-    def set(self, key, value, DoNotClobber=True):
+        #  Check if module exists
+        if not module in self.options.keys():
+            print('Warning: ' + module + ' not found in options.')
+            return default
 
-        #  Check if key is in dictionary
-        if key in self.preferences and DoNotClobber == True:
-            return False
+        #  Check if name exists
+        if not name in self.options[module].keys():
+            print('Warning: ' + name + ' not found in module.')
+            return default
 
-        #  If the key is not in the dictionary or if we don't care about clobbering,
-        #  then just write
-        else:
-            self.preferences[key]=value
-
-        return True
+        return self.options[module][name][0]
 
 
