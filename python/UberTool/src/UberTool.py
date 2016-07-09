@@ -12,11 +12,7 @@ import sys, logging
 from PyQt4 import QtGui
 
 #  Core Files
-sys.path.insert(0,'core')
-import Preferences
-
-#  GUI Files
-sys.path.insert(0,'gui')
+import core.Preferences
 
 #  Main Window
 from MainWindow import MainWindow

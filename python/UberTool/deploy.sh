@@ -10,7 +10,9 @@
 
 PREFIX="$HOME/local"
 
+
 PREFIX_CLEAN=`echo $PREFIX | sed 's/\//\\\\\//g'`
+
 
 #   Test if the bin directory exists
 if [ ! -d "$PREFIX/bin" ]; then
@@ -31,15 +33,14 @@ else
 fi
 
 # copy the main script
-cp UberTool.py $PREFIX/share/UberTool/UberTool.py
+cp src/UberTool.py $PREFIX/share/UberTool/UberTool.py
 cp misc/UberTool.sh $PREFIX/share/UberTool/UberTool.sh
 
 # Copy other utilities
-cp -r add-ons $PREFIX/share/UberTool/
-cp -r core    $PREFIX/share/UberTool/
-cp -r gui     $PREFIX/share/UberTool/
-cp -r icons   $PREFIX/share/UberTool/
-cp module-list.txt $PREFIX/share/UberTool/
+cp -r src/plugins $PREFIX/share/UberTool/
+cp -r src/core    $PREFIX/share/UberTool/
+cp -r src/gui     $PREFIX/share/UberTool/
+cp -r src/icons   $PREFIX/share/UberTool/
 
 #  Create the symbolic link
 if [ -f "$PREFIX/bin/UberTool" ]; then
