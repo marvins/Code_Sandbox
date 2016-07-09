@@ -2,12 +2,9 @@
 #
 
 #  Get the path to where we are at now
-pushd `dirname $0`/../share/UberTool > /dev/null
-SCRIPTPATH=`pwd`
+SCRIPTPATH="`dirname $0`/../share/UberTool"
 
 #  Fire off the ubertool
 $SCRIPTPATH/UberTool.py
 
-#  Return
-popd > /dev/null
 

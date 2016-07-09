@@ -6,32 +6,34 @@
 #
 
 #  Python Libraries
-import imp, sys
+import imp, sys, os
 
 #  Load Plugin Base
-sys.path.insert(0,'add-ons')
-import PluginBase
+import plugins.PluginBase
 
 #   Add-On Loader
 class AddOnLoader:
-	
-	plugins = []
 
-	#  Constructor
-	def __init__(self, configurationFile):
-		
-		#  Open the module configuration file
-		modules = open(configurationFile,'r');
-		
-		#  Read Each List
-		for line in modules:
-			if not line.strip() == '':
+    plugins = []
 
-				#  Split up the module name and the class name
-				components = line.strip().split(':');
+    #  Constructor
+    def __init__(self, configurationFile):
 
-				py_mod = imp.load_source(components[1],'add-ons/' + components[0])
+        #  Open the module configuration file
+        modules = open(configurationFile,'r')
 
-				class_inst = getattr(py_mod, components[1])
-				self.plugins += [class_inst()]
+        #  Grab the base path
+        plugin_path = os.path.dirname(__file__) + '../plugins/'
 
+        #  Read Each List
+        for line in modules:
+            if not line.strip() == '':
+
+                #  Split up the module name and the class name
+                components = line.strip().split(':')
+
+                print('Loading: ' + plugin_path + components[0])
+                py_mod = imp.load_source(components[1], plugin_path + components[0])
+
+                class_inst = getattr(py_mod, components[1])
+                self.plugins += [class_inst()]

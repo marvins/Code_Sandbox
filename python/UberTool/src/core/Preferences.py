@@ -11,72 +11,72 @@ import os
 
 #  Preferences Class
 class Preferences:
+
+    # settings
+    preferences = {}
+
+    #  Constructor
+    def __init__(self, args = [], configFilename = None, loadConfig = False ):
 	
-	# settings
-	preferences = {}
-	
-	#  Constructor
-	def __init__(self, args = [], configFilename = None, loadConfig = False ):
-	
-		#  Set the config filename if provided
-		if not configFilename == None:
-			self.configFilename = configFilename
-		else:
-			self.configFilename = os.environ['HOME'] + '/.ubertool/options.cfg'
+        #  Set the config filename if provided
+        if not configFilename == None:
+            self.configFilename = configFilename
+        else:
+            self.configFilename = os.environ['HOME'] + '/.ubertool/options.cfg'
 
-		#  Initialize the container
-		self.initializeSettings();
+        #  Initialize the container
+        self.initializeSettings()
 
-		#  Process command-line arguments
+        #  Process command-line arguments
 
 
-	#  Initialize Settings
-	def initializeSettings(self):
-		
-		#  Add the module list
-		self.preferences['AddOns.ModuleList']='module-list.txt'
-		
-		#  Add the button sizes
-		self.preferences['core.MainWindowButtonWidth']='100';
-		self.preferences['core.MainWindowButtonHeight']='100';
+    #  Initialize Settings
+    def initializeSettings(self):
 
-		#  Set default button icon sizes
-		self.preferences['core.MainWindowButtonIconWidth']='70'
-		self.preferences['core.MainWindowButtonIconHeight']='70'
+        #  Add the module list
+        self.preferences['AddOns.ModuleList']=os.path.dirname(__file__) + '/../plugins/module-list.txt'
 
-		#  Set the default place for Main Window Icons
-		self.preferences['core.IconHome']='icons';
-		
-		#  Set the default number of buttons horizontally
-		self.preferences['core.ButtonsPerRow']='3'
+        #  Add the button sizes
+        self.preferences['core.MainWindowButtonWidth']='100'
+        self.preferences['core.MainWindowButtonHeight']='100'
+
+        #  Set default button icon sizes
+        self.preferences['core.MainWindowButtonIconWidth']='70'
+        self.preferences['core.MainWindowButtonIconHeight']='70'
+
+        #  Set the default place for Main Window Icons
+        self.preferences['core.IconHome']='icons'
+
+        #  Set the default number of buttons horizontally
+        self.preferences['core.ButtonsPerRow']='3'
 
 
-	#  Open the config file
-	def openConfigFile(self):
-		
-		pass
+    #  Open the config file
+    def openConfigFile(self):
 
-	#  Write the config file
-	def saveConfigFile(self):
-		
-		pass
+        pass
 
-	#  Retrieve a setting
-	def get(self, key):
-		return self.preferences[key];
+    #  Write the config file
+    def saveConfigFile(self):
 
-	#  Set a particular setting
-	def set(self, key, value, DoNotClobber=True):
-		
-		#  Check if key is in dictionary
-		if key in self.preferences and DoNotClobber == True:
-			return False;
+        pass
 
-		#  If the key is not in the dictionary or if we don't care about clobbering, 
-		#  then just write
-		else:
-			self.preferences[key]=value;
+    #  Retrieve a setting
+    def get(self, key):
+        return self.preferences[key]
 
-		return True;
+    #  Set a particular setting
+    def set(self, key, value, DoNotClobber=True):
+
+        #  Check if key is in dictionary
+        if key in self.preferences and DoNotClobber == True:
+            return False
+
+        #  If the key is not in the dictionary or if we don't care about clobbering,
+        #  then just write
+        else:
+            self.preferences[key]=value
+
+        return True
 
 
