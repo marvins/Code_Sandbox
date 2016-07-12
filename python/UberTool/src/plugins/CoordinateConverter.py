@@ -144,6 +144,9 @@ class CoordinateConverter(PluginBase):
         #  Set the layout
         self.setLayout(self.mainLayout)
 
+    #  Get the Module Name
+    def Get_Plugin_Name(self):
+        return 'CoordinateConverter'
 
     #  Get the icon size for the buttons
     def Get_Button_Icon_Size(self):

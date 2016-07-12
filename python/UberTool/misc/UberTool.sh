@@ -5,6 +5,6 @@
 SCRIPTPATH="`dirname $0`/../share/UberTool"
 
 #  Fire off the ubertool
-$SCRIPTPATH/UberTool.py
+$SCRIPTPATH/UberTool.py $@
 
 

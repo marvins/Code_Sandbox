@@ -40,8 +40,13 @@ class MainWindow(QtGui.QMainWindow):
         #  Initialize the GUI
         self.Initialize_UI()
 
+        #  Configure Window
+        self.setWindowState( self.windowState() & ~Qt.WindowMinimized | Qt.WindowActive )
+
         #  Show the GUI
         self.show()
+
+        self.activateWindow()
 
 
     #  Initialize the User Interface
@@ -114,8 +119,7 @@ class MainWindow(QtGui.QMainWindow):
     def Load_Plugins(self):
 
         # open the add-on loader
-        addOnLoader = AddOnLoader.AddOnLoader( self.m_preferences,
-                                               self.m_preferences.Query('CORE','MODULE_PATH'))
+        addOnLoader = AddOnLoader.AddOnLoader( self.m_preferences )
 
         # Get a list of plugins
         self.plugins = addOnLoader.plugins

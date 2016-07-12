@@ -26,6 +26,7 @@ def Initialize_Default_Options(ubertool_root):
     options['CORE'] = {}
     options['CORE']['DEFAULT_CONFIG_PATHNAME'] = [os.environ['HOME'] + '/.ubertool/options.cfg', 'Path to default config file.']
     options['CORE']['MODULE_PATH']             = [ubertool_root + '/plugins/module-list.txt', 'Path to module list.']
+    options['CORE']['MODULE_BASE']             = [ubertool_root + '/plugins', 'Path to module directory.']
     options['CORE']['ICON_HOME']               = [ubertool_root + '/icons', 'Path to icons.']
     options['CORE']['WRITE_CONFIGURATION']     = ['False', 'Flag to write config each time you restart.']
 
