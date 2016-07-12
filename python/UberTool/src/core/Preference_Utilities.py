@@ -39,6 +39,10 @@ def Initialize_Default_Options(ubertool_root):
     options['GUI']['MainWindowButtonIconWidth']  = ['70', 'Width of Icons on the Main Window.']
     options['GUI']['MainWindowButtonIconHeight'] = ['70', 'Height of Icons on the Main Window.']
     options['GUI']['MainWindowButtonsPerRow']    = ['3', 'Number of Buttons per Main Window Row']
+    options['GUI']['ToolbarButtonWidth']         = ['60', 'Width of Toolbar Buttons.']
+    options['GUI']['ToolbarButtonHeight']        = ['60', 'Height of Toolbar Buttons.']
+    options['GUI']['ToolbarButtonIconWidth']     = ['50', 'Width of Toolbar Button Icons.']
+    options['GUI']['ToolbarButtonIconHeight']    = ['50', 'Height of Toolbar Button Icons.']
 
 
     return options

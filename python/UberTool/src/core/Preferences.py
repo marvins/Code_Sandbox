@@ -10,6 +10,7 @@ import os, argparse, ConfigParser, datetime, sys
 
 #  UberTool Libraries
 from core.Preference_Utilities import *
+from core.SysLogger import SysLogger
 
 
 #  Preferences Class
@@ -19,6 +20,8 @@ class Preferences:
     #  Constructor
     def __init__( self ):
 
+        #  Log Entry
+        SysLogger.Log('Loading the Configuration.')
 
         #  Set the UberTool Root Path
         self.ubertool_root = Get_UberTool_Root()
@@ -42,9 +45,11 @@ class Preferences:
 
         #  Write Configuration if Requested
         if self.Query('CORE','WRITE_CONFIGURATION','False') == 'True':
-            print('Writing Configuration')
+            SysLogger.Log('Writing Configuration')
             self.Write_Configuration_File()
 
+        #  Log Exit
+        SysLogger.Log('Finish loading configuration')
 
 
     def Set_Default_Parameters(self):
@@ -202,6 +207,24 @@ class Preferences:
         if not module in self.options.keys():
             return []
         return self.options[module].keys()
+
+    #  Retrieve a setting
+    def QueryPluginFull(self, name, default = None):
+
+        #  Check if name exists
+        if not name in self.plugin_options.keys():
+            print('Warning: ' + name + ' not found in plugin module.')
+            return [default,'']
+
+        output = (self.plugin_options[name][0],self.plugin_options[name][1])
+        return output
+
+    #  Retrieve a setting
+    def QueryPlugin(self, name, default = None):
+        return self.QueryPluginFull(name, default)[0]
+
+    def QueryPluginItems(self):
+        return self.plugin_options.keys()
 
     def Set(self, module, name, value, comment = '',
             create_module_if_missing = False,

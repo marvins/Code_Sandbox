@@ -32,7 +32,7 @@ class MainWindow(QtGui.QMainWindow):
         self.m_preferences = preferences
 
         #  Create the configuration pane
-        self.m_configuration_pane = ConfigurationPane()
+        self.m_configuration_pane = ConfigurationPane(preferences)
 
         #  Load Plugins
         self.Load_Plugins()
@@ -46,7 +46,8 @@ class MainWindow(QtGui.QMainWindow):
         #  Show the GUI
         self.show()
 
-        self.activateWindow()
+        #  Bring the GUI to front
+        self.raise_()
 
 
     #  Initialize the User Interface
