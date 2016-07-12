@@ -73,5 +73,5 @@ class ConfigurationPane(QtGui.QDialog):
     def Connect_Widgets(self):
 
         #  Listen for close
-        self.connect( self.m_log_pane, SIGNAL('close_panel()'), self.close)
+        self.connect( self.m_log_pane,    SIGNAL('close_panel()'), self.close)
         self.connect( self.m_config_pane, SIGNAL('close_panel()'), self.close)

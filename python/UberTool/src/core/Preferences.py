@@ -9,6 +9,7 @@
 import os, argparse, ConfigParser, datetime, sys
 
 #  UberTool Libraries
+from core.AddOnLoader import *
 from core.Preference_Utilities import *
 from core.SysLogger import SysLogger
 
@@ -177,7 +178,19 @@ class Preferences:
 
     def Load_Plugin_Configurations(self):
 
-        pass
+        #  Load the Default Config Options
+        results = AddOnLoader.Load_Default_Config_Options(self)
+
+        print('Plugin Options: ' + str(self.plugin_options))
+        for key in results.keys():
+
+            #  Check if key exists in plugin options
+            if key in self.plugin_options.keys():
+                self.plugin_options[key][0] = results[key][0]
+            else:
+                self.plugin_options[key] = results[key]
+
+        print('Post Plugin Options: ' + str(self.plugin_options))
 
     #  Retrieve a setting
     def QueryFull(self, module, name, default = None):

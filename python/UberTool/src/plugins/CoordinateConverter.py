@@ -160,3 +160,7 @@ class CoordinateConverter(PluginBase):
     def Get_Button_Icon_Path(self):
         return 'coordinate.png'
 
+    @staticmethod
+    def Get_Default_Configuration_Options():
+        return {'coordinate_converter.ToolbarButtonIconWidth':  ['30','Icon Width of Toolbar Buttons'],
+                'coordinate_converter.ToolbarButtonIconHeight': ['30','Icon Height of Toolbar Buttons']}

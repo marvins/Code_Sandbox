@@ -27,3 +27,7 @@ class PluginBase(QtGui.QWidget):
     def Get_Button_Icon_Size(self):
         return QtGui.QSize(100,100)
 
+
+    @staticmethod
+    def Get_Default_Configuration_Options():
+        return {}

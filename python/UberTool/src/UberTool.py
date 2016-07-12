@@ -33,7 +33,7 @@ def main():
     app = QtGui.QApplication(sys.argv)
 
     #  Load the Main Widget
-    mainWindow = MainWindow(preferences)
+    main_window = MainWindow(preferences)
 
     #  Start the application
     sys.exit(app.exec_())

@@ -158,7 +158,7 @@ class ConfigurationFilePane(QtGui.QWidget):
             item_widget.setText(1, child)
             item_widget.setText(2, value[0])
             item_widget.setText(3, value[1])
-            item_widget.setCheckState(Qt.Unchecked)
+            item_widget.setCheckState(0, Qt.Unchecked)
             plugin_widget.addChild(item_widget)
 
         self.m_config_tree.addTopLevelItem(plugin_widget)
