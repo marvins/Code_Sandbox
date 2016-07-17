@@ -17,26 +17,24 @@ import sys
 
 #  Add our conversion utilities
 from plugins.CoordinateConverter import CoordinateConverterUtils
+from plugins.CoordinateConverter.GeographicCoordinatePane import GeographicCoordinatePane
+from plugins.CoordinateConverter.UTMCoordinatePane import UTMCoordinatePane
 
 
 #  This is the Coordinate Conversion Widget which stores our local info
-class CoordinatePanel(QtGui.QWidget):
+class CoordinatePanel(QtGui.QGroupBox):
 
 
     def __init__(self, labelName, ReadOnly = False, parent = None):
 
         #  Create parent
-        QtGui.QWidget.__init__(self,parent)
+        QtGui.QGroupBox.__init__(self, labelName, parent)
 
         #  Set the read/modify flag
         self.isReadOnly = ReadOnly
 
         #  Create the layout
         self.layout = QtGui.QVBoxLayout()
-
-        #  Set the label
-        self.mainLabel = QtGui.QLabel(labelName)
-        self.layout.addWidget(self.mainLabel)
 
         #  Create the coordinate type combo
         self.initCoordinateTypeWidget()
@@ -82,8 +80,8 @@ class CoordinatePanel(QtGui.QWidget):
         self.stackedWidget = QtGui.QStackedWidget()
 
         #  Create the coordinate dd widget
-        self.stackedWidget.addWidget(CoordinateConverterUtils.GeodeticWindow(ReadOnly = self.isReadOnly ))
-        self.stackedWidget.addWidget(CoordinateConverterUtils.UTMWindow( ReadOnly = self.isReadOnly ))
+        self.stackedWidget.addWidget(GeographicCoordinatePane( ReadOnly = self.isReadOnly ))
+        self.stackedWidget.addWidget(UTMCoordinatePane( ReadOnly = self.isReadOnly ))
 
 
         #  Add widget
@@ -140,9 +138,33 @@ class CoordinateConverter(PluginBase):
         self.mainLayout.addWidget(self.toCoordinateWidget)
 
         #  Create the toolbar
+        self.Build_Toolbar()
 
         #  Set the layout
         self.setLayout(self.mainLayout)
+
+    def Build_Toolbar(self):
+
+        #  Create Toolbar Widget
+        self.m_toolbar_widget = QtGui.QGroupBox('Toolbar', self)
+
+        #  Create Layout
+        self.m_toolbar_layout = QtGui.QHBoxLayout()
+        self.m_toolbar_layout.setAlignment(Qt.AlignLeft)
+
+        #  Create Close Button
+        icon_path=self.preferences.Query('CORE','ICON_HOME')+'/close.png'
+        self.m_toolbar_close_button = self.Create_Button(action=self.close,
+                                                         icon_path=icon_path,
+                                                         tooltip='Close Panel.')
+        self.m_toolbar_layout.addWidget(self.m_toolbar_close_button)
+
+
+        #  Set layout
+        self.m_toolbar_widget.setLayout(self.m_toolbar_layout)
+
+        #  Add to main
+        self.mainLayout.addWidget(self.m_toolbar_widget)
 
     #  Get the Module Name
     def Get_Plugin_Name(self):
@@ -162,5 +184,45 @@ class CoordinateConverter(PluginBase):
 
     @staticmethod
     def Get_Default_Configuration_Options():
-        return {'coordinate_converter.ToolbarButtonIconWidth':  ['30','Icon Width of Toolbar Buttons'],
-                'coordinate_converter.ToolbarButtonIconHeight': ['30','Icon Height of Toolbar Buttons']}
+        return {'coordinate_converter.ToolbarButtonWidth':      ['40','Width of Toolbar Buttons'],
+                'coordinate_converter.ToolbarButtonHeight':     ['40','Height of Toolbar Buttons.'],
+                'coordinate_converter.ToolbarButtonIconWidth':  ['30','Width of Toolbar Button Icons'],
+                'coordinate_converter.ToolbarButtonIconHeight': ['30','Height of Toolbar Button Icons']}
+
+
+
+    def Create_Button( self, name = None,
+                             parent = None,
+                             action=None,
+                             icon_path = None,
+                             icon_size = None,
+                             tooltip = None):
+
+        #  Create ToolButton
+        button = QtGui.QToolButton(parent)
+
+        #  Set attributes
+        if not name is None:
+            button.setText(name)
+            button.setToolButtonStyle(Qt.ToolButtonTextUnderIcon)
+
+        if not action is None:
+            button.clicked.connect(action)
+
+        button.setFixedWidth(int(self.preferences.QueryPlugin('coordinate_converter.ToolbarButtonWidth',100)))
+        button.setFixedHeight(int(self.preferences.QueryPlugin('coordinate_converter.ToolbarButtonHeight',100)))
+
+        if not icon_path is None:
+            button.setIcon(QtGui.QIcon(icon_path))
+
+        if icon_size is None:
+            button.setIconSize(QSize(int(self.preferences.QueryPlugin('coordinate_converter.ToolbarButtonIconWidth')),
+                                     int(self.preferences.QueryPlugin('coordinate_converter.ToolbarButtonIconHeight'))))
+        else:
+            button.setIconSize(icon_size)
+
+
+        if not tooltip is None:
+            self.setToolTip(tooltip)
+
+        return button

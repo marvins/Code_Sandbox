@@ -62,12 +62,15 @@ class ConfigurationFilePane(QtGui.QWidget):
         self.m_config_widget = QtGui.QGroupBox('Configuration Settings',self)
 
         # Create layout
-        self.m_config_layout = QtGui.QVBoxLayout()
+        self.m_config_layout = QtGui.QHBoxLayout()
 
         #  Create Tree Widget
         self.m_config_tree = QtGui.QTreeWidget()
         self.m_config_tree.setColumnCount(len(self.m_tree_labels))
         self.m_config_layout.addWidget( self.m_config_tree )
+
+        #  Create Panel Toolbar
+        self.Build_Configuration_Panel_Toolbar()
 
         #  Set the config layout
         self.m_config_widget.setLayout(self.m_config_layout)
@@ -75,6 +78,36 @@ class ConfigurationFilePane(QtGui.QWidget):
         #  Add to main layout
         self.m_main_layout.addWidget(self.m_config_widget)
 
+
+    def Build_Configuration_Panel_Toolbar(self):
+
+        #  Create Panel Button Widget
+        self.m_config_button_panel = QtGui.QWidget()
+
+        #  Create Panel Button Layout
+        self.m_config_button_layout = QtGui.QVBoxLayout()
+
+        #  Get Icon Base Path
+        icon_base = self.m_options.Query('CORE','ICON_HOME')
+        add_item_icon_path  = icon_base + '/add.png'
+        rm_item_icon_path   = icon_base + '/trashcan.png'
+        edit_item_icon_path = icon_base + '/pencil.png'
+
+        #  Create Add Button
+        self.m_config_add_button  = self.Create_Button(icon_path=add_item_icon_path)
+        self.m_config_button_layout.addWidget(self.m_config_add_button)
+
+        #  Create RM Button
+        self.m_config_rm_button   = self.Create_Button(icon_path=rm_item_icon_path)
+        self.m_config_button_layout.addWidget(self.m_config_rm_button)
+
+        #  Create Edit Button
+        self.m_config_edit_button = self.Create_Button(icon_path=edit_item_icon_path)
+        self.m_config_button_layout.addWidget(self.m_config_edit_button)
+
+
+        self.m_config_button_panel.setLayout(self.m_config_button_layout)
+        self.m_config_layout.addWidget(self.m_config_button_panel)
 
     def Build_Toolbar(self):
 
@@ -84,14 +117,6 @@ class ConfigurationFilePane(QtGui.QWidget):
         #  Create Layout
         self.m_toolbar_layout = QtGui.QHBoxLayout()
         self.m_toolbar_layout.setAlignment(Qt.AlignLeft)
-
-        #  Create Add
-
-        #  Create Delete Button
-
-        #  Create Reload Button
-
-        #  Create Save/Write Button
 
 
         #  Create Close Button
@@ -138,7 +163,6 @@ class ConfigurationFilePane(QtGui.QWidget):
                 item_widget.setText(1, child)
                 item_widget.setText(2, value[0])
                 item_widget.setText(3, value[1])
-                item_widget.setCheckState(0, Qt.Unchecked)
 
                 module_widget.addChild(item_widget)
 
@@ -158,7 +182,6 @@ class ConfigurationFilePane(QtGui.QWidget):
             item_widget.setText(1, child)
             item_widget.setText(2, value[0])
             item_widget.setText(3, value[1])
-            item_widget.setCheckState(0, Qt.Unchecked)
             plugin_widget.addChild(item_widget)
 
         self.m_config_tree.addTopLevelItem(plugin_widget)
@@ -205,3 +228,15 @@ class ConfigurationFilePane(QtGui.QWidget):
 
         print('Closing Config File Pane')
         self.close_panel.emit()
+
+    @pyqtSlot()
+    def AddConfigOption(self):
+        pass
+
+    @pyqtSlot()
+    def RemoveConfigOption(self):
+        pass
+
+    @pyqtSlot()
+    def EditConfigOption(self):
+        pass

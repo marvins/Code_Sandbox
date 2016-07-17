@@ -181,7 +181,6 @@ class Preferences:
         #  Load the Default Config Options
         results = AddOnLoader.Load_Default_Config_Options(self)
 
-        print('Plugin Options: ' + str(self.plugin_options))
         for key in results.keys():
 
             #  Check if key exists in plugin options
@@ -189,8 +188,6 @@ class Preferences:
                 self.plugin_options[key][0] = results[key][0]
             else:
                 self.plugin_options[key] = results[key]
-
-        print('Post Plugin Options: ' + str(self.plugin_options))
 
     #  Retrieve a setting
     def QueryFull(self, module, name, default = None):
