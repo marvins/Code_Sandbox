@@ -9,8 +9,8 @@
 #include <QGridLayout>
 #include <QToolButton>
 #include <QVBoxLayout>
-#include <QWebFrame>
-#include <QWebView>
+#include <QtWebEngine/QtWebEngine>
+#include <QtWebEngineWidgets/QWebEngineView>
 #include <QWidget>
 
 #include <src/core/DataContainer.hpp>
@@ -59,6 +59,12 @@ class BrowserPane : public QWidget{
         //-----------------------------//
         void build_toolbar_widget();
 
+        /**
+         * @brief Parse Latitude Result
+         */
+        void Parse_Latitude( const QString& result );
+        void Parse_Longitude( const QString& result );
+
         //-----------------------------//
         //-     Private Variables     -//
         //-----------------------------//
@@ -67,7 +73,7 @@ class BrowserPane : public QWidget{
         QGridLayout*  mainLayout;
 
         ///  Web View
-        QWebView*  webView;
+        QWebEngineView*  webView;
         
         /// Toolbar Widget
         QWidget*      toolbarWidget;
@@ -80,6 +86,7 @@ class BrowserPane : public QWidget{
 
         /// Toolbar Export Button
         QToolButton*  toolbarExportButton;
+
 
 };
 

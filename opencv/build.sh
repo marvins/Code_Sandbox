@@ -7,8 +7,10 @@ IMAGE_LIST=image-list.txt
 #OY=920
 
 #  16K x 16K
-OX="`expr 12500`"
-OY="`expr  2500`"
+OX=0
+#"`expr 1024`"
+OY=0
+#"`expr  2500`"
 
 SCALE=1
 

@@ -10,7 +10,8 @@
 #include <QMainWindow>
 #include <QMenuBar>
 #include <QSplitter>
-#include <QWebView>
+#include <QtWebEngine/QtWebEngine>
+#include <QtWebEngineWidgets/QWebEngineView>
 #include <QWidget>
 
 #include <src/core/DataContainer.hpp>

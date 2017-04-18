@@ -10,6 +10,8 @@
 
 #include <QMessageBox>
 
+#include <QNetworkProxy>
+
 using namespace std;
 
 
@@ -44,6 +46,11 @@ void DataContainer::load( int argc, char* argv[] ){
 	load_windows_configuration();
 #endif
 
+
+    // Setup the network
+    QNetworkProxy proxy;
+    proxy.setType(QNetworkProxy::NoProxy);
+    QNetworkProxy::setApplicationProxy(proxy);
 
 }
 

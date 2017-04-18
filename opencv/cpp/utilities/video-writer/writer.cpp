@@ -76,11 +76,13 @@ int main( int argc, char* argv[] )
     cout << "Building video writer." << endl;
     cv::VideoWriter video_writer;
     bool is_color = true;
-    int four_cc = CV_FOURCC('F','M','P','4');
-    //int four_cc = -1;//CV_FOURCC('M','P','4','2');//-1;
+    //int four_cc = CV_FOURCC('F','M','P','4');
+    int four_cc = 0;//CV_FOURCC('M','P','4','2');//-1;
+    
 
 
     // Open Video Writer
+    cout << "FOUR_CC: " << four_cc << std::endl;
     video_writer.open( options.Get_Output_Pathname().c_str(),
                        four_cc,
                        options.Get_FPS(),

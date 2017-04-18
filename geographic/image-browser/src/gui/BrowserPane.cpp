@@ -27,7 +27,7 @@ BrowserPane::BrowserPane( QWidget* parent )
     mainLayout = new QGridLayout;
 
     // create web gui
-    webView = new QWebView(this);
+    webView = new QWebEngineView(this);
     mainLayout->addWidget( webView, 0, 0 );
     
     
@@ -64,7 +64,7 @@ void BrowserPane::setUrl( const string& url ){
 			turl[i] = '/';
 		}
 	}
-    std::cout << "Setting QWebView URL: " << turl << std::endl;
+    std::cout << "Setting QWebEngineView URL: " << turl << std::endl;
     webView->setUrl(QUrl(turl.c_str()));
 
 }
@@ -117,7 +117,7 @@ void BrowserPane::reloadBrowserOverlays()
     /// Clear all overlays
     for( size_t i=0; i<settings.variables.size(); i++ ){
         string cc = settings.variables[i] + string(".setMap(null);");
-        webView->page()->mainFrame()->evaluateJavaScript( cc.c_str() );
+        webView->page()->runJavaScript( cc.c_str() );
     }
     settings.variables.clear();
 
@@ -127,7 +127,7 @@ void BrowserPane::reloadBrowserOverlays()
         // create the javascript variable
         string varname;
         string command = settings.overlay_list[i].toGoogleMapsString( varname, i);
-        QVariant res = webView->page()->mainFrame()->evaluateJavaScript( command.c_str());
+        webView->page()->runJavaScript( command.c_str());
     
         // add the variable to the list
         settings.variables.push_back(varname);
@@ -147,25 +147,57 @@ bool BrowserPane::eventFilter(QObject *target, QEvent *event)
         if( event->type() == QEvent::MouseButtonPress )
         {
             sleep(1);
-            std::string lat_res = webView->page()->mainFrame()->evaluateJavaScript("marker_lat").toString().toStdString();
-            std::string lon_res = webView->page()->mainFrame()->evaluateJavaScript("marker_lon").toString().toStdString();
-            double lat, lon;
-            bool valid = false;
-            try{
-                lat = std::stod(lat_res); 
-                lon = std::stod(lon_res); 
-                valid = true;
-            }
-            catch(...){
-                cerr << "Unable to parse the marker coordinates" << std::endl; 
-            }
-
-            if( valid ){
-                std::cout << "Position: " << lat << ", " << lon << std::endl;
-            }
+            webView->page()->runJavaScript("marker_lat", [&](const QVariant& result){
+                Parse_Latitude( result.toString() ); });
+            webView->page()->runJavaScript("marker_lon", [&](const QVariant& result){
+                Parse_Longitude( result.toString() ); });
         }
 
+        // Otherwise, print information
+        else
+        {
+            std::cout << "Event Type: " << event->type() << std::endl;
+        }
     }
     return false;
 }
+
+void BrowserPane::Parse_Latitude( const QString& lat_str )
+{
+    double lat;
+    bool valid = false;
+    try{
+        lat = std::stod(lat_str.toStdString());
+        valid = true;
+    }
+
+    catch(...){
+        cerr << "Unable to parse the marker coordinates" << std::endl; 
+    }
+
+    
+    if( valid ){
+        std::cout << "Latitude: " << lat << std::endl;
+    }
+}
+
+void BrowserPane::Parse_Longitude( const QString& lon_str )
+{
+    double lon;
+    bool valid = false;
+    try{
+        lon = std::stod(lon_str.toStdString());
+        valid = true;
+    }
+
+    catch(...){
+        cerr << "Unable to parse the marker coordinates" << std::endl; 
+    }
+
+    
+    if( valid ){
+        std::cout << "Longitude: " << lon << std::endl;
+    }
+}
+
 
