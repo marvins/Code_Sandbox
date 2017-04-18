@@ -24,7 +24,7 @@ set(CMAKE_AUTOMOC ON)
 
 # Find the QtWidgets library
 find_package(Qt5Widgets)
-find_package(Qt5WebEngine)
+#find_package(Qt5WebEngine)
 find_package(Qt5WebEngineWidgets)
 
 
@@ -107,9 +107,9 @@ add_executable( image_browser
 # Use the Widgets module from Qt 5.
 target_link_libraries( image_browser 
                        Qt5::Widgets 
-                       Qt5::WebEngine
                        Qt5::WebEngineWidgets
                        ${GDAL_LIBRARY} 
                        ${Boost_LIBRARIES}
 )
+# Qt5::WebEngine
 
