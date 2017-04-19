@@ -5,6 +5,9 @@
  */
 #include "BrowserPane.hpp"
 
+// Project Libraries
+#include "BrowserPage.hpp"
+
 // Image-Browser Libraries
 #include <src/core/FilesystemUtilities.hpp>
 #include <src/core/Log_Utilities.hpp>
@@ -48,6 +51,11 @@ BrowserPane::BrowserPane( QWidget* parent )
     // create web gui
     webView = new QWebEngineView(this);
     mainLayout->addWidget( webView, 0, 0 );
+
+    // Create page
+    auto browser_page = new BrowserPage(this);
+    webView->setPage(browser_page);
+    
 
     // Create Channel
     m_web_channel = new QWebChannel(this);

@@ -23,10 +23,10 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_AUTOMOC ON)
 
 # Find the QtWidgets library
-find_package(Qt5Widgets)
-find_package(Qt5WebEngine)
-find_package(Qt5WebEngineWidgets)
-find_package(Qt5WebSockets)
+find_package(Qt5Widgets REQUIRED)
+find_package(Qt5WebEngine REQUIRED)
+find_package(Qt5WebEngineWidgets REQUIRED)
+find_package(Qt5WebSockets REQUIRED )
 
 
 #----------------------------------#
@@ -71,6 +71,7 @@ set( IMAGE_BROWSER_SOURCES
      src/core/StringUtilities.cpp
      src/core/WebSocketClientWrapper.cpp
      src/gui/AssetPane.cpp
+     src/gui/BrowserPage.cpp
      src/gui/BrowserPane.cpp
      src/gui/IndexingProgressDialog.cpp
      src/gui/IndexingWorker.cpp
@@ -95,6 +96,7 @@ set( IMAGE_BROWSER_HEADERS
 	 src/core/StringUtilities.hpp
      src/core/WebSocketClientWrapper.hpp
      src/gui/AssetPane.hpp
+     src/gui/BrowserPage.hpp
      src/gui/BrowserPane.hpp
      src/gui/IndexingProgressDialog.hpp
      src/gui/IndexingWorker.hpp
@@ -116,4 +118,3 @@ target_link_libraries( image_browser
                        ${GDAL_LIBRARY}
                        ${Boost_LIBRARIES}
 )
-# Qt5::WebEngine
