@@ -28,6 +28,7 @@
                 });
 
             var web_channel = null;
+            var web_socket = null;
 
             /*
                 Initialize the Map to the default location
@@ -68,32 +69,19 @@
                     marker_lon = event.latLng.lng();
 
                     // Send WebSocket Update
+                    console.log('Trying to send on web channel');
                     web_channel.send('Event Complete');
                 });
 
-                // Create web channel
-                web_channel = new QWebChannel(qt.webChannelTransport,
-                  function(channel) {
-                      // make dialog object accessible globally
-                      window.dialog = channel.objects.dialog;
+                console.log('Building Web Socket');
 
-                      document.getElementById("send").onclick = function() {
-                          var input = document.getElementById("input");
-                          var text = input.value;
-                          if (!text) {
-                              return;
-                          }
+                // Create Socket
+                web_socket = new WebSocket("ws://localhost:12345");
 
-                          output("Sent message: " + text);
-                          input.value = "";
-                          dialog.receiveText(text);
-                      }
-
-
-                      dialog.receiveText("Client connected, ready to send/receive messages!");
-                      output("Connected to WebChannel, ready to send/receive messages!");
-                  }
-                );
+                web_socket.onopen = function()
+                {
+                    web_socket.send("Hello World");
+                }
 
             }
 

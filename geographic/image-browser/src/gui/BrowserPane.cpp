@@ -59,7 +59,7 @@ BrowserPane::BrowserPane( QWidget* parent )
     // Create Document object
     m_content = new Document();
 
-    m_web_channel->registerObject(QStringLiteral("content"), m_content);
+    m_web_channel->registerObject(QStringLiteral("dialog"), m_content);
     webView->page()->setWebChannel(m_web_channel);
 
 
@@ -186,7 +186,7 @@ bool BrowserPane::eventFilter(QObject *target, QEvent *event)
                 Parse_Longitude( result.toString() ); });
         }
 
-        
+
     }
     return false;
 }
