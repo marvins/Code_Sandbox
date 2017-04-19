@@ -24,8 +24,9 @@ set(CMAKE_AUTOMOC ON)
 
 # Find the QtWidgets library
 find_package(Qt5Widgets)
-#find_package(Qt5WebEngine)
+find_package(Qt5WebEngine)
 find_package(Qt5WebEngineWidgets)
+find_package(Qt5WebSockets)
 
 
 #----------------------------------#
@@ -38,7 +39,7 @@ include_directories( ${GDAL_INCLUDE_DIR} )
 #----------------------------------#
 #-         Configure Boost        -#
 #----------------------------------#
-Find_Package(Boost 
+Find_Package(Boost
                 COMPONENTS
                     date_time
                     regex
@@ -68,6 +69,7 @@ set( IMAGE_BROWSER_SOURCES
      src/core/Point.cpp
      src/core/Rect.cpp
      src/core/StringUtilities.cpp
+     src/core/WebSocketClientWrapper.cpp
      src/gui/AssetPane.cpp
      src/gui/BrowserPane.cpp
      src/gui/IndexingProgressDialog.cpp
@@ -88,9 +90,10 @@ set( IMAGE_BROWSER_HEADERS
      src/core/Log_Utilities.hpp
      src/core/MessagingService.hpp
      src/core/Overlay.hpp
-	 src/core/Point.hpp 
+	 src/core/Point.hpp
      src/core/Rect.hpp
 	 src/core/StringUtilities.hpp
+     src/core/WebSocketClientWrapper.hpp
      src/gui/AssetPane.hpp
      src/gui/BrowserPane.hpp
      src/gui/IndexingProgressDialog.hpp
@@ -98,18 +101,19 @@ set( IMAGE_BROWSER_HEADERS
      src/gui/MainWindow.hpp
      src/gui/PreferenceDialog.hpp
 )
-		   
 
-add_executable( image_browser 
+
+add_executable( image_browser
                 ${IMAGE_BROWSER_SOURCES}
                 ${IMAGE_BROWSER_HEADERS} )
 
 # Use the Widgets module from Qt 5.
-target_link_libraries( image_browser 
-                       Qt5::Widgets 
+target_link_libraries( image_browser
+                       Qt5::Widgets
+                       Qt5::WebEngine
                        Qt5::WebEngineWidgets
-                       ${GDAL_LIBRARY} 
+                       Qt5::WebSockets
+                       ${GDAL_LIBRARY}
                        ${Boost_LIBRARIES}
 )
 # Qt5::WebEngine
-

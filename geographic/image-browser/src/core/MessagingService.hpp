@@ -9,6 +9,7 @@
 #include <QtGui>
 #include <QWidget>
 
+
 /**
  * @class MessagingService
 */
@@ -34,11 +35,11 @@ class MessagingService : public QObject{
         void showIndexingProgressDialogSlot();
 
         void closeIndexingProgressDialogSlot();
-        
+
         void updateIndexingProgressDialogStatusSlot();
 
     signals:
-        
+
         /**
          * Signal to reload all browser overlays
         */
@@ -55,7 +56,7 @@ class MessagingService : public QObject{
         void showIndexingProgressDialogSignal();
 
         void closeIndexingProgressDialogSignal();
-        
+
         void updateIndexingProgressDialogStatusSignal();
 
 };

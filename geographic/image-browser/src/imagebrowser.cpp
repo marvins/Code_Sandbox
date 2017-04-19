@@ -5,6 +5,7 @@
  */
 #include <QtGui>
 #include <QApplication>
+#include <QtWebEngine/QtWebEngine>
 
 #include <src/gui/MainWindow.hpp>
 
@@ -24,6 +25,8 @@ int main( int argc, char* argv[] ){
 	///   Create the Qt Application
     QApplication app(argc, argv);
     
+    QtWebEngine::initialize();
+
     // parse command line options
     settings.load( argc, argv );        
         

@@ -33,35 +33,35 @@ class MainWindow : public QMainWindow{
     Q_OBJECT
 
     public:
-        
+
         /**
          * Default Constructor
          */
         MainWindow( );
 
     public slots:
-        
+
         void loadPreferencePane();
 
         void showIndexingProgressDialog();
         void closeIndexingProgressDialog();
-        
+
         void updateIndexingProgressDialog();
 
     private:
-        
+
         /// Build Menu
         void build_menu();
 
         /// Main Window Splitter
         QSplitter* splitter;
-        
+
         /// Asset Panel
         AssetPane*   assetPane;
 
         /// Browser Panel
         BrowserPane* browserPane;
-        
+
         /// File Menu
         QMenu*  fileMenu;
 
@@ -70,12 +70,13 @@ class MainWindow : public QMainWindow{
 
         /// Options Menu
         QMenu*  optionsMenu;
-        
+
         /// Preference Pane Action
         QAction*  prefAction;
-    
+
         /// Indexing Progress Dialog
         IndexingProgressDialog*  indexingProgressDialog;
+
 
 };
 
