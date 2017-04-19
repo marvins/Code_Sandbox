@@ -69,7 +69,6 @@ set( IMAGE_BROWSER_SOURCES
      src/core/Point.cpp
      src/core/Rect.cpp
      src/core/StringUtilities.cpp
-     src/core/WebSocketClientWrapper.cpp
      src/gui/AssetPane.cpp
      src/gui/BrowserPage.cpp
      src/gui/BrowserPane.cpp
@@ -94,7 +93,6 @@ set( IMAGE_BROWSER_HEADERS
 	 src/core/Point.hpp
      src/core/Rect.hpp
 	 src/core/StringUtilities.hpp
-     src/core/WebSocketClientWrapper.hpp
      src/gui/AssetPane.hpp
      src/gui/BrowserPage.hpp
      src/gui/BrowserPane.hpp

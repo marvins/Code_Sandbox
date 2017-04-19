@@ -33,6 +33,8 @@ class WebSocketClientWrapper : public QObject
     Q_SIGNALS:
         void clientConnected(WebSocketTransport* client);
 
+        void received_data( QString message_data );
+
     private Q_SLOTS:
         void handleNewConnection();
 

@@ -21,21 +21,6 @@
 extern DataContainer    settings;
 extern MessagingService message_service;
 
-class Document : public QObject
-{
-    Q_OBJECT
-    Q_PROPERTY(QString text MEMBER m_text NOTIFY textChanged)
-public:
-    explicit Document(QObject *parent = nullptr) : QObject(parent) {}
-
-    void setText(const QString &text);
-
-signals:
-    void textChanged(const QString &text);
-
-private:
-    QString m_text;
-};
 
 /**
  * @class BrowserPane
@@ -51,6 +36,7 @@ class BrowserPane : public QWidget{
          */
         BrowserPane( QWidget* parent = NULL );
 
+        virtual ~BrowserPane();
 
         /**
          *  Set the url of the browser pane
@@ -70,6 +56,20 @@ class BrowserPane : public QWidget{
         */
         void reloadBrowserOverlays();
 
+
+        /**
+         * @brief Respond to Messages from html
+        */
+        void Handle_HTML_Response( const QString& response );
+
+        void Handle_New_Connection();
+        void Handle_Close_Connection();
+
+        void Handle_Text_Message( const QString& message );
+        void Handle_Binary_Message( QByteArray message );
+
+        void Socket_Disconnected();
+
     private:
 
         //-----------------------------//
@@ -82,6 +82,9 @@ class BrowserPane : public QWidget{
          */
         void Parse_Latitude( const QString& result );
         void Parse_Longitude( const QString& result );
+
+        void Configure_Networking();
+
 
         //-----------------------------//
         //-     Private Variables     -//
@@ -105,17 +108,11 @@ class BrowserPane : public QWidget{
         /// Toolbar Export Button
         QToolButton*  toolbarExportButton;
 
-        /// content
-        Document* m_content;
-
-        /// Client server
-        WebSocketClientWrapper* m_client_wrapper;
-
         /// Socket server
         QWebSocketServer* m_socket_server;
 
-        /// channel
-        QWebChannel* m_web_channel;
+        /// List of Connections
+        QList<QWebSocket*> m_socket_clients;
 };
 
 #endif
