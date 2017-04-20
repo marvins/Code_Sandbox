@@ -5,6 +5,9 @@
  */
 #include "BrowserPane.hpp"
 
+// Project Libraries
+#include "BrowserPage.hpp"
+
 // Image-Browser Libraries
 #include <src/core/FilesystemUtilities.hpp>
 #include <src/core/Log_Utilities.hpp>
@@ -17,13 +20,6 @@
 
 using namespace std;
 
-void Document::setText(const QString &text)
-{
-    if (text == m_text)
-        return;
-    m_text = text;
-    emit textChanged(m_text);
-}
 
 
 /********************************/
@@ -32,15 +28,10 @@ void Document::setText(const QString &text)
 BrowserPane::BrowserPane( QWidget* parent )
   : QWidget(parent)
 {
-    // Create Web Socket Server
-    m_socket_server = new QWebSocketServer(QStringLiteral("Listener"), QWebSocketServer::NonSecureMode);
-    if (!m_socket_server->listen(QHostAddress::LocalHost, 12345)) {
-        qFatal("Failed to open web socket server.");
-        std::exit(1);
-    }
 
-    // Create client wrapper
-    m_client_wrapper = new WebSocketClientWrapper(m_socket_server);
+    // Configure Networking
+    Configure_Networking();
+
 
     // create main layout
     mainLayout = new QGridLayout;
@@ -49,18 +40,10 @@ BrowserPane::BrowserPane( QWidget* parent )
     webView = new QWebEngineView(this);
     mainLayout->addWidget( webView, 0, 0 );
 
-    // Create Channel
-    m_web_channel = new QWebChannel(this);
-    QObject::connect( m_client_wrapper,
-                      &WebSocketClientWrapper::clientConnected,
-                      m_web_channel,
-                      &QWebChannel::connectTo);
+    // Create page
+    auto browser_page = new BrowserPage(this);
+    webView->setPage(browser_page);
 
-    // Create Document object
-    m_content = new Document();
-
-    m_web_channel->registerObject(QStringLiteral("dialog"), m_content);
-    webView->page()->setWebChannel(m_web_channel);
 
 
     // create toolbar widget
@@ -83,6 +66,19 @@ BrowserPane::BrowserPane( QWidget* parent )
 
     // Listen for events in the view
     webView->installEventFilter(this);
+}
+
+BrowserPane::~BrowserPane()
+{
+    // Close socket
+    if( m_socket_server != nullptr )
+    {
+        m_socket_server->close();
+    }
+
+    // Clear clients
+    qDeleteAll(m_socket_clients.begin(),
+               m_socket_clients.end());
 }
 
 /*********************************/
@@ -167,6 +163,58 @@ void BrowserPane::reloadBrowserOverlays()
 
 }
 
+
+/*******************************************************/
+/*            Handle HTML Response in gui              */
+/*******************************************************/
+void BrowserPane::Handle_HTML_Response( const QString& response )
+{
+
+    std::cout << "Received Response From HTML: " << response.toStdString() << std::endl;
+
+}
+
+void BrowserPane::Handle_New_Connection()
+{
+    std::cout << "New Connection Received" << std::endl;
+
+    // Get socket
+    QWebSocket* new_socket = m_socket_server->nextPendingConnection();
+
+    // Connect socket
+    connect( new_socket, &QWebSocket::textMessageReceived, this, &BrowserPane::Handle_Text_Message);
+    connect( new_socket, &QWebSocket::binaryMessageReceived, this, &BrowserPane::Handle_Binary_Message);
+    connect( new_socket, &QWebSocket::disconnected, this, &BrowserPane::Socket_Disconnected);
+}
+
+void BrowserPane::Handle_Close_Connection()
+{
+    std::cout << "Connection Closed" << std::endl;
+}
+
+
+void BrowserPane::Handle_Text_Message( const QString& message )
+{
+    // Get text
+    std::cout << "Received Text Data: " << message.toStdString() << std::endl;
+
+}
+
+void BrowserPane::Handle_Binary_Message( QByteArray message )
+{
+    std::cout << "Received Binary Data: " << message.toStdString() << std::endl;
+
+}
+
+void BrowserPane::Socket_Disconnected()
+{
+    QWebSocket* client = qobject_cast<QWebSocket*>(sender());
+
+    // Remove client
+    m_socket_clients.removeAll(client);
+
+}
+
 /********************************************/
 /*          Browser Event Filter            */
 /********************************************/
@@ -227,4 +275,24 @@ void BrowserPane::Parse_Longitude( const QString& lon_str )
     if( valid ){
         std::cout << "Longitude: " << lon << std::endl;
     }
+}
+
+void BrowserPane::Configure_Networking()
+{
+
+    // Create Web Socket Server
+    m_socket_server = new QWebSocketServer(QStringLiteral("Listener"), QWebSocketServer::NonSecureMode);
+    if (!m_socket_server->listen(QHostAddress::LocalHost, 12345)) {
+        qFatal("Failed to open web socket server.");
+        std::exit(1);
+    }
+
+    // Connect the New Connection Listener
+    connect( m_socket_server, &QWebSocketServer::newConnection,
+             this, &BrowserPane::Handle_New_Connection );
+
+    // Connect the Close Connection
+    connect( m_socket_server, &QWebSocketServer::closed,
+             this, &BrowserPane::Handle_Close_Connection );
+
 }

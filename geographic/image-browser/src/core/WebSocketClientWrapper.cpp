@@ -44,17 +44,6 @@ void WebSocketTransport::sendMessage(const QJsonObject &message)
 */
 void WebSocketTransport::textMessageReceived(const QString &messageData)
 {
-    QJsonParseError error;
-    QJsonDocument message = QJsonDocument::fromJson(messageData.toUtf8(), &error);
-    if (error.error) {
-        qWarning() << "Failed to parse text message as JSON object:" << messageData
-                   << "Error is:" << error.errorString();
-        return;
-    } else if (!message.isObject()) {
-        qWarning() << "Received JSON message that is not an object: " << messageData;
-        return;
-    }
-
     std::cout << "Received Message Data: " << messageData.toStdString() << std::endl;
     emit messageReceived(message.object(), this);
 }

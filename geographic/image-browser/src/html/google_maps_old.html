@@ -27,7 +27,6 @@
                     content: "Hello World;"
                 });
 
-            var web_channel = null;
             var web_socket = null;
 
             /*
@@ -70,7 +69,7 @@
 
                     // Send WebSocket Update
                     console.log('Trying to send on web channel');
-                    web_channel.send('Event Complete');
+                    web_socket.send('Event Complete');
                 });
 
                 console.log('Building Web Socket');
