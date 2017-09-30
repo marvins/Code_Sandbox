@@ -8,6 +8,9 @@
 // C++ Libraries
 #include <iostream>
 
+// Boost Libraries
+#include <boost/filesystem.hpp>
+
 // Qt Libraries
 #include <QAction>
 #include <QMenuBar>
@@ -34,7 +37,15 @@ void Main_Window::Initialize_GUI()
     // Create the stack Widgets
     m_stack_widget = new QStackedWidget(this);
 
-
+	// Check if Path Exists
+	if (boost::filesystem::exists(boost::filesystem::path("C:\\Qt")))
+	{
+		std::cout << "Found QT Base Directory" << std::endl;
+	}
+	else
+	{
+		std::cout << "Did not find QT Base Repository" << std::endl;
+	}
 
     // Add widget to main gui
     setCentralWidget( m_stack_widget );

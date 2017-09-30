@@ -30,6 +30,13 @@ set( PROJECT_EXTRA_LIBS )
 #include_directories(${GDAL_INCLUDE_DIR})
 #message("-- ${Blue}GDAL Includes:${Green}${GDAL_INCLUDE_DIR}${ColorReset}")
 
+#---------------------------#
+#-      Configure Boost	   -#
+#---------------------------#
+find_package(Boost COMPONENTS
+                    filesystem
+              REQUIRED)
+include_directories(${Boost_INCLUDE_DIR})
 
 #---------------------------#
 #-      Configure Qt5      -#
@@ -43,6 +50,7 @@ set(CMAKE_AUTOMOC ON)
 
 
 # Find the QtWidgets library
+find_package(Qt5Core REQUIRED)
 find_package(Qt5WebEngine REQUIRED)
 find_package(Qt5WebEngineWidgets REQUIRED)
 find_package(Qt5WebSockets REQUIRED )
@@ -80,9 +88,11 @@ add_executable( sample-gui
 
 #   Link the libraries
 target_link_libraries( sample-gui
+		Qt5::Core
         Qt5::WebEngine
         Qt5::WebEngineWidgets
         Qt5::WebSockets
         Qt5::Widgets
+		${Boost_LIBRARIES}
 )
 

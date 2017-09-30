@@ -8,6 +8,7 @@ $qt_home='C:\Qt\5.9.1\msvc2017_64'
 
 $qt_packages="$qt_home\plugins\platforms"
 
+$Build_Type='Release'
 
 #  Build Package
 if( $(Test-Path 'Releases\Sample-GUI') -eq $false )
@@ -20,4 +21,4 @@ Copy-Item "$qt_packages\\*.dll" 'Releases\Sample-GUI\'
 Copy-Item "$qt_home\\bin\\*.dll" 'Releases\Sample-GUI\'
 
 #  Copy GUI
-Copy-Item ".\build\bin\RelWithDebInfo\sample-gui.exe" '.\Releases\Sample-GUI\'
+Copy-Item ".\release\bin\$Build_Type\sample-gui.exe" '.\Releases\Sample-GUI\'

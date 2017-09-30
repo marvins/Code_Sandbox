@@ -1,0 +1,17 @@
+{
+  "cmake_variables":[
+  {
+    "name": "BOOST_ROOT",
+    "value": "C:\\Users\\Marvin Smith\\Desktop\\Projects\\boost_1_65_1\\stage"
+  },
+  {
+    "name": "BOOST_INCLUDEDIR",
+    "value": "C:\\Users\\Marvin Smith\\Desktop\\Projects\\boost_1_65_1\\stage\\include"
+  },
+  {
+    "name": "Boost_USE_STATIC_LIBS",
+    "value": "ON"
+  }
+  ],
+  "generator": "Visual Studio 15 2017 Win64"
+}

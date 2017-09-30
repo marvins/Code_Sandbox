@@ -1,16 +1,16 @@
 {
-    // See https://go.microsoft.com//fwlink//?linkid=834763 for more information about this file.
+    /* See https://go.microsoft.com//fwlink//?linkid=834763 for more information about this file.*/
     "configurations": [
-        {
+      {
         "name": "x64-Debug",
-        "generator": "Ninja",
-        "configurationType" : "Debug",
+        "generator": "Visual Studio 15 2017 Win64",
+        "configurationType": "Debug",
         "inheritEnvironments": [ "msvc_x64" ],
-        "buildRoot":  "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
-        "cmakeCommandArgs":  "",
+        "buildRoot": "${env.USERPROFILE}\\CMakeBuilds\\${workspaceHash}\\build\\${name}",
+        "cmakeCommandArgs": "",
         "buildCommandArgs": "-v",
-        "ctestCommandArgs":  ""
-        },
+        "ctestCommandArgs": ""
+      },
       {
         "name": "x64-Release",
         "generator": "Visual Studio 15 2017 Win64",
@@ -18,10 +18,21 @@
         "inheritEnvironments": [ "msvc_x64" ],
         "buildRoot": "${workspaceRoot}\\build",
         "cmakeCommandArgs": "",
-        "buildCommandArgs": "-v:D",
+        "buildCommandArgs": "-v:d",
         "ctestCommandArgs": "",
         "variables": [
-
+          {
+            "name": "BOOST_ROOT",
+            "value": "C:\\Users\\Marvin Smith\\Desktop\\Projects\\boost_1_65_1\\stage"
+          },
+          {
+            "name": "BOOST_INCLUDEDIR",
+            "value": "C:\\Users\\Marvin Smith\\Desktop\\Projects\\boost_1_65_1\\stage\\include"
+          },
+          {
+            "name": "Boost_USE_STATIC_LIBS",
+            "value": "ON"
+          }
         ]
       }
     ]
