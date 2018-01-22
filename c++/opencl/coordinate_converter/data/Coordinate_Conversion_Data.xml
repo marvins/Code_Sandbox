@@ -1,0 +1,20 @@
+<Coordinate_Conversion>
+
+    <Coordinates>
+
+        <!-- Mount Everest -->
+        <Coordinate id="0" name="Mt. Everest">
+            <Geog datum="WGS84" latitude_deg="27.988056" longitude_deg="86.925278" />
+            <UTM  is_northern="true"  grid_zone="45" easting_meters="492652"  northing_meters="3095881" />
+            <MGRS value="45RVL9265295881" />
+        </Coordinate>
+
+        <!-- Mount Kilimanjaro -->
+        <Coordinate id="1" name="Mt. Kilimanjaro">
+            <Geog datum="WGS84" latitude_deg="-3.075833" longitude_deg="37.353333" />
+            <UTM is_northern="false" grid_zone="37"  easting_meters="317004" northing_meters="9659884" />
+        </Coordinate>
+
+    </Coordinates>
+
+</Coordinate_Conversion>

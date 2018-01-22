@@ -22,8 +22,12 @@ set( LIB_COORDINATE_SOURCES
         Coordinate/Coordinate_Base.hpp
         Coordinate/Coordinate_Geographic.cpp
         Coordinate/Coordinate_Geographic.hpp
+        Coordinate/Coordinate_TransMerc.cpp
+        Coordinate/Coordinate_TransMerc.hpp
         Coordinate/Coordinate_UTM.cpp
         Coordinate/Coordinate_UTM.hpp
+        Coordinate/Ellipsoid.cpp
+        Coordinate/Ellipsoid.hpp
         Coordinate/Enumerations.cpp
         Coordinate/Enumerations.hpp
 )

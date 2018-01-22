@@ -16,6 +16,11 @@ SET(CMAKE_CXX_STANDARD 11)
 #  Find OpenCL
 find_package( OpenCL REQUIRED )
 
+#  Define the thirdparty libraries
+add_subdirectory(thirdparty)
 
 #  Define the library sources
 add_subdirectory(src)
+
+#  Add Tests
+add_subdirectory(tests)

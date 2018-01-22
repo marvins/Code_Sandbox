@@ -9,6 +9,7 @@
 // Coordinate Libraries
 #include <Coordinate.hpp>
 
+
 class OpenCL_Converter_Config_01 : public Coordinate_Converter_Config_Base
 {
     public:
@@ -34,6 +35,23 @@ class OpenCL_Converter_01 : public Coordinate_Converter_Base
          * @brief Constructor
          */
         OpenCL_Converter_01( OpenCL_Converter_Config_01::ptr_t config );
+
+
+        /**
+         * @brief Destructor
+         */
+        virtual ~OpenCL_Converter_01();
+
+
+        /**
+         * @brief Convert a Geographic Coordinate to UTM
+         * @param coordinate
+         * @return
+         */
+        Coordinate_UTM  Convert_To_UTM( const Coordinate_Geographic& coordinate );
+
+
+        std::vector<Coordinate_UTM> Convert_To_UTM( const std::vector<Coordinate_Geographic>& coordinates );
 
     private:
 

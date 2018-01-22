@@ -8,6 +8,12 @@
 // C++ Libraries
 #include <memory>
 #include <string>
+#include <vector>
+
+// Project Libraries
+#include "Coordinate_Geographic.hpp"
+#include "Coordinate_UTM.hpp"
+
 
 /**
  * @class Coordinate_Converter_Config_Base
@@ -37,6 +43,20 @@ class Coordinate_Converter_Base
          * @brief Constructor
          */
         Coordinate_Converter_Base( const Coordinate_Converter_Config_Base::ptr_t config );
+
+
+        /**
+         * @brief Convert Coordinate
+         */
+        virtual Coordinate_UTM  Convert_To_UTM( const Coordinate_Geographic& coordinate ) = 0;
+
+
+        /**
+         * @brief Convert multiple coordinates at once
+         * @param coordinates
+         * @return
+         */
+        virtual std::vector<Coordinate_UTM> Convert_To_UTM( const std::vector<Coordinate_Geographic>& coordinates ) = 0;
 
 
     private:
