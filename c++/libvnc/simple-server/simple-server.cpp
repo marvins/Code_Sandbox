@@ -7,13 +7,14 @@
 
 // C++ Dependencies
 #include <iostream>
+#include <memory>
 #include <string>
+
 
 // Project Dependencies
 #include "Options.hpp"
+#include "Server_Context.hpp"
 
-// LibVNC Server
-#include <rfb/rfb.h>
 
 int main( int argc, char* argv[] )
 {
@@ -21,25 +22,17 @@ int main( int argc, char* argv[] )
     std::cout << "Loading Configuration Information" << std::endl;
     Options options(argc, argv);
 
-    // Build the VNC Server
-    std::cout << "Creating the VNC Server Session." << std::endl;
-    std::cout << " - Bits Per Sample  : " << options.Get_Bits_Per_Sample() << std::endl;
-    std::cout << " - Samples Per Pixel: " << options.Get_Samples_Per_Pixel() << std::endl;
-    std::cout << " - Bytes Per Pixel  : " << options.Get_Bytes_Per_Pixel() << std::endl;
-    rfbScreenInfoPtr server = rfbGetScreen( &argc, argv, 
-                                            options.Get_Screen_Width(),
-                                            options.Get_Screen_Height(), 
-                                            options.Get_Bits_Per_Sample(),
-                                            options.Get_Samples_Per_Pixel(),
-                                            options.Get_Bytes_Per_Pixel());
-    
-    // Build the Frame Buffer
-    server->frameBuffer = new char[options.Get_Frame_Buffer_Size_Bytes()];
+    // Create the Server Context
+    auto context = std::make_shared<Server_Context>(options);
 
-    rfbInitServer(server);
+    // Initialize
+    context->Initialize();
 
-    rfbRunEventLoop(server, -1, FALSE);
+    // Run the Server
+    context->Run_Server();
 
+
+    std::cout << "Exiting Application" << std::endl;
     return 0;
 }
 

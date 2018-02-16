@@ -9,3 +9,4 @@ add_subdirectory(libCoordinate)
 
 #  Add the each subsequent conversion library
 add_subdirectory(libConvert01)
+add_subdirectory(libConvert02)

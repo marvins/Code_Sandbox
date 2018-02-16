@@ -23,10 +23,30 @@ FIND_PATH( LIBVNCSERVER_INCLUDE_DIR
                 "rfb/rfb.h"
             PATHS
                 /usr/include
+                /opt/local/include
 )
 
-FIND_LIBRARY(LIBVNCSERVER_SERVER_LIBRARY NAMES vncserver PATH_SUFFIXES lib lib64)
-FIND_LIBRARY(LIBVNCSERVER_CLIENT_LIBRARY NAMES vncclient PATH_SUFFIXES lib lib64)
+FIND_LIBRARY( LIBVNCSERVER_SERVER_LIBRARY
+                    NAMES
+                        vncserver
+                    PATHS
+                        /usr
+                        /usr/local
+                        /opt/local
+                    PATH_SUFFIXES
+                        lib
+                        lib64)
+
+FIND_LIBRARY( LIBVNCSERVER_CLIENT_LIBRARY
+                    NAMES
+                        vncclient
+                    PATHS
+                        /usr
+                        /usr/local
+                        /opt/local
+                    PATH_SUFFIXES
+                        lib
+                        lib64)
 
 
 message("LIBVNCSERVER_INCLUDE_DIR    : ${LIBVNCSERVER_INCLUDE_DIR}")

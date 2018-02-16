@@ -10,6 +10,8 @@
 #include <cinttypes>
 #include <string>
 
+// C++ Libraries
+#include <opencv2/core/core.hpp>
 
 /**
  * @class Options
@@ -75,6 +77,21 @@ class Options
         }
 
 
+        /**
+         * @brief Get the OpenCV Pixel Type
+         * @return
+         */
+        int Get_OpenCV_PType()const;
+
+
+        /**
+         * @brief Get the Network Port
+         */
+        inline int32_t Get_Network_Port()const{
+            return m_network_port;
+        }
+
+
     private:
 
         /// Application Name
@@ -91,6 +108,9 @@ class Options
         int32_t m_samples_per_pixel;
 
         int32_t m_bytes_per_pixel;
+
+        /// Network Port
+        int32_t m_network_port;
 
 }; // End of Options Class
 

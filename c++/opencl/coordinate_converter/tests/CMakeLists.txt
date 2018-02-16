@@ -6,6 +6,7 @@
 #  Add Libraries
 include_directories( ../src/libCoordinate
                      ../src/libConvert01
+                     ../src/libConvert02
                      ../thirdparty/googletest/googletest/include
                      ../thirdparty/pugixml/src )
 
@@ -19,10 +20,12 @@ add_executable( coordinate-test
                 coordinate-test.cpp
                 Coordinate_Test_Data.cpp
                 Coordinate_Test_Data.hpp
-                TEST_libConvert01.cpp )
+                TEST_libConvert01.cpp
+                TEST_libConvert02.cpp )
 
 target_link_libraries( coordinate-test
                         Coordinate
                         OpenCLConvert01
+                        OpenCLConvert02
                         gmock
                         pugixml )

@@ -10,10 +10,19 @@ cmake_minimum_required( VERSION 3.0 FATAL_ERROR )
 #   Set the project name
 PROJECT( Simple-Server-Demo )
 
+#  Set C++ 11
+set( CMAKE_CXX_STANDARD 11 )
+
 #  Find libVNC Server
 find_package( LibVncServer )
 message( " - libVNC-Server Found: ${LIBVNCSERVER_FOUND}")
 message( " - libVNC-Server Libs : ${LIBVNCSERVER_LIBRARIES}" )
+
+#---------------------------#
+#-       Find OpenCV       -#
+#---------------------------#
+find_package(OpenCV REQUIRED)
+
 
 #----------------------------#
 #-       Find Boost         -#
@@ -35,6 +44,8 @@ set( DEMO_SOURCES
         simple-server.cpp
         Options.cpp
         Options.hpp
+        Server_Context.cpp
+        Server_Context.hpp
         ../common/Parser.cpp
         ../common/Parser.hpp
 )
@@ -46,7 +57,8 @@ add_executable( simple-server
 
 target_link_libraries( simple-server
                         ${LIBVNCSERVER_LIBRARIES}
-                        ${Boost_LIBRARIES} )
+                        ${Boost_LIBRARIES}
+                        ${OpenCV_LIBRARIES})
 
 
 

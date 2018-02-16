@@ -8,6 +8,7 @@
 // C++ Libraries
 #include <deque>
 #include <iostream>
+#include <stdexcept>
 
 // Internal Libs
 #include "../common/Parser.hpp"
@@ -64,6 +65,13 @@ Options::Options( int argc, char* argv[] )
         std::cerr << "error: Unable to find BYTES_PER_PIXEL parameter in config." << std::endl;
         std::exit(1);
     }
+
+    /// Network Information
+    m_network_port = parser.getItem_int("NETWORK_PORT", found );
+    if( !found ) {
+        std::cerr << "error: Unable to find NETWORK_PORT parameter in config." << std::endl;
+        std::exit(1);
+    }
 }
 
 
@@ -75,3 +83,35 @@ void Options::Usage()
     std::cerr << "usage: " << m_program_name << " <config-path>" << std::endl;
 }
 
+
+/************************************************/
+/*          Build the OpenCV PixelType          */
+/************************************************/
+int Options::Get_OpenCV_PType() const
+{
+    int32_t output = -1;
+
+    switch(m_bits_per_sample)
+    {
+        case 8:
+
+            switch(m_samples_per_pixel)
+            {
+                case 3:
+                    switch(m_bytes_per_pixel)
+                    {
+                        case 4:
+                            output = CV_8UC4;
+                            break;
+                    }
+                    break;
+            }
+            break;
+
+    }
+
+    if( output < 0 ){
+        throw std::runtime_error("Unsupported combination.");
+    }
+    return output;
+}
