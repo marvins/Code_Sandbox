@@ -21,8 +21,10 @@
 
 // OpenCV
 #include <opencv2/core/core.hpp>
-#include <opencv2/imgcodecs/imgcodecs.hpp>
 #include <opencv2/imgproc/imgproc.hpp>
+
+// For Newer versions of OpenCV
+//#include <opencv2/imgcodecs/imgcodecs.hpp>
 
 
 /**
