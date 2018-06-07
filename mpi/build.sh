@@ -93,6 +93,11 @@ for ARG in "$@"; do
         -c)
             RUN_CLEAN=1
             ;;
+
+        --debug)
+            BUILD_TYPE='debug'
+            ;;
+
         *)
             if [ "$BUILD_TYPE_SET" = '1' ]; then
                 BUILD_TYPE=$ARG

@@ -27,12 +27,37 @@ else()
     include_directories(${MPI_INCLUDE_PATH})
 endif()
 
+#  Find Boost
+find_package( Boost
+                COMPONENTS
+                    system )
+include_directories( ${Boost_INCLUDE_DIRS} )
+message("BOOST_ROOT         : ${BOOST_ROOT}")
+message("Boost_LIBRARIES    : ${Boost_LIBRARIES}")
+message("Boost_INCLUDE_DIRS : ${Boost_INCLUDE_DIRS}")
+message("Boost_LIBRARY_DIRS : ${Boost_LIBRARY_DIRS}")
+
 
 #  Create each mpi dynamic window demo
-add_executable( mpi-fault-tolerance-demo-01
-                fault-tolerance-demo-01.cpp )
+add_executable( mpi-fault-tolerance-demo-01-master
+                fault-tolerance-demo-01-master.cpp
+                Connection_Listener.cpp
+                Connection_Listener.hpp
+                ${COMMON_SOURCES} )
 
-target_link_libraries( mpi-fault-tolerance-demo-01
-                       ${MPI_LIBRARIES} )
+target_link_libraries( mpi-fault-tolerance-demo-01-master
+                       ${MPI_LIBRARIES}
+                       ${Boost_LIBRARIES} )
+
+
+add_executable( mpi-fault-tolerance-demo-01-slave
+                fault-tolerance-demo-01-slave.cpp
+                Connection_Listener.cpp
+                Connection_Listener.hpp
+                ${COMMON_SOURCES} )
+
+target_link_libraries( mpi-fault-tolerance-demo-01-slave
+                       ${MPI_LIBRARIES}
+                       ${Boost_LIBRARIES} )
 
 
