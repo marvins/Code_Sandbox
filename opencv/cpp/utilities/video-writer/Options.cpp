@@ -33,7 +33,8 @@ Options::Options( int argc, char* argv[] )
    m_image_rotation(0),
    m_image_center_x(0.5),
    m_image_center_y(0.5),
-   m_fps(2)
+   m_fps(2),
+   m_use_gui(false)
 {
     // Parse the Command-Line
     Parse_Command_Line( argc, argv );
@@ -99,6 +100,11 @@ void Options::Parse_Command_Line( int argc,
             // Set the path
             m_output_pathname = args.front();
             args.pop_front();
+        }
+
+        // Show GUI
+        else if( arg == "-gui" ){
+            m_use_gui = true;
         }
 
         // Scale
@@ -216,6 +222,7 @@ void Options::Usage()const
     std::cerr << std::endl;
     std::cerr << "  -fps <int>     : Set the Frames Per Second. Default: " << m_fps << std::endl;
     std::cerr << std::endl;
+    std::cerr << "  -gui           : Show video frames using highgui." << std::endl;
 
     std::cerr << "optional performance flags" << std::endl;
     std::cerr << std::endl;

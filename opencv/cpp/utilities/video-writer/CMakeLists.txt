@@ -28,6 +28,7 @@ find_package( GDAL )
 #-------------------#
 #-    Find Boost   -#
 #-------------------#
+message("${Blue}Looking for Boost at ${BOOST_ROOT} ${ColourReset}")
 set( Boost_USE_STATIC_LIBS ON )
 find_package(Boost REQUIRED
                 COMPONENTS

@@ -7,9 +7,9 @@ IMAGE_LIST=image-list.txt
 #OY=920
 
 #  16K x 16K
-OX=0
+OX=8000
 #"`expr 1024`"
-OY=0
+OY=9000
 #"`expr  2500`"
 
 SCALE=1
@@ -41,7 +41,7 @@ fi
 popd
 
 
-CMD="./release/bin/video-writer -v $OUTPUT_VIDEO -i $IMAGE_LIST --overlay-path -ox $OX -oy $OY -s $SCALE -fps $FPS"
+CMD="./release/bin/video-writer -v $OUTPUT_VIDEO -i $IMAGE_LIST --overlay-path -ox $OX -oy $OY -s $SCALE -fps $FPS -gui"
 echo $CMD
 $CMD
 
