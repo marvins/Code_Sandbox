@@ -65,6 +65,9 @@ add_executable( opencv-video-stab
 add_executable( opencv-optflow-demo
         opencv_optflow_demo.cpp )
 
+add_executable( opencv_video_stab_temp
+                opencv_video_stab.cpp )
+
 
 #-------------------------------#
 #-     Link the Executable     -#
@@ -77,3 +80,5 @@ target_link_libraries( opencv-video-stab
 target_link_libraries( opencv-optflow-demo
         ${OpenCV_LIBRARIES})
 
+target_link_libraries( opencv_video_stab_temp
+                       ${OpenCV_LIBRARIES} )

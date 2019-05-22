@@ -21,9 +21,8 @@
 
 using namespace std;
 using namespace cv;
-using namespace cv::videostab;
 
-Ptr<IFrameSource> stabilizedFrames;
+Ptr<videostab::IFrameSource> stabilizedFrames;
 string saveMotionsPath;
 double outputFps;
 string outputPath;
@@ -32,7 +31,7 @@ bool quietMode;
 void run();
 void saveMotionsIfNecessary();
 void printHelp();
-MotionModel motionModel(const string &str);
+videostab::MotionModel motionModel(const string &str);
 
 
 void run()
@@ -180,7 +179,7 @@ class IMotionEstimatorBuilder
 {
 public:
     virtual ~IMotionEstimatorBuilder() {}
-    virtual Ptr<ImageMotionEstimatorBase> build() = 0;
+    virtual Ptr<videostab::ImageMotionEstimatorBase> build() = 0;
 protected:
     IMotionEstimatorBuilder(CommandLineParser &command) : cmd(command) {}
     CommandLineParser cmd;
@@ -193,11 +192,11 @@ public:
     MotionEstimatorRansacL2Builder(CommandLineParser &command, bool use_gpu, const string &_prefix = "")
         : IMotionEstimatorBuilder(command), gpu(use_gpu), prefix(_prefix) {}
 
-    Ptr<ImageMotionEstimatorBase> build() override
+    Ptr<videostab::ImageMotionEstimatorBase> build() override
     {
-        Ptr<MotionEstimatorRansacL2> est = makePtr<MotionEstimatorRansacL2>(motionModel(arg(prefix + "model")));
+        Ptr<videostab::MotionEstimatorRansacL2> est = makePtr<videostab::MotionEstimatorRansacL2>(motionModel(arg(prefix + "model")));
 
-        RansacParams ransac = est->ransacParams();
+        videostab::RansacParams ransac = est->ransacParams();
         if (arg(prefix + "subset") != "auto")
             ransac.size = argi(prefix + "subset");
         if (arg(prefix + "thresh") != "auto")
@@ -207,11 +206,11 @@ public:
 
         est->setMinInlierRatio(argf(prefix + "min-inlier-ratio"));
 
-        Ptr<IOutlierRejector> outlierRejector = makePtr<NullOutlierRejector>();
+        Ptr<videostab::IOutlierRejector> outlierRejector = makePtr<videostab::NullOutlierRejector>();
         if (arg(prefix + "local-outlier-rejection") == "yes")
         {
-            Ptr<TranslationBasedLocalOutlierRejector> tblor = makePtr<TranslationBasedLocalOutlierRejector>();
-            RansacParams ransacParams = tblor->ransacParams();
+            Ptr<videostab::TranslationBasedLocalOutlierRejector> tblor = makePtr<videostab::TranslationBasedLocalOutlierRejector>();
+            videostab::RansacParams ransacParams = tblor->ransacParams();
             if (arg(prefix + "thresh") != "auto")
                 ransacParams.thresh = argf(prefix + "thresh");
             tblor->setRansacParams(ransacParams);
@@ -229,7 +228,7 @@ public:
         CV_Assert(gpu == false && "CUDA modules are not available");
 #endif
 
-        Ptr<KeypointBasedMotionEstimator> kbest = makePtr<KeypointBasedMotionEstimator>(est);
+        Ptr<videostab::KeypointBasedMotionEstimator> kbest = makePtr<videostab::KeypointBasedMotionEstimator>(est);
         kbest->setDetector(GFTTDetector::create(argi(prefix + "nkps")));
         kbest->setOutlierRejector(outlierRejector);
         return kbest;
@@ -246,15 +245,15 @@ public:
     MotionEstimatorL1Builder(CommandLineParser &command, bool use_gpu, const string &_prefix = "")
         : IMotionEstimatorBuilder(command), gpu(use_gpu), prefix(_prefix) {}
 
-    Ptr<ImageMotionEstimatorBase> build() override
+    Ptr<videostab::ImageMotionEstimatorBase> build() override
     {
-        Ptr<MotionEstimatorL1> est = makePtr<MotionEstimatorL1>(motionModel(arg(prefix + "model")));
+        Ptr<videostab::MotionEstimatorL1> est = makePtr<videostab::MotionEstimatorL1>(motionModel(arg(prefix + "model")));
 
-        Ptr<IOutlierRejector> outlierRejector = makePtr<NullOutlierRejector>();
+        Ptr<videostab::IOutlierRejector> outlierRejector = makePtr<videostab::NullOutlierRejector>();
         if (arg(prefix + "local-outlier-rejection") == "yes")
         {
-            Ptr<TranslationBasedLocalOutlierRejector> tblor = makePtr<TranslationBasedLocalOutlierRejector>();
-            RansacParams ransacParams = tblor->ransacParams();
+            Ptr<videostab::TranslationBasedLocalOutlierRejector> tblor = makePtr<videostab::TranslationBasedLocalOutlierRejector>();
+            videostab::RansacParams ransacParams = tblor->ransacParams();
             if (arg(prefix + "thresh") != "auto")
                 ransacParams.thresh = argf(prefix + "thresh");
             tblor->setRansacParams(ransacParams);
@@ -272,7 +271,7 @@ public:
         CV_Assert(gpu == false && "CUDA modules are not available");
 #endif
 
-        Ptr<KeypointBasedMotionEstimator> kbest = makePtr<KeypointBasedMotionEstimator>(est);
+        Ptr<videostab::KeypointBasedMotionEstimator> kbest = makePtr<videostab::KeypointBasedMotionEstimator>(est);
         kbest->setDetector(GFTTDetector::create(argi(prefix + "nkps")));
         kbest->setOutlierRejector(outlierRejector);
         return kbest;
@@ -357,7 +356,7 @@ int main(int argc, const char **argv)
             cout << endl;
         }
 
-        StabilizerBase *stabilizer = 0;
+        videostab::StabilizerBase *stabilizer = 0;
 
         // check if source video is specified
 
@@ -367,7 +366,7 @@ int main(int argc, const char **argv)
 
         // get source video parameters
 
-        Ptr<VideoFileSource> source = makePtr<VideoFileSource>(inputPath);
+        Ptr<videostab::VideoFileSource> source = makePtr<videostab::VideoFileSource>(inputPath);
         cout << "frame count (rough): " << source->count() << endl;
         if (arg("fps") == "auto")
             outputFps = source->fps();
@@ -396,7 +395,7 @@ int main(int argc, const char **argv)
         {
             // we must use two pass stabilizer
 
-            TwoPassStabilizer *twoPassStabilizer = new TwoPassStabilizer();
+            videostab::TwoPassStabilizer *twoPassStabilizer = new videostab::TwoPassStabilizer();
             stabilizer = twoPassStabilizer;
             twoPassStabilizer->setEstimateTrimRatio(arg("est-trim") == "yes");
 
@@ -404,7 +403,7 @@ int main(int argc, const char **argv)
 
             if (arg("lin-prog-stab") == "yes")
             {
-                Ptr<LpMotionStabilizer> stab = makePtr<LpMotionStabilizer>();
+                Ptr<videostab::LpMotionStabilizer> stab = makePtr<videostab::LpMotionStabilizer>();
                 stab->setFrameSize(Size(source->width(), source->height()));
                 stab->setTrimRatio(arg("lps-trim-ratio") == "auto" ? argf("trim-ratio") : argf("lps-trim-ratio"));
                 stab->setWeight1(argf("lps-w1"));
@@ -414,15 +413,15 @@ int main(int argc, const char **argv)
                 twoPassStabilizer->setMotionStabilizer(stab);
             }
             else if (arg("stdev") == "auto")
-                twoPassStabilizer->setMotionStabilizer(makePtr<GaussianMotionFilter>(argi("radius")));
+                twoPassStabilizer->setMotionStabilizer(makePtr<videostab::GaussianMotionFilter>(argi("radius")));
             else
-                twoPassStabilizer->setMotionStabilizer(makePtr<GaussianMotionFilter>(argi("radius"), argf("stdev")));
+                twoPassStabilizer->setMotionStabilizer(makePtr<videostab::GaussianMotionFilter>(argi("radius"), argf("stdev")));
 
             // init wobble suppressor if necessary
 
             if (arg("wobble-suppress") == "yes")
             {
-                Ptr<MoreAccurateMotionWobbleSuppressorBase> ws = makePtr<MoreAccurateMotionWobbleSuppressor>();
+                Ptr<videostab::MoreAccurateMotionWobbleSuppressorBase> ws = makePtr<videostab::MoreAccurateMotionWobbleSuppressor>();
                 if (arg("gpu") == "yes")
 #ifdef HAVE_OPENCV_CUDAWARPING
                     ws = makePtr<MoreAccurateMotionWobbleSuppressorGpu>();
@@ -434,15 +433,15 @@ int main(int argc, const char **argv)
                 ws->setPeriod(argi("ws-period"));
                 twoPassStabilizer->setWobbleSuppressor(ws);
 
-                MotionModel model = ws->motionEstimator()->motionModel();
+                videostab::MotionModel model = ws->motionEstimator()->motionModel();
                 if (arg("load-motions2") != "no")
                 {
-                    ws->setMotionEstimator(makePtr<FromFileMotionReader>(arg("load-motions2")));
+                    ws->setMotionEstimator(makePtr<videostab::FromFileMotionReader>(arg("load-motions2")));
                     ws->motionEstimator()->setMotionModel(model);
                 }
                 if (arg("save-motions2") != "no")
                 {
-                    ws->setMotionEstimator(makePtr<ToFileMotionWriter>(arg("save-motions2"), ws->motionEstimator()));
+                    ws->setMotionEstimator(makePtr<videostab::ToFileMotionWriter>(arg("save-motions2"), ws->motionEstimator()));
                     ws->motionEstimator()->setMotionModel(model);
                 }
             }
@@ -451,29 +450,29 @@ int main(int argc, const char **argv)
         {
             // we must use one pass stabilizer
 
-            OnePassStabilizer *onePassStabilizer = new OnePassStabilizer();
+            videostab::OnePassStabilizer *onePassStabilizer = new videostab::OnePassStabilizer();
             stabilizer = onePassStabilizer;
             if (arg("stdev") == "auto")
-                onePassStabilizer->setMotionFilter(makePtr<GaussianMotionFilter>(argi("radius")));
+                onePassStabilizer->setMotionFilter(makePtr<videostab::GaussianMotionFilter>(argi("radius")));
             else
-                onePassStabilizer->setMotionFilter(makePtr<GaussianMotionFilter>(argi("radius"), argf("stdev")));
+                onePassStabilizer->setMotionFilter(makePtr<videostab::GaussianMotionFilter>(argi("radius"), argf("stdev")));
         }
 
         stabilizer->setFrameSource(source);
         stabilizer->setMotionEstimator(motionEstBuilder->build());
 
         // cast stabilizer to simple frame source interface to read stabilized frames
-        stabilizedFrames.reset(dynamic_cast<IFrameSource*>(stabilizer));
+        stabilizedFrames.reset(dynamic_cast<videostab::IFrameSource*>(stabilizer));
 
-        MotionModel model = stabilizer->motionEstimator()->motionModel();
+        videostab::MotionModel model = stabilizer->motionEstimator()->motionModel();
         if (arg("load-motions") != "no")
         {
-            stabilizer->setMotionEstimator(makePtr<FromFileMotionReader>(arg("load-motions")));
+            stabilizer->setMotionEstimator(makePtr<videostab::FromFileMotionReader>(arg("load-motions")));
             stabilizer->motionEstimator()->setMotionModel(model);
         }
         if (arg("save-motions") != "no")
         {
-            stabilizer->setMotionEstimator(makePtr<ToFileMotionWriter>(arg("save-motions"), stabilizer->motionEstimator()));
+            stabilizer->setMotionEstimator(makePtr<videostab::ToFileMotionWriter>(arg("save-motions"), stabilizer->motionEstimator()));
             stabilizer->motionEstimator()->setMotionModel(model);
         }
 
@@ -482,7 +481,7 @@ int main(int argc, const char **argv)
         // init deblurer
         if (arg("deblur") == "yes")
         {
-            Ptr<WeightingDeblurer> deblurer = makePtr<WeightingDeblurer>();
+            Ptr<videostab::WeightingDeblurer> deblurer = makePtr<videostab::WeightingDeblurer>();
             deblurer->setRadius(argi("radius"));
             deblurer->setSensitivity(argf("deblur-sens"));
             stabilizer->setDeblurer(deblurer);
@@ -503,26 +502,26 @@ int main(int argc, const char **argv)
                                  + cmd.get<string>("border-mode"));
 
         // init inpainter
-        InpaintingPipeline *inpainters = new InpaintingPipeline();
-        Ptr<InpainterBase> inpainters_(inpainters);
+        videostab::InpaintingPipeline *inpainters = new videostab::InpaintingPipeline();
+        Ptr<videostab::InpainterBase> inpainters_(inpainters);
         if (arg("mosaic") == "yes")
         {
-            Ptr<ConsistentMosaicInpainter> inp = makePtr<ConsistentMosaicInpainter>();
+            Ptr<videostab::ConsistentMosaicInpainter> inp = makePtr<videostab::ConsistentMosaicInpainter>();
             inp->setStdevThresh(argf("mosaic-stdev"));
             inpainters->pushBack(inp);
         }
         if (arg("motion-inpaint") == "yes")
         {
-            Ptr<MotionInpainter> inp = makePtr<MotionInpainter>();
+            Ptr<videostab::MotionInpainter> inp = makePtr<videostab::MotionInpainter>();
             inp->setDistThreshold(argf("mi-dist-thresh"));
             inpainters->pushBack(inp);
         }
         if (arg("color-inpaint") == "average")
-            inpainters->pushBack(makePtr<ColorAverageInpainter>());
+            inpainters->pushBack(makePtr<videostab::ColorAverageInpainter>());
         else if (arg("color-inpaint") == "ns")
-            inpainters->pushBack(makePtr<ColorInpainter>(int(INPAINT_NS), argd("ci-radius")));
+            inpainters->pushBack(makePtr<videostab::ColorInpainter>(int(INPAINT_NS), argd("ci-radius")));
         else if (arg("color-inpaint") == "telea")
-            inpainters->pushBack(makePtr<ColorInpainter>(int(INPAINT_TELEA), argd("ci-radius")));
+            inpainters->pushBack(makePtr<videostab::ColorInpainter>(int(INPAINT_TELEA), argd("ci-radius")));
         else if (arg("color-inpaint") != "no")
             throw runtime_error("unknown color inpainting method: " + arg("color-inpaint"));
         if (!inpainters->empty())
@@ -549,19 +548,19 @@ int main(int argc, const char **argv)
 }
 
 
-MotionModel motionModel(const string &str)
+videostab::MotionModel motionModel(const string &str)
 {
     if (str == "transl")
-        return MM_TRANSLATION;
+        return videostab::MM_TRANSLATION;
     if (str == "transl_and_scale")
-        return MM_TRANSLATION_AND_SCALE;
+        return videostab::MM_TRANSLATION_AND_SCALE;
     if (str == "rigid")
-        return MM_RIGID;
+        return videostab::MM_RIGID;
     if (str == "similarity")
-        return MM_SIMILARITY;
+        return videostab::MM_SIMILARITY;
     if (str == "affine")
-        return MM_AFFINE;
+        return videostab::MM_AFFINE;
     if (str == "homography")
-        return MM_HOMOGRAPHY;
+        return videostab::MM_HOMOGRAPHY;
     throw runtime_error("unknown motion model: " + str);
 }
