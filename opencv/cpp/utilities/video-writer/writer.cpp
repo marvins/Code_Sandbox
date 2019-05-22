@@ -28,8 +28,8 @@ int main( int argc, char* argv[] )
     Options options(argc, argv);
 
 
-    const int video_sx = 3840;
-    const int video_sy = 2160;
+    const int video_sx = 1920;//3840;
+    const int video_sy = 1080;//2160;
     const int video_ox = options.Get_Corner_Offset().x;
     const int video_oy = options.Get_Corner_Offset().y;
 
@@ -77,7 +77,7 @@ int main( int argc, char* argv[] )
     cv::VideoWriter video_writer;
     bool is_color = true;
     //int four_cc = CV_FOURCC('F','M','P','4');
-    int four_cc = 0;//CV_FOURCC('M','P','4','2');//-1;
+    int four_cc = CV_FOURCC('X','2','6','4');// CV_FOURCC('M','P','4','2');//-1;
     
 
 
@@ -112,16 +112,19 @@ int main( int argc, char* argv[] )
         }
 
         // Warp Image
+        std::cout << "Warping Image" << std::endl;
         cv::warpAffine( image, image, affine_transform, image.size());
 
 
         // Crop to the bounding box
+        std::cout << "Cropping Image" << std::endl;
         cv::Mat frame_image = cv::Mat(image, roi_bbox);
 
         // Overlay the text info if requested
         if( options.Get_Overlay_Path_Flag() == true )
         {
             // Write Text
+            std::cout << "Writing Overlay" << std::endl;
             cv::putText( frame_image, 
                          base_image_paths[i], 
                          overlay_path_corner,
@@ -131,8 +134,13 @@ int main( int argc, char* argv[] )
         }
 
         // Write the image
+        std::cout << "Pushing to streamer" << std::endl;
         video_writer << frame_image;
-
+        
+        if( options.Use_GUI() ){
+            cv::imshow("Video Output",frame_image);
+            cv::waitKey(10);
+        }
     }
 
     cout << "closing up" << endl;

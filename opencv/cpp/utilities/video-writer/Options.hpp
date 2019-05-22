@@ -116,6 +116,10 @@ class Options
             return m_num_threads;
         }
 
+        inline bool Use_GUI()const{
+            return m_use_gui;
+        }
+
 
         /**
          * @brief Print Usage Instructions.
@@ -199,6 +203,8 @@ class Options
 
         /// Number of Threads
         int m_num_threads;
+        
+        bool m_use_gui;
 
 }; // End of Options Class
 
