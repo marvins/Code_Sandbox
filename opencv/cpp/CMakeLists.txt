@@ -5,7 +5,8 @@
 #    Purpose: Build the C++ Utilities
 #
 
-
+#  Add the stabilization demo
+add_subdirectory(stab-demo)
 
 #  Add the Utilities
 add_subdirectory(utilities)

@@ -1,0 +1,79 @@
+#    File:    CMakeLists.txt
+#    Author:  Marvin Smith
+#    Date:    10/30/2015
+#
+#    Purpose: Build the C++ OpenCV Video Writer
+#
+
+#  Configure C++11
+set( CMAKE_CXX_FLAGS "-std=c++11 -Wall")
+
+#---------------------------------#
+#-     Change the Output Path    -#
+#---------------------------------#
+SET( EXECUTABLE_OUTPUT_PATH ${PROJECT_BINARY_DIR}/bin )
+SET( LIBRARY_OUTPUT_PATH ${PROJECT_BINARY_DIR}/lib )
+
+
+#--------------------#
+#-    Find OpenCV   -#
+#--------------------#
+find_package(OpenCV REQUIRED)
+include_directories( ${OpenCV_INCLUDES} )
+
+
+find_package( GDAL )
+
+#-------------------#
+#-    Find Boost   -#
+#-------------------#
+message("${Blue}Looking for Boost at ${BOOST_ROOT} ${ColourReset}")
+set( Boost_USE_STATIC_LIBS ON )
+find_package(Boost REQUIRED
+        COMPONENTS
+        system
+        filesystem
+        )
+include_directories(${Boost_INCLUDE_DIRS})
+
+#----------------------------#
+#-    Define the Sources    -#
+#----------------------------#
+set( APP_SOURCES
+        stabilization-demo.cpp
+        Frame_Info.cpp
+        Frame_Info.hpp
+        Frame_Loader.cpp
+        Frame_Loader.hpp
+        Log_Utilities.cpp
+        Log_Utilities.hpp
+        Options.cpp
+        Options.hpp
+        String_Utilities.cpp
+        String_Utilities.hpp
+        )
+
+
+
+#--------------------------------#
+#-     Build the Executable     -#
+#--------------------------------#
+add_executable( opencv-video-stab
+        ${APP_SOURCES}
+        )
+
+add_executable( opencv-optflow-demo
+        opencv_optflow_demo.cpp )
+
+
+#-------------------------------#
+#-     Link the Executable     -#
+#-------------------------------#
+target_link_libraries( opencv-video-stab
+                      ${OpenCV_LIBRARIES}
+                      ${Boost_LIBRARIES}
+                      ${GDAL_LIBRARY} )
+
+target_link_libraries( opencv-optflow-demo
+        ${OpenCV_LIBRARIES})
+
