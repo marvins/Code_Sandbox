@@ -6,6 +6,7 @@
 #
 
 #  Add the stabilization demo
+add_subdirectory(stab-checker)
 add_subdirectory(stab-demo)
 
 #  Add the Utilities
