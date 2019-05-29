@@ -2,6 +2,8 @@
 #define STAB_DEMO_CV_VIDEOSTAB_FRAME_SOURCE_HPP
 
 // C++ Libraries
+#include <functional>
+#include <memory>
 #include <vector>
 
 // OpenCV Libraries
@@ -32,48 +34,56 @@ class NullFrameSource : public IFrameSource
         }
 };
 
-class CV_EXPORTS VideoFileSource : public IFrameSource
+class VideoFileSource : public IFrameSource
 {
-public:
-    VideoFileSource(const String &path, bool volatileFrame = false);
+    public:
+        VideoFileSource(const cv::String &path, bool volatileFrame = false);
 
-    virtual void reset() CV_OVERRIDE;
-    virtual Mat nextFrame() CV_OVERRIDE;
+        void reset() override;
 
-    int width();
-    int height();
-    int count();
-    double fps();
+        cv::Mat nextFrame() override;
 
-private:
-    Ptr<IFrameSource> impl;
+        int width();
+
+        int height();
+
+        int count();
+
+        double fps();
+
+    private:
+        std::shared_ptr<IFrameSource> impl;
 };
 
 class MaskFrameSource : public IFrameSource
 {
-public:
-    MaskFrameSource(const Ptr<IFrameSource>& source): impl(source) {};
+    public:
 
-    virtual void reset() CV_OVERRIDE { impl->reset(); }
-    virtual Mat nextFrame() CV_OVERRIDE {
-        Mat nextFrame = impl->nextFrame();
-        maskCallback_(nextFrame);
-        return nextFrame;
-    }
+        /**
+         * @brief Constructor
+         */
+        MaskFrameSource(const std::shared_ptr<IFrameSource> &source)
+          : impl(source)
+        {};
 
-    void setMaskCallback(std::function<void(Mat&)> MaskCallback)
-    {
-        maskCallback_ = std::bind(MaskCallback, std::placeholders::_1);
-    };
+        void reset()override{ impl->reset(); }
 
-private:
-    Ptr<IFrameSource> impl;
-    std::function<void(Mat&)> maskCallback_;
+        cv::Mat nextFrame()override
+        {
+            cv::Mat nextFrame = impl->nextFrame();
+            maskCallback_(nextFrame);
+            return nextFrame;
+        }
+
+        void setMaskCallback(std::function<void(cv::Mat & )> MaskCallback)
+        {
+            maskCallback_ = std::bind(MaskCallback, std::placeholders::_1);
+        };
+
+    private:
+        std::shared_ptr<IFrameSource> impl;
+        std::function<void(cv::Mat&)> maskCallback_;
 };
 
-//! @}
-
-} // namespace videostab
-} // namespace cv
 
 #endif

@@ -12,7 +12,8 @@
 class VideoFileSourceImpl : public IFrameSource
 {
     public:
-        VideoFileSourceImpl(const String &path, bool volatileFrame)
+
+        VideoFileSourceImpl(const cv::String &path, bool volatileFrame)
             : path_(path), volatileFrame_(volatileFrame)
         { reset(); }
 
@@ -24,37 +25,46 @@ class VideoFileSourceImpl : public IFrameSource
                 CV_Error(0, "can't open file: " + path_);
         }
 
-        Mat nextFrame() override
+        cv::Mat nextFrame() override
         {
-            Mat frame;
+            cv::Mat frame;
             vc >> frame;
             return volatileFrame_ ? frame : frame.clone();
         }
 
         int width()
-        { return static_cast<int>(vc.get(CAP_PROP_FRAME_WIDTH)); }
+        {
+            return static_cast<int>(vc.get(cv::CAP_PROP_FRAME_WIDTH));
+        }
 
         int height()
-        { return static_cast<int>(vc.get(CAP_PROP_FRAME_HEIGHT)); }
+        {
+            return static_cast<int>(vc.get(cv::CAP_PROP_FRAME_HEIGHT));
+        }
 
         int count()
-        { return static_cast<int>(vc.get(CAP_PROP_FRAME_COUNT)); }
+        {
+            return static_cast<int>(vc.get(cv::CAP_PROP_FRAME_COUNT));
+        }
 
         double fps()
-        { return vc.get(CAP_PROP_FPS); }
+        {
+            return vc.get(cv::CAP_PROP_FPS);
+        }
 
     private:
-        String path_;
+
+        cv::String path_;
         bool volatileFrame_;
-        VideoCapture vc;
+        cv::VideoCapture vc;
 };
 
 
-VideoFileSource::VideoFileSource(const String &path, bool volatileFrame)
+VideoFileSource::VideoFileSource(const cv::String &path, bool volatileFrame)
     : impl(new VideoFileSourceImpl(path, volatileFrame)) {}
 
 void VideoFileSource::reset() { impl->reset(); }
-Mat VideoFileSource::nextFrame() { return impl->nextFrame(); }
+cv::Mat VideoFileSource::nextFrame() { return impl->nextFrame(); }
 
 int VideoFileSource::width() { return ((VideoFileSourceImpl*)impl.get())->width(); }
 int VideoFileSource::height() { return ((VideoFileSourceImpl*)impl.get())->height(); }

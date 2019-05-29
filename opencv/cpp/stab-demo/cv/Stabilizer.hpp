@@ -64,138 +64,238 @@
 
 class StabilizerBase
 {
-public:
-    virtual ~StabilizerBase() {}
+    public:
+        virtual ~StabilizerBase()
+        {}
 
-    void setLog(Ptr<ILog> ilog) { log_ = ilog; }
-    Ptr<ILog> log() const { return log_; }
+        void setLog(std::shared_ptr<ILog> ilog)
+        {
+            log_ = ilog;
+        }
 
-    void setRadius(int val) { radius_ = val; }
-    int radius() const { return radius_; }
+        std::shared_ptr<ILog> log() const
+        {
+            return log_;
+        }
 
-    void setFrameSource(Ptr<IFrameSource> val) { frameSource_ = val; }
-    Ptr<IFrameSource> frameSource() const { return frameSource_; }
+        void setRadius(int val)
+        {
+            radius_ = val;
+        }
 
-    void setMaskSource(const Ptr<IFrameSource>& val) { maskSource_ = val; }
-    Ptr<IFrameSource> maskSource() const { return maskSource_; }
+        int radius() const
+        {
+            return radius_;
+        }
 
-    void setMotionEstimator(Ptr<ImageMotionEstimatorBase> val) { motionEstimator_ = val; }
-    Ptr<ImageMotionEstimatorBase> motionEstimator() const { return motionEstimator_; }
+        void setFrameSource( std::shared_ptr<IFrameSource> val)
+        {
+            frameSource_ = val;
+        }
 
-    void setDeblurer(Ptr<DeblurerBase> val) { deblurer_ = val; }
-    Ptr<DeblurerBase> deblurrer() const { return deblurer_; }
+        std::shared_ptr<IFrameSource> frameSource() const
+        {
+            return frameSource_;
+        }
 
-    void setTrimRatio(float val) { trimRatio_ = val; }
-    float trimRatio() const { return trimRatio_; }
+        void setMaskSource(const std::shared_ptr<IFrameSource> &val)
+        {
+            maskSource_ = val;
+        }
 
-    void setCorrectionForInclusion(bool val) { doCorrectionForInclusion_ = val; }
-    bool doCorrectionForInclusion() const { return doCorrectionForInclusion_; }
+        std::shared_ptr<IFrameSource> maskSource() const
+        {
+            return maskSource_;
+        }
 
-    void setBorderMode(int val) { borderMode_ = val; }
-    int borderMode() const { return borderMode_; }
+        void setMotionEstimator( cv::Ptr<ImageMotionEstimatorBase> val)
+        {
+            motionEstimator_ = val;
+        }
 
-    void setInpainter(Ptr<InpainterBase> val) { inpainter_ = val; }
-    Ptr<InpainterBase> inpainter() const { return inpainter_; }
+        cv::Ptr<ImageMotionEstimatorBase> motionEstimator() const
+        {
+            return motionEstimator_;
+        }
 
-protected:
-    StabilizerBase();
+        void setDeblurer(std::shared_ptr<DeblurerBase> val)
+        {
+            deblurer_ = val;
+        }
 
-    void reset();
-    Mat nextStabilizedFrame();
-    bool doOneIteration();
-    virtual void setUp(const Mat &firstFrame);
-    virtual Mat estimateMotion() = 0;
-    virtual Mat estimateStabilizationMotion() = 0;
-    void stabilizeFrame();
-    virtual Mat postProcessFrame(const Mat &frame);
-    void logProcessingTime();
+        std::shared_ptr<DeblurerBase> deblurrer() const
+        {
+            return deblurer_;
+        }
 
-    Ptr<ILog> log_;
-    Ptr<IFrameSource> frameSource_;
-    Ptr<IFrameSource> maskSource_;
-    Ptr<ImageMotionEstimatorBase> motionEstimator_;
-    Ptr<DeblurerBase> deblurer_;
-    Ptr<InpainterBase> inpainter_;
-    int radius_;
-    float trimRatio_;
-    bool doCorrectionForInclusion_;
-    int borderMode_;
+        void setTrimRatio(float val)
+        {
+            trimRatio_ = val;
+        }
 
-    Size frameSize_;
-    Mat frameMask_;
-    int curPos_;
-    int curStabilizedPos_;
-    bool doDeblurring_;
-    Mat preProcessedFrame_;
-    bool doInpainting_;
-    Mat inpaintingMask_;
-    Mat finalFrame_;
-    std::vector<Mat> frames_;
-    std::vector<Mat> motions_; // motions_[i] is the motion from i-th to i+1-th frame
-    std::vector<float> blurrinessRates_;
-    std::vector<Mat> stabilizedFrames_;
-    std::vector<Mat> stabilizedMasks_;
-    std::vector<Mat> stabilizationMotions_;
-    clock_t processingStartTime_;
+        float trimRatio() const
+        {
+            return trimRatio_;
+        }
+
+        void setCorrectionForInclusion(bool val)
+        {
+            doCorrectionForInclusion_ = val;
+        }
+
+        bool doCorrectionForInclusion() const
+        {
+            return doCorrectionForInclusion_;
+        }
+
+        void setBorderMode(int val)
+        {
+            borderMode_ = val;
+        }
+
+        int borderMode() const
+        {
+            return borderMode_;
+        }
+
+        void setInpainter( std::shared_ptr<InpainterBase> val)
+        {
+            inpainter_ = val;
+        }
+
+        std::shared_ptr <InpainterBase> inpainter() const
+        {
+            return inpainter_;
+        }
+
+    protected:
+
+        StabilizerBase();
+
+        void reset();
+
+        cv::Mat nextStabilizedFrame();
+
+        bool doOneIteration();
+
+        virtual void setUp(const cv::Mat &firstFrame);
+
+        virtual cv::Mat estimateMotion() = 0;
+
+        virtual cv::Mat estimateStabilizationMotion() = 0;
+
+        void stabilizeFrame();
+
+        virtual cv::Mat postProcessFrame(const cv::Mat &frame);
+
+        void logProcessingTime();
+
+        std::shared_ptr<ILog> log_;
+        std::shared_ptr<IFrameSource> frameSource_;
+        std::shared_ptr<IFrameSource> maskSource_;
+        cv::Ptr<ImageMotionEstimatorBase> motionEstimator_;
+        std::shared_ptr<DeblurerBase> deblurer_;
+        std::shared_ptr<InpainterBase> inpainter_;
+        int radius_;
+        float trimRatio_;
+        bool doCorrectionForInclusion_;
+        int borderMode_;
+
+        cv::Size frameSize_;
+        cv::Mat frameMask_;
+        int curPos_;
+        int curStabilizedPos_;
+        bool doDeblurring_;
+        cv::Mat preProcessedFrame_;
+        bool doInpainting_;
+        cv::Mat inpaintingMask_;
+        cv::Mat finalFrame_;
+        std::vector<cv::Mat> frames_;
+        std::vector<cv::Mat> motions_; // motions_[i] is the motion from i-th to i+1-th frame
+        std::vector<float> blurrinessRates_;
+        std::vector<cv::Mat> stabilizedFrames_;
+        std::vector<cv::Mat> stabilizedMasks_;
+        std::vector<cv::Mat> stabilizationMotions_;
+        clock_t processingStartTime_;
 };
 
-class CV_EXPORTS OnePassStabilizer : public StabilizerBase, public IFrameSource
+
+class OnePassStabilizer : public StabilizerBase, public IFrameSource
 {
-public:
-    OnePassStabilizer();
+    public:
 
-    void setMotionFilter(Ptr<MotionFilterBase> val) { motionFilter_ = val; }
-    Ptr<MotionFilterBase> motionFilter() const { return motionFilter_; }
+        OnePassStabilizer();
 
-    virtual void reset() CV_OVERRIDE;
-    virtual Mat nextFrame() CV_OVERRIDE { return nextStabilizedFrame(); }
+        void setMotionFilter(std::shared_ptr<MotionFilterBase> val)
+        { motionFilter_ = val; }
 
-protected:
-    virtual void setUp(const Mat &firstFrame) CV_OVERRIDE;
-    virtual Mat estimateMotion() CV_OVERRIDE;
-    virtual Mat estimateStabilizationMotion() CV_OVERRIDE;
-    virtual Mat postProcessFrame(const Mat &frame) CV_OVERRIDE;
+        std::shared_ptr<MotionFilterBase> motionFilter() const
+        { return motionFilter_; }
 
-    Ptr<MotionFilterBase> motionFilter_;
+        void reset() override;
+
+        cv::Mat nextFrame() override
+        {
+            return nextStabilizedFrame();
+        }
+
+    protected:
+
+        void setUp(const cv::Mat &firstFrame) override;
+
+        cv::Mat estimateMotion() override;
+
+        cv::Mat estimateStabilizationMotion() override;
+
+        cv::Mat postProcessFrame(const cv::Mat &frame) override;
+
+        std::shared_ptr<MotionFilterBase> motionFilter_;
 };
 
 class TwoPassStabilizer : public StabilizerBase, public IFrameSource
 {
     public:
+
         TwoPassStabilizer();
 
-        void setMotionStabilizer(Ptr <IMotionStabilizer> val)
-        { motionStabilizer_ = val; }
+        void setMotionStabilizer( std::shared_ptr<IMotionStabilizer> val)
+        {
+            motionStabilizer_ = val;
+        }
 
-        Ptr <IMotionStabilizer> motionStabilizer() const
-        { return motionStabilizer_; }
+        std::shared_ptr<IMotionStabilizer> motionStabilizer() const
+        {
+            return motionStabilizer_;
+        }
 
-        void setWobbleSuppressor(Ptr <WobbleSuppressorBase> val)
-        { wobbleSuppressor_ = val; }
+        void setWobbleSuppressor( std::shared_ptr<WobbleSuppressorBase> val)
+        {
+            wobbleSuppressor_ = val;
+        }
 
-        Ptr <WobbleSuppressorBase> wobbleSuppressor() const
-        { return wobbleSuppressor_; }
+        std::shared_ptr<WobbleSuppressorBase> wobbleSuppressor() const
+        {
+            return wobbleSuppressor_;
+        }
 
         void setEstimateTrimRatio(bool val)
-        { mustEstTrimRatio_ = val; }
+        {
+            mustEstTrimRatio_ = val;
+        }
 
         bool mustEstimateTrimaRatio() const
-        { return mustEstTrimRatio_; }
+        {
+            return mustEstTrimRatio_;
+        }
 
-        virtual void reset()
+        void reset() override;
 
-        CV_OVERRIDE;
-
-        virtual Mat nextFrame()
-
-        CV_OVERRIDE;
+        cv::Mat nextFrame() override;
 
     protected:
         void runPrePassIfNecessary();
 
-        virtual void setUp(const cv::Mat &firstFrame)
-
-        CV_OVERRIDE;
+        virtual void setUp(const cv::Mat &firstFrame) override;
 
         virtual cv::Mat estimateMotion() override;
 

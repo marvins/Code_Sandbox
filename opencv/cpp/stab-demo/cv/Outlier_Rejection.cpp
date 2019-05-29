@@ -4,44 +4,42 @@
 #include "Outlier_Rejection.hpp"
 
 
-void NullOutlierRejector::process( Size /*frameSize*/, InputArray points0, InputArray points1, OutputArray mask)
+void NullOutlierRejector::process( cv::Size /*frameSize*/, cv::InputArray points0, cv::InputArray points1, cv::OutputArray mask)
 {
-    CV_INSTRUMENT_REGION();
-
     CV_Assert(points0.type() == points1.type());
     CV_Assert(points0.getMat().checkVector(2) == points1.getMat().checkVector(2));
 
     int npoints = points0.getMat().checkVector(2);
     mask.create(1, npoints, CV_8U);
-    Mat mask_ = mask.getMat();
+    cv::Mat mask_ = mask.getMat();
     mask_.setTo(1);
 }
 
 TranslationBasedLocalOutlierRejector::TranslationBasedLocalOutlierRejector()
 {
-    setCellSize(Size(50, 50));
+    setCellSize(cv::Size(50, 50));
     setRansacParams(RansacParams::default2dMotion(MM_TRANSLATION));
 }
 
 
-void TranslationBasedLocalOutlierRejector::process(
-        Size frameSize, InputArray points0, InputArray points1, OutputArray mask)
+void TranslationBasedLocalOutlierRejector::process( cv::Size frameSize,
+                                                    cv::InputArray points0,
+                                                    cv::InputArray points1,
+                                                    cv::OutputArray mask)
 {
-    CV_INSTRUMENT_REGION();
-
     CV_Assert(points0.type() == points1.type());
     CV_Assert(points0.getMat().checkVector(2) == points1.getMat().checkVector(2));
 
     int npoints = points0.getMat().checkVector(2);
 
-    const Point2f* points0_ = points0.getMat().ptr<Point2f>();
-    const Point2f* points1_ = points1.getMat().ptr<Point2f>();
+    const cv::Point2f* points0_ = points0.getMat().ptr<cv::Point2f>();
+    const cv::Point2f* points1_ = points1.getMat().ptr<cv::Point2f>();
 
     mask.create(1, npoints, CV_8U);
     uchar* mask_ = mask.getMat().ptr<uchar>();
 
-    Size ncells((frameSize.width + cellSize_.width - 1) / cellSize_.width,
-                (frameSize.height + cellSize_.height - 1) / cellSize_.height);
+    cv::Size ncells((frameSize.width + cellSize_.width - 1) / cellSize_.width,
+                    (frameSize.height + cellSize_.height - 1) / cellSize_.height);
 
     // fill grid cells
 
@@ -56,7 +54,7 @@ void TranslationBasedLocalOutlierRejector::process(
 
     // process each cell
 
-    RNG rng(0);
+    cv::RNG rng(0);
     int niters = ransacParams_.niters();
     std::vector<int> inliers;
 
@@ -84,8 +82,8 @@ void TranslationBasedLocalOutlierRejector::process(
                 {
                     x1 = points0_[cell[i]].x + dx;
                     y1 = points0_[cell[i]].y + dy;
-                    if (sqr(x1 - points1_[cell[i]].x) + sqr(y1 - points1_[cell[i]].y) <
-                        sqr(ransacParams_.thresh))
+                    if (std::pow(x1 - points1_[cell[i]].x, 2.0) + std::pow(y1 - points1_[cell[i]].y, 2.0) <
+                        std::pow(ransacParams_.thresh, 2.0))
                     {
                         ninliers++;
                     }
@@ -108,8 +106,8 @@ void TranslationBasedLocalOutlierRejector::process(
         {
             x1 = points0_[cell[i]].x + dxBest;
             y1 = points0_[cell[i]].y + dyBest;
-            if (sqr(x1 - points1_[cell[i]].x) + sqr(y1 - points1_[cell[i]].y) <
-                sqr(ransacParams_.thresh))
+            if (std::pow(x1 - points1_[cell[i]].x, 2.0) + std::pow(y1 - points1_[cell[i]].y, 2.0) <
+                std::pow(ransacParams_.thresh, 2.0))
             {
                 inliers[ninliers++] = cell[i];
             }
@@ -135,8 +133,8 @@ void TranslationBasedLocalOutlierRejector::process(
         {
             x1 = points0_[cell[i]].x + dxBest;
             y1 = points0_[cell[i]].y + dyBest;
-            if (sqr(x1 - points1_[cell[i]].x) + sqr(y1 - points1_[cell[i]].y) <
-                sqr(ransacParams_.thresh))
+            if (std::pow(x1 - points1_[cell[i]].x, 2.0) + std::pow(y1 - points1_[cell[i]].y, 2.0) <
+                std::pow(ransacParams_.thresh, 2.0))
             {
                 mask_[cell[i]] = 1;
             }
@@ -147,6 +145,3 @@ void TranslationBasedLocalOutlierRejector::process(
         }
     }
 }
-
-} // namespace videostab
-} // namespace cv

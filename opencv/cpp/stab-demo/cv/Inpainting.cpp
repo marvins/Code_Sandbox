@@ -1,57 +1,13 @@
-/*M///////////////////////////////////////////////////////////////////////////////////////
-//
-//  IMPORTANT: READ BEFORE DOWNLOADING, COPYING, INSTALLING OR USING.
-//
-//  By downloading, copying, installing or using the software you agree to this license.
-//  If you do not agree to this license, do not download, install,
-//  copy or use the software.
-//
-//
-//                           License Agreement
-//                For Open Source Computer Vision Library
-//
-// Copyright (C) 2000-2008, Intel Corporation, all rights reserved.
-// Copyright (C) 2009-2011, Willow Garage Inc., all rights reserved.
-// Third party copyrights are property of their respective owners.
-//
-// Redistribution and use in source and binary forms, with or without modification,
-// are permitted provided that the following conditions are met:
-//
-//   * Redistribution's of source code must retain the above copyright notice,
-//     this list of conditions and the following disclaimer.
-//
-//   * Redistribution's in binary form must reproduce the above copyright notice,
-//     this list of conditions and the following disclaimer in the documentation
-//     and/or other materials provided with the distribution.
-//
-//   * The name of the copyright holders may not be used to endorse or promote products
-//     derived from this software without specific prior written permission.
-//
-// This software is provided by the copyright holders and contributors "as is" and
-// any express or implied warranties, including, but not limited to, the implied
-// warranties of merchantability and fitness for a particular purpose are disclaimed.
-// In no event shall the Intel Corporation or contributors be liable for any direct,
-// indirect, incidental, special, exemplary, or consequential damages
-// (including, but not limited to, procurement of substitute goods or services;
-// loss of use, data, or profits; or business interruption) however caused
-// and on any theory of liability, whether in contract, strict liability,
-// or tort (including negligence or otherwise) arising in any way out of
-// the use of this software, even if advised of the possibility of such damage.
-//
-//M*/
+#include "Inpainting.hpp"
 
-#include "precomp.hpp"
+// C++ Libraries
 #include <queue>
-#include "opencv2/videostab/inpainting.hpp"
-#include "opencv2/videostab/global_motion.hpp"
-#include "opencv2/videostab/fast_marching.hpp"
-#include "opencv2/videostab/ring_buffer.hpp"
-#include "opencv2/opencv_modules.hpp"
 
-namespace cv
-{
-namespace videostab
-{
+// Project Libraries
+#include "Global_Motion.hpp"
+#include "Fast_Marching.hpp"
+#include "Ring_Buffer.hpp"
+
 
 void InpaintingPipeline::setRadius(int val)
 {
@@ -61,7 +17,7 @@ void InpaintingPipeline::setRadius(int val)
 }
 
 
-void InpaintingPipeline::setFrames(const std::vector<Mat> &val)
+void InpaintingPipeline::setFrames(const std::vector<cv::Mat> &val)
 {
     for (size_t i = 0; i < inpainters_.size(); ++i)
         inpainters_[i]->setFrames(val);
@@ -77,7 +33,7 @@ void InpaintingPipeline::setMotionModel(MotionModel val)
 }
 
 
-void InpaintingPipeline::setMotions(const std::vector<Mat> &val)
+void InpaintingPipeline::setMotions(const std::vector<cv::Mat> &val)
 {
     for (size_t i = 0; i < inpainters_.size(); ++i)
         inpainters_[i]->setMotions(val);
@@ -85,7 +41,7 @@ void InpaintingPipeline::setMotions(const std::vector<Mat> &val)
 }
 
 
-void InpaintingPipeline::setStabilizedFrames(const std::vector<Mat> &val)
+void InpaintingPipeline::setStabilizedFrames(const std::vector<cv::Mat> &val)
 {
     for (size_t i = 0; i < inpainters_.size(); ++i)
         inpainters_[i]->setStabilizedFrames(val);
@@ -93,7 +49,7 @@ void InpaintingPipeline::setStabilizedFrames(const std::vector<Mat> &val)
 }
 
 
-void InpaintingPipeline::setStabilizationMotions(const std::vector<Mat> &val)
+void InpaintingPipeline::setStabilizationMotions(const std::vector<cv::Mat> &val)
 {
     for (size_t i = 0; i < inpainters_.size(); ++i)
         inpainters_[i]->setStabilizationMotions(val);
@@ -101,10 +57,8 @@ void InpaintingPipeline::setStabilizationMotions(const std::vector<Mat> &val)
 }
 
 
-void InpaintingPipeline::inpaint(int idx, Mat &frame, Mat &mask)
+void InpaintingPipeline::inpaint(int idx, cv::Mat &frame, cv::Mat &mask)
 {
-    CV_INSTRUMENT_REGION();
-
     for (size_t i = 0; i < inpainters_.size(); ++i)
         inpainters_[i]->inpaint(idx, frame, mask);
 }
@@ -113,7 +67,7 @@ void InpaintingPipeline::inpaint(int idx, Mat &frame, Mat &mask)
 struct Pixel3
 {
     float intens;
-    Point3_<uchar> color;
+    cv::Point3_<uchar> color;
     bool operator <(const Pixel3 &other) const { return intens < other.intens; }
 };
 
@@ -124,15 +78,13 @@ ConsistentMosaicInpainter::ConsistentMosaicInpainter()
 }
 
 
-void ConsistentMosaicInpainter::inpaint(int idx, Mat &frame, Mat &mask)
+void ConsistentMosaicInpainter::inpaint(int idx, cv::Mat &frame, cv::Mat &mask)
 {
-    CV_INSTRUMENT_REGION();
-
     CV_Assert(frame.type() == CV_8UC3);
     CV_Assert(mask.size() == frame.size() && mask.type() == CV_8U);
 
-    Mat invS = at(idx, *stabilizationMotions_).inv();
-    std::vector<Mat_<float> > vmotions(2*radius_ + 1);
+    cv::Mat invS = at(idx, *stabilizationMotions_).inv();
+    std::vector<cv::Mat_<float> > vmotions(2*radius_ + 1);
     for (int i = -radius_; i <= radius_; ++i)
         vmotions[radius_ + i] = getMotion(idx, idx + i, *motions_) * invS;
 
@@ -140,8 +92,8 @@ void ConsistentMosaicInpainter::inpaint(int idx, Mat &frame, Mat &mask)
     float mean, var;
     std::vector<Pixel3> pixels(2*radius_ + 1);
 
-    Mat_<Point3_<uchar> > frame_(frame);
-    Mat_<uchar> mask_(mask);
+    cv::Mat_<cv::Point3_<uchar> > frame_(frame);
+    cv::Mat_<uchar> mask_(mask);
 
     for (int y = 0; y < mask.rows; ++y)
     {
@@ -155,8 +107,8 @@ void ConsistentMosaicInpainter::inpaint(int idx, Mat &frame, Mat &mask)
 
                 for (int i = -radius_; i <= radius_; ++i)
                 {
-                    const Mat_<Point3_<uchar> > &framei = at(idx + i, *frames_);
-                    const Mat_<float> &Mi = vmotions[radius_ + i];
+                    const cv::Mat_<cv::Point3_<uchar> > &framei = at(idx + i, *frames_);
+                    const cv::Mat_<float> &Mi = vmotions[radius_ + i];
                     int xi = cvRound(Mi(0,0)*x + Mi(0,1)*y + Mi(0,2));
                     int yi = cvRound(Mi(1,0)*x + Mi(1,1)*y + Mi(1,2));
                     if (xi >= 0 && xi < framei.cols && yi >= 0 && yi < framei.rows)
@@ -171,7 +123,7 @@ void ConsistentMosaicInpainter::inpaint(int idx, Mat &frame, Mat &mask)
                 {
                     mean /= n;
                     for (int i = 0; i < n; ++i)
-                        var += sqr(pixels[i].intens - mean);
+                        var += std::pow(pixels[i].intens - mean, 2.0);
                     var /= std::max(n - 1, 1);
 
                     if (var < stdevThresh_ * stdevThresh_)
@@ -187,7 +139,7 @@ void ConsistentMosaicInpainter::inpaint(int idx, Mat &frame, Mat &mask)
                             c2 = (c2 + pixels[nh].color.y) / 2;
                             c3 = (c3 + pixels[nh].color.z) / 2;
                         }
-                        frame_(y, x) = Point3_<uchar>(
+                        frame_(y, x) = cv::Point3_<uchar>(
                                 static_cast<uchar>(c1),
                                 static_cast<uchar>(c2),
                                 static_cast<uchar>(c3));
@@ -200,16 +152,18 @@ void ConsistentMosaicInpainter::inpaint(int idx, Mat &frame, Mat &mask)
 }
 
 
-static float alignementError(
-        const Mat &M, const Mat &frame0, const Mat &mask0, const Mat &frame1)
+static float alignementError( const cv::Mat &M,
+                              const cv::Mat &frame0,
+                              const cv::Mat &mask0,
+                              const cv::Mat &frame1)
 {
     CV_Assert(frame0.type() == CV_8UC3 && frame1.type() == CV_8UC3);
     CV_Assert(mask0.type() == CV_8U && mask0.size() == frame0.size());
     CV_Assert(frame0.size() == frame1.size());
-    CV_Assert(M.size() == Size(3,3) && M.type() == CV_32F);
+    CV_Assert(M.size() == cv::Size(3,3) && M.type() == CV_32F);
 
-    Mat_<uchar> mask0_(mask0);
-    Mat_<float> M_(M);
+    cv::Mat_<uchar> mask0_(mask0);
+    cv::Mat_<float> M_(M);
     float err = 0;
 
     for (int y0 = 0; y0 < frame0.rows; ++y0)
@@ -221,8 +175,8 @@ static float alignementError(
                 int x1 = cvRound(M_(0,0)*x0 + M_(0,1)*y0 + M_(0,2));
                 int y1 = cvRound(M_(1,0)*x0 + M_(1,1)*y0 + M_(1,2));
                 if (y1 >= 0 && y1 < frame1.rows && x1 >= 0 && x1 < frame1.cols)
-                    err += std::abs(intensity(frame1.at<Point3_<uchar> >(y1,x1)) -
-                                    intensity(frame0.at<Point3_<uchar> >(y0,x0)));
+                    err += std::abs(intensity(frame1.at<cv::Point3_<uchar> >(y1,x1)) -
+                                    intensity(frame0.at<cv::Point3_<uchar> >(y0,x0)));
             }
         }
     }
@@ -233,124 +187,113 @@ static float alignementError(
 
 class MotionInpaintBody
 {
-public:
-    void operator ()(int x, int y)
-    {
-        float uEst = 0.f, vEst = 0.f, wSum = 0.f;
-
-        for (int dy = -rad; dy <= rad; ++dy)
+    public:
+        void operator()(int x, int y)
         {
-            for (int dx = -rad; dx <= rad; ++dx)
+            float uEst = 0.f, vEst = 0.f, wSum = 0.f;
+
+            for (int dy = -rad; dy <= rad; ++dy)
             {
-                int qx0 = x + dx;
-                int qy0 = y + dy;
-
-                if (qy0 >= 0 && qy0 < mask0.rows && qx0 >= 0 && qx0 < mask0.cols && mask0(qy0,qx0))
+                for (int dx = -rad; dx <= rad; ++dx)
                 {
-                    int qx1 = cvRound(qx0 + flowX(qy0,qx0));
-                    int qy1 = cvRound(qy0 + flowY(qy0,qx0));
-                    int px1 = qx1 - dx;
-                    int py1 = qy1 - dy;
+                    int qx0 = x + dx;
+                    int qy0 = y + dy;
 
-                    if (qx1 >= 0 && qx1 < mask1.cols && qy1 >= 0 && qy1 < mask1.rows && mask1(qy1,qx1) &&
-                        px1 >= 0 && px1 < mask1.cols && py1 >= 0 && py1 < mask1.rows && mask1(py1,px1))
+                    if (qy0 >= 0 && qy0 < mask0.rows && qx0 >= 0 && qx0 < mask0.cols && mask0(qy0, qx0))
                     {
-                        float dudx = 0.f, dvdx = 0.f, dudy = 0.f, dvdy = 0.f;
+                        int qx1 = cvRound(qx0 + flowX(qy0, qx0));
+                        int qy1 = cvRound(qy0 + flowY(qy0, qx0));
+                        int px1 = qx1 - dx;
+                        int py1 = qy1 - dy;
 
-                        if (qx0 > 0 && mask0(qy0,qx0-1))
+                        if (qx1 >= 0 && qx1 < mask1.cols && qy1 >= 0 && qy1 < mask1.rows && mask1(qy1, qx1) &&
+                            px1 >= 0 && px1 < mask1.cols && py1 >= 0 && py1 < mask1.rows && mask1(py1, px1))
                         {
-                            if (qx0+1 < mask0.cols && mask0(qy0,qx0+1))
-                            {
-                                dudx = (flowX(qy0,qx0+1) - flowX(qy0,qx0-1)) * 0.5f;
-                                dvdx = (flowY(qy0,qx0+1) - flowY(qy0,qx0-1)) * 0.5f;
-                            }
-                            else
-                            {
-                                dudx = flowX(qy0,qx0) - flowX(qy0,qx0-1);
-                                dvdx = flowY(qy0,qx0) - flowY(qy0,qx0-1);
-                            }
-                        }
-                        else if (qx0+1 < mask0.cols && mask0(qy0,qx0+1))
-                        {
-                            dudx = flowX(qy0,qx0+1) - flowX(qy0,qx0);
-                            dvdx = flowY(qy0,qx0+1) - flowY(qy0,qx0);
-                        }
+                            float dudx = 0.f, dvdx = 0.f, dudy = 0.f, dvdy = 0.f;
 
-                        if (qy0 > 0 && mask0(qy0-1,qx0))
-                        {
-                            if (qy0+1 < mask0.rows && mask0(qy0+1,qx0))
+                            if (qx0 > 0 && mask0(qy0, qx0 - 1))
                             {
-                                dudy = (flowX(qy0+1,qx0) - flowX(qy0-1,qx0)) * 0.5f;
-                                dvdy = (flowY(qy0+1,qx0) - flowY(qy0-1,qx0)) * 0.5f;
+                                if (qx0 + 1 < mask0.cols && mask0(qy0, qx0 + 1))
+                                {
+                                    dudx = (flowX(qy0, qx0 + 1) - flowX(qy0, qx0 - 1)) * 0.5f;
+                                    dvdx = (flowY(qy0, qx0 + 1) - flowY(qy0, qx0 - 1)) * 0.5f;
+                                }
+                                else
+                                {
+                                    dudx = flowX(qy0, qx0) - flowX(qy0, qx0 - 1);
+                                    dvdx = flowY(qy0, qx0) - flowY(qy0, qx0 - 1);
+                                }
                             }
-                            else
+                            else if (qx0 + 1 < mask0.cols && mask0(qy0, qx0 + 1))
                             {
-                                dudy = flowX(qy0,qx0) - flowX(qy0-1,qx0);
-                                dvdy = flowY(qy0,qx0) - flowY(qy0-1,qx0);
+                                dudx = flowX(qy0, qx0 + 1) - flowX(qy0, qx0);
+                                dvdx = flowY(qy0, qx0 + 1) - flowY(qy0, qx0);
                             }
-                        }
-                        else if (qy0+1 < mask0.rows && mask0(qy0+1,qx0))
-                        {
-                            dudy = flowX(qy0+1,qx0) - flowX(qy0,qx0);
-                            dvdy = flowY(qy0+1,qx0) - flowY(qy0,qx0);
-                        }
 
-                        Point3_<uchar> cp = frame1(py1,px1), cq = frame1(qy1,qx1);
-                        float distColor = sqr(static_cast<float>(cp.x-cq.x))
-                                        + sqr(static_cast<float>(cp.y-cq.y))
-                                        + sqr(static_cast<float>(cp.z-cq.z));
-                        float w = 1.f / (std::sqrt(distColor * (dx*dx + dy*dy)) + eps);
+                            if (qy0 > 0 && mask0(qy0 - 1, qx0))
+                            {
+                                if (qy0 + 1 < mask0.rows && mask0(qy0 + 1, qx0))
+                                {
+                                    dudy = (flowX(qy0 + 1, qx0) - flowX(qy0 - 1, qx0)) * 0.5f;
+                                    dvdy = (flowY(qy0 + 1, qx0) - flowY(qy0 - 1, qx0)) * 0.5f;
+                                }
+                                else
+                                {
+                                    dudy = flowX(qy0, qx0) - flowX(qy0 - 1, qx0);
+                                    dvdy = flowY(qy0, qx0) - flowY(qy0 - 1, qx0);
+                                }
+                            }
+                            else if (qy0 + 1 < mask0.rows && mask0(qy0 + 1, qx0))
+                            {
+                                dudy = flowX(qy0 + 1, qx0) - flowX(qy0, qx0);
+                                dvdy = flowY(qy0 + 1, qx0) - flowY(qy0, qx0);
+                            }
 
-                        uEst += w * (flowX(qy0,qx0) - dudx*dx - dudy*dy);
-                        vEst += w * (flowY(qy0,qx0) - dvdx*dx - dvdy*dy);
-                        wSum += w;
+                            cv::Point3_ <uchar> cp = frame1(py1, px1), cq = frame1(qy1, qx1);
+                            float distColor = std::pow(static_cast<float>(cp.x - cq.x), 2.0)
+                                              + std::pow(static_cast<float>(cp.y - cq.y), 2.0)
+                                              + std::pow(static_cast<float>(cp.z - cq.z), 2.0);
+                            float w = 1.f / (std::sqrt(distColor * (dx * dx + dy * dy)) + eps);
+
+                            uEst += w * (flowX(qy0, qx0) - dudx * dx - dudy * dy);
+                            vEst += w * (flowY(qy0, qx0) - dvdx * dx - dvdy * dy);
+                            wSum += w;
+                        }
                     }
                 }
             }
+
+            if (wSum > 0.f)
+            {
+                flowX(y, x) = uEst / wSum;
+                flowY(y, x) = vEst / wSum;
+                mask0(y, x) = 255;
+            }
         }
 
-        if (wSum > 0.f)
-        {
-            flowX(y,x) = uEst / wSum;
-            flowY(y,x) = vEst / wSum;
-            mask0(y,x) = 255;
-        }
-    }
-
-    Mat_<Point3_<uchar> > frame1;
-    Mat_<uchar> mask0, mask1;
-    Mat_<float> flowX, flowY;
-    float eps;
-    int rad;
+        cv::Mat_ <cv::Point3_<uchar>> frame1;
+        cv::Mat_ <uchar> mask0, mask1;
+        cv::Mat_<float> flowX, flowY;
+        float eps;
+        int rad;
 };
 
 
-#ifdef _MSC_VER
-#pragma warning(disable: 4702)  // unreachable code
-#endif
 MotionInpainter::MotionInpainter()
 {
-#ifdef HAVE_OPENCV_CUDAOPTFLOW
-    setOptFlowEstimator(makePtr<DensePyrLkOptFlowEstimatorGpu>());
-    setFlowErrorThreshold(1e-4f);
-    setDistThreshold(5.f);
-    setBorderMode(BORDER_REPLICATE);
-#else
-    CV_Error(Error::StsNotImplemented, "Current implementation of MotionInpainter requires CUDA");
-#endif
+    CV_Error(cv::Error::StsNotImplemented, "Current implementation of MotionInpainter requires CUDA");
 }
 
 
-void MotionInpainter::inpaint(int idx, Mat &frame, Mat &mask)
+void MotionInpainter::inpaint(int idx, cv::Mat &frame, cv::Mat &mask)
 {
-    CV_INSTRUMENT_REGION();
 
     std::priority_queue<std::pair<float,int> > neighbors;
-    std::vector<Mat> vmotions(2*radius_ + 1);
+    std::vector<cv::Mat> vmotions(2*radius_ + 1);
 
     for (int i = -radius_; i <= radius_; ++i)
     {
-        Mat motion0to1 = getMotion(idx, idx + i, *motions_) * at(idx, *stabilizationMotions_).inv();
+        cv::Mat motion0to1 = getMotion(idx, idx + i, *motions_) * at(idx, *stabilizationMotions_).inv();
         vmotions[radius_ + i] = motion0to1;
 
         if (i != 0)
@@ -366,7 +309,7 @@ void MotionInpainter::inpaint(int idx, Mat &frame, Mat &mask)
         mask1_.setTo(255);
     }
 
-    cvtColor(frame, grayFrame_, COLOR_BGR2GRAY);
+    cvtColor(frame, grayFrame_, cv::COLOR_BGR2GRAY);
 
     MotionInpaintBody body;
     body.rad = 2;
@@ -377,7 +320,7 @@ void MotionInpainter::inpaint(int idx, Mat &frame, Mat &mask)
         int neighbor = neighbors.top().second;
         neighbors.pop();
 
-        Mat motion1to0 = vmotions[radius_ + neighbor - idx].inv();
+        cv::Mat motion1to0 = vmotions[radius_ + neighbor - idx].inv();
 
         // warp frame
 
@@ -385,25 +328,25 @@ void MotionInpainter::inpaint(int idx, Mat &frame, Mat &mask)
 
         if (motionModel_ != MM_HOMOGRAPHY)
             warpAffine(
-                    frame1_, transformedFrame1_, motion1to0(Rect(0,0,3,2)), frame1_.size(),
-                    INTER_LINEAR, borderMode_);
+                    frame1_, transformedFrame1_, motion1to0(cv::Rect(0,0,3,2)), frame1_.size(),
+                    cv::INTER_LINEAR, borderMode_);
         else
             warpPerspective(
-                    frame1_, transformedFrame1_, motion1to0, frame1_.size(), INTER_LINEAR,
+                    frame1_, transformedFrame1_, motion1to0, frame1_.size(), cv::INTER_LINEAR,
                     borderMode_);
 
-        cvtColor(transformedFrame1_, transformedGrayFrame1_, COLOR_BGR2GRAY);
+        cvtColor(transformedFrame1_, transformedGrayFrame1_, cv::COLOR_BGR2GRAY);
 
         // warp mask
 
         if (motionModel_ != MM_HOMOGRAPHY)
             warpAffine(
-                    mask1_, transformedMask1_, motion1to0(Rect(0,0,3,2)), mask1_.size(),
-                    INTER_NEAREST);
+                    mask1_, transformedMask1_, motion1to0(cv::Rect(0,0,3,2)), mask1_.size(),
+                    cv::INTER_NEAREST);
         else
-            warpPerspective(mask1_, transformedMask1_, motion1to0, mask1_.size(), INTER_NEAREST);
+            warpPerspective(mask1_, transformedMask1_, motion1to0, mask1_.size(), cv::INTER_NEAREST);
 
-        erode(transformedMask1_, transformedMask1_, Mat());
+        erode(transformedMask1_, transformedMask1_, cv::Mat());
 
         // update flow
 
@@ -451,7 +394,7 @@ public:
         }
 
         float wSumInv = (std::fabs(wSum) > 0) ? (1.f / wSum) : 0; // if wSum is 0, c1-c3 will be 0 too
-        frame(y,x) = Point3_<uchar>(
+        frame(y,x) = cv::Point3_<uchar>(
                 static_cast<uchar>(c1*wSumInv),
                 static_cast<uchar>(c2*wSumInv),
                 static_cast<uchar>(c3*wSumInv));
@@ -463,10 +406,8 @@ public:
 };
 
 
-void ColorAverageInpainter::inpaint(int /*idx*/, Mat &frame, Mat &mask)
+void ColorAverageInpainter::inpaint(int /*idx*/, cv::Mat &frame, cv::Mat &mask)
 {
-    CV_INSTRUMENT_REGION();
-
     ColorAverageInpaintBody body;
     body.mask = mask;
     body.frame = frame;
@@ -474,33 +415,33 @@ void ColorAverageInpainter::inpaint(int /*idx*/, Mat &frame, Mat &mask)
 }
 
 
-void ColorInpainter::inpaint(int /*idx*/, Mat &frame, Mat &mask)
+void ColorInpainter::inpaint(int /*idx*/, cv::Mat &frame, cv::Mat &mask)
 {
-    CV_INSTRUMENT_REGION();
-
     bitwise_not(mask, invMask_);
     cv::inpaint(frame, invMask_, frame, radius_, method_);
 }
 
 
-void calcFlowMask(
-        const Mat &flowX, const Mat &flowY, const Mat &errors, float maxError,
-        const Mat &mask0, const Mat &mask1, Mat &flowMask)
+void calcFlowMask( const cv::Mat &flowX,
+                   const cv::Mat &flowY,
+                   const cv::Mat &errors,
+                   float maxError,
+                   const cv::Mat &mask0,
+                   const cv::Mat &mask1,
+                   cv::Mat &flowMask)
 {
-    CV_INSTRUMENT_REGION();
-
     CV_Assert(flowX.type() == CV_32F && flowX.size() == mask0.size());
     CV_Assert(flowY.type() == CV_32F && flowY.size() == mask0.size());
     CV_Assert(errors.type() == CV_32F && errors.size() == mask0.size());
     CV_Assert(mask0.type() == CV_8U);
     CV_Assert(mask1.type() == CV_8U && mask1.size() == mask0.size());
 
-    Mat_<float> flowX_(flowX), flowY_(flowY), errors_(errors);
-    Mat_<uchar> mask0_(mask0), mask1_(mask1);
+    cv::Mat_<float> flowX_(flowX), flowY_(flowY), errors_(errors);
+    cv::Mat_<uchar> mask0_(mask0), mask1_(mask1);
 
     flowMask.create(mask0.size(), CV_8U);
     flowMask.setTo(0);
-    Mat_<uchar> flowMask_(flowMask);
+    cv::Mat_<uchar> flowMask_(flowMask);
 
     for (int y0 = 0; y0 < flowMask_.rows; ++y0)
     {
@@ -519,12 +460,15 @@ void calcFlowMask(
 }
 
 
-void completeFrameAccordingToFlow(
-        const Mat &flowMask, const Mat &flowX, const Mat &flowY, const Mat &frame1, const Mat &mask1,
-        float distThresh, Mat &frame0, Mat &mask0)
+void completeFrameAccordingToFlow( const cv::Mat &flowMask,
+                                   const cv::Mat &flowX,
+                                   const cv::Mat &flowY,
+                                   const cv::Mat &frame1,
+                                   const cv::Mat &mask1,
+                                   float distThresh,
+                                   cv::Mat &frame0,
+                                   cv::Mat &mask0)
 {
-    CV_INSTRUMENT_REGION();
-
     CV_Assert(flowMask.type() == CV_8U);
     CV_Assert(flowX.type() == CV_32F && flowX.size() == flowMask.size());
     CV_Assert(flowY.type() == CV_32F && flowY.size() == flowMask.size());
@@ -533,8 +477,8 @@ void completeFrameAccordingToFlow(
     CV_Assert(frame0.type() == CV_8UC3 && frame0.size() == flowMask.size());
     CV_Assert(mask0.type() == CV_8U && mask0.size() == flowMask.size());
 
-    Mat_<uchar> flowMask_(flowMask), mask1_(mask1), mask0_(mask0);
-    Mat_<float> flowX_(flowX), flowY_(flowY);
+    cv::Mat_<uchar> flowMask_(flowMask), mask1_(mask1), mask0_(mask0);
+    cv::Mat_<float> flowX_(flowX), flowY_(flowY);
 
     for (int y0 = 0; y0 < frame0.rows; ++y0)
     {
@@ -546,15 +490,12 @@ void completeFrameAccordingToFlow(
                 int y1 = cvRound(y0 + flowY_(y0,x0));
 
                 if (x1 >= 0 && x1 < frame1.cols && y1 >= 0 && y1 < frame1.rows && mask1_(y1,x1)
-                    && sqr(flowX_(y0,x0)) + sqr(flowY_(y0,x0)) < sqr(distThresh))
+                    && std::pow(flowX_(y0,x0), 2.0) + std::pow(flowY_(y0,x0), 2.0) < std::pow(distThresh, 2.0))
                 {
-                    frame0.at<Point3_<uchar> >(y0,x0) = frame1.at<Point3_<uchar> >(y1,x1);
+                    frame0.at<cv::Point3_<uchar> >(y0,x0) = frame1.at<cv::Point3_<uchar> >(y1,x1);
                     mask0_(y0,x0) = 255;
                 }
             }
         }
     }
 }
-
-} // namespace videostab
-} // namespace cv

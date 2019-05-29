@@ -43,170 +43,280 @@
 #ifndef OPENCV_VIDEOSTAB_INPAINTINT_HPP
 #define OPENCV_VIDEOSTAB_INPAINTINT_HPP
 
+// C++ Libraries
 #include <vector>
-#include "opencv2/core.hpp"
-#include "opencv2/videostab/optical_flow.hpp"
-#include "opencv2/videostab/fast_marching.hpp"
-#include "opencv2/videostab/global_motion.hpp"
-#include "opencv2/photo.hpp"
 
-namespace cv
+// OpenCV Libraries
+#include <opencv2/core.hpp>
+#include <opencv2/photo.hpp>
+
+// Project Libraries
+#include "Optical_Flow.hpp"
+#include "Fast_Marching.hpp"
+#include "Global_Motion.hpp"
+
+
+class InpainterBase
 {
-namespace videostab
-{
+    public:
 
-//! @addtogroup videostab
-//! @{
+        InpainterBase()
+            : radius_(0),
+              motionModel_(MM_UNKNOWN),
+              frames_(0),
+              motions_(0),
+              stabilizedFrames_(0),
+              stabilizationMotions_(0)
+        {}
 
-class CV_EXPORTS InpainterBase
-{
-public:
-    InpainterBase()
-        : radius_(0), motionModel_(MM_UNKNOWN), frames_(0), motions_(0),
-          stabilizedFrames_(0), stabilizationMotions_(0) {}
+        virtual ~InpainterBase() = default;
 
-    virtual ~InpainterBase() {}
+        virtual void setRadius(int val)
+        {
+            radius_ = val;
+        }
 
-    virtual void setRadius(int val) { radius_ = val; }
-    virtual int radius() const { return radius_; }
+        virtual int radius() const
+        {
+            return radius_;
+        }
 
-    virtual void setMotionModel(MotionModel val) { motionModel_ = val; }
-    virtual MotionModel motionModel() const { return motionModel_; }
+        virtual void setMotionModel(MotionModel val)
+        {
+            motionModel_ = val;
+        }
 
-    virtual void inpaint(int idx, Mat &frame, Mat &mask) = 0;
+        virtual MotionModel motionModel() const
+        {
+            return motionModel_;
+        }
+
+        virtual void inpaint( int idx, cv::Mat &frame, cv::Mat &mask) = 0;
 
 
-    // data from stabilizer
+        // data from stabilizer
 
-    virtual void setFrames(const std::vector<Mat> &val) { frames_ = &val; }
-    virtual const std::vector<Mat>& frames() const { return *frames_; }
+        virtual void setFrames(const std::vector<cv::Mat> &val)
+        {
+            frames_ = &val;
+        }
 
-    virtual void setMotions(const std::vector<Mat> &val) { motions_ = &val; }
-    virtual const std::vector<Mat>& motions() const { return *motions_; }
+        virtual const std::vector<cv::Mat> &frames() const
+        {
+            return *frames_;
+        }
 
-    virtual void setStabilizedFrames(const std::vector<Mat> &val) { stabilizedFrames_ = &val; }
-    virtual const std::vector<Mat>& stabilizedFrames() const { return *stabilizedFrames_; }
+        virtual void setMotions(const std::vector<cv::Mat> &val)
+        {
+            motions_ = &val;
+        }
 
-    virtual void setStabilizationMotions(const std::vector<Mat> &val) { stabilizationMotions_ = &val; }
-    virtual const std::vector<Mat>& stabilizationMotions() const { return *stabilizationMotions_; }
+        virtual const std::vector<cv::Mat> &motions() const
+        {
+            return *motions_;
+        }
 
-protected:
-    int radius_;
-    MotionModel motionModel_;
-    const std::vector<Mat> *frames_;
-    const std::vector<Mat> *motions_;
-    const std::vector<Mat> *stabilizedFrames_;
-    const std::vector<Mat> *stabilizationMotions_;
+        virtual void setStabilizedFrames(const std::vector<cv::Mat> &val)
+        {
+            stabilizedFrames_ = &val;
+        }
+
+        virtual const std::vector<cv::Mat> &stabilizedFrames() const
+        {
+            return *stabilizedFrames_;
+        }
+
+        virtual void setStabilizationMotions(const std::vector<cv::Mat> &val)
+        {
+            stabilizationMotions_ = &val;
+        }
+
+        virtual const std::vector<cv::Mat>& stabilizationMotions() const
+        {
+            return *stabilizationMotions_;
+        }
+
+    protected:
+
+        int radius_;
+        MotionModel motionModel_;
+        const std::vector<cv::Mat> *frames_;
+        const std::vector<cv::Mat> *motions_;
+        const std::vector<cv::Mat> *stabilizedFrames_;
+        const std::vector<cv::Mat> *stabilizationMotions_;
 };
 
-class CV_EXPORTS NullInpainter : public InpainterBase
+class NullInpainter : public InpainterBase
 {
-public:
-    virtual void inpaint(int /*idx*/, Mat &/*frame*/, Mat &/*mask*/) CV_OVERRIDE {}
+    public:
+
+        virtual void inpaint(int /*idx*/, cv::Mat &/*frame*/, cv::Mat &/*mask*/) override
+        {
+        }
 };
 
-class CV_EXPORTS InpaintingPipeline : public InpainterBase
+class InpaintingPipeline : public InpainterBase
 {
-public:
-    void pushBack(Ptr<InpainterBase> inpainter) { inpainters_.push_back(inpainter); }
-    bool empty() const { return inpainters_.empty(); }
+    public:
 
-    virtual void setRadius(int val) CV_OVERRIDE;
-    virtual void setMotionModel(MotionModel val) CV_OVERRIDE;
-    virtual void setFrames(const std::vector<Mat> &val) CV_OVERRIDE;
-    virtual void setMotions(const std::vector<Mat> &val) CV_OVERRIDE;
-    virtual void setStabilizedFrames(const std::vector<Mat> &val) CV_OVERRIDE;
-    virtual void setStabilizationMotions(const std::vector<Mat> &val) CV_OVERRIDE;
+        void pushBack( std::shared_ptr<InpainterBase> inpainter)
+        {
+            inpainters_.push_back(inpainter);
+        }
 
-    virtual void inpaint(int idx, Mat &frame, Mat &mask) CV_OVERRIDE;
+        bool empty() const
+        {
+            return inpainters_.empty();
+        }
 
-private:
-    std::vector<Ptr<InpainterBase> > inpainters_;
+        void setRadius(int val) override;
+
+        void setMotionModel(MotionModel val) override;
+
+
+        void setFrames(const std::vector<cv::Mat> &val) override;
+
+        void setMotions(const std::vector<cv::Mat> &val) override;
+
+        void setStabilizedFrames(const std::vector<cv::Mat> &val) override;
+
+        void setStabilizationMotions(const std::vector<cv::Mat> &val) override;
+
+        void inpaint(int idx, cv::Mat &frame, cv::Mat &mask) override;
+
+    private:
+
+        std::vector<std::shared_ptr<InpainterBase>> inpainters_;
 };
 
-class CV_EXPORTS ConsistentMosaicInpainter : public InpainterBase
+class ConsistentMosaicInpainter : public InpainterBase
 {
-public:
-    ConsistentMosaicInpainter();
+    public:
 
-    void setStdevThresh(float val) { stdevThresh_ = val; }
-    float stdevThresh() const { return stdevThresh_; }
+        ConsistentMosaicInpainter();
 
-    virtual void inpaint(int idx, Mat &frame, Mat &mask) CV_OVERRIDE;
+        void setStdevThresh(float val)
+        {
+            stdevThresh_ = val;
+        }
 
-private:
-    float stdevThresh_;
+        float stdevThresh() const
+        {
+            return stdevThresh_;
+        }
+
+        void inpaint(int idx, cv::Mat &frame, cv::Mat &mask) override;
+
+    private:
+        float stdevThresh_;
 };
 
-class CV_EXPORTS MotionInpainter : public InpainterBase
+class MotionInpainter : public InpainterBase
 {
-public:
-    MotionInpainter();
+    public:
+        MotionInpainter();
 
-    void setOptFlowEstimator(Ptr<IDenseOptFlowEstimator> val) { optFlowEstimator_ = val; }
-    Ptr<IDenseOptFlowEstimator> optFlowEstimator() const { return optFlowEstimator_; }
+        void setOptFlowEstimator(std::shared_ptr<IDenseOptFlowEstimator> val)
+        {
+            optFlowEstimator_ = val;
+        }
 
-    void setFlowErrorThreshold(float val) { flowErrorThreshold_ = val; }
-    float flowErrorThreshold() const { return flowErrorThreshold_; }
+        std::shared_ptr<IDenseOptFlowEstimator> optFlowEstimator() const
+        {
+            return optFlowEstimator_;
+        }
 
-    void setDistThreshold(float val) { distThresh_ = val; }
-    float distThresh() const { return distThresh_; }
+        void setFlowErrorThreshold(float val)
+        {
+            flowErrorThreshold_ = val;
+        }
 
-    void setBorderMode(int val) { borderMode_ = val; }
-    int borderMode() const { return borderMode_; }
+        float flowErrorThreshold() const
+        {
+            return flowErrorThreshold_;
+        }
 
-    virtual void inpaint(int idx, Mat &frame, Mat &mask) CV_OVERRIDE;
+        void setDistThreshold(float val)
+        {
+            distThresh_ = val;
+        }
 
-private:
-    FastMarchingMethod fmm_;
-    Ptr<IDenseOptFlowEstimator> optFlowEstimator_;
-    float flowErrorThreshold_;
-    float distThresh_;
-    int borderMode_;
+        float distThresh() const
+        {
+            return distThresh_;
+        }
 
-    Mat frame1_, transformedFrame1_;
-    Mat_<uchar> grayFrame_, transformedGrayFrame1_;
-    Mat_<uchar> mask1_, transformedMask1_;
-    Mat_<float> flowX_, flowY_, flowErrors_;
-    Mat_<uchar> flowMask_;
+        void setBorderMode(int val)
+        {
+            borderMode_ = val;
+        }
+
+        int borderMode() const
+        {
+            return borderMode_;
+        }
+
+        void inpaint(int idx, cv::Mat &frame, cv::Mat &mask) override;
+
+    private:
+        FastMarchingMethod fmm_;
+        std::shared_ptr<IDenseOptFlowEstimator> optFlowEstimator_;
+        float flowErrorThreshold_;
+        float distThresh_;
+        int borderMode_;
+
+        cv::Mat frame1_, transformedFrame1_;
+        cv::Mat_<uchar> grayFrame_, transformedGrayFrame1_;
+        cv::Mat_<uchar> mask1_, transformedMask1_;
+        cv::Mat_<float> flowX_, flowY_, flowErrors_;
+        cv::Mat_<uchar> flowMask_;
 };
 
-class CV_EXPORTS ColorAverageInpainter : public InpainterBase
+class ColorAverageInpainter : public InpainterBase
 {
-public:
-    virtual void inpaint(int idx, Mat &frame, Mat &mask) CV_OVERRIDE;
+    public:
 
-private:
-    FastMarchingMethod fmm_;
+        void inpaint(int idx, cv::Mat &frame, cv::Mat &mask) override;
+
+    private:
+        FastMarchingMethod fmm_;
 };
 
-class CV_EXPORTS ColorInpainter : public InpainterBase
+class ColorInpainter : public InpainterBase
 {
-public:
-    ColorInpainter(int method = INPAINT_TELEA, double radius = 2.);
+    public:
 
-    virtual void inpaint(int idx, Mat &frame, Mat &mask) CV_OVERRIDE;
+        ColorInpainter(int method = cv::INPAINT_TELEA, double radius = 2.)
+          : method_(method),
+            radius_(radius)
+        {
+        }
 
-private:
-    int method_;
-    double radius_;
-    Mat invMask_;
+        void inpaint(int idx, cv::Mat &frame, cv::Mat &mask) override;
+
+    private:
+        int method_;
+        double radius_;
+        cv::Mat invMask_;
 };
 
-inline ColorInpainter::ColorInpainter(int _method, double _radius)
-        : method_(_method), radius_(_radius) {}
+void calcFlowMask( const cv::Mat&  flowX,
+                   const cv::Mat&  flowY,
+                   const cv::Mat&  errors,
+                   float           maxError,
+                   const cv::Mat&  mask0,
+                   const cv::Mat&  mask1,
+                   cv::Mat&        flowMask);
 
-CV_EXPORTS void calcFlowMask(
-        const Mat &flowX, const Mat &flowY, const Mat &errors, float maxError,
-        const Mat &mask0, const Mat &mask1, Mat &flowMask);
 
-CV_EXPORTS void completeFrameAccordingToFlow(
-        const Mat &flowMask, const Mat &flowX, const Mat &flowY, const Mat &frame1, const Mat &mask1,
-        float distThresh, Mat& frame0, Mat &mask0);
+void completeFrameAccordingToFlow( const cv::Mat&  flowMask,
+                                   const cv::Mat&  flowX,
+                                   const cv::Mat&  flowY,
+                                   const cv::Mat&  frame1,
+                                   const cv::Mat&  mask1,
+                                   float           distThresh,
+                                   cv::Mat&        frame0,
+                                   cv::Mat&        mask0 );
 
-//! @}
-
-} // namespace videostab
-} // namespace cv
 
 #endif
