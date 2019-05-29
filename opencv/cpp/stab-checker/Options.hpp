@@ -35,6 +35,8 @@ class Options
          */
         std::string Get_Setting( const std::string& name )const;
 
+        int Get_Setting_Int( const std::string& name )const;
+
 
         void Parse_Config_File( const std::string& pathname );
 

@@ -50,6 +50,8 @@ void Interface::Start()
         sin << " - Height: " << m_video_src->height() << std::endl;
         LOG_INFO(sin.str());
     }
+    m_max_frames = std::min( m_video_src->count(),
+                             m_options->Get_Setting_Int("MAX_FRAMES"));
 
     // Create GUI Window
     m_gui_thread = std::thread(&Interface::Run, this);
@@ -84,6 +86,13 @@ void Interface::Wait_Until_Completion()
         m_gui_thread.join();
     }
     endwin();
+    nocbreak();
+
+    // Check if we need to produce the report
+    if( m_current_stage == (int)Stages::BUILD_REPORT )
+    {
+        Build_Report();
+    }
     LOG_TRACE("End of Wait Method");
 }
 
@@ -94,19 +103,32 @@ void Interface::Wait_Until_Completion()
 void Interface::Run()
 {
     // Setup window
-    cv::namedWindow(WINDOW_NAME.c_str());
-    cv::setMouseCallback(WINDOW_NAME.c_str(), &Interface::Mouse_Callback, this);
+    cv::namedWindow(REF_WINDOW_NAME.c_str());
+    cv::namedWindow(CURRENT_WINDOW_NAME.c_str());
+    cv::setMouseCallback(CURRENT_WINDOW_NAME.c_str(), &Interface::Mouse_Callback, this);
 
     while(m_gui_running)
     {
 
         // Show the current image
-        imshow(WINDOW_NAME.c_str(), m_view_image );
+        m_gui_mtx.lock();
+        if( m_view_image.rows > 0 )
+        {
+            imshow(CURRENT_WINDOW_NAME.c_str(), m_view_image);
+        }
+        if( m_ref_image.rows > 0 )
+        {
+            imshow(REF_WINDOW_NAME.c_str(), m_ref_image);
+        }
+        m_gui_mtx.unlock();
         auto key = cv::waitKey(30);
 
         // Check keypress
         if( key == 27 ){ // ESC
             break;
+        }
+        if( key == 'n' && m_current_stage == (int)Stages::INITIALIZATION){
+            Transition_From_Init();
         }
     }
 
@@ -154,6 +176,7 @@ void Interface::Render_Terminal()
             break;
 
         case (int)Stages::FRAME_SELECTION:
+            Print_Frame_Window();
             break;
     }
     refresh();
@@ -164,7 +187,7 @@ void Interface::Render_Terminal()
     {
         case 'n':
             if(m_current_stage == (int)Stages::INITIALIZATION){
-                m_current_stage++;
+                Transition_From_Init();
             }
             break;
         case 27:
@@ -189,6 +212,18 @@ void Interface::Print_Initialization_Window()
     printw(" esc - Abort and exit.\n");
     printw("\n");
     printw("Points Selected: %d\n", m_point_list.size());
+}
+
+
+/****************************************************/
+/*          Print the Frame-To-Frame Window         */
+/****************************************************/
+void Interface::Print_Frame_Window()
+{
+    printw("Frame %d of %d\n", m_current_frame, m_video_src->count());
+    printw("\n");
+    printw("Options:\n");
+
 }
 
 
@@ -226,4 +261,105 @@ void Interface::Mouse_Callback_Worker(int event, int x, int y, int flags )
                     point_info.Get_Color(),
                     2 );
     }
+
+    // If the user clicked and the GUI is in frame selection mode.
+    else if( event == CV_EVENT_LBUTTONDOWN && m_current_stage == (int)Stages::FRAME_SELECTION )
+    {
+        m_point_list[m_current_point].Add_Frame_Point( m_current_frame,
+                                                       cv::Point(x,y));
+
+        // Increment point
+        m_current_point++;
+        if( m_current_point >= m_point_list.size() )
+        {
+            m_current_point = 0;
+            Increment_Frame(m_options->Get_Setting_Int("FRAME_SKIP_COUNT"));
+        }
+
+        // Update the Reference Box
+        Draw_Boxes();
+    }
+}
+
+
+/************************************/
+/*          Increment Frame         */
+/************************************/
+void Interface::Increment_Frame(int number_frames)
+{
+    m_gui_mtx.lock();
+    for( int i=0; i<number_frames; i++ )
+    {
+        m_current_frame++;
+
+        // Skip if the video is at the end
+        if( m_current_frame < m_max_frames )
+        {
+            m_current_image = m_video_src->nextFrame();
+        }
+        else{
+            m_current_stage = (int)Stages::BUILD_REPORT;
+            m_gui_running = false;
+        }
+    }
+
+    m_current_image.copyTo(m_view_image);
+    m_gui_mtx.unlock();
+}
+
+
+/****************************************************/
+/*          Transition from Init to Next            */
+/****************************************************/
+void Interface::Transition_From_Init()
+{
+    m_current_stage++;
+    m_view_image.copyTo(m_ref_image_orig);
+
+    Draw_Boxes();
+
+    // Increment frame
+    Increment_Frame( m_options->Get_Setting_Int("FRAME_SKIP_COUNT"));
+}
+
+
+/**********************************************/
+/*      Draw Reference Image Bounding Box     */
+/**********************************************/
+void Interface::Draw_Boxes()
+{
+    m_ref_image_orig.copyTo(m_ref_image );
+
+    auto point_info = m_point_list[m_current_point];
+    cv::Point offset(m_options->Get_Setting_Int("BOX_OFFSET"),m_options->Get_Setting_Int("BOX_OFFSET"));
+    cv::rectangle( m_ref_image,
+                   point_info.Get_Pixel()-offset,
+                   point_info.Get_Pixel()+offset,
+                   point_info.Get_Color(),
+                   2 );
+}
+
+
+/********************************************/
+/*          Create Output Report            */
+/********************************************/
+void Interface::Build_Report()
+{
+    // Iterate over points, computing errors from original
+    double error_sum = 0;
+    double error_cnt = 0;
+    for( const auto& p : m_point_list )
+    {
+        error_sum += p.Get_Offset_Sum();
+        error_cnt += p.Get_Offset_Count();
+    }
+
+    std::stringstream sin;
+    sin << "Score: " << std::fixed << (error_sum/error_cnt) << std::endl;
+    LOG_INFO(sin.str());
+
+    // Build new output video showing offsets
+    m_video_src->reset();
+
+    //
 }

@@ -91,6 +91,21 @@ std::string Options::Get_Setting(const std::string &name) const
 }
 
 
+/************************************************/
+/*          Get the Requested Setting           */
+/************************************************/
+int Options::Get_Setting_Int(const std::string &name) const
+{
+    try{
+        return std::stoi(Get_Setting(name));
+    }
+    catch(...)
+    {
+        return std::numeric_limits<int>::min();
+    }
+}
+
+
 /****************************************************/
 /*          Parse the configuration file            */
 /****************************************************/
