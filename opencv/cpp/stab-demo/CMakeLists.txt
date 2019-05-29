@@ -66,7 +66,32 @@ add_executable( opencv-optflow-demo
         opencv_optflow_demo.cpp )
 
 add_executable( opencv_video_stab_temp
-                opencv_video_stab.cpp )
+                opencv_video_stab.cpp
+                cv/Deblurring.cpp
+                cv/Deblurring.hpp
+                cv/Fast_Marching.cpp
+                cv/Fast_Marching.hpp
+                cv/Fast_Marching_Inl.hpp
+                cv/Frame_Source.cpp
+                cv/Frame_Source.hpp
+                cv/Global_Motion.cpp
+                cv/Global_Motion.hpp
+                cv/Inpainting.cpp
+                cv/Inpainting.hpp
+                cv/Log.cpp
+                cv/Log.hpp
+                cv/Motion_Core.hpp
+                cv/Motion_Stabilizing.cpp
+                cv/Motion_Stabilizing.hpp
+                cv/Optical_Flow.cpp
+                cv/Optical_Flow.hpp
+                cv/Outlier_Rejection.cpp
+                cv/Outlier_Rejection.hpp
+                cv/Ring_Buffer.hpp
+                cv/Stabilizer.cpp
+                cv/Stabilizer.hpp
+                cv/Wobble_Suppression.cpp
+                cv/Wobble_Suppression.hpp )
 
 
 #-------------------------------#

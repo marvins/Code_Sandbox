@@ -10,8 +10,9 @@
 #include <opencv2/imgproc.hpp>
 #include <opencv2/videoio.hpp>
 #include <opencv2/highgui.hpp>
-#include <opencv2/videostab.hpp>
 #include <opencv2/opencv_modules.hpp>
+
+#include "cv/Stabilizer.hpp"
 
 #define arg(name) cmd.get<string>(name)
 #define argb(name) cmd.get<bool>(name)
@@ -22,7 +23,7 @@
 using namespace std;
 using namespace cv;
 
-Ptr<videostab::IFrameSource> stabilizedFrames;
+std::shared_ptr<IFrameSource> stabilizedFrames;
 string saveMotionsPath;
 double outputFps;
 string outputPath;
