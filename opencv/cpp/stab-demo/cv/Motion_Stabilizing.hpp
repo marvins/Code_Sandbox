@@ -26,31 +26,6 @@ class IMotionStabilizer
 };
 
 
-class MotionStabilizationPipeline : public IMotionStabilizer
-{
-    public:
-
-        void pushBack(std::shared_ptr<IMotionStabilizer> stabilizer)
-        {
-            stabilizers_.push_back(stabilizer);
-        }
-
-        bool empty() const
-        {
-            return stabilizers_.empty();
-        }
-
-        void stabilize( int size,
-                        const std::vector<cv::Mat>& motions,
-                        std::pair<int, int> range,
-                        cv::Mat *stabilizationMotions) override;
-
-    private:
-
-        std::vector<std::shared_ptr<IMotionStabilizer>> stabilizers_;
-};
-
-
 class MotionFilterBase : public IMotionStabilizer
 {
     public:

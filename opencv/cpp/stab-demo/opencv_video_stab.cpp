@@ -339,7 +339,7 @@ int main(int argc, const char **argv)
             return -1;
         }
 
-        StabilizerBase *stabilizer = 0;
+        auto stabilizer = std::make_shared<StabilizerBase>();
 
         // check if source video is specified
 
@@ -370,78 +370,56 @@ int main(int argc, const char **argv)
         else
             wsMotionEstBuilder.reset(new MotionEstimatorRansacL2Builder(cmd, arg("gpu") == "yes", "ws-"));
 
-        // determine whether we must use one pass or two pass stabilizer
-        bool isTwoPass =
-                arg("est-trim") == "yes" || arg("wobble-suppress") == "yes" || arg("lin-prog-stab") == "yes";
+        // we must use two pass stabilizer
+        stabilizer->setEstimateTrimRatio(arg("est-trim") == "yes");
 
-        if (isTwoPass)
+        // determine stabilization technique
+
+        if (arg("lin-prog-stab") == "yes")
         {
-            // we must use two pass stabilizer
-
-            auto *twoPassStabilizer = new TwoPassStabilizer();
-            stabilizer = twoPassStabilizer;
-            twoPassStabilizer->setEstimateTrimRatio(arg("est-trim") == "yes");
-
-            // determine stabilization technique
-
-            if (arg("lin-prog-stab") == "yes")
-            {
-                auto stab = std::make_shared<LpMotionStabilizer>();
-                stab->setFrameSize(Size(source->width(), source->height()));
-                stab->setTrimRatio(arg("lps-trim-ratio") == "auto" ? argf("trim-ratio") : argf("lps-trim-ratio"));
-                stab->setWeight1(argf("lps-w1"));
-                stab->setWeight2(argf("lps-w2"));
-                stab->setWeight3(argf("lps-w3"));
-                stab->setWeight4(argf("lps-w4"));
-                twoPassStabilizer->setMotionStabilizer(stab);
-            }
-            else if (arg("stdev") == "auto")
-                twoPassStabilizer->setMotionStabilizer(std::make_shared<GaussianMotionFilter>(argi("radius")));
-            else
-                twoPassStabilizer->setMotionStabilizer(std::make_shared<GaussianMotionFilter>(argi("radius"), argf("stdev")));
-
-            // init wobble suppressor if necessary
-
-            if (arg("wobble-suppress") == "yes")
-            {
-                auto ws = std::make_shared<MoreAccurateMotionWobbleSuppressor>();
-                if (arg("gpu") == "yes")
-                    throw runtime_error("OpenCV is built without CUDA support");
-
-                ws->setMotionEstimator(wsMotionEstBuilder->build());
-                ws->setPeriod(argi("ws-period"));
-                twoPassStabilizer->setWobbleSuppressor(ws);
-
-                auto model = ws->motionEstimator()->motionModel();
-                if (arg("load-motions2") != "no")
-                {
-                    ws->setMotionEstimator( cv::makePtr<FromFileMotionReader>(arg("load-motions2")));
-                    ws->motionEstimator()->setMotionModel(model);
-                }
-                if (arg("save-motions2") != "no")
-                {
-                    ws->setMotionEstimator(cv::makePtr<ToFileMotionWriter>(arg("save-motions2"), ws->motionEstimator()));
-                    ws->motionEstimator()->setMotionModel(model);
-                }
-            }
+            auto stab = std::make_shared<LpMotionStabilizer>();
+            stab->setFrameSize(Size(source->width(), source->height()));
+            stab->setTrimRatio(arg("lps-trim-ratio") == "auto" ? argf("trim-ratio") : argf("lps-trim-ratio"));
+            stab->setWeight1(argf("lps-w1"));
+            stab->setWeight2(argf("lps-w2"));
+            stab->setWeight3(argf("lps-w3"));
+            stab->setWeight4(argf("lps-w4"));
+            stabilizer->setMotionStabilizer(stab);
         }
+        else if (arg("stdev") == "auto")
+            stabilizer->setMotionStabilizer(std::make_shared<GaussianMotionFilter>(argi("radius")));
         else
-        {
-            // we must use one pass stabilizer
+            stabilizer->setMotionStabilizer(std::make_shared<GaussianMotionFilter>(argi("radius"), argf("stdev")));
 
-            auto *onePassStabilizer = new OnePassStabilizer();
-            stabilizer = onePassStabilizer;
-            if (arg("stdev") == "auto")
-                onePassStabilizer->setMotionFilter(std::make_shared<GaussianMotionFilter>(argi("radius")));
-            else
-                onePassStabilizer->setMotionFilter(std::make_shared<GaussianMotionFilter>(argi("radius"), argf("stdev")));
+        // init wobble suppressor if necessary
+
+        if (arg("wobble-suppress") == "yes")
+        {
+            auto ws = std::make_shared<MoreAccurateMotionWobbleSuppressor>();
+
+            ws->setMotionEstimator(wsMotionEstBuilder->build());
+            ws->setPeriod(argi("ws-period"));
+            stabilizer->setWobbleSuppressor(ws);
+
+            auto model = ws->motionEstimator()->motionModel();
+            if (arg("load-motions2") != "no")
+            {
+                ws->setMotionEstimator( cv::makePtr<FromFileMotionReader>(arg("load-motions2")));
+                ws->motionEstimator()->setMotionModel(model);
+            }
+            if (arg("save-motions2") != "no")
+            {
+                ws->setMotionEstimator(cv::makePtr<ToFileMotionWriter>(arg("save-motions2"), ws->motionEstimator()));
+                ws->motionEstimator()->setMotionModel(model);
+            }
         }
+
 
         stabilizer->setFrameSource(source);
         stabilizer->setMotionEstimator(motionEstBuilder->build());
 
         // cast stabilizer to simple frame source interface to read stabilized frames
-        stabilizedFrames.reset(dynamic_cast<IFrameSource*>(stabilizer));
+        stabilizedFrames = dynamic_pointer_cast<IFrameSource>(stabilizer);
 
         auto model = stabilizer->motionEstimator()->motionModel();
         if (arg("load-motions") != "no")

@@ -62,11 +62,13 @@
 #include "Wobble_Suppression.hpp"
 
 
-class StabilizerBase
+class StabilizerBase : public IFrameSource
 {
     public:
-        virtual ~StabilizerBase()
-        {}
+
+        StabilizerBase();
+
+        virtual ~StabilizerBase() = default;
 
         void setLog(std::shared_ptr<ILog> ilog)
         {
@@ -168,11 +170,41 @@ class StabilizerBase
             return inpainter_;
         }
 
+        void setMotionStabilizer( std::shared_ptr<IMotionStabilizer> val)
+        {
+            motionStabilizer_ = val;
+        }
+
+        std::shared_ptr<IMotionStabilizer> motionStabilizer() const
+        {
+            return motionStabilizer_;
+        }
+
+        void setWobbleSuppressor( std::shared_ptr<WobbleSuppressorBase> val)
+        {
+            wobbleSuppressor_ = val;
+        }
+
+        std::shared_ptr<WobbleSuppressorBase> wobbleSuppressor() const
+        {
+            return wobbleSuppressor_;
+        }
+
+        void setEstimateTrimRatio(bool val)
+        {
+            mustEstTrimRatio_ = val;
+        }
+
+        bool mustEstimateTrimaRatio() const
+        {
+            return mustEstTrimRatio_;
+        }
+
+        cv::Mat nextFrame() final;
+
+        void reset() final;
+
     protected:
-
-        StabilizerBase();
-
-        void reset();
 
         cv::Mat nextStabilizedFrame();
 
@@ -180,11 +212,13 @@ class StabilizerBase
 
         virtual void setUp(const cv::Mat &firstFrame);
 
-        virtual cv::Mat estimateMotion() = 0;
+        virtual cv::Mat estimateMotion();
 
-        virtual cv::Mat estimateStabilizationMotion() = 0;
+        virtual cv::Mat estimateStabilizationMotion();
 
         void stabilizeFrame();
+
+        void runPrePassIfNecessary();
 
         virtual cv::Mat postProcessFrame(const cv::Mat &frame);
 
@@ -217,91 +251,6 @@ class StabilizerBase
         std::vector<cv::Mat> stabilizedMasks_;
         std::vector<cv::Mat> stabilizationMotions_;
         clock_t processingStartTime_;
-};
-
-
-class OnePassStabilizer : public StabilizerBase, public IFrameSource
-{
-    public:
-
-        OnePassStabilizer();
-
-        void setMotionFilter(std::shared_ptr<MotionFilterBase> val)
-        { motionFilter_ = val; }
-
-        std::shared_ptr<MotionFilterBase> motionFilter() const
-        { return motionFilter_; }
-
-        void reset() override;
-
-        cv::Mat nextFrame() override
-        {
-            return nextStabilizedFrame();
-        }
-
-    protected:
-
-        void setUp(const cv::Mat &firstFrame) override;
-
-        cv::Mat estimateMotion() override;
-
-        cv::Mat estimateStabilizationMotion() override;
-
-        cv::Mat postProcessFrame(const cv::Mat &frame) override;
-
-        std::shared_ptr<MotionFilterBase> motionFilter_;
-};
-
-class TwoPassStabilizer : public StabilizerBase, public IFrameSource
-{
-    public:
-
-        TwoPassStabilizer();
-
-        void setMotionStabilizer( std::shared_ptr<IMotionStabilizer> val)
-        {
-            motionStabilizer_ = val;
-        }
-
-        std::shared_ptr<IMotionStabilizer> motionStabilizer() const
-        {
-            return motionStabilizer_;
-        }
-
-        void setWobbleSuppressor( std::shared_ptr<WobbleSuppressorBase> val)
-        {
-            wobbleSuppressor_ = val;
-        }
-
-        std::shared_ptr<WobbleSuppressorBase> wobbleSuppressor() const
-        {
-            return wobbleSuppressor_;
-        }
-
-        void setEstimateTrimRatio(bool val)
-        {
-            mustEstTrimRatio_ = val;
-        }
-
-        bool mustEstimateTrimaRatio() const
-        {
-            return mustEstTrimRatio_;
-        }
-
-        void reset() override;
-
-        cv::Mat nextFrame() override;
-
-    protected:
-        void runPrePassIfNecessary();
-
-        virtual void setUp(const cv::Mat &firstFrame) override;
-
-        virtual cv::Mat estimateMotion() override;
-
-        virtual cv::Mat estimateStabilizationMotion() override;
-
-        virtual cv::Mat postProcessFrame(const cv::Mat &frame) override;
 
         std::shared_ptr<IMotionStabilizer> motionStabilizer_;
         std::shared_ptr<WobbleSuppressorBase> wobbleSuppressor_;
@@ -313,6 +262,5 @@ class TwoPassStabilizer : public StabilizerBase, public IFrameSource
         std::vector<cv::Mat> motions2_;
         cv::Mat suppressedFrame_;
 };
-
 
 #endif

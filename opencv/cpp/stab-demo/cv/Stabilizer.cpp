@@ -23,6 +23,11 @@ StabilizerBase::StabilizerBase()
     doInpainting_ = false;
     processingStartTime_ = 0;
     curStabilizedPos_ = 0;
+
+    setMotionStabilizer(std::make_shared<GaussianMotionFilter>());
+    setWobbleSuppressor(std::make_shared<NullWobbleSuppressor>());
+    setEstimateTrimRatio(false);
+    reset();
 }
 
 
@@ -43,6 +48,12 @@ void StabilizerBase::reset()
     stabilizedMasks_.clear();
     stabilizationMotions_.clear();
     processingStartTime_ = 0;
+
+    frameCount_ = 0;
+    isPrePassDone_ = false;
+    doWobbleSuppression_ = false;
+    motions2_.clear();
+    suppressedFrame_ = cv::Mat();
 }
 
 
@@ -116,6 +127,24 @@ bool StabilizerBase::doOneIteration()
 
 void StabilizerBase::setUp(const cv::Mat &firstFrame)
 {
+    int cacheSize = 2*radius_ + 1;
+    frames_.resize(cacheSize);
+    stabilizedFrames_.resize(cacheSize);
+    stabilizedMasks_.resize(cacheSize);
+
+    for (int i = -radius_; i <= 0; ++i)
+        at(i, frames_) = firstFrame;
+
+    WobbleSuppressorBase *wobble = wobbleSuppressor_.get();
+    doWobbleSuppression_ = dynamic_cast<NullWobbleSuppressor*>(wobble) == 0;
+    if (doWobbleSuppression_)
+    {
+        wobbleSuppressor_->setFrameCount(frameCount_);
+        wobbleSuppressor_->setMotions(motions_);
+        wobbleSuppressor_->setMotions2(motions2_);
+        wobbleSuppressor_->setStabilizationMotions(stabilizationMotions_);
+    }
+
     InpainterBase *inpaint = inpainter_.get();
     doInpainting_ = dynamic_cast<NullInpainter*>(inpaint) == 0;
     if (doInpainting_)
@@ -164,13 +193,24 @@ void StabilizerBase::stabilizeFrame()
     // apply stabilization transformation
 
     if (motionEstimator_->motionModel() != MM_HOMOGRAPHY)
-        warpAffine(
-                preProcessedFrame_, at(curStabilizedPos_, stabilizedFrames_),
-                stabilizationMotion(cv::Rect(0,0,3,2)), frameSize_, cv::INTER_LINEAR, borderMode_);
+    {
+        warpAffine( preProcessedFrame_,
+                    at(curStabilizedPos_, stabilizedFrames_),
+                    stabilizationMotion( cv::Rect(0, 0, 3, 2)),
+                                         frameSize_,
+                                         cv::INTER_LINEAR,
+                                         borderMode_);
+    }
     else
-        warpPerspective(
-                preProcessedFrame_, at(curStabilizedPos_, stabilizedFrames_),
-                stabilizationMotion, frameSize_, cv::INTER_LINEAR, borderMode_);
+    {
+        warpPerspective( preProcessedFrame_,
+                         at( curStabilizedPos_,
+                             stabilizedFrames_ ),
+                         stabilizationMotion,
+                         frameSize_,
+                         cv::INTER_LINEAR,
+                         borderMode_);
+    }
 
     if (doInpainting_)
     {
@@ -188,18 +228,19 @@ void StabilizerBase::stabilizeFrame()
 
         at(curStabilizedPos_, stabilizedMasks_).copyTo(inpaintingMask_);
 
-        inpainter_->inpaint(
-            curStabilizedPos_, at(curStabilizedPos_, stabilizedFrames_), inpaintingMask_);
+        inpainter_->inpaint( curStabilizedPos_, at(curStabilizedPos_, stabilizedFrames_), inpaintingMask_);
     }
 }
 
 
 cv::Mat StabilizerBase::postProcessFrame(const cv::Mat &frame)
 {
+    wobbleSuppressor_->suppress(curStabilizedPos_, frame, suppressedFrame_);
+
     // trim frame
-    int dx = static_cast<int>(floor(trimRatio_ * frame.cols));
-    int dy = static_cast<int>(floor(trimRatio_ * frame.rows));
-    return frame(cv::Rect(dx, dy, frame.cols - 2*dx, frame.rows - 2*dy));
+    int dx = static_cast<int>(floor(trimRatio_ * suppressedFrame_.cols));
+    int dy = static_cast<int>(floor(trimRatio_ * suppressedFrame_.rows));
+    return frame(cv::Rect(dx, dy, suppressedFrame_.cols - 2*dx, suppressedFrame_.rows - 2*dy));
 }
 
 
@@ -210,86 +251,11 @@ void StabilizerBase::logProcessingTime()
 }
 
 
-OnePassStabilizer::OnePassStabilizer()
-{
-    setMotionFilter(std::make_shared<GaussianMotionFilter>());
-    reset();
-}
 
-
-void OnePassStabilizer::reset()
-{
-    StabilizerBase::reset();
-}
-
-
-void OnePassStabilizer::setUp(const cv::Mat &firstFrame)
-{
-    frameSize_ = firstFrame.size();
-    frameMask_.create(frameSize_, CV_8U);
-    frameMask_.setTo(255);
-
-    int cacheSize = 2*radius_ + 1;
-    frames_.resize(cacheSize);
-    stabilizedFrames_.resize(cacheSize);
-    stabilizedMasks_.resize(cacheSize);
-    motions_.resize(cacheSize);
-    stabilizationMotions_.resize(cacheSize);
-
-    for (int i = -radius_; i < 0; ++i)
-    {
-        at(i, motions_) = cv::Mat::eye(3, 3, CV_32F);
-        at(i, frames_) = firstFrame;
-    }
-
-    at(0, frames_) = firstFrame;
-
-    StabilizerBase::setUp(firstFrame);
-}
-
-
-cv::Mat OnePassStabilizer::estimateMotion()
-{
-    return motionEstimator_->estimate(at(curPos_ - 1, frames_), at(curPos_, frames_));
-}
-
-
-cv::Mat OnePassStabilizer::estimateStabilizationMotion()
-{
-    return motionFilter_->stabilize(curStabilizedPos_, motions_, std::make_pair(0, curPos_));
-}
-
-
-cv::Mat OnePassStabilizer::postProcessFrame(const cv::Mat &frame)
-{
-    return StabilizerBase::postProcessFrame(frame);
-}
-
-
-TwoPassStabilizer::TwoPassStabilizer()
-{
-    setMotionStabilizer(std::make_shared<GaussianMotionFilter>());
-    setWobbleSuppressor(std::make_shared<NullWobbleSuppressor>());
-    setEstimateTrimRatio(false);
-    reset();
-}
-
-
-void TwoPassStabilizer::reset()
-{
-    StabilizerBase::reset();
-    frameCount_ = 0;
-    isPrePassDone_ = false;
-    doWobbleSuppression_ = false;
-    motions2_.clear();
-    suppressedFrame_ = cv::Mat();
-}
-
-
-cv::Mat TwoPassStabilizer::nextFrame()
+cv::Mat StabilizerBase::nextFrame()
 {
     runPrePassIfNecessary();
-    return StabilizerBase::nextStabilizedFrame();
+    return nextStabilizedFrame();
 }
 
 
@@ -325,7 +291,7 @@ static void saveMotions(
 #endif
 
 
-void TwoPassStabilizer::runPrePassIfNecessary()
+void StabilizerBase::runPrePassIfNecessary()
 {
     if (!isPrePassDone_)
     {
@@ -392,8 +358,10 @@ void TwoPassStabilizer::runPrePassIfNecessary()
         startTime = clock();
 
         stabilizationMotions_.resize(frameCount_);
-        motionStabilizer_->stabilize(
-            frameCount_, motions_, std::make_pair(0, frameCount_ - 1), &stabilizationMotions_[0]);
+        motionStabilizer_->stabilize( frameCount_,
+                                      motions_,
+                                      std::make_pair(0, frameCount_ - 1),
+                                      &stabilizationMotions_[0]);
 
         elapsedTime = clock() - startTime;
         log_->print("motion stabilization time: %.3f sec\n",
@@ -422,44 +390,14 @@ void TwoPassStabilizer::runPrePassIfNecessary()
 }
 
 
-void TwoPassStabilizer::setUp(const cv::Mat &firstFrame)
-{
-    int cacheSize = 2*radius_ + 1;
-    frames_.resize(cacheSize);
-    stabilizedFrames_.resize(cacheSize);
-    stabilizedMasks_.resize(cacheSize);
-
-    for (int i = -radius_; i <= 0; ++i)
-        at(i, frames_) = firstFrame;
-
-    WobbleSuppressorBase *wobble = wobbleSuppressor_.get();
-    doWobbleSuppression_ = dynamic_cast<NullWobbleSuppressor*>(wobble) == 0;
-    if (doWobbleSuppression_)
-    {
-        wobbleSuppressor_->setFrameCount(frameCount_);
-        wobbleSuppressor_->setMotions(motions_);
-        wobbleSuppressor_->setMotions2(motions2_);
-        wobbleSuppressor_->setStabilizationMotions(stabilizationMotions_);
-    }
-
-    StabilizerBase::setUp(firstFrame);
-}
-
-
-cv::Mat TwoPassStabilizer::estimateMotion()
+cv::Mat StabilizerBase::estimateMotion()
 {
     return motions_[curPos_ - 1].clone();
 }
 
 
-cv::Mat TwoPassStabilizer::estimateStabilizationMotion()
+cv::Mat StabilizerBase::estimateStabilizationMotion()
 {
     return stabilizationMotions_[curStabilizedPos_].clone();
 }
 
-
-cv::Mat TwoPassStabilizer::postProcessFrame(const cv::Mat &frame)
-{
-    wobbleSuppressor_->suppress(curStabilizedPos_, frame, suppressedFrame_);
-    return StabilizerBase::postProcessFrame(suppressedFrame_);
-}

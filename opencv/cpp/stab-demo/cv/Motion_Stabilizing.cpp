@@ -4,36 +4,8 @@
 #include "Global_Motion.hpp"
 #include "Ring_Buffer.hpp"
 
-
-void MotionStabilizationPipeline::stabilize( int size,
-                                             const std::vector<cv::Mat>& motions,
-                                             std::pair<int,int> range,
-                                             cv::Mat *stabilizationMotions )
-{
-    std::vector<cv::Mat> updatedMotions(motions.size());
-    for (size_t i = 0; i < motions.size(); ++i)
-        updatedMotions[i] = motions[i].clone();
-
-    std::vector<cv::Mat> stabilizationMotions_(size);
-
-    for (int i = 0; i < size; ++i)
-        stabilizationMotions[i] = cv::Mat::eye(3, 3, CV_32F);
-
-    for (size_t i = 0; i < stabilizers_.size(); ++i)
-    {
-        stabilizers_[i]->stabilize(size, updatedMotions, range, &stabilizationMotions_[0]);
-
-        for (int k = 0; k < size; ++k)
-            stabilizationMotions[k] = stabilizationMotions_[k] * stabilizationMotions[k];
-
-        for (int j = 0; j + 1 < size; ++j)
-        {
-            cv::Mat S0 = stabilizationMotions[j];
-            cv::Mat S1 = stabilizationMotions[j+1];
-            at(j, updatedMotions) = S1 * at(j, updatedMotions) * S0.inv();
-        }
-    }
-}
+// C++ Libraries
+#include <iostream>
 
 
 void MotionFilterBase::stabilize( int size,
@@ -64,6 +36,7 @@ cv::Mat GaussianMotionFilter::stabilize( int idx,
                                          const std::vector<cv::Mat>& motions,
                                          std::pair<int,int> range)
 {
+    std::cout << "GaussianMotionFilter::Stabilize. IDX: " << idx << ", Range (" << std::get<0>(range) << ", " << std::get<1>(range) << ")" << std::endl;
     const cv::Mat &cur = at(idx, motions);
     cv::Mat res = cv::Mat::zeros(cur.size(), cur.type());
     float sum = 0.f;
