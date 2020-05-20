@@ -2,8 +2,10 @@
 
 // C++ Libraries
 #include <functional>
+#include <iostream>
 #include <memory>
 #include <mutex>
+#include <sstream>
 #include <vector>
 
 /**
@@ -24,7 +26,10 @@ class Resource_Manager
                                    std::function<ResourceType()> default_allocator = []{ return ResourceType(); } )
           : m_default_allocator( default_allocator )
         {
-            m_resource_list.resize( max_resources, m_default_allocator );
+            for( size_t i=0; i<max_resources; i++ )
+            {
+                m_resource_list.push_back( m_default_allocator );
+            }
         }
 
         /**
@@ -51,32 +56,62 @@ class Resource_Manager
             valid = false;
 
             // Iterate over each resource, looking for the next available one
-            for( auto& resource : m_resource_list )
+            int counter = 0;
+            for( size_t idx = 0; idx < m_resource_list.size(); idx++ )
             {
-                if( !resource.m_reserved )
+                if( !m_resource_list[idx].m_reserved )
                 {
                     valid = true;
-                    resource.m_reserved = true;
-                    return resource.m_resource;
+                    m_resource_list[idx].m_reserved = true;
+                    return m_resource_list[idx].m_resource;
                 }
+                counter++;
             }
             return nullptr;
         }
 
-        void Release( std::unique_ptr<ResourceType> resource )
+        /**
+         * @brief Release a single resource back to the manager.
+         * @param resource
+         */
+        void Release( std::shared_ptr<ResourceType>& resource )
         {
+            std::lock_guard<std::mutex> lck( m_resource_mtx );
+            for( size_t idx = 0; idx < m_resource_list.size(); idx++ )
+            {
+                if( m_resource_list[idx].m_resource == resource )
+                {
+                    m_resource_list[idx].m_reserved = false;
+                    return;
+                }
+            }
 
+            // Clear the input pointer
+            resource = nullptr;
+        }
+
+        std::string To_Log_String()
+        {
+            std::ostringstream sout;
+            sout << "Resource-Manager" << std::endl;
+            for( size_t i=0; i<m_resource_list.size(); i++ )
+            {
+                sout << "  - " << i << ", Reserved: " << std::boolalpha << m_resource_list[i].m_reserved;
+                sout << ", Ptr: " << m_resource_list[i].m_resource << ", Contents: ";
+                sout << (*m_resource_list[i].m_resource) << std::endl;
+            }
+            return sout.str();
         }
 
     private:
 
-        struct ResourceTuple
+        struct ResourcePair
         {
             /**
              * @brief Default Constructor
              */
-            ResourceTuple( std::function<ResourceType()> resource_allocator )
-              : m_resource( std::make_shared<ResourceType>(resource_allocator()) ),
+            ResourcePair( std::function<ResourceType()> resource_allocator )
+              : m_resource( std::make_shared<ResourceType>( resource_allocator() ) ),
                 m_reserved( false )
             {}
 
@@ -88,7 +123,7 @@ class Resource_Manager
         std::function<ResourceType()> m_default_allocator;
 
         /// List of resources
-        std::vector<ResourceTuple> m_resource_list;
+        std::vector<ResourcePair> m_resource_list;
 
         /// Mutex
         std::mutex m_resource_mtx;

@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cstring>
+#include <string>
+
 class SomeBlob
 {
     public:
@@ -22,6 +25,7 @@ class SomeBlob
             m_buffer_size_bytes(buffer_size),
             m_message(message)
         {
+            memset( m_buffer, init_val, m_buffer_size_bytes );
         }
 
         /**
@@ -51,9 +55,24 @@ class SomeBlob
             return m_message;
         }
 
+        /**
+         * @brief Set the message text
+         * @param new_message
+         */
+        void Set_Message( std::string new_message )
+        {
+            m_message = new_message;
+        }
+
     private:
 
         char* m_buffer { nullptr };
         uint64_t m_buffer_size_bytes { 0 };
         std::string m_message { "hello world" };
 };
+
+std::ostream& operator << ( std::ostream& sout, const SomeBlob& rhs )
+{
+    sout << " Buffer Size: " << rhs.Get_Buffer_Size_Bytes() << ", Message: " << rhs.Get_Message() << ", Buffer: " << std::string(rhs.Get_Buffer(), rhs.Get_Buffer_Size_Bytes());
+    return sout;
+}
