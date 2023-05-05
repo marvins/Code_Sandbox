@@ -79,6 +79,8 @@ def compute_score( overlap, is_full_copy ):
 
     return score
 
+def sort_by_score( entry ):
+    return entry[0]
 
 if __name__ == '__main__':
 
@@ -109,6 +111,8 @@ if __name__ == '__main__':
     list_of_words = load_words( 'words.txt' )
 
     #  create a random word
+    #  PROTIP:  Comment out this function and just add a test string to verify this shit works
+    #ex:  test_word = 'hello'
     test_word = create_random_word( NUMBER_LETTERS )
     test_word_hist = compute_histogram( test_word )
     print( f'Random Word: {test_word}, Hist: {test_word_hist}' )
@@ -122,7 +126,21 @@ if __name__ == '__main__':
 
         #  Check overlap
         overlap = compute_word_overlap( word_hist, test_word_hist )
-        print( f'word: {word}, test: {test_word}, hist: {word_hist}, test: {test_word_hist}, overlap: {overlap}' )
         if overlap[1] == True or overlap[2] == True:
             score = compute_score( overlap[0], overlap[1] )
-            overlapping_words.insert( [score, word] )
+            overlapping_words.append( [score, word] )
+
+    #  All words have been processed, what's the best?
+    #  -> We need to sort by the score
+    overlapping_words.sort(key=sort_by_score)
+    best_score = overlapping_words[-1]
+
+
+    #  Now print our results
+    print( f'Randomly Generated Word: {test_word}' )
+    print( f'Randomly Generated Word Histogram:\n{test_word_hist}' )
+    print( '' )
+    print( f' Number of words in master list that score points against random word: {len(overlapping_words)}' )
+    print( ' -> NOTE:  Ordered by score (Low -> High):')
+    for w in overlapping_words:
+        print( f'Word: {w[1]}, Score: {w[0]}' )
