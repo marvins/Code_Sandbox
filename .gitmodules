@@ -1,9 +1,9 @@
 [submodule "c++/opengl/image-display-tool/src/thirdparty/pugixml"]
-	path = c++/opengl/image-display-tool/src/thirdparty/pugixml
+	path = cpp/opengl/image-display-tool/src/thirdparty/pugixml
 	url = https://github.com/zeux/pugixml.git
 [submodule "c++/opencl/coordinate_converter/thirdparty/pugixml"]
-	path = c++/opencl/coordinate_converter/thirdparty/pugixml
+	path = cpp/opencl/coordinate_converter/thirdparty/pugixml
 	url = https://github.com/zeux/pugixml
 [submodule "c++/opencl/coordinate_converter/thirdparty/googletest"]
-	path = c++/opencl/coordinate_converter/thirdparty/googletest
+	path = cpp/opencl/coordinate_converter/thirdparty/googletest
 	url = https://github.com/google/googletest
