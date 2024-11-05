@@ -8,9 +8,15 @@
  */
 #pragma once
 
-
+// C++ Standard Libraries
+#include <variant>
 
 namespace mem {
+
+enum class StatusType {
+  SUCCESS = 0,
+  UNINITIALIZED = 1,
+};
 
 /**
  * @class Ok

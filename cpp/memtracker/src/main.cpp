@@ -34,7 +34,7 @@ class Class1
             auto class_id = static_cast<int>(TypesToTrack::CLASS_1);
 
             // 
-            mem::MemoryTracker
+            //mem::MemoryTracker
         }
 
         static Class1 create() {
@@ -71,7 +71,7 @@ void create_objects( std::chrono::system_clock::time_point  end_at,
     while( std::chrono::system_clock::now() < end_at )
     {
         auto loop_start_time = std::chrono::system_clock::now();
-        auto loop_end_timne  = loop_start_time + sleep_time;
+        auto loop_end_time   = loop_start_time + sleep_time;
 
         // Create new instance
         auto new_value = ValueType::create();
@@ -104,7 +104,7 @@ void destroy_objects( std::chrono::system_clock::time_point  end_at,
     while( std::chrono::system_clock::now() < end_at )
     {
         auto loop_start_time = std::chrono::system_clock::now();
-        auto loop_end_timne  = loop_start_time + sleep_time;
+        auto loop_end_time   = loop_start_time + sleep_time;
 
         // Try to fetch a value.
         if( !queue.try_pop( new_value ) ) {

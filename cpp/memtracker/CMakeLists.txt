@@ -30,7 +30,6 @@ include_directories( src )
 
 add_executable( ${PROJECT_NAME}
                 src/main.cpp
-                src/memtracker/MemoryTracker.cpp
                 src/memtracker/MemoryTracker.hpp 
                 src/memtracker/Result.hpp )
 
